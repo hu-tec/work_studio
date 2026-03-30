@@ -1,604 +1,276 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Work Studio - 관리자</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Pretendard', -apple-system, sans-serif; background: #f5f5f5; color: #333; }
-
-    /* Login */
-    .login-overlay {
-      position: fixed; inset: 0; background: #1a365d; z-index: 1000;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .login-box {
-      background: white; padding: 48px; border-radius: 16px; width: 380px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
-    }
-    .login-box h2 { font-size: 24px; font-weight: 800; color: #1a365d; margin-bottom: 8px; }
-    .login-box p { font-size: 13px; color: #888; margin-bottom: 24px; }
-    .login-box input {
-      width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px;
-      font-size: 14px; margin-bottom: 12px; outline: none;
-    }
-    .login-box input:focus { border-color: #1a365d; }
-    .login-box button {
-      width: 100%; padding: 12px; background: #1a365d; color: white; border: none;
-      border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer;
-    }
-    .login-box button:hover { background: #2d4a7c; }
-    .login-error { color: #c00; font-size: 12px; margin-top: 8px; display: none; }
-    .login-hint { font-size: 11px; color: #aaa; margin-top: 16px; }
-
-    /* Layout */
-    .app { display: none; }
-    .app.visible { display: block; }
-
-    header {
-      background: #1a365d; color: white; padding: 12px 24px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    header h1 { font-size: 18px; font-weight: 700; }
-    .header-right { display: flex; align-items: center; gap: 16px; }
-    .user-info { font-size: 12px; color: rgba(255,255,255,0.7); }
-    .logout-btn {
-      padding: 4px 12px; background: rgba(255,255,255,0.15); border: none; color: white;
-      border-radius: 4px; font-size: 11px; cursor: pointer;
-    }
-    .logout-btn:hover { background: rgba(255,255,255,0.25); }
-
-    /* Breadcrumb */
-    .breadcrumb { padding: 10px 24px; font-size: 12px; color: #888; background: #fafafa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .breadcrumb span { color: #1a365d; font-weight: 600; }
-    .view-toggle { display: flex; gap: 4px; }
-    .view-toggle button {
-      padding: 4px 12px; border: 1px solid #ddd; background: white; border-radius: 4px;
-      font-size: 11px; cursor: pointer; color: #666;
-    }
-    .view-toggle button.active { background: #1a365d; color: white; border-color: #1a365d; }
-
-    /* Sidebar + Content */
-    .main { display: flex; min-height: calc(100vh - 85px); }
-    .sidebar {
-      width: 220px; background: white; border-right: 1px solid #eee; padding: 12px 0;
-      flex-shrink: 0; overflow-y: auto;
-    }
-    .sidebar-group { margin-bottom: 8px; }
-    .sidebar-group-title {
-      padding: 8px 20px; font-size: 10px; font-weight: 800; color: #1a365d;
-      text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: flex;
-      justify-content: space-between; align-items: center;
-    }
-    .sidebar-group-title:hover { background: #f8fafc; }
-    .sidebar-group-title .arrow { font-size: 8px; transition: transform 0.2s; }
-    .sidebar-group-title .arrow.open { transform: rotate(90deg); }
-    .sidebar-group-items { overflow: hidden; }
-    .sidebar-group-items.collapsed { display: none; }
-    .sidebar-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 7px 20px 7px 32px; font-size: 13px; color: #555; cursor: pointer;
-      transition: all 0.1s; border-left: 3px solid transparent;
-    }
-    .sidebar-item:hover { background: #f8fafc; color: #1a365d; }
-    .sidebar-item.active { background: #eef2ff; color: #1a365d; font-weight: 700; border-left-color: #1a365d; }
-    .sidebar-count {
-      background: #e2e8f0; color: #555; font-size: 10px; font-weight: 700;
-      padding: 1px 6px; border-radius: 8px; min-width: 20px; text-align: center;
-    }
-    .sidebar-count.has-new { background: #fed7d7; color: #c53030; }
-    .sidebar-all {
-      padding: 10px 20px; font-size: 13px; font-weight: 700; color: #1a365d; cursor: pointer;
-      border-bottom: 1px solid #eee; margin-bottom: 8px;
-    }
-    .sidebar-all:hover { background: #eef2ff; }
-    .sidebar-all.active { background: #eef2ff; }
-
-    .content-area { flex: 1; padding: 0; overflow: hidden; }
-
-    /* Dashboard */
-    .dashboard { padding: 20px; }
-    .dash-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .dash-card {
-      background: white; border-radius: 10px; padding: 16px; border: 1px solid #eee;
-      cursor: pointer; transition: all 0.15s;
-    }
-    .dash-card:hover { border-color: #1a365d; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .dash-card .card-label { font-size: 11px; color: #888; font-weight: 600; margin-bottom: 4px; }
-    .dash-card .card-count { font-size: 28px; font-weight: 800; color: #1a365d; }
-    .dash-card .card-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
-    .dash-card .card-new { color: #c53030; font-weight: 700; }
-
-    .dash-recent { background: white; border-radius: 10px; border: 1px solid #eee; }
-    .dash-recent-title { padding: 14px 16px; font-size: 14px; font-weight: 700; border-bottom: 1px solid #eee; }
-    .dash-recent-item {
-      padding: 10px 16px; border-bottom: 1px solid #f5f5f5; display: flex;
-      justify-content: space-between; align-items: center; font-size: 13px; cursor: pointer;
-    }
-    .dash-recent-item:hover { background: #f8fafc; }
-    .dash-recent-item:last-child { border-bottom: none; }
-    .dash-recent-left { display: flex; align-items: center; gap: 8px; }
-    .dash-tag {
-      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
-      background: #eef2ff; color: #1a365d;
-    }
-    .dash-time { font-size: 11px; color: #aaa; }
-
-    /* List */
-    .content { margin: 16px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .toolbar { padding: 10px 16px; border-bottom: 1px solid #eee; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .toolbar input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; width: 180px; }
-    .toolbar select { padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; }
-    .toolbar button {
-      padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px;
-      background: white; cursor: pointer; font-size: 12px;
-    }
-    .toolbar button:hover { background: #f0f0f0; }
-    .toolbar .delete-btn { color: #c00; border-color: #c00; }
-    .toolbar .delete-btn:hover { background: #fff0f0; }
-
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th {
-      text-align: left; padding: 10px 12px; background: #f8fafc;
-      border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #555;
-      position: sticky; top: 0;
-    }
-    tbody tr { border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-    tbody tr:hover { background: #f8fafc; }
-    tbody td { padding: 10px 12px; vertical-align: top; max-width: 280px; word-break: break-word; }
-    .table-wrap { overflow-x: auto; max-height: 65vh; overflow-y: auto; }
-
-    .badge-count { background: #e2e8f0; color: #1a365d; display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-    .badge-new { background: #fed7d7; color: #c53030; display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-    .badge-id { background: #f0f0f0; color: #555; font-family: monospace; font-size: 11px; padding: 1px 6px; border-radius: 4px; }
-    .empty { padding: 40px; text-align: center; color: #999; }
-    .checkbox { width: 16px; height: 16px; cursor: pointer; }
-
-    .detail-row { background: #f8fafc; }
-    .detail-cell { padding: 16px 24px; }
-    .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
-    .detail-item { font-size: 12px; padding: 6px 0; }
-    .detail-item .label { color: #888; font-size: 11px; font-weight: 600; }
-    .detail-item .value { font-weight: 500; margin-top: 3px; line-height: 1.5; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Work Studio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:12px/1.4 'Pretendard',-apple-system,sans-serif;background:#f0f2f5;color:#333}
+/* Login */
+.lo{position:fixed;inset:0;background:#1a365d;z-index:1000;display:flex;align-items:center;justify-content:center}
+.lb{background:#fff;padding:40px;border-radius:12px;width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.lb h2{font-size:20px;color:#1a365d;margin-bottom:6px}
+.lb p{font-size:11px;color:#888;margin-bottom:20px}
+.lb input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:6px;font-size:13px;margin-bottom:10px;outline:none}
+.lb input:focus{border-color:#1a365d}
+.lb button{width:100%;padding:10px;background:#1a365d;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer}
+.lb button:hover{background:#2d4a7c}
+.le{color:#c00;font-size:11px;margin-top:6px;display:none}
+.lh{font-size:10px;color:#aaa;margin-top:12px}
+/* App */
+.app{display:none}.app.v{display:flex;flex-direction:column;height:100vh}
+header{background:#1a365d;color:#fff;padding:6px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+header h1{font-size:14px;font-weight:700}
+.hr{display:flex;align-items:center;gap:12px;font-size:11px}
+.hr .ui{color:rgba(255,255,255,.6)}
+.hr button{padding:2px 10px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:3px;font-size:10px;cursor:pointer}
+/* Topbar */
+.tb{background:#fff;border-bottom:1px solid #e2e8f0;padding:4px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.tb .bc{font-size:11px;color:#888}.tb .bc b{color:#1a365d}
+.tb .vt{margin-left:auto;display:flex;gap:2px}
+.tb .vt button{padding:3px 10px;border:1px solid #ddd;background:#fff;border-radius:3px;font-size:10px;cursor:pointer;color:#666}
+.tb .vt button.a{background:#1a365d;color:#fff;border-color:#1a365d}
+/* Main */
+.mn{display:flex;flex:1;overflow:hidden}
+/* Sidebar */
+.sb{width:180px;background:#fff;border-right:1px solid #e8e8e8;overflow-y:auto;flex-shrink:0;font-size:11px}
+.sg{border-bottom:1px solid #f0f0f0}
+.sgt{padding:6px 12px;font-size:9px;font-weight:800;color:#1a365d;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fafbfc}
+.sgt:hover{background:#f0f2f5}
+.si{padding:5px 12px 5px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:#555;border-left:2px solid transparent}
+.si:hover{background:#f8fafc;color:#1a365d}
+.si.a{background:#eef2ff;color:#1a365d;font-weight:700;border-left-color:#1a365d}
+.sc{font-size:9px;background:#e8ecf0;color:#555;padding:0 5px;border-radius:8px;min-width:16px;text-align:center;font-weight:700}
+.sc.n{background:#fed7d7;color:#c53030}
+.sa{padding:6px 12px;font-weight:700;color:#1a365d;cursor:pointer;border-bottom:1px solid #eee;font-size:11px}
+.sa:hover,.sa.a{background:#eef2ff}
+/* Content */
+.ca{flex:1;overflow-y:auto;padding:12px}
+/* Dashboard */
+.dc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.dk{background:#fff;border-radius:6px;padding:10px 12px;border:1px solid #eee;cursor:pointer;transition:.15s}
+.dk:hover{border-color:#1a365d;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.dk .dl{font-size:9px;color:#888;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dk .dv{font-size:22px;font-weight:800;color:#1a365d;line-height:1.2}
+.dk .ds{font-size:9px;color:#aaa}.dk .dn{color:#c53030;font-weight:700}
+/* Recent feed */
+.rf{background:#fff;border-radius:6px;border:1px solid #eee}
+.rft{padding:8px 12px;font-size:11px;font-weight:700;border-bottom:1px solid #eee;display:flex;justify-content:space-between}
+.ri{padding:4px 12px;border-bottom:1px solid #f8f8f8;display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;line-height:1.3}
+.ri:hover{background:#f8fafc}
+.ri:last-child{border-bottom:none}
+.rid{font-family:monospace;font-size:9px;background:#f0f0f0;color:#555;padding:0 4px;border-radius:2px;white-space:nowrap}
+.rit{font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;background:#eef2ff;color:#1a365d;white-space:nowrap}
+.rin{font-size:9px;background:#fed7d7;color:#c53030;padding:0 4px;border-radius:2px;font-weight:700}
+.ris{font-size:9px;padding:1px 5px;border-radius:2px;font-weight:600;white-space:nowrap}
+.ris.s0{background:#fff3cd;color:#856404}.ris.s1{background:#d4edda;color:#155724}.ris.s2{background:#e2e8f0;color:#555}
+.rim{margin-left:auto;font-size:9px;color:#aaa;white-space:nowrap}
+/* List */
+.ct{background:#fff;border-radius:6px;border:1px solid #eee}
+.tl{padding:6px 12px;border-bottom:1px solid #eee;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tl input[type=text]{padding:4px 8px;border:1px solid #ddd;border-radius:3px;font-size:11px;width:160px}
+.tl select{padding:4px 6px;border:1px solid #ddd;border-radius:3px;font-size:10px}
+.tl button{padding:3px 10px;border:1px solid #ddd;border-radius:3px;background:#fff;font-size:10px;cursor:pointer}
+.tl button:hover{background:#f0f0f0}
+.tl .db{color:#c00;border-color:#c00}.tl .db:hover{background:#fff0f0}
+.tl .ab{background:#1a365d;color:#fff;border-color:#1a365d}
+.tl .cnt{font-size:10px;background:#e8ecf0;padding:1px 6px;border-radius:8px;font-weight:600}
+.tw{overflow-x:auto;max-height:calc(100vh - 160px);overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead th{text-align:left;padding:6px 8px;background:#f8fafc;border-bottom:2px solid #e2e8f0;font-weight:600;color:#555;position:sticky;top:0;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f5f5f5;cursor:pointer}
+tbody tr:hover{background:#f8fafc}
+tbody td{padding:5px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cb{width:14px;height:14px;cursor:pointer}
+.bid{font-family:monospace;font-size:9px;background:#f0f0f0;padding:0 4px;border-radius:2px}
+.bn{font-size:9px;background:#fed7d7;color:#c53030;padding:0 3px;border-radius:2px;font-weight:700;margin-left:3px}
+.bs{font-size:9px;padding:1px 5px;border-radius:2px;font-weight:600}
+.bs.s0{background:#fff3cd;color:#856404}.bs.s1{background:#d4edda;color:#155724}.bs.s2{background:#e2e8f0;color:#555}
+.em{padding:30px;text-align:center;color:#999}
+/* Detail */
+.dr{background:#f8fafc}
+.dr td{padding:10px 16px}
+.dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:10px;color:#888}
+.dh button{padding:2px 8px;border-radius:3px;font-size:10px;cursor:pointer;border:1px solid #ddd;background:#fff}
+.dh .eb{color:#1a365d;border-color:#1a365d}.dh .sv{background:#16a34a;color:#fff;border-color:#16a34a;display:none}
+.dh .cl{display:none}.dh .xb{color:#c00;border-color:#c00}
+.dg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.di{font-size:11px;padding:4px 0;border-bottom:1px solid #f0f0f0}
+.di .lbl{font-size:9px;color:#888;font-weight:600}.di .val{margin-top:1px;line-height:1.4;word-break:break-word;white-space:normal}
+.di input{display:none;width:100%;padding:3px 6px;border:1px solid #ccc;border-radius:3px;font-size:11px;margin-top:2px}
+/* Memo */
+.memo-wrap{margin-top:8px;padding-top:8px;border-top:1px solid #eee}
+.memo-wrap textarea{width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px;resize:none;height:50px}
+.memo-wrap button{margin-top:4px;padding:3px 10px;background:#1a365d;color:#fff;border:none;border-radius:3px;font-size:10px;cursor:pointer}
+/* Add form */
+#addF{margin-bottom:12px;background:#fff;border-radius:6px;border:1px solid #eee;padding:12px;display:none}
+#addF .af-title{font-size:12px;font-weight:700;margin-bottom:8px}
+#addF .af-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#addF label{font-size:9px;font-weight:700;color:#555;display:block;margin-bottom:2px}
+#addF input{width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px}
+#addF .af-btns{margin-top:8px;display:flex;gap:6px}
+#addF .af-btns button{padding:6px 16px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:none}
+</style>
 </head>
 <body>
-  <div class="login-overlay" id="loginOverlay">
-    <div class="login-box">
-      <h2>Work Studio</h2>
-      <p>홈페이지 업무 관리 시스템</p>
-      <input type="text" id="loginId" placeholder="아이디" />
-      <input type="password" id="loginPw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()" />
-      <button onclick="doLogin()">로그인</button>
-      <div class="login-error" id="loginError">아이디 또는 비밀번호가 올바르지 않습니다.</div>
-      <div class="login-hint">admin / admin</div>
-    </div>
-  </div>
+<div class="lo" id="lo"><div class="lb"><h2>Work Studio</h2><p>홈페이지 업무 관리</p>
+<input id="lid" placeholder="아이디"/><input type="password" id="lpw" placeholder="비밀번호" onkeydown="event.key==='Enter'&&doL()"/>
+<button onclick="doL()">로그인</button><div class="le" id="le">아이디/비밀번호 오류</div><div class="lh">admin / admin</div></div></div>
 
-  <div class="app" id="app">
-    <header>
-      <h1>Work Studio</h1>
-      <div class="header-right">
-        <span class="user-info" id="userInfo"></span>
-        <button class="logout-btn" onclick="doLogout()">로그아웃</button>
-      </div>
-    </header>
-    <div class="breadcrumb" id="breadcrumb">
-      <div>Work Studio</div>
-      <div class="view-toggle">
-        <button id="btnDash" class="active" onclick="setView('dashboard')">대시보드</button>
-        <button id="btnList" onclick="setView('list')">리스트</button>
-      </div>
-    </div>
-    <div class="main">
-      <div class="sidebar" id="sidebar"></div>
-      <div class="content-area" id="contentArea"></div>
-    </div>
-  </div>
+<div class="app" id="app">
+<header><h1>Work Studio</h1><div class="hr"><span class="ui" id="ui"></span><button onclick="doLO()">로그아웃</button></div></header>
+<div class="tb"><div class="bc" id="bc">Work Studio</div>
+<div class="vt"><button id="bD" class="a" onclick="sv('d')">대시보드</button><button id="bL" onclick="sv('l')">리스트</button></div></div>
+<div class="mn"><div class="sb" id="sb"></div><div class="ca" id="ca"></div></div>
+</div>
 
-  <script>
-    const USERS = { admin: { pw: "admin", name: "관리자", role: "admin" }, staff: { pw: "staff", name: "직원", role: "staff" } };
-    function doLogin() {
-      const id = document.getElementById("loginId").value, pw = document.getElementById("loginPw").value;
-      const user = USERS[id];
-      if (user && user.pw === pw) { sessionStorage.setItem("ws_user", JSON.stringify({ id, ...user })); showApp(); }
-      else document.getElementById("loginError").style.display = "block";
-    }
-    function doLogout() { sessionStorage.removeItem("ws_user"); location.reload(); }
-    function showApp() {
-      document.getElementById("loginOverlay").style.display = "none";
-      document.getElementById("app").classList.add("visible");
-      const user = JSON.parse(sessionStorage.getItem("ws_user"));
-      document.getElementById("userInfo").textContent = `${user.name} (${user.role})`;
-      init();
-    }
+<script>
+const U={admin:{pw:"admin",n:"관리자",r:"admin"},staff:{pw:"staff",n:"직원",r:"staff"}};
+function doL(){const i=lid.value,p=lpw.value,u=U[i];if(u&&u.pw===p){sessionStorage.ws=JSON.stringify({i,...u});sA()}else le.style.display="block"}
+function doLO(){sessionStorage.removeItem("ws");location.reload()}
+function sA(){lo.style.display="none";app.classList.add("v");const u=JSON.parse(sessionStorage.ws);ui.textContent=u.n;init()}
 
-    const CATEGORIES = {
-      "번역 서비스": { tables: ["translation_contacts","translation_quotes","translation_translators","translation_integrated","translation_experts","translation_orders"] },
-      "윤리": { tables: ["aiethics_applications"] },
-      "고전번역": { tables: ["classic_inquiries","classic_specialist_apps"] },
-      "레벨테스트": { tables: ["level_test_submissions"] },
-      "대표님 사이트": { tables: ["story_posts"] },
-    };
-    const TABLE_LABELS = {
-      aiethics_applications: "전문가 모집", classic_inquiries: "문의", classic_specialist_apps: "전문가 신청",
-      translation_contacts: "문의하기", translation_quotes: "견적 의뢰", translation_translators: "번역사 신청",
-      translation_integrated: "통합 신청", translation_experts: "전문가 지원", translation_orders: "번역 신청",
-      level_test_submissions: "답안 제출", story_posts: "블로그 포스트",
-    };
+const C={"번역":{t:["translation_contacts","translation_quotes","translation_translators","translation_integrated","translation_experts","translation_orders"]},
+"윤리":{t:["aiethics_applications"]},"고전번역":{t:["classic_inquiries","classic_specialist_apps"]},
+"레벨테스트":{t:["level_test_submissions"]},"대표님":{t:["story_posts"]}};
+const L={aiethics_applications:"전문가모집",classic_inquiries:"문의",classic_specialist_apps:"전문가신청",
+translation_contacts:"문의",translation_quotes:"견적",translation_translators:"번역사",
+translation_integrated:"통합신청",translation_experts:"전문가지원",translation_orders:"번역신청",
+level_test_submissions:"답안",story_posts:"블로그"};
+const ST=["신규","확인","처리완료"];
 
-    let tables = [], tableCounts = {}, tableData = {}, currentTable = null, currentView = "dashboard";
-    let selectedIds = new Set(), collapsedCats = new Set();
+let T=[],TC={},TD={},cT=null,cV="d",sel=new Set(),cC=new Set();
 
-    async function init() {
-      tables = await fetch("/api/tables").then(r => r.json());
-      await loadAllData();
-      renderSidebar();
-      renderView();
-    }
+async function init(){T=await f("/api/tables");await lA();rS();rv()}
+async function lA(){for(const t of T){const r=await f("/api/"+t);TD[t]=r;TC[t]=r.length}}
+function f(u){return fetch(u).then(r=>r.json())}
 
-    async function loadAllData() {
-      for (const t of tables) {
-        const rows = await fetch(`/api/${t}`).then(r => r.json());
-        tableData[t] = rows;
-        tableCounts[t] = rows.length;
-      }
-    }
+function aR(){let a=[];for(const t of T)(TD[t]||[]).forEach(r=>a.push({...r,_t:t}));return a.sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""))}
+function iT(d){return d&&d.startsWith(new Date().toISOString().slice(0,10))}
+function rn(t,id){const p={aiethics_applications:"ETH",classic_inquiries:"CLS",classic_specialist_apps:"CSP",translation_contacts:"TCT",translation_quotes:"TQT",translation_translators:"TTR",translation_integrated:"TIN",translation_experts:"TEX",translation_orders:"TOR",level_test_submissions:"LVL",story_posts:"BLG"};return(p[t]||"W")+"-"+String(id).padStart(4,"0")}
+function gC(t){for(const[c,v]of Object.entries(C))if(v.t.includes(t))return c;return""}
+function gS(row){try{const d=JSON.parse(row.data);return d._status||0}catch{return 0}}
+function eh(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function fv(v){if(v==null)return"";if(Array.isArray(v))return v.join(", ");if(typeof v==="object")return Object.entries(v).map(([k,v])=>k+":"+v).join(" / ");const s=String(v);return s.length>60?s.slice(0,60)+"…":s}
 
-    function getAllRows() {
-      let all = [];
-      for (const t of tables) {
-        (tableData[t] || []).forEach(row => {
-          all.push({ ...row, _table: t });
-        });
-      }
-      return all.sort((a, b) => b.id - a.id || (b.created_at || "").localeCompare(a.created_at || ""));
-    }
+function sv(v){cV=v;bD.className=v==="d"?"a":"";bL.className=v==="l"?"a":"";rv()}
+function rv(){if(cV==="d"&&!cT)rD();else rL()}
 
-    function getRecentRows(limit = 15) {
-      return getAllRows().sort((a, b) => (b.created_at || "").localeCompare(a.created_at || "")).slice(0, limit);
-    }
+function rS(){
+let h=`<div class="sa ${!cT?"a":""}" onclick="cT=null;sv('d')">전체</div>`;
+for(const[c,v]of Object.entries(C)){
+const cc=v.t.reduce((s,t)=>s+(TC[t]||0),0);
+const nc=v.t.reduce((s,t)=>s+(TD[t]||[]).filter(r=>iT(r.created_at)).length,0);
+const op=!cC.has(c);
+h+=`<div class="sg"><div class="sgt" onclick="tC('${c}')"><span>${c} (${cc})</span>${nc?`<span class="sc n">+${nc}</span>`:""}</div>`;
+if(op)for(const t of v.t){const nt=(TD[t]||[]).filter(r=>iT(r.created_at)).length;
+h+=`<div class="si ${t===cT?"a":""}" onclick="sT('${t}')"><span>${L[t]||t}</span><span class="sc${nt?" n":""}">${TC[t]||0}</span></div>`}
+h+=`</div>`}
+sb.innerHTML=h}
+function tC(c){cC.has(c)?cC.delete(c):cC.add(c);rS()}
+function sT(t){cT=t;sel.clear();cV="l";bD.className="";bL.className="a";rS();uB();rL()}
+function uB(){bc.innerHTML=cT?`Work Studio &rsaquo; <b>${gC(cT)}</b> &rsaquo; <b>${L[cT]}</b>`:"Work Studio"}
 
-    function isToday(dateStr) {
-      if (!dateStr) return false;
-      return dateStr.startsWith(new Date().toISOString().slice(0, 10));
-    }
+// Dashboard
+function rD(){uB();const tot=T.reduce((s,t)=>s+(TC[t]||0),0);const tN=aR().filter(r=>iT(r.created_at)).length;
+let cards=`<div class="dk" onclick="cT=null;rD()"><div class="dl">전체 접수</div><div class="dv">${tot}</div><div class="ds">${tN?`<span class="dn">오늘+${tN}</span>`:"오늘 0"}</div></div>`;
+for(const[c,v]of Object.entries(C)){const n=v.t.reduce((s,t)=>s+(TC[t]||0),0);const nd=v.t.reduce((s,t)=>s+(TD[t]||[]).filter(r=>iT(r.created_at)).length,0);
+cards+=`<div class="dk" onclick="sT('${v.t[0]}')"><div class="dl">${c}</div><div class="dv">${n}</div><div class="ds">${nd?`<span class="dn">+${nd}</span>`:"—"}</div></div>`}
 
-    function genReceiptNo(table, id) {
-      const prefixes = {
-        aiethics_applications: "ETH", classic_inquiries: "CLS", classic_specialist_apps: "CSP",
-        translation_contacts: "TCT", translation_quotes: "TQT", translation_translators: "TTR",
-        translation_integrated: "TIN", translation_experts: "TEX", translation_orders: "TOR",
-        level_test_submissions: "LVL", story_posts: "BLG",
-      };
-      return `${prefixes[table] || "WRK"}-${String(id).padStart(4, "0")}`;
-    }
+const rec=aR().slice(0,25);
+let rh=rec.map(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}
+const nm=p.name||p.title||p.studentName||"—";const st=gS(r);
+return`<div class="ri" onclick="sT('${r._t}')"><span class="rid">${rn(r._t,r.id)}</span><span class="rit">${L[r._t]||r._t}</span><span class="ris s${st}">${ST[st]}</span>${eh(nm).slice(0,20)}${iT(r.created_at)?'<span class="rin">NEW</span>':""}<span class="rim">${(r.created_at||"").slice(5,16)}</span></div>`}).join("");
 
-    function getCatForTable(t) {
-      for (const [cat, info] of Object.entries(CATEGORIES)) if (info.tables.includes(t)) return cat;
-      return "";
-    }
+ca.innerHTML=`<div class="dc">${cards}</div><div class="rf"><div class="rft"><span>최근 접수 (${rec.length})</span></div>${rh||'<div class="em">데이터 없음</div>'}</div>`}
 
-    function setView(v) {
-      currentView = v;
-      document.getElementById("btnDash").className = v === "dashboard" ? "active" : "";
-      document.getElementById("btnList").className = v === "list" ? "active" : "";
-      renderView();
-    }
+// List
+function rL(){uB();const data=cT?TD[cT]||[]:[];
+if(!data.length){ca.innerHTML='<div id="addF"></div><div class="ct"><div class="em">데이터 없음</div></div>';return}
+const aK=new Set();const ps=data.map(r=>{let d;try{d=JSON.parse(r.data)}catch{d={raw:r.data}}
+Object.keys(d).forEach(k=>{if(k!=="_status"&&k!=="_memo")aK.add(k)});return{...r,p:d}});
+const keys=[...aK].slice(0,5);// max 5 columns for density
 
-    function renderView() {
-      if (currentView === "dashboard" && !currentTable) renderDashboard();
-      else renderList();
-    }
+const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fT(this.value)"/>
+<select onchange="fS(this.value)"><option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
+<select onchange="fD(this.value)"><option value="">전체기간</option><option value="t">오늘</option><option value="w">7일</option><option value="m">30일</option></select>
+<span class="cnt">${ps.length}건</span>
+<button class="ab" onclick="sAF()">+추가</button>
+<button onclick="bSt(1)">확인처리</button><button onclick="bSt(2)">완료처리</button>
+<button class="db" onclick="dS()">삭제</button></div>`;
 
-    function renderSidebar() {
-      let html = `<div class="sidebar-all ${!currentTable ? 'active' : ''}" onclick="currentTable=null;setView('dashboard')">전체 대시보드</div>`;
-      for (const [cat, info] of Object.entries(CATEGORIES)) {
-        const catCount = info.tables.reduce((s, t) => s + (tableCounts[t] || 0), 0);
-        const todayCount = info.tables.reduce((s, t) => s + (tableData[t] || []).filter(r => isToday(r.created_at)).length, 0);
-        const isOpen = !collapsedCats.has(cat);
-        html += `<div class="sidebar-group">
-          <div class="sidebar-group-title" onclick="toggleCat('${cat}')">
-            <span><span class="arrow ${isOpen ? 'open' : ''}">&#9654;</span> ${cat} (${catCount})</span>
-            ${todayCount > 0 ? `<span class="sidebar-count has-new">+${todayCount}</span>` : ''}
-          </div>
-          <div class="sidebar-group-items ${isOpen ? '' : 'collapsed'}">`;
-        for (const t of info.tables) {
-          const todayT = (tableData[t] || []).filter(r => isToday(r.created_at)).length;
-          html += `<div class="sidebar-item ${t === currentTable ? 'active' : ''}" onclick="selectTab('${t}')">
-            <span>${TABLE_LABELS[t] || t}</span>
-            <span class="sidebar-count ${todayT > 0 ? 'has-new' : ''}">${tableCounts[t] || 0}</span>
-          </div>`;
-        }
-        html += `</div></div>`;
-      }
-      document.getElementById("sidebar").innerHTML = html;
-    }
+const th=`<tr><th><input type="checkbox" class="cb" onchange="tA(this.checked)"/></th><th>접수번호</th><th>상태</th>${keys.map(k=>`<th>${k}</th>`).join("")}<th>일시</th></tr>`;
+const tb=ps.map(r=>{const st=r.p._status||0;
+return`<tr data-id="${r.id}" data-d="${r.created_at||""}" onclick="tD(this,${r.id})"><td><input type="checkbox" class="cb" ${sel.has(r.id)?"checked":""} onclick="event.stopPropagation();tSel(${r.id},this.checked)"/></td>
+<td><span class="bid">${rn(cT,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</td>
+<td><span class="bs s${st}">${ST[st]}</span></td>
+${keys.map(k=>`<td>${eh(fv(r.p[k]))}</td>`).join("")}
+<td>${(r.created_at||"").slice(5,16)}</td></tr>`}).join("");
 
-    function toggleCat(cat) {
-      if (collapsedCats.has(cat)) collapsedCats.delete(cat); else collapsedCats.add(cat);
-      renderSidebar();
-    }
+ca.innerHTML=`<div id="addF"></div><div class="ct">${tl}<div class="tw"><table><thead>${th}</thead><tbody id="tB">${tb}</tbody></table></div></div>`}
 
-    function selectTab(table) {
-      currentTable = table;
-      selectedIds.clear();
-      currentView = "list";
-      document.getElementById("btnDash").className = "";
-      document.getElementById("btnList").className = "active";
-      renderSidebar();
-      updateBreadcrumb();
-      renderList();
-    }
+function tSel(id,c){c?sel.add(id):sel.delete(id)}
+function tA(c){(TD[cT]||[]).forEach(r=>{c?sel.add(r.id):sel.delete(r.id)});rL()}
+async function dS(){if(!sel.size)return alert("선택 없음");if(!confirm(sel.size+"건 삭제?"))return;for(const id of sel)await fetch(`/api/${cT}/${id}`,{method:"DELETE"});sel.clear();await lA();rS();rL()}
+async function bSt(st){if(!sel.size)return alert("선택 없음");for(const id of sel){const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)continue;let d;try{d=JSON.parse(row.data)}catch{d={}}
+d._status=st;await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})}
+sel.clear();await lA();rS();rL()}
 
-    function updateBreadcrumb() {
-      const bc = document.getElementById("breadcrumb");
-      const left = currentTable
-        ? `<span style="cursor:pointer" onclick="currentTable=null;setView('dashboard')">Work Studio</span> &rsaquo; <span>${getCatForTable(currentTable)}</span> &rsaquo; <span>${TABLE_LABELS[currentTable]}</span>`
-        : "Work Studio";
-      bc.querySelector("div:first-child").innerHTML = left;
-    }
+function tD(tr,id){const ex=tr.nextElementSibling;if(ex&&ex.classList.contains("dr")){ex.remove();return}
+const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)return;
+let p;try{p=JSON.parse(row.data)}catch{p={raw:row.data}}
+const memo=p._memo||"";
+const fields=Object.entries(p).filter(([k])=>k!=="_status"&&k!=="_memo").map(([k,v])=>{
+const val=Array.isArray(v)?v.join(", "):typeof v==="object"?Object.entries(v).map(([a,b])=>a+":"+b).join(" / "):String(v||"");
+return`<div class="di"><div class="lbl">${k}</div><div class="val" id="v-${id}-${k}">${eh(val)}</div><input id="e-${id}-${k}" data-key="${k}" value="${eh(val)}"/></div>`}).join("");
 
-    // --- Dashboard ---
-    function renderDashboard() {
-      updateBreadcrumb();
-      const area = document.getElementById("contentArea");
-      const total = tables.reduce((s, t) => s + (tableCounts[t] || 0), 0);
-      const todayTotal = getAllRows().filter(r => isToday(r.created_at)).length;
+const dt=document.createElement("tr");dt.className="dr";
+dt.innerHTML=`<td colspan="99"><div class="dh"><span>${rn(cT,id)} | ${row.created_at} | 상태: <span class="bs s${p._status||0}">${ST[p._status||0]}</span></span>
+<span><button class="eb" onclick="eS(${id})">수정</button><button class="sv" id="sv${id}" onclick="eSv(${id})">저장</button><button class="cl" id="cl${id}" onclick="eCl(${id})">취소</button>
+<select onchange="cSt(${id},this.value)" style="font-size:10px;padding:2px"><option value="0" ${(p._status||0)===0?"selected":""}>신규</option><option value="1" ${p._status===1?"selected":""}>확인</option><option value="2" ${p._status===2?"selected":""}>처리완료</option></select>
+<button class="xb" onclick="dOne(${id})">삭제</button></span></div>
+<div class="dg" id="dg-${id}">${fields}</div>
+<div class="memo-wrap"><textarea id="mm-${id}" placeholder="관리자 메모…">${eh(memo)}</textarea><button onclick="sMm(${id})">메모 저장</button></div></td>`;
+tr.after(dt)}
 
-      let cards = `<div class="dash-card" onclick="currentTable=null;renderDashboard()">
-        <div class="card-label">전체 접수</div>
-        <div class="card-count">${total}</div>
-        <div class="card-sub">${todayTotal > 0 ? `<span class="card-new">오늘 +${todayTotal}</span>` : '오늘 신규 없음'}</div>
-      </div>`;
-      for (const [cat, info] of Object.entries(CATEGORIES)) {
-        const cnt = info.tables.reduce((s, t) => s + (tableCounts[t] || 0), 0);
-        const todayCnt = info.tables.reduce((s, t) => s + (tableData[t] || []).filter(r => isToday(r.created_at)).length, 0);
-        cards += `<div class="dash-card" onclick="selectTab('${info.tables[0]}')">
-          <div class="card-label">${cat}</div>
-          <div class="card-count">${cnt}</div>
-          <div class="card-sub">${todayCnt > 0 ? `<span class="card-new">오늘 +${todayCnt}</span>` : '—'}</div>
-        </div>`;
-      }
+function eS(id){document.getElementById("sv"+id).style.display="inline";document.getElementById("cl"+id).style.display="inline";
+document.querySelectorAll(`#dg-${id} .di`).forEach(d=>{d.querySelector(".val").style.display="none";d.querySelector("input").style.display="block"})}
+function eCl(id){document.getElementById("sv"+id).style.display="none";document.getElementById("cl"+id).style.display="none";
+document.querySelectorAll(`#dg-${id} .di`).forEach(d=>{d.querySelector(".val").style.display="block";d.querySelector("input").style.display="none"})}
+async function eSv(id){const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)return;let o;try{o=JSON.parse(row.data)}catch{o={}}
+const u={...o};document.querySelectorAll(`#dg-${id} input[data-key]`).forEach(inp=>{const k=inp.dataset.key,v=inp.value;
+if(Array.isArray(o[k]))u[k]=v.split(",").map(s=>s.trim()).filter(Boolean);else u[k]=v});
+await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(u)});await lA();rS();rL()}
+async function cSt(id,st){const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)return;let d;try{d=JSON.parse(row.data)}catch{d={}}
+d._status=Number(st);await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});await lA();rS();rL()}
+async function dOne(id){if(!confirm("삭제?"))return;await fetch(`/api/${cT}/${id}`,{method:"DELETE"});await lA();rS();rL()}
+async function sMm(id){const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)return;let d;try{d=JSON.parse(row.data)}catch{d={}}
+d._memo=document.getElementById("mm-"+id).value;await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});alert("메모 저장됨")}
 
-      const recent = getRecentRows(15);
-      let recentHtml = recent.map(row => {
-        let parsed; try { parsed = JSON.parse(row.data); } catch { parsed = {}; }
-        const name = parsed.name || parsed.title || parsed.studentName || "—";
-        return `<div class="dash-recent-item" onclick="selectTab('${row._table}')">
-          <div class="dash-recent-left">
-            <span class="badge-id">${genReceiptNo(row._table, row.id)}</span>
-            <span class="dash-tag">${TABLE_LABELS[row._table] || row._table}</span>
-            <span>${escapeHtml(name)}</span>
-            ${isToday(row.created_at) ? '<span class="badge-new">NEW</span>' : ''}
-          </div>
-          <span class="dash-time">${row.created_at || ""}</span>
-        </div>`;
-      }).join("");
+function fT(q){document.querySelectorAll("#tB tr:not(.dr)").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?"":"none"})}
+function fS(v){document.querySelectorAll("#tB tr:not(.dr)").forEach(r=>{if(!v){r.style.display="";return}
+const id=Number(r.dataset.id);const row=(TD[cT]||[]).find(x=>x.id===id);if(!row){r.style.display="none";return}
+let p;try{p=JSON.parse(row.data)}catch{p={}}r.style.display=String(p._status||0)===v?"":"none"})}
+function fD(v){const now=new Date();let cut=null;
+if(v==="t")cut=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+else if(v==="w"){cut=new Date(now);cut.setDate(cut.getDate()-7)}
+else if(v==="m"){cut=new Date(now);cut.setDate(cut.getDate()-30)}
+document.querySelectorAll("#tB tr:not(.dr)").forEach(r=>{if(!cut){r.style.display="";return}
+r.style.display=(r.dataset.d&&new Date(r.dataset.d)>=cut)?"":"none"})}
 
-      area.innerHTML = `<div class="dashboard">
-        <div class="dash-cards">${cards}</div>
-        <div class="dash-recent">
-          <div class="dash-recent-title">최근 접수 내역</div>
-          ${recentHtml || '<div class="empty">접수된 데이터가 없습니다</div>'}
-        </div>
-      </div>`;
-    }
+// Add form
+function sAF(){const af=document.getElementById("addF");if(af.style.display==="block"){af.style.display="none";return}
+const s=(TD[cT]||[])[0];let keys=[];if(s)try{keys=Object.keys(JSON.parse(s.data)).filter(k=>k!=="_status"&&k!=="_memo")}catch{}
+if(!keys.length)keys=["name","email","message"];
+af.innerHTML=`<div class="af-title">${L[cT]} 수동 추가</div><div class="af-grid">${keys.map(k=>`<div><label>${k}</label><input data-af="${k}"/></div>`).join("")}</div>
+<div class="af-btns"><button style="background:#1a365d;color:#fff" onclick="doAF()">추가</button><button style="border:1px solid #ddd;background:#fff" onclick="document.getElementById('addF').style.display='none'">취소</button></div>`;
+af.style.display="block"}
+async function doAF(){const d={};document.querySelectorAll("#addF input[data-af]").forEach(i=>{d[i.dataset.af]=i.value});
+await fetch(`/api/${cT}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
+document.getElementById("addF").style.display="none";await lA();rS();rL()}
 
-    // --- List ---
-    function renderList() {
-      const area = document.getElementById("contentArea");
-      const data = currentTable ? (tableData[currentTable] || []) : [];
-
-      if (data.length === 0) {
-        area.innerHTML = '<div class="content"><div class="empty">데이터가 없습니다</div></div>';
-        return;
-      }
-
-      const allKeys = new Set();
-      const parsed = data.map(row => {
-        let d; try { d = JSON.parse(row.data); } catch { d = { raw: row.data }; }
-        Object.keys(d).forEach(k => allKeys.add(k));
-        return { ...row, parsed: d };
-      });
-      const keys = [...allKeys];
-
-      const toolbar = `<div class="toolbar">
-        <input type="text" placeholder="검색..." oninput="filterTable(this.value)" />
-        <select onchange="filterByDate(this.value)">
-          <option value="">전체 기간</option>
-          <option value="today">오늘</option>
-          <option value="week">최근 7일</option>
-          <option value="month">최근 30일</option>
-        </select>
-        <span class="badge-count">${parsed.length}건</span>
-        <button onclick="showAddForm()" style="background:#1a365d;color:white;border-color:#1a365d;">+ 추가</button>
-        <button class="delete-btn" onclick="deleteSelected()">선택 삭제</button>
-      </div>`;
-
-      const thead = `<tr>
-        <th><input type="checkbox" class="checkbox" onchange="toggleAll(this.checked)" /></th>
-        <th>접수번호</th>
-        ${keys.map(k => `<th>${k}</th>`).join("")}
-        <th>접수일시</th>
-      </tr>`;
-
-      const tbody = parsed.map((row, i) => `
-        <tr data-id="${row.id}" data-date="${row.created_at || ''}" onclick="toggleDetail(this, ${row.id})">
-          <td><input type="checkbox" class="checkbox" ${selectedIds.has(row.id)?'checked':''} onclick="event.stopPropagation();toggleSelect(${row.id},this.checked)" /></td>
-          <td><span class="badge-id">${genReceiptNo(currentTable, row.id)}</span> ${isToday(row.created_at)?'<span class="badge-new">NEW</span>':''}</td>
-          ${keys.map(k => `<td>${escapeHtml(formatValue(row.parsed[k]))}</td>`).join("")}
-          <td>${row.created_at || ""}</td>
-        </tr>`).join("");
-
-      area.innerHTML = `<div class="content">${toolbar}
-        <div class="table-wrap"><table><thead>${thead}</thead><tbody id="tableBody">${tbody}</tbody></table></div>
-      </div>`;
-    }
-
-    function formatValue(v) {
-      if (v === null || v === undefined) return "";
-      if (Array.isArray(v)) return v.join(", ");
-      if (typeof v === "object") return JSON.stringify(v);
-      const s = String(v);
-      return s.length > 80 ? s.slice(0, 80) + "..." : s;
-    }
-    function escapeHtml(str) { const d = document.createElement("div"); d.textContent = str; return d.innerHTML; }
-    function toggleSelect(id, c) { if (c) selectedIds.add(id); else selectedIds.delete(id); }
-    function toggleAll(c) { (tableData[currentTable]||[]).forEach(r => { if(c) selectedIds.add(r.id); else selectedIds.delete(r.id); }); renderList(); }
-
-    async function deleteSelected() {
-      if (selectedIds.size === 0) return alert("선택된 항목이 없습니다.");
-      if (!confirm(`${selectedIds.size}건을 삭제하시겠습니까?`)) return;
-      for (const id of selectedIds) await fetch(`/api/${currentTable}/${id}`, { method: "DELETE" });
-      selectedIds.clear();
-      await loadAllData();
-      renderSidebar();
-      renderList();
-    }
-
-    function toggleDetail(tr, id) {
-      const ex = tr.nextElementSibling;
-      if (ex && ex.classList.contains("detail-row")) { ex.remove(); return; }
-      const row = (tableData[currentTable]||[]).find(r => r.id === id);
-      if (!row) return;
-      let p; try { p = JSON.parse(row.data); } catch { p = { raw: row.data }; }
-      const fields = Object.entries(p).map(([k, v]) => {
-        const val = Array.isArray(v) ? v.join(", ") : typeof v === "object" ? JSON.stringify(v, null, 2) : String(v || "");
-        return `<div class="detail-item">
-          <div class="label">${k}</div>
-          <div class="value" id="val-${id}-${k}">${escapeHtml(val)}</div>
-          <input type="text" id="edit-${id}-${k}" data-key="${k}" value="${escapeHtml(val)}" style="display:none;width:100%;padding:4px 8px;border:1px solid #ccc;border-radius:4px;font-size:12px;margin-top:3px;" />
-        </div>`;
-      }).join("");
-      const detailTr = document.createElement("tr");
-      detailTr.className = "detail-row";
-      detailTr.innerHTML = `<td class="detail-cell" colspan="99">
-        <div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:11px;color:#888;">접수번호: <strong>${genReceiptNo(currentTable, id)}</strong> | 접수일시: ${row.created_at}</span>
-          <span>
-            <button onclick="startEdit(${id})" id="editBtn-${id}" style="padding:4px 12px;border:1px solid #1a365d;color:#1a365d;background:white;border-radius:4px;font-size:11px;cursor:pointer;margin-right:4px;">수정</button>
-            <button onclick="saveEdit(${id})" id="saveBtn-${id}" style="display:none;padding:4px 12px;border:1px solid #16a34a;color:white;background:#16a34a;border-radius:4px;font-size:11px;cursor:pointer;margin-right:4px;">저장</button>
-            <button onclick="cancelEdit(${id})" id="cancelBtn-${id}" style="display:none;padding:4px 12px;border:1px solid #888;color:#888;background:white;border-radius:4px;font-size:11px;cursor:pointer;margin-right:4px;">취소</button>
-            <button onclick="deleteSingle(${id})" style="padding:4px 12px;border:1px solid #c00;color:#c00;background:white;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>
-          </span>
-        </div>
-        <div class="detail-grid" id="detail-grid-${id}">${fields}</div>
-      </td>`;
-      tr.after(detailTr);
-    }
-
-    function startEdit(id) {
-      document.getElementById(`editBtn-${id}`).style.display = "none";
-      document.getElementById(`saveBtn-${id}`).style.display = "inline";
-      document.getElementById(`cancelBtn-${id}`).style.display = "inline";
-      document.querySelectorAll(`#detail-grid-${id} .detail-item`).forEach(item => {
-        const valEl = item.querySelector(".value");
-        const inputEl = item.querySelector("input");
-        if (valEl && inputEl) { valEl.style.display = "none"; inputEl.style.display = "block"; }
-      });
-    }
-
-    function cancelEdit(id) {
-      document.getElementById(`editBtn-${id}`).style.display = "inline";
-      document.getElementById(`saveBtn-${id}`).style.display = "none";
-      document.getElementById(`cancelBtn-${id}`).style.display = "none";
-      document.querySelectorAll(`#detail-grid-${id} .detail-item`).forEach(item => {
-        const valEl = item.querySelector(".value");
-        const inputEl = item.querySelector("input");
-        if (valEl && inputEl) { valEl.style.display = "block"; inputEl.style.display = "none"; }
-      });
-    }
-
-    async function saveEdit(id) {
-      const row = (tableData[currentTable]||[]).find(r => r.id === id);
-      if (!row) return;
-      let original; try { original = JSON.parse(row.data); } catch { original = {}; }
-      const updated = { ...original };
-      document.querySelectorAll(`#detail-grid-${id} input[data-key]`).forEach(input => {
-        const key = input.getAttribute("data-key");
-        const val = input.value;
-        // 원래 배열이었으면 쉼표 분리로 복원
-        if (Array.isArray(original[key])) updated[key] = val.split(",").map(s => s.trim()).filter(Boolean);
-        else updated[key] = val;
-      });
-      try {
-        const res = await fetch(`/api/${currentTable}/${id}`, {
-          method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updated),
-        });
-        if (!res.ok) throw new Error();
-        await loadAllData(); renderSidebar(); renderList();
-      } catch { alert("수정에 실패했습니다."); }
-    }
-
-    async function deleteSingle(id) {
-      if (!confirm("이 항목을 삭제하시겠습니까?")) return;
-      await fetch(`/api/${currentTable}/${id}`, { method: "DELETE" });
-      await loadAllData(); renderSidebar(); renderList();
-    }
-
-    // --- 수동 추가 ---
-    function showAddForm() {
-      const area = document.getElementById("contentArea");
-      const existing = document.getElementById("addFormWrap");
-      if (existing) { existing.remove(); return; }
-      const wrap = document.createElement("div");
-      wrap.id = "addFormWrap";
-      wrap.style.cssText = "margin:16px;background:white;border-radius:8px;border:1px solid #eee;padding:20px;";
-      // 해당 테이블의 기존 데이터에서 키 추출
-      const sampleRow = (tableData[currentTable]||[])[0];
-      let keys = [];
-      if (sampleRow) { try { keys = Object.keys(JSON.parse(sampleRow.data)); } catch {} }
-      if (keys.length === 0) keys = ["name", "email", "message"];
-      let fields = keys.map(k => `<div style="margin-bottom:10px;">
-        <label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;">${k}</label>
-        <input data-field="${k}" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;" />
-      </div>`).join("");
-      wrap.innerHTML = `<div style="font-size:14px;font-weight:700;margin-bottom:12px;">수동 추가 — ${TABLE_LABELS[currentTable]}</div>
-        ${fields}
-        <div style="display:flex;gap:8px;margin-top:12px;">
-          <button onclick="submitAddForm()" style="padding:8px 20px;background:#1a365d;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">추가</button>
-          <button onclick="document.getElementById('addFormWrap').remove()" style="padding:8px 20px;border:1px solid #ddd;background:white;border-radius:6px;font-size:12px;cursor:pointer;">취소</button>
-        </div>`;
-      area.insertBefore(wrap, area.firstChild);
-    }
-
-    async function submitAddForm() {
-      const inputs = document.querySelectorAll("#addFormWrap input[data-field]");
-      const data = {};
-      inputs.forEach(input => { data[input.getAttribute("data-field")] = input.value; });
-      try {
-        const res = await fetch(`/api/${currentTable}`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data),
-        });
-        if (!res.ok) throw new Error();
-        document.getElementById("addFormWrap").remove();
-        await loadAllData(); renderSidebar(); renderList();
-      } catch { alert("추가에 실패했습니다."); }
-    }
-
-    function filterTable(q) {
-      document.querySelectorAll("#tableBody tr:not(.detail-row)").forEach(r => {
-        r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? "" : "none";
-      });
-    }
-
-    function filterByDate(range) {
-      const now = new Date();
-      let cutoff = null;
-      if (range === "today") cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      else if (range === "week") { cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - 7); }
-      else if (range === "month") { cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - 30); }
-      document.querySelectorAll("#tableBody tr:not(.detail-row)").forEach(r => {
-        if (!cutoff) { r.style.display = ""; return; }
-        const d = r.getAttribute("data-date");
-        r.style.display = (d && new Date(d) >= cutoff) ? "" : "none";
-      });
-    }
-
-    const saved = sessionStorage.getItem("ws_user");
-    if (saved) showApp();
-  </script>
+if(sessionStorage.ws)sA();
+</script>
 </body>
 </html>
