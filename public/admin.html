@@ -98,6 +98,7 @@ tbody td{padding:5px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 .acts{white-space:nowrap;text-align:center}
 .ic{cursor:pointer;padding:1px 4px;border-radius:2px;font-size:13px;opacity:.5;transition:.1s}
 .ic:hover{opacity:1;background:#eef2ff}
+.sc{color:#16a34a}.sc:hover{background:#dcfce7}
 .xc:hover{background:#fff0f0}
 .em-on{background:#1a365d!important;color:#fff!important;border-color:#1a365d!important}
 .emi{font-size:11px!important}
@@ -217,7 +218,7 @@ return`<tr data-id="${r.id}" data-d="${r.created_at||""}">
 <td><span class="bs s${st}" onclick="cyS(${r.id})" title="클릭하면 상태 변경" style="cursor:pointer">${ST[st]}</span></td>
 ${eM?keys.map(k=>`<td><input class="emi" data-id="${r.id}" data-key="${k}" value="${eh(fv(r.p[k]))}" style="width:100%;padding:2px 4px;border:1px solid #ccc;border-radius:2px;font-size:11px"/></td>`).join(""):keys.map(k=>`<td onclick="tD(this.parentElement,${r.id})" title="클릭하면 상세">${eh(fv(r.p[k]))}</td>`).join("")}
 <td>${(r.created_at||"").slice(5,16)}</td>
-<td class="acts"><span class="ic" onclick="tD(this.closest('tr'),${r.id})" title="상세">&#128269;</span>${eM?`<span class="ic" onclick="svRow(${r.id})" title="저장">&#10004;</span>`:`<span class="ic" onclick="qE(${r.id})" title="수정">&#9998;</span>`}<span class="ic xc" onclick="dOne(${r.id})" title="삭제">&#10006;</span></td>
+<td class="acts">${eM?`<span class="ic sc" onclick="svRow(${r.id})" title="저장">&#10004;</span>`:`<span class="ic" onclick="qE(${r.id})" title="수정">&#9998;</span>`}<span class="ic xc" onclick="dOne(${r.id})" title="삭제">&#128465;</span></td>
 </tr>`}).join("");
 
 ca.innerHTML=`<div id="addF"></div><div class="ct">${tl}<div class="tw"><table><thead>${th}</thead><tbody id="tB">${tb}</tbody></table></div></div>`}
