@@ -47,25 +47,8 @@ header h1{font-size:14px;font-weight:700}
 .sa:hover,.sa.a{background:#eef2ff}
 /* Content */
 .ca{flex:1;overflow-y:auto;padding:12px}
-/* Dashboard */
-.dc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.dk{background:#fff;border-radius:6px;padding:10px 12px;border:1px solid #eee;cursor:pointer;transition:.15s}
-.dk:hover{border-color:#1a365d;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.dk .dl{font-size:9px;color:#888;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dk .dv{font-size:22px;font-weight:800;color:#1a365d;line-height:1.2}
-.dk .ds{font-size:9px;color:#aaa}.dk .dn{color:#c53030;font-weight:700}
-/* Recent feed */
-.rf{background:#fff;border-radius:6px;border:1px solid #eee}
-.rft{padding:8px 12px;font-size:11px;font-weight:700;border-bottom:1px solid #eee;display:flex;justify-content:space-between}
-.ri{padding:4px 12px;border-bottom:1px solid #f8f8f8;display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;line-height:1.3}
-.ri:hover{background:#f8fafc}
-.ri:last-child{border-bottom:none}
-.rid{font-family:monospace;font-size:9px;background:#f0f0f0;color:#555;padding:0 4px;border-radius:2px;white-space:nowrap}
+/* Tags */
 .rit{font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;background:#eef2ff;color:#1a365d;white-space:nowrap}
-.rin{font-size:9px;background:#fed7d7;color:#c53030;padding:0 4px;border-radius:2px;font-weight:700}
-.ris{font-size:9px;padding:1px 5px;border-radius:2px;font-weight:600;white-space:nowrap}
-.ris.s0{background:#fff3cd;color:#856404}.ris.s1{background:#d4edda;color:#155724}.ris.s2{background:#e2e8f0;color:#555}
-.rim{margin-left:auto;font-size:9px;color:#aaa;white-space:nowrap}
 /* List */
 .ct{background:#fff;border-radius:6px;border:1px solid #eee}
 .tl{padding:6px 12px;border-bottom:1px solid #eee;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -172,18 +155,35 @@ function tC(c){cC.has(c)?cC.delete(c):cC.add(c);rS()}
 function sT(t){cT=t;sel.clear();cV="l";bD.className="";bL.className="a";rS();uB();rL()}
 function uB(){bc.innerHTML=cT?`Work Studio &rsaquo; <b>${gC(cT)}</b> &rsaquo; <b>${L[cT]}</b>`:"Work Studio"}
 
-// Dashboard
-function rD(){uB();const tot=T.reduce((s,t)=>s+(TC[t]||0),0);const tN=aR().filter(r=>iT(r.created_at)).length;
-let cards=`<div class="dk" onclick="cT=null;rD()"><div class="dl">전체 접수</div><div class="dv">${tot}</div><div class="ds">${tN?`<span class="dn">오늘+${tN}</span>`:"오늘 0"}</div></div>`;
-for(const[c,v]of Object.entries(C)){const n=v.t.reduce((s,t)=>s+(TC[t]||0),0);const nd=v.t.reduce((s,t)=>s+(TD[t]||[]).filter(r=>iT(r.created_at)).length,0);
-cards+=`<div class="dk" onclick="sT('${v.t[0]}')"><div class="dl">${c}</div><div class="dv">${n}</div><div class="ds">${nd?`<span class="dn">+${nd}</span>`:"—"}</div></div>`}
+// Dashboard — 카드 없이 전체 통합 테이블
+function rD(){uB();const all=aR();
+if(!all.length){ca.innerHTML='<div class="ct"><div class="em">데이터 없음</div></div>';return}
+const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fTD(this.value)"/>
+<select onchange="fSD(this.value)"><option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
+<select onchange="fCD(this.value)"><option value="">전체분류</option>${Object.keys(C).map(c=>`<option value="${c}">${c}</option>`).join("")}</select>
+<select onchange="fDD(this.value)"><option value="">전체기간</option><option value="t">오늘</option><option value="w">7일</option><option value="m">30일</option></select>
+<span class="cnt">${all.length}건</span></div>`;
 
-const rec=aR().slice(0,25);
-let rh=rec.map(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}
-const nm=p.name||p.title||p.studentName||"—";const st=gS(r);
-return`<div class="ri" onclick="sT('${r._t}')"><span class="rid">${rn(r._t,r.id)}</span><span class="rit">${L[r._t]||r._t}</span><span class="ris s${st}">${ST[st]}</span>${eh(nm).slice(0,20)}${iT(r.created_at)?'<span class="rin">NEW</span>':""}<span class="rim">${(r.created_at||"").slice(5,16)}</span></div>`}).join("");
+const th=`<tr><th>접수번호</th><th>분류</th><th>폼</th><th>상태</th><th>이름</th><th>이메일/연락처</th><th>일시</th></tr>`;
+const tb=all.map(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}
+const st=p._status||0;const nm=p.name||p.title||p.studentName||"—";const ct=p.email||p.contact||p.phone||"";
+return`<tr data-cat="${gC(r._t)}" data-st="${st}" data-d="${r.created_at||""}" onclick="cT='${r._t}';cV='l';bD.className='';bL.className='a';rS();uB();rL()">
+<td><span class="bid">${rn(r._t,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</td>
+<td><span class="rit">${gC(r._t)}</span></td><td>${L[r._t]||r._t}</td>
+<td><span class="bs s${st}">${ST[st]}</span></td>
+<td>${eh(String(nm).slice(0,15))}</td><td>${eh(String(ct).slice(0,25))}</td>
+<td>${(r.created_at||"").slice(5,16)}</td></tr>`}).join("");
 
-ca.innerHTML=`<div class="dc">${cards}</div><div class="rf"><div class="rft"><span>최근 접수 (${rec.length})</span></div>${rh||'<div class="em">데이터 없음</div>'}</div>`}
+ca.innerHTML=`<div class="ct">${tl}<div class="tw"><table><thead>${th}</thead><tbody id="tBD">${tb}</tbody></table></div></div>`}
+
+function fTD(q){document.querySelectorAll("#tBD tr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?"":"none"})}
+function fSD(v){document.querySelectorAll("#tBD tr").forEach(r=>{r.style.display=(!v||r.dataset.st===v)?"":"none"})}
+function fCD(v){document.querySelectorAll("#tBD tr").forEach(r=>{r.style.display=(!v||r.dataset.cat===v)?"":"none"})}
+function fDD(v){const now=new Date();let cut=null;
+if(v==="t")cut=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+else if(v==="w"){cut=new Date(now);cut.setDate(cut.getDate()-7)}
+else if(v==="m"){cut=new Date(now);cut.setDate(cut.getDate()-30)}
+document.querySelectorAll("#tBD tr").forEach(r=>{r.style.display=(!cut||(r.dataset.d&&new Date(r.dataset.d)>=cut))?"":"none"})}
 
 // List
 function rL(){uB();const data=cT?TD[cT]||[]:[];
