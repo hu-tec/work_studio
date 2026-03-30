@@ -48,28 +48,37 @@
       border-radius: 4px; font-size: 11px; cursor: pointer;
     }
     .logout-btn:hover { background: rgba(255,255,255,0.25); }
-    .stats { display: flex; gap: 8px; flex-wrap: wrap; }
-    .stat { background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px; font-size: 12px; }
-    .stat strong { font-size: 16px; margin-right: 3px; }
 
     /* Breadcrumb */
-    .breadcrumb { padding: 12px 24px; font-size: 12px; color: #888; background: #fafafa; border-bottom: 1px solid #eee; }
+    .breadcrumb { padding: 10px 24px; font-size: 12px; color: #888; background: #fafafa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
     .breadcrumb span { color: #1a365d; font-weight: 600; }
+    .view-toggle { display: flex; gap: 4px; }
+    .view-toggle button {
+      padding: 4px 12px; border: 1px solid #ddd; background: white; border-radius: 4px;
+      font-size: 11px; cursor: pointer; color: #666;
+    }
+    .view-toggle button.active { background: #1a365d; color: white; border-color: #1a365d; }
 
     /* Sidebar + Content */
-    .main { display: flex; min-height: calc(100vh - 90px); }
+    .main { display: flex; min-height: calc(100vh - 85px); }
     .sidebar {
-      width: 220px; background: white; border-right: 1px solid #eee; padding: 16px 0;
+      width: 220px; background: white; border-right: 1px solid #eee; padding: 12px 0;
       flex-shrink: 0; overflow-y: auto;
     }
-    .sidebar-group { margin-bottom: 16px; }
+    .sidebar-group { margin-bottom: 8px; }
     .sidebar-group-title {
-      padding: 6px 20px; font-size: 10px; font-weight: 800; color: #1a365d;
-      text-transform: uppercase; letter-spacing: 1px;
+      padding: 8px 20px; font-size: 10px; font-weight: 800; color: #1a365d;
+      text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: flex;
+      justify-content: space-between; align-items: center;
     }
+    .sidebar-group-title:hover { background: #f8fafc; }
+    .sidebar-group-title .arrow { font-size: 8px; transition: transform 0.2s; }
+    .sidebar-group-title .arrow.open { transform: rotate(90deg); }
+    .sidebar-group-items { overflow: hidden; }
+    .sidebar-group-items.collapsed { display: none; }
     .sidebar-item {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 20px; font-size: 13px; color: #555; cursor: pointer;
+      padding: 7px 20px 7px 32px; font-size: 13px; color: #555; cursor: pointer;
       transition: all 0.1s; border-left: 3px solid transparent;
     }
     .sidebar-item:hover { background: #f8fafc; color: #1a365d; }
@@ -78,15 +87,52 @@
       background: #e2e8f0; color: #555; font-size: 10px; font-weight: 700;
       padding: 1px 6px; border-radius: 8px; min-width: 20px; text-align: center;
     }
+    .sidebar-count.has-new { background: #fed7d7; color: #c53030; }
+    .sidebar-all {
+      padding: 10px 20px; font-size: 13px; font-weight: 700; color: #1a365d; cursor: pointer;
+      border-bottom: 1px solid #eee; margin-bottom: 8px;
+    }
+    .sidebar-all:hover { background: #eef2ff; }
+    .sidebar-all.active { background: #eef2ff; }
 
     .content-area { flex: 1; padding: 0; overflow: hidden; }
-    .content { margin: 16px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
-    .toolbar { padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; gap: 8px; align-items: center; }
-    .toolbar input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; width: 200px; }
+    /* Dashboard */
+    .dashboard { padding: 20px; }
+    .dash-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .dash-card {
+      background: white; border-radius: 10px; padding: 16px; border: 1px solid #eee;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .dash-card:hover { border-color: #1a365d; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .dash-card .card-label { font-size: 11px; color: #888; font-weight: 600; margin-bottom: 4px; }
+    .dash-card .card-count { font-size: 28px; font-weight: 800; color: #1a365d; }
+    .dash-card .card-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
+    .dash-card .card-new { color: #c53030; font-weight: 700; }
+
+    .dash-recent { background: white; border-radius: 10px; border: 1px solid #eee; }
+    .dash-recent-title { padding: 14px 16px; font-size: 14px; font-weight: 700; border-bottom: 1px solid #eee; }
+    .dash-recent-item {
+      padding: 10px 16px; border-bottom: 1px solid #f5f5f5; display: flex;
+      justify-content: space-between; align-items: center; font-size: 13px; cursor: pointer;
+    }
+    .dash-recent-item:hover { background: #f8fafc; }
+    .dash-recent-item:last-child { border-bottom: none; }
+    .dash-recent-left { display: flex; align-items: center; gap: 8px; }
+    .dash-tag {
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+      background: #eef2ff; color: #1a365d;
+    }
+    .dash-time { font-size: 11px; color: #aaa; }
+
+    /* List */
+    .content { margin: 16px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .toolbar { padding: 10px 16px; border-bottom: 1px solid #eee; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .toolbar input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; width: 180px; }
+    .toolbar select { padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; }
     .toolbar button {
-      padding: 6px 14px; border: 1px solid #ddd; border-radius: 4px;
-      background: white; cursor: pointer; font-size: 13px;
+      padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px;
+      background: white; cursor: pointer; font-size: 12px;
     }
     .toolbar button:hover { background: #f0f0f0; }
     .toolbar .delete-btn { color: #c00; border-color: #c00; }
@@ -98,25 +144,26 @@
       border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #555;
       position: sticky; top: 0;
     }
-    tbody tr { border-bottom: 1px solid #f0f0f0; }
+    tbody tr { border-bottom: 1px solid #f0f0f0; cursor: pointer; }
     tbody tr:hover { background: #f8fafc; }
-    tbody td { padding: 10px 12px; vertical-align: top; max-width: 300px; word-break: break-word; }
-    .table-wrap { overflow-x: auto; max-height: 70vh; overflow-y: auto; }
+    tbody td { padding: 10px 12px; vertical-align: top; max-width: 280px; word-break: break-word; }
+    .table-wrap { overflow-x: auto; max-height: 65vh; overflow-y: auto; }
 
     .badge-count { background: #e2e8f0; color: #1a365d; display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .badge-new { background: #fed7d7; color: #c53030; display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+    .badge-id { background: #f0f0f0; color: #555; font-family: monospace; font-size: 11px; padding: 1px 6px; border-radius: 4px; }
     .empty { padding: 40px; text-align: center; color: #999; }
     .checkbox { width: 16px; height: 16px; cursor: pointer; }
 
     .detail-row { background: #f8fafc; }
     .detail-cell { padding: 16px 24px; }
-    .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; }
-    .detail-item { font-size: 12px; }
-    .detail-item .label { color: #888; font-size: 11px; }
-    .detail-item .value { font-weight: 500; margin-top: 2px; }
+    .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+    .detail-item { font-size: 12px; padding: 6px 0; }
+    .detail-item .label { color: #888; font-size: 11px; font-weight: 600; }
+    .detail-item .value { font-weight: 500; margin-top: 3px; line-height: 1.5; }
   </style>
 </head>
 <body>
-  <!-- Login Screen -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-box">
       <h2>Work Studio</h2>
@@ -129,51 +176,36 @@
     </div>
   </div>
 
-  <!-- App -->
   <div class="app" id="app">
     <header>
       <h1>Work Studio</h1>
       <div class="header-right">
-        <div class="stats" id="stats"></div>
         <span class="user-info" id="userInfo"></span>
         <button class="logout-btn" onclick="doLogout()">로그아웃</button>
       </div>
     </header>
-    <div class="breadcrumb" id="breadcrumb">Work Studio</div>
+    <div class="breadcrumb" id="breadcrumb">
+      <div>Work Studio</div>
+      <div class="view-toggle">
+        <button id="btnDash" class="active" onclick="setView('dashboard')">대시보드</button>
+        <button id="btnList" onclick="setView('list')">리스트</button>
+      </div>
+    </div>
     <div class="main">
       <div class="sidebar" id="sidebar"></div>
-      <div class="content-area">
-        <div class="content" id="content">
-          <div class="empty">로딩 중...</div>
-        </div>
-      </div>
+      <div class="content-area" id="contentArea"></div>
     </div>
   </div>
 
   <script>
-    // --- Auth (mock) ---
-    const USERS = {
-      admin: { pw: "admin", name: "관리자", role: "admin" },
-      staff: { pw: "staff", name: "직원", role: "staff" },
-    };
-
+    const USERS = { admin: { pw: "admin", name: "관리자", role: "admin" }, staff: { pw: "staff", name: "직원", role: "staff" } };
     function doLogin() {
-      const id = document.getElementById("loginId").value;
-      const pw = document.getElementById("loginPw").value;
+      const id = document.getElementById("loginId").value, pw = document.getElementById("loginPw").value;
       const user = USERS[id];
-      if (user && user.pw === pw) {
-        sessionStorage.setItem("ws_user", JSON.stringify({ id, ...user }));
-        showApp();
-      } else {
-        document.getElementById("loginError").style.display = "block";
-      }
+      if (user && user.pw === pw) { sessionStorage.setItem("ws_user", JSON.stringify({ id, ...user })); showApp(); }
+      else document.getElementById("loginError").style.display = "block";
     }
-
-    function doLogout() {
-      sessionStorage.removeItem("ws_user");
-      location.reload();
-    }
-
+    function doLogout() { sessionStorage.removeItem("ws_user"); location.reload(); }
     function showApp() {
       document.getElementById("loginOverlay").style.display = "none";
       document.getElementById("app").classList.add("visible");
@@ -182,222 +214,287 @@
       init();
     }
 
-    // --- Category structure ---
     const CATEGORIES = {
-      "번역 서비스": {
-        tables: ["translation_contacts", "translation_quotes", "translation_translators", "translation_integrated", "translation_experts", "translation_orders"],
-      },
-      "윤리": {
-        tables: ["aiethics_applications"],
-      },
-      "고전번역": {
-        tables: ["classic_inquiries", "classic_specialist_apps"],
-      },
-      "레벨테스트": {
-        tables: ["level_test_submissions"],
-      },
-      "대표님 사이트": {
-        tables: ["story_posts"],
-      },
+      "번역 서비스": { tables: ["translation_contacts","translation_quotes","translation_translators","translation_integrated","translation_experts","translation_orders"] },
+      "윤리": { tables: ["aiethics_applications"] },
+      "고전번역": { tables: ["classic_inquiries","classic_specialist_apps"] },
+      "레벨테스트": { tables: ["level_test_submissions"] },
+      "대표님 사이트": { tables: ["story_posts"] },
     };
-
     const TABLE_LABELS = {
-      aiethics_applications:    "전문가 모집",
-      classic_inquiries:        "문의",
-      classic_specialist_apps:  "전문가 신청",
-      translation_contacts:     "문의하기",
-      translation_quotes:       "견적 의뢰",
-      translation_translators:  "번역사 신청",
-      translation_integrated:   "통합 신청",
-      translation_experts:      "전문가 지원",
-      translation_orders:       "번역 신청",
-      level_test_submissions:   "답안 제출",
-      story_posts:              "블로그 포스트",
+      aiethics_applications: "전문가 모집", classic_inquiries: "문의", classic_specialist_apps: "전문가 신청",
+      translation_contacts: "문의하기", translation_quotes: "견적 의뢰", translation_translators: "번역사 신청",
+      translation_integrated: "통합 신청", translation_experts: "전문가 지원", translation_orders: "번역 신청",
+      level_test_submissions: "답안 제출", story_posts: "블로그 포스트",
     };
 
-    let tables = [];
-    let tableCounts = {};
-    let currentTable = null;
-    let currentData = [];
-    let selectedIds = new Set();
+    let tables = [], tableCounts = {}, tableData = {}, currentTable = null, currentView = "dashboard";
+    let selectedIds = new Set(), collapsedCats = new Set();
 
     async function init() {
-      tables = await fetch("/api/tables").then((r) => r.json());
-      await loadStats();
+      tables = await fetch("/api/tables").then(r => r.json());
+      await loadAllData();
       renderSidebar();
-      if (tables.length > 0) selectTab(tables[0]);
+      renderView();
     }
 
-    async function loadStats() {
-      let total = 0;
+    async function loadAllData() {
       for (const t of tables) {
-        const rows = await fetch(`/api/${t}`).then((r) => r.json());
+        const rows = await fetch(`/api/${t}`).then(r => r.json());
+        tableData[t] = rows;
         tableCounts[t] = rows.length;
-        total += rows.length;
       }
-      const statsEl = document.getElementById("stats");
-      statsEl.innerHTML = `<div class="stat"><strong>${total}</strong>전체</div>`;
     }
 
-    function renderSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      let html = "";
-      for (const [cat, info] of Object.entries(CATEGORIES)) {
-        const catCount = info.tables.reduce((sum, t) => sum + (tableCounts[t] || 0), 0);
-        html += `<div class="sidebar-group">`;
-        html += `<div class="sidebar-group-title">${cat} (${catCount})</div>`;
-        for (const t of info.tables) {
-          const isActive = t === currentTable ? " active" : "";
-          html += `<div class="sidebar-item${isActive}" onclick="selectTab('${t}')">
-            <span>${TABLE_LABELS[t] || t}</span>
-            <span class="sidebar-count">${tableCounts[t] || 0}</span>
-          </div>`;
-        }
-        html += `</div>`;
+    function getAllRows() {
+      let all = [];
+      for (const t of tables) {
+        (tableData[t] || []).forEach(row => {
+          all.push({ ...row, _table: t });
+        });
       }
-      sidebar.innerHTML = html;
+      return all.sort((a, b) => b.id - a.id || (b.created_at || "").localeCompare(a.created_at || ""));
     }
 
-    function getCategoryForTable(table) {
-      for (const [cat, info] of Object.entries(CATEGORIES)) {
-        if (info.tables.includes(table)) return cat;
-      }
+    function getRecentRows(limit = 15) {
+      return getAllRows().sort((a, b) => (b.created_at || "").localeCompare(a.created_at || "")).slice(0, limit);
+    }
+
+    function isToday(dateStr) {
+      if (!dateStr) return false;
+      return dateStr.startsWith(new Date().toISOString().slice(0, 10));
+    }
+
+    function genReceiptNo(table, id) {
+      const prefixes = {
+        aiethics_applications: "ETH", classic_inquiries: "CLS", classic_specialist_apps: "CSP",
+        translation_contacts: "TCT", translation_quotes: "TQT", translation_translators: "TTR",
+        translation_integrated: "TIN", translation_experts: "TEX", translation_orders: "TOR",
+        level_test_submissions: "LVL", story_posts: "BLG",
+      };
+      return `${prefixes[table] || "WRK"}-${String(id).padStart(4, "0")}`;
+    }
+
+    function getCatForTable(t) {
+      for (const [cat, info] of Object.entries(CATEGORIES)) if (info.tables.includes(t)) return cat;
       return "";
     }
 
-    async function selectTab(table) {
-      currentTable = table;
-      selectedIds.clear();
-      renderSidebar();
-      const cat = getCategoryForTable(table);
-      document.getElementById("breadcrumb").innerHTML =
-        `Work Studio &rsaquo; <span>${cat}</span> &rsaquo; <span>${TABLE_LABELS[table] || table}</span>`;
-      currentData = await fetch(`/api/${table}`).then((r) => r.json());
-      renderTable();
+    function setView(v) {
+      currentView = v;
+      document.getElementById("btnDash").className = v === "dashboard" ? "active" : "";
+      document.getElementById("btnList").className = v === "list" ? "active" : "";
+      renderView();
     }
 
-    function renderTable() {
-      const contentEl = document.getElementById("content");
-      if (currentData.length === 0) {
-        contentEl.innerHTML = '<div class="empty">데이터가 없습니다</div>';
+    function renderView() {
+      if (currentView === "dashboard" && !currentTable) renderDashboard();
+      else renderList();
+    }
+
+    function renderSidebar() {
+      let html = `<div class="sidebar-all ${!currentTable ? 'active' : ''}" onclick="currentTable=null;setView('dashboard')">전체 대시보드</div>`;
+      for (const [cat, info] of Object.entries(CATEGORIES)) {
+        const catCount = info.tables.reduce((s, t) => s + (tableCounts[t] || 0), 0);
+        const todayCount = info.tables.reduce((s, t) => s + (tableData[t] || []).filter(r => isToday(r.created_at)).length, 0);
+        const isOpen = !collapsedCats.has(cat);
+        html += `<div class="sidebar-group">
+          <div class="sidebar-group-title" onclick="toggleCat('${cat}')">
+            <span><span class="arrow ${isOpen ? 'open' : ''}">&#9654;</span> ${cat} (${catCount})</span>
+            ${todayCount > 0 ? `<span class="sidebar-count has-new">+${todayCount}</span>` : ''}
+          </div>
+          <div class="sidebar-group-items ${isOpen ? '' : 'collapsed'}">`;
+        for (const t of info.tables) {
+          const todayT = (tableData[t] || []).filter(r => isToday(r.created_at)).length;
+          html += `<div class="sidebar-item ${t === currentTable ? 'active' : ''}" onclick="selectTab('${t}')">
+            <span>${TABLE_LABELS[t] || t}</span>
+            <span class="sidebar-count ${todayT > 0 ? 'has-new' : ''}">${tableCounts[t] || 0}</span>
+          </div>`;
+        }
+        html += `</div></div>`;
+      }
+      document.getElementById("sidebar").innerHTML = html;
+    }
+
+    function toggleCat(cat) {
+      if (collapsedCats.has(cat)) collapsedCats.delete(cat); else collapsedCats.add(cat);
+      renderSidebar();
+    }
+
+    function selectTab(table) {
+      currentTable = table;
+      selectedIds.clear();
+      currentView = "list";
+      document.getElementById("btnDash").className = "";
+      document.getElementById("btnList").className = "active";
+      renderSidebar();
+      updateBreadcrumb();
+      renderList();
+    }
+
+    function updateBreadcrumb() {
+      const bc = document.getElementById("breadcrumb");
+      const left = currentTable
+        ? `<span style="cursor:pointer" onclick="currentTable=null;setView('dashboard')">Work Studio</span> &rsaquo; <span>${getCatForTable(currentTable)}</span> &rsaquo; <span>${TABLE_LABELS[currentTable]}</span>`
+        : "Work Studio";
+      bc.querySelector("div:first-child").innerHTML = left;
+    }
+
+    // --- Dashboard ---
+    function renderDashboard() {
+      updateBreadcrumb();
+      const area = document.getElementById("contentArea");
+      const total = tables.reduce((s, t) => s + (tableCounts[t] || 0), 0);
+      const todayTotal = getAllRows().filter(r => isToday(r.created_at)).length;
+
+      let cards = `<div class="dash-card" onclick="currentTable=null;renderDashboard()">
+        <div class="card-label">전체 접수</div>
+        <div class="card-count">${total}</div>
+        <div class="card-sub">${todayTotal > 0 ? `<span class="card-new">오늘 +${todayTotal}</span>` : '오늘 신규 없음'}</div>
+      </div>`;
+      for (const [cat, info] of Object.entries(CATEGORIES)) {
+        const cnt = info.tables.reduce((s, t) => s + (tableCounts[t] || 0), 0);
+        const todayCnt = info.tables.reduce((s, t) => s + (tableData[t] || []).filter(r => isToday(r.created_at)).length, 0);
+        cards += `<div class="dash-card" onclick="selectTab('${info.tables[0]}')">
+          <div class="card-label">${cat}</div>
+          <div class="card-count">${cnt}</div>
+          <div class="card-sub">${todayCnt > 0 ? `<span class="card-new">오늘 +${todayCnt}</span>` : '—'}</div>
+        </div>`;
+      }
+
+      const recent = getRecentRows(15);
+      let recentHtml = recent.map(row => {
+        let parsed; try { parsed = JSON.parse(row.data); } catch { parsed = {}; }
+        const name = parsed.name || parsed.title || parsed.studentName || "—";
+        return `<div class="dash-recent-item" onclick="selectTab('${row._table}')">
+          <div class="dash-recent-left">
+            <span class="badge-id">${genReceiptNo(row._table, row.id)}</span>
+            <span class="dash-tag">${TABLE_LABELS[row._table] || row._table}</span>
+            <span>${escapeHtml(name)}</span>
+            ${isToday(row.created_at) ? '<span class="badge-new">NEW</span>' : ''}
+          </div>
+          <span class="dash-time">${row.created_at || ""}</span>
+        </div>`;
+      }).join("");
+
+      area.innerHTML = `<div class="dashboard">
+        <div class="dash-cards">${cards}</div>
+        <div class="dash-recent">
+          <div class="dash-recent-title">최근 접수 내역</div>
+          ${recentHtml || '<div class="empty">접수된 데이터가 없습니다</div>'}
+        </div>
+      </div>`;
+    }
+
+    // --- List ---
+    function renderList() {
+      const area = document.getElementById("contentArea");
+      const data = currentTable ? (tableData[currentTable] || []) : [];
+
+      if (data.length === 0) {
+        area.innerHTML = '<div class="content"><div class="empty">데이터가 없습니다</div></div>';
         return;
       }
 
       const allKeys = new Set();
-      const parsed = currentData.map((row) => {
-        let d;
-        try { d = JSON.parse(row.data); } catch { d = { raw: row.data }; }
-        Object.keys(d).forEach((k) => allKeys.add(k));
+      const parsed = data.map(row => {
+        let d; try { d = JSON.parse(row.data); } catch { d = { raw: row.data }; }
+        Object.keys(d).forEach(k => allKeys.add(k));
         return { ...row, parsed: d };
       });
       const keys = [...allKeys];
 
-      const toolbar = `
-        <div class="toolbar">
-          <input type="text" id="searchInput" placeholder="검색..." oninput="filterTable(this.value)" />
-          <span class="badge-count">${parsed.length}건</span>
-          <button class="delete-btn" onclick="deleteSelected()">선택 삭제</button>
-        </div>
-      `;
+      const toolbar = `<div class="toolbar">
+        <input type="text" placeholder="검색..." oninput="filterTable(this.value)" />
+        <select onchange="filterByDate(this.value)">
+          <option value="">전체 기간</option>
+          <option value="today">오늘</option>
+          <option value="week">최근 7일</option>
+          <option value="month">최근 30일</option>
+        </select>
+        <span class="badge-count">${parsed.length}건</span>
+        <button class="delete-btn" onclick="deleteSelected()">선택 삭제</button>
+      </div>`;
 
       const thead = `<tr>
         <th><input type="checkbox" class="checkbox" onchange="toggleAll(this.checked)" /></th>
-        <th>No.</th>
-        ${keys.map((k) => `<th>${k}</th>`).join("")}
+        <th>접수번호</th>
+        ${keys.map(k => `<th>${k}</th>`).join("")}
         <th>접수일시</th>
       </tr>`;
 
-      const tbody = parsed
-        .map(
-          (row, i) => `
-        <tr data-id="${row.id}" onclick="toggleDetail(this, ${row.id})">
-          <td><input type="checkbox" class="checkbox" ${selectedIds.has(row.id) ? "checked" : ""} onclick="event.stopPropagation(); toggleSelect(${row.id}, this.checked)" /></td>
-          <td>${parsed.length - i}</td>
-          ${keys.map((k) => `<td>${escapeHtml(formatValue(row.parsed[k]))}</td>`).join("")}
+      const tbody = parsed.map((row, i) => `
+        <tr data-id="${row.id}" data-date="${row.created_at || ''}" onclick="toggleDetail(this, ${row.id})">
+          <td><input type="checkbox" class="checkbox" ${selectedIds.has(row.id)?'checked':''} onclick="event.stopPropagation();toggleSelect(${row.id},this.checked)" /></td>
+          <td><span class="badge-id">${genReceiptNo(currentTable, row.id)}</span> ${isToday(row.created_at)?'<span class="badge-new">NEW</span>':''}</td>
+          ${keys.map(k => `<td>${escapeHtml(formatValue(row.parsed[k]))}</td>`).join("")}
           <td>${row.created_at || ""}</td>
-        </tr>`
-        )
-        .join("");
+        </tr>`).join("");
 
-      contentEl.innerHTML = `
-        ${toolbar}
-        <div class="table-wrap">
-          <table>
-            <thead>${thead}</thead>
-            <tbody id="tableBody">${tbody}</tbody>
-          </table>
-        </div>
-      `;
+      area.innerHTML = `<div class="content">${toolbar}
+        <div class="table-wrap"><table><thead>${thead}</thead><tbody id="tableBody">${tbody}</tbody></table></div>
+      </div>`;
     }
 
     function formatValue(v) {
       if (v === null || v === undefined) return "";
       if (Array.isArray(v)) return v.join(", ");
       if (typeof v === "object") return JSON.stringify(v);
-      return String(v);
+      const s = String(v);
+      return s.length > 80 ? s.slice(0, 80) + "..." : s;
     }
-
-    function escapeHtml(str) {
-      const div = document.createElement("div");
-      div.textContent = str;
-      return div.innerHTML;
-    }
-
-    function toggleSelect(id, checked) {
-      if (checked) selectedIds.add(id);
-      else selectedIds.delete(id);
-    }
-
-    function toggleAll(checked) {
-      currentData.forEach((row) => {
-        if (checked) selectedIds.add(row.id);
-        else selectedIds.delete(row.id);
-      });
-      renderTable();
-    }
+    function escapeHtml(str) { const d = document.createElement("div"); d.textContent = str; return d.innerHTML; }
+    function toggleSelect(id, c) { if (c) selectedIds.add(id); else selectedIds.delete(id); }
+    function toggleAll(c) { (tableData[currentTable]||[]).forEach(r => { if(c) selectedIds.add(r.id); else selectedIds.delete(r.id); }); renderList(); }
 
     async function deleteSelected() {
       if (selectedIds.size === 0) return alert("선택된 항목이 없습니다.");
       if (!confirm(`${selectedIds.size}건을 삭제하시겠습니까?`)) return;
-      for (const id of selectedIds) {
-        await fetch(`/api/${currentTable}/${id}`, { method: "DELETE" });
-      }
+      for (const id of selectedIds) await fetch(`/api/${currentTable}/${id}`, { method: "DELETE" });
       selectedIds.clear();
-      await loadStats();
+      await loadAllData();
       renderSidebar();
-      await selectTab(currentTable);
+      renderList();
     }
 
     function toggleDetail(tr, id) {
-      const existing = tr.nextElementSibling;
-      if (existing && existing.classList.contains("detail-row")) {
-        existing.remove();
-        return;
-      }
-      const row = currentData.find((r) => r.id === id);
+      const ex = tr.nextElementSibling;
+      if (ex && ex.classList.contains("detail-row")) { ex.remove(); return; }
+      const row = (tableData[currentTable]||[]).find(r => r.id === id);
       if (!row) return;
-      let parsed;
-      try { parsed = JSON.parse(row.data); } catch { parsed = { raw: row.data }; }
-
-      const detailHtml = Object.entries(parsed)
-        .map(([k, v]) => `<div class="detail-item"><div class="label">${k}</div><div class="value">${escapeHtml(formatValue(v))}</div></div>`)
-        .join("");
-
+      let p; try { p = JSON.parse(row.data); } catch { p = { raw: row.data }; }
+      const html = Object.entries(p).map(([k, v]) => {
+        const val = Array.isArray(v) ? v.join(", ") : typeof v === "object" ? JSON.stringify(v, null, 2) : String(v || "");
+        return `<div class="detail-item"><div class="label">${k}</div><div class="value">${escapeHtml(val)}</div></div>`;
+      }).join("");
       const detailTr = document.createElement("tr");
       detailTr.className = "detail-row";
-      detailTr.innerHTML = `<td class="detail-cell" colspan="99"><div class="detail-grid">${detailHtml}</div></td>`;
+      detailTr.innerHTML = `<td class="detail-cell" colspan="99">
+        <div style="margin-bottom:8px;font-size:11px;color:#888;">접수번호: <strong>${genReceiptNo(currentTable, id)}</strong> | 접수일시: ${row.created_at}</div>
+        <div class="detail-grid">${html}</div>
+      </td>`;
       tr.after(detailTr);
     }
 
-    function filterTable(query) {
-      const rows = document.querySelectorAll("#tableBody tr:not(.detail-row)");
-      const q = query.toLowerCase();
-      rows.forEach((row) => {
-        row.style.display = row.textContent.toLowerCase().includes(q) ? "" : "none";
+    function filterTable(q) {
+      document.querySelectorAll("#tableBody tr:not(.detail-row)").forEach(r => {
+        r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? "" : "none";
       });
     }
 
-    // --- Boot ---
+    function filterByDate(range) {
+      const now = new Date();
+      let cutoff = null;
+      if (range === "today") cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      else if (range === "week") { cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - 7); }
+      else if (range === "month") { cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - 30); }
+      document.querySelectorAll("#tableBody tr:not(.detail-row)").forEach(r => {
+        if (!cutoff) { r.style.display = ""; return; }
+        const d = r.getAttribute("data-date");
+        r.style.display = (d && new Date(d) >= cutoff) ? "" : "none";
+      });
+    }
+
     const saved = sessionStorage.getItem("ws_user");
     if (saved) showApp();
   </script>
