@@ -1,7 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { TABLES, getAll, getById, insert, update, remove } = require("./db");
+
+const S3_BUCKET = process.env.S3_BUCKET || "work-studio-uploads";
+const S3_REGION = process.env.S3_REGION || "ap-northeast-2";
+const s3 = new S3Client({ region: S3_REGION });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -49,6 +55,27 @@ app.delete("/api/:table/:id", (req, res) => {
   if (!TABLES.includes(table)) return res.status(404).json({ error: "Unknown table" });
   const result = remove(table, id);
   res.json({ success: true, ...result });
+});
+
+// --- S3 Presigned URL for file uploads ---
+app.post("/api/upload/presign", async (req, res) => {
+  try {
+    const { filename, contentType, folder } = req.body;
+    if (!filename || !contentType) {
+      return res.status(400).json({ error: "filename and contentType required" });
+    }
+    const key = `${folder || "uploads"}/${Date.now()}_${filename}`;
+    const command = new PutObjectCommand({
+      Bucket: S3_BUCKET,
+      Key: key,
+      ContentType: contentType,
+    });
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 600 });
+    const fileUrl = `https://${S3_BUCKET}.s3.${S3_REGION}.amazonaws.com/${key}`;
+    res.json({ uploadUrl, fileUrl, key });
+  } catch (err) {
+    res.status(500).json({ error: "Presigned URL 생성 실패", detail: err.message });
+  }
 });
 
 // --- SPA fallback ---
