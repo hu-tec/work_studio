@@ -1,0 +1,15 @@
+{
+  "name": "work_studio",
+  "version": "1.0.0",
+  "description": "HutechC Work Studio - 홈페이지 업무 통합 백엔드",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.0"
+  }
+}
