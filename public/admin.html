@@ -413,6 +413,7 @@
           <option value="month">최근 30일</option>
         </select>
         <span class="badge-count">${parsed.length}건</span>
+        <button onclick="showAddForm()" style="background:#1a365d;color:white;border-color:#1a365d;">+ 추가</button>
         <button class="delete-btn" onclick="deleteSelected()">선택 삭제</button>
       </div>`;
 
@@ -463,17 +464,118 @@
       const row = (tableData[currentTable]||[]).find(r => r.id === id);
       if (!row) return;
       let p; try { p = JSON.parse(row.data); } catch { p = { raw: row.data }; }
-      const html = Object.entries(p).map(([k, v]) => {
+      const fields = Object.entries(p).map(([k, v]) => {
         const val = Array.isArray(v) ? v.join(", ") : typeof v === "object" ? JSON.stringify(v, null, 2) : String(v || "");
-        return `<div class="detail-item"><div class="label">${k}</div><div class="value">${escapeHtml(val)}</div></div>`;
+        return `<div class="detail-item">
+          <div class="label">${k}</div>
+          <div class="value" id="val-${id}-${k}">${escapeHtml(val)}</div>
+          <input type="text" id="edit-${id}-${k}" data-key="${k}" value="${escapeHtml(val)}" style="display:none;width:100%;padding:4px 8px;border:1px solid #ccc;border-radius:4px;font-size:12px;margin-top:3px;" />
+        </div>`;
       }).join("");
       const detailTr = document.createElement("tr");
       detailTr.className = "detail-row";
       detailTr.innerHTML = `<td class="detail-cell" colspan="99">
-        <div style="margin-bottom:8px;font-size:11px;color:#888;">접수번호: <strong>${genReceiptNo(currentTable, id)}</strong> | 접수일시: ${row.created_at}</div>
-        <div class="detail-grid">${html}</div>
+        <div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:11px;color:#888;">접수번호: <strong>${genReceiptNo(currentTable, id)}</strong> | 접수일시: ${row.created_at}</span>
+          <span>
+            <button onclick="startEdit(${id})" id="editBtn-${id}" style="padding:4px 12px;border:1px solid #1a365d;color:#1a365d;background:white;border-radius:4px;font-size:11px;cursor:pointer;margin-right:4px;">수정</button>
+            <button onclick="saveEdit(${id})" id="saveBtn-${id}" style="display:none;padding:4px 12px;border:1px solid #16a34a;color:white;background:#16a34a;border-radius:4px;font-size:11px;cursor:pointer;margin-right:4px;">저장</button>
+            <button onclick="cancelEdit(${id})" id="cancelBtn-${id}" style="display:none;padding:4px 12px;border:1px solid #888;color:#888;background:white;border-radius:4px;font-size:11px;cursor:pointer;margin-right:4px;">취소</button>
+            <button onclick="deleteSingle(${id})" style="padding:4px 12px;border:1px solid #c00;color:#c00;background:white;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>
+          </span>
+        </div>
+        <div class="detail-grid" id="detail-grid-${id}">${fields}</div>
       </td>`;
       tr.after(detailTr);
+    }
+
+    function startEdit(id) {
+      document.getElementById(`editBtn-${id}`).style.display = "none";
+      document.getElementById(`saveBtn-${id}`).style.display = "inline";
+      document.getElementById(`cancelBtn-${id}`).style.display = "inline";
+      document.querySelectorAll(`#detail-grid-${id} .detail-item`).forEach(item => {
+        const valEl = item.querySelector(".value");
+        const inputEl = item.querySelector("input");
+        if (valEl && inputEl) { valEl.style.display = "none"; inputEl.style.display = "block"; }
+      });
+    }
+
+    function cancelEdit(id) {
+      document.getElementById(`editBtn-${id}`).style.display = "inline";
+      document.getElementById(`saveBtn-${id}`).style.display = "none";
+      document.getElementById(`cancelBtn-${id}`).style.display = "none";
+      document.querySelectorAll(`#detail-grid-${id} .detail-item`).forEach(item => {
+        const valEl = item.querySelector(".value");
+        const inputEl = item.querySelector("input");
+        if (valEl && inputEl) { valEl.style.display = "block"; inputEl.style.display = "none"; }
+      });
+    }
+
+    async function saveEdit(id) {
+      const row = (tableData[currentTable]||[]).find(r => r.id === id);
+      if (!row) return;
+      let original; try { original = JSON.parse(row.data); } catch { original = {}; }
+      const updated = { ...original };
+      document.querySelectorAll(`#detail-grid-${id} input[data-key]`).forEach(input => {
+        const key = input.getAttribute("data-key");
+        const val = input.value;
+        // 원래 배열이었으면 쉼표 분리로 복원
+        if (Array.isArray(original[key])) updated[key] = val.split(",").map(s => s.trim()).filter(Boolean);
+        else updated[key] = val;
+      });
+      try {
+        const res = await fetch(`/api/${currentTable}/${id}`, {
+          method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updated),
+        });
+        if (!res.ok) throw new Error();
+        await loadAllData(); renderSidebar(); renderList();
+      } catch { alert("수정에 실패했습니다."); }
+    }
+
+    async function deleteSingle(id) {
+      if (!confirm("이 항목을 삭제하시겠습니까?")) return;
+      await fetch(`/api/${currentTable}/${id}`, { method: "DELETE" });
+      await loadAllData(); renderSidebar(); renderList();
+    }
+
+    // --- 수동 추가 ---
+    function showAddForm() {
+      const area = document.getElementById("contentArea");
+      const existing = document.getElementById("addFormWrap");
+      if (existing) { existing.remove(); return; }
+      const wrap = document.createElement("div");
+      wrap.id = "addFormWrap";
+      wrap.style.cssText = "margin:16px;background:white;border-radius:8px;border:1px solid #eee;padding:20px;";
+      // 해당 테이블의 기존 데이터에서 키 추출
+      const sampleRow = (tableData[currentTable]||[])[0];
+      let keys = [];
+      if (sampleRow) { try { keys = Object.keys(JSON.parse(sampleRow.data)); } catch {} }
+      if (keys.length === 0) keys = ["name", "email", "message"];
+      let fields = keys.map(k => `<div style="margin-bottom:10px;">
+        <label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;">${k}</label>
+        <input data-field="${k}" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;" />
+      </div>`).join("");
+      wrap.innerHTML = `<div style="font-size:14px;font-weight:700;margin-bottom:12px;">수동 추가 — ${TABLE_LABELS[currentTable]}</div>
+        ${fields}
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button onclick="submitAddForm()" style="padding:8px 20px;background:#1a365d;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">추가</button>
+          <button onclick="document.getElementById('addFormWrap').remove()" style="padding:8px 20px;border:1px solid #ddd;background:white;border-radius:6px;font-size:12px;cursor:pointer;">취소</button>
+        </div>`;
+      area.insertBefore(wrap, area.firstChild);
+    }
+
+    async function submitAddForm() {
+      const inputs = document.querySelectorAll("#addFormWrap input[data-field]");
+      const data = {};
+      inputs.forEach(input => { data[input.getAttribute("data-field")] = input.value; });
+      try {
+        const res = await fetch(`/api/${currentTable}`, {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error();
+        document.getElementById("addFormWrap").remove();
+        await loadAllData(); renderSidebar(); renderList();
+      } catch { alert("추가에 실패했습니다."); }
     }
 
     function filterTable(q) {
