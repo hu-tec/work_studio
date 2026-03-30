@@ -94,6 +94,13 @@ tbody td{padding:5px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 #addF input{width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px}
 #addF .af-btns{margin-top:8px;display:flex;gap:6px}
 #addF .af-btns button{padding:6px 16px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:none}
+/* Actions & Icons */
+.acts{white-space:nowrap;text-align:center}
+.ic{cursor:pointer;padding:1px 4px;border-radius:2px;font-size:13px;opacity:.5;transition:.1s}
+.ic:hover{opacity:1;background:#eef2ff}
+.xc:hover{background:#fff0f0}
+.em-on{background:#1a365d!important;color:#fff!important;border-color:#1a365d!important}
+.emi{font-size:11px!important}
 </style>
 </head>
 <body>
@@ -186,11 +193,12 @@ else if(v==="m"){cut=new Date(now);cut.setDate(cut.getDate()-30)}
 document.querySelectorAll("#tBD tr").forEach(r=>{r.style.display=(!cut||(r.dataset.d&&new Date(r.dataset.d)>=cut))?"":"none"})}
 
 // List
+let eM=false; // edit mode
 function rL(){uB();const data=cT?TD[cT]||[]:[];
 if(!data.length){ca.innerHTML='<div id="addF"></div><div class="ct"><div class="em">데이터 없음</div></div>';return}
 const aK=new Set();const ps=data.map(r=>{let d;try{d=JSON.parse(r.data)}catch{d={raw:r.data}}
 Object.keys(d).forEach(k=>{if(k!=="_status"&&k!=="_memo")aK.add(k)});return{...r,p:d}});
-const keys=[...aK].slice(0,5);// max 5 columns for density
+const keys=[...aK].slice(0,5);
 
 const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fT(this.value)"/>
 <select onchange="fS(this.value)"><option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
@@ -198,17 +206,30 @@ const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fT
 <span class="cnt">${ps.length}건</span>
 <button class="ab" onclick="sAF()">+추가</button>
 <button onclick="bSt(1)">확인처리</button><button onclick="bSt(2)">완료처리</button>
-<button class="db" onclick="dS()">삭제</button></div>`;
+<button class="db" onclick="dS()">삭제</button>
+<button class="${eM?"em-on":""}" onclick="tEM()" title="편집 모드">${eM?"편집모드 ON":"편집모드"}</button></div>`;
 
-const th=`<tr><th><input type="checkbox" class="cb" onchange="tA(this.checked)"/></th><th>접수번호</th><th>상태</th>${keys.map(k=>`<th>${k}</th>`).join("")}<th>일시</th></tr>`;
+const th=`<tr><th style="width:30px"><input type="checkbox" class="cb" onchange="tA(this.checked)"/></th><th>번호</th><th>상태</th>${keys.map(k=>`<th>${k}</th>`).join("")}<th>일시</th><th style="width:60px">작업</th></tr>`;
 const tb=ps.map(r=>{const st=r.p._status||0;
-return`<tr data-id="${r.id}" data-d="${r.created_at||""}" onclick="tD(this,${r.id})"><td><input type="checkbox" class="cb" ${sel.has(r.id)?"checked":""} onclick="event.stopPropagation();tSel(${r.id},this.checked)"/></td>
+return`<tr data-id="${r.id}" data-d="${r.created_at||""}">
+<td><input type="checkbox" class="cb" ${sel.has(r.id)?"checked":""} onclick="tSel(${r.id},this.checked)"/></td>
 <td><span class="bid">${rn(cT,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</td>
-<td><span class="bs s${st}">${ST[st]}</span></td>
-${keys.map(k=>`<td>${eh(fv(r.p[k]))}</td>`).join("")}
-<td>${(r.created_at||"").slice(5,16)}</td></tr>`}).join("");
+<td><span class="bs s${st}" onclick="cyS(${r.id})" title="클릭하면 상태 변경" style="cursor:pointer">${ST[st]}</span></td>
+${eM?keys.map(k=>`<td><input class="emi" data-id="${r.id}" data-key="${k}" value="${eh(fv(r.p[k]))}" style="width:100%;padding:2px 4px;border:1px solid #ccc;border-radius:2px;font-size:11px"/></td>`).join(""):keys.map(k=>`<td onclick="tD(this.parentElement,${r.id})" title="클릭하면 상세">${eh(fv(r.p[k]))}</td>`).join("")}
+<td>${(r.created_at||"").slice(5,16)}</td>
+<td class="acts"><span class="ic" onclick="tD(this.closest('tr'),${r.id})" title="상세">&#128269;</span>${eM?`<span class="ic" onclick="svRow(${r.id})" title="저장">&#10004;</span>`:`<span class="ic" onclick="qE(${r.id})" title="수정">&#9998;</span>`}<span class="ic xc" onclick="dOne(${r.id})" title="삭제">&#10006;</span></td>
+</tr>`}).join("");
 
 ca.innerHTML=`<div id="addF"></div><div class="ct">${tl}<div class="tw"><table><thead>${th}</thead><tbody id="tB">${tb}</tbody></table></div></div>`}
+
+function tEM(){eM=!eM;rL()}
+async function cyS(id){const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)return;let d;try{d=JSON.parse(row.data)}catch{d={}}
+d._status=((d._status||0)+1)%3;await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});await lA();rS();rL()}
+function qE(id){eM=true;rL();/* switch to edit mode */}
+async function svRow(id){const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)return;let o;try{o=JSON.parse(row.data)}catch{o={}}
+const u={...o};document.querySelectorAll(`.emi[data-id="${id}"]`).forEach(inp=>{const k=inp.dataset.key,v=inp.value;
+if(Array.isArray(o[k]))u[k]=v.split(",").map(s=>s.trim()).filter(Boolean);else u[k]=v});
+await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(u)});await lA();rS();rL()}
 
 function tSel(id,c){c?sel.add(id):sel.delete(id)}
 function tA(c){(TD[cT]||[]).forEach(r=>{c?sel.add(r.id):sel.delete(r.id)});rL()}
