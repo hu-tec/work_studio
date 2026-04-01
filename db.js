@@ -18,6 +18,7 @@ const TABLES = [
   "level_test_submissions",    // 레벨테스트 답안
   "story_posts",               // 대표님 블로그
   "applications",              // 통합 신청 (사용자/전문가/B2B)
+  "cbt_results",               // AITe CBT 시험 결과
 ];
 
 for (const table of TABLES) {
