@@ -102,6 +102,24 @@ tbody td{padding:5px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 .xc:hover{background:#fff0f0}
 .em-on{background:#1a365d!important;color:#fff!important;border-color:#1a365d!important}
 .emi{font-size:11px!important}
+/* Quadrant Dashboard */
+.qd{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0}
+.qc{background:#fff;border-radius:6px;border:1px solid #e2e8f0;display:flex;flex-direction:column;min-height:200px;max-height:calc(50vh - 60px);overflow:hidden}
+.qh{padding:6px 10px;border-bottom:1px solid #e8e8e8;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.qh-title{font-size:12px;font-weight:800;display:flex;align-items:center;gap:6px}
+.qh-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.qh-counts{display:flex;gap:4px}
+.qh-cnt{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;background:#f0f0f0;color:#555}
+.qb{overflow-y:auto;flex:1}
+.qr{display:grid;grid-template-columns:70px 1fr 52px 46px 58px;align-items:center;padding:3px 8px;border-bottom:1px solid #f5f5f5;font-size:11px;cursor:pointer;gap:4px}
+.qr:hover{background:#f8fafc}
+.qt{font-size:8px;font-weight:700;padding:1px 4px;border-radius:2px;color:#fff;white-space:nowrap;text-align:center}
+.qn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qd-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:6px 12px;background:#fff;border-radius:6px;border:1px solid #e2e8f0;margin-bottom:8px}
+.qd-stat{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600}
+.qd-num{font-size:16px;font-weight:900;color:#1a365d}
+.qd-lbl{font-size:9px;color:#888;font-weight:600}
+.qd-sep{width:1px;height:24px;background:#e2e8f0}
 </style>
 </head>
 <body>
@@ -174,92 +192,99 @@ function tC(c){cC.has(c)?cC.delete(c):cC.add(c);rS()}
 function sT(t){cT=t;sel.clear();cV="l";bD.className="";bL.className="a";rS();uB();rL()}
 function uB(){bc.innerHTML=cT?`Work Studio &rsaquo; <b>${gC(cT)}</b> &rsaquo; <b>${L[cT]}</b>`:"Work Studio"}
 
-// Dashboard — 카드 없이 전체 통합 테이블
+// Quadrant Dashboard — 사분면 통합 뷰
+const QUAD={
+"번역":{t:["translation_contacts","translation_quotes","translation_translators","translation_integrated","translation_experts","translation_orders"],color:"#2563eb",bg:"#eff6ff"},
+"윤리":{t:["aiethics_applications"],color:"#7c3aed",bg:"#f5f3ff"},
+"고전번역":{t:["classic_inquiries","classic_specialist_apps"],color:"#059669",bg:"#ecfdf5"},
+"시험·기타":{t:["level_test_submissions","cbt_results","story_posts","applications"],color:"#d97706",bg:"#fffbeb"}
+};
+const TB={translation_contacts:{l:"문의",c:"#6b7280"},translation_quotes:{l:"견적",c:"#8b5cf6"},translation_orders:{l:"신청",c:"#2563eb"},
+translation_integrated:{l:"통합",c:"#0891b2"},translation_translators:{l:"번역사",c:"#9333ea"},translation_experts:{l:"전문가",c:"#9333ea"},
+aiethics_applications:{l:"전문가",c:"#7c3aed"},classic_inquiries:{l:"문의",c:"#6b7280"},classic_specialist_apps:{l:"전문가",c:"#059669"},
+level_test_submissions:{l:"답안",c:"#ea580c"},cbt_results:{l:"CBT",c:"#ea580c"},story_posts:{l:"블로그",c:"#65a30d"},applications:{l:"신청",c:"#2563eb"}};
+
 function rD(){uB();const all=aR();
-if(!all.length){ca.innerHTML='<div class="ct"><div class="em">데이터 없음</div></div>';return}
-const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fTD(this.value)"/>
-<select onchange="fSD(this.value)"><option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
-<select onchange="fCD(this.value)"><option value="">전체분류</option>${Object.keys(C).map(c=>`<option value="${c}">${c}</option>`).join("")}</select>
-<select onchange="fDD(this.value)"><option value="">전체기간</option><option value="t">오늘</option><option value="w">7일</option><option value="m">30일</option></select>
-<span class="cnt">${all.length}건</span></div>`;
+// Summary bar
+const total=all.length;
+const newCnt=all.filter(r=>iT(r.created_at)).length;
+const stCnts=[0,0,0];all.forEach(r=>{try{const s=JSON.parse(r.data)._status||0;stCnts[s]++}catch{}});
 
-const th=`<tr><th>접수번호</th><th>분류</th><th>폼</th><th>상태</th><th>이름</th><th>이메일/연락처</th><th>일시</th></tr>`;
-const tb=all.map(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}
-const st=p._status||0;const nm=p.name||p.title||p.studentName||"—";const ct=p.email||p.contact||p.phone||"";
-return`<tr data-cat="${gC(r._t)}" data-st="${st}" data-d="${r.created_at||""}" onclick="cT='${r._t}';cV='l';bD.className='';bL.className='a';rS();uB();rL()">
-<td><span class="bid">${rn(r._t,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</td>
-<td><span class="rit">${gC(r._t)}</span></td><td>${L[r._t]||r._t}</td>
-<td><span class="bs s${st}">${ST[st]}</span></td>
-<td>${eh(String(nm).slice(0,15))}</td><td>${eh(String(ct).slice(0,25))}</td>
-<td>${(r.created_at||"").slice(5,16)}</td></tr>`}).join("");
+let h=`<div class="qd-bar">
+<div class="qd-stat"><span class="qd-num">${total}</span><span class="qd-lbl">전체</span></div>
+<div class="qd-sep"></div>
+${newCnt?`<div class="qd-stat"><span style="font-size:14px;font-weight:900;color:#c53030">+${newCnt}</span><span class="qd-lbl">오늘</span></div><div class="qd-sep"></div>`:""}
+<div class="qd-stat"><span style="font-size:13px;font-weight:800;color:#f59e0b">${stCnts[0]}</span><span class="qd-lbl">신규</span></div>
+<div class="qd-stat"><span style="font-size:13px;font-weight:800;color:#16a34a">${stCnts[1]}</span><span class="qd-lbl">확인</span></div>
+<div class="qd-stat"><span style="font-size:13px;font-weight:800;color:#94a3b8">${stCnts[2]}</span><span class="qd-lbl">완료</span></div>
+<div class="qd-sep"></div>
+<input type="text" placeholder="검색…" oninput="fQD(this.value)" style="padding:3px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px;width:140px"/>
+<select onchange="fQS(this.value)" style="padding:3px 6px;border:1px solid #ddd;border-radius:4px;font-size:10px">
+<option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
+</div>`;
 
-ca.innerHTML=`<div class="ct">${tl}<div class="tw"><table><thead>${th}</thead><tbody id="tBD">${tb}</tbody></table></div></div>`}
+// Quadrants
+h+=`<div class="qd">`;
+for(const[qName,qCfg]of Object.entries(QUAD)){
+const rows=[];
+for(const t of qCfg.t)(TD[t]||[]).forEach(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}rows.push({...r,_t:t,p})});
+rows.sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""));
 
-function fTD(q){document.querySelectorAll("#tBD tr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?"":"none"})}
-function fSD(v){document.querySelectorAll("#tBD tr").forEach(r=>{r.style.display=(!v||r.dataset.st===v)?"":"none"})}
-function fCD(v){document.querySelectorAll("#tBD tr").forEach(r=>{r.style.display=(!v||r.dataset.cat===v)?"":"none"})}
-function fDD(v){const now=new Date();let cut=null;
-if(v==="t")cut=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-else if(v==="w"){cut=new Date(now);cut.setDate(cut.getDate()-7)}
-else if(v==="m"){cut=new Date(now);cut.setDate(cut.getDate()-30)}
-document.querySelectorAll("#tBD tr").forEach(r=>{r.style.display=(!cut||(r.dataset.d&&new Date(r.dataset.d)>=cut))?"":"none"})}
+const typeCnts={};rows.forEach(r=>{const l=(TB[r._t]||{l:"?"}).l;typeCnts[l]=(typeCnts[l]||0)+1});
+
+h+=`<div class="qc">
+<div class="qh" style="background:${qCfg.bg}">
+<div class="qh-title"><span class="qh-dot" style="background:${qCfg.color}"></span>${qName} <span style="font-size:10px;color:${qCfg.color}">${rows.length}건</span></div>
+<div class="qh-counts">${Object.entries(typeCnts).map(([l,c])=>`<span class="qh-cnt">${l} ${c}</span>`).join("")}</div>
+</div>
+<div class="qb">`;
+
+if(!rows.length){h+=`<div style="padding:20px;text-align:center;color:#ccc;font-size:11px">데이터 없음</div>`}
+else{rows.forEach(r=>{
+const st=r.p._status||0;const nm=r.p.name||r.p.title||r.p.studentName||r.p.orgName||"—";
+const tb_=TB[r._t]||{l:"?",c:"#888"};
+h+=`<div class="qr" data-st="${st}" onclick="cT='${r._t}';cV='l';bD.className='';bL.className='a';rS();uB();rL()">
+<span><span class="bid">${rn(r._t,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</span>
+<span class="qn">${eh(String(nm).slice(0,12))}</span>
+<span class="qt" style="background:${tb_.c}">${tb_.l}</span>
+<span class="bs s${st}" style="font-size:8px">${ST[st]}</span>
+<span style="font-size:9px;color:#999">${(r.created_at||"").slice(5,16)}</span>
+</div>`})}
+h+=`</div></div>`}
+h+=`</div>`;
+ca.innerHTML=h}
+
+function rApp(){cT=null;cV="d";bD.className="a";bL.className="";rS();rD()}
+
+function fQD(q){q=q.toLowerCase();document.querySelectorAll(".qr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?"":"none"})}
+function fQS(v){document.querySelectorAll(".qr").forEach(r=>{r.style.display=(!v||r.dataset.st===v)?"":"none"})}
 
 // List
 let eM=false; // edit mode
-function rL(){uB();const data=cT?TD[cT]||[]:[];
+function rL(){
+if(cT==="applications"){rApp();return}
+uB();const data=cT?TD[cT]||[]:[];
 if(!data.length){ca.innerHTML='<div id="addF"></div><div class="ct"><div class="em">데이터 없음</div></div>';return}
 const aK=new Set();const ps=data.map(r=>{let d;try{d=JSON.parse(r.data)}catch{d={raw:r.data}}
 Object.keys(d).forEach(k=>{if(k!=="_status"&&k!=="_memo")aK.add(k)});return{...r,p:d}});
 const keys=[...aK].slice(0,5);
 
-const appFilters=cT==="applications"?`<select onchange="fSrc(this.value)"><option value="">전체출처</option>${[...new Set(ps.map(r=>r.p._source).filter(Boolean))].map(s=>`<option value="${s}">${srcL(s)}</option>`).join("")}</select>
-<select onchange="fTy(this.value)"><option value="">전체유형</option><option value="user">사용자</option><option value="expert">전문가</option><option value="b2b">B2B</option></select>
-<select onchange="fStp(this.value)"><option value="">전체단계</option><option value="1">1단계</option><option value="2">2단계</option><option value="3">3단계</option></select>`:"";
 const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fT(this.value)"/>
 <select onchange="fS(this.value)"><option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
 <select onchange="fD(this.value)"><option value="">전체기간</option><option value="t">오늘</option><option value="w">7일</option><option value="m">30일</option></select>
-${appFilters}
 <span class="cnt">${ps.length}건</span>
 <button class="ab" onclick="sAF()">+추가</button>
 <button onclick="bSt(1)">확인처리</button><button onclick="bSt(2)">완료처리</button>
 <button class="db" onclick="dS()">삭제</button>
 <button class="${eM?"em-on":""}" onclick="tEM()" title="편집 모드">${eM?"편집모드 ON":"편집모드"}</button></div>`;
 
-const isApp=cT==="applications";
-function appExtra(p){
-const s=Number(p._step)||1,t=p._type||"";
-const parts=[];
-if(s>=2){
-if(t==="user"){if(p.serviceType)parts.push("서비스:"+p.serviceType);if(p.deadline)parts.push("납기:"+p.deadline);if(p.budget)parts.push("예산:"+p.budget)}
-if(t==="expert"){if(p.specialty)parts.push("분야:"+p.specialty);if(p.careerYears)parts.push(p.careerYears+"년");if(p.experience)parts.push(String(p.experience).slice(0,20))}
-if(t==="b2b"){if(p.orgName)parts.push(p.orgName);if(p.contractType)parts.push(p.contractType);if(p.volume)parts.push(p.volume)}
-}
-if(s>=3){
-const skip=new Set(["_source","_type","_step","_status","_memo","_submitted","name","phone","email","privacyConsent","serviceType","deadline","budget","specialty","careerYears","experience","portfolio","resume","orgName","bizNumber","managerName","contractType","volume","proposal","company","birthDate","nationality","job","channel","intro","description"]);
-Object.entries(p).forEach(([k,v])=>{if(!skip.has(k)&&v&&parts.length<4)parts.push(k+":"+String(v).slice(0,15))});
-}
-return parts.join(" / ")||"—";
-}
-const th=isApp
-?`<tr><th style="width:30px"><input type="checkbox" class="cb" onchange="tA(this.checked)"/></th><th>번호</th><th>상태</th><th>출처</th><th>유형</th><th>단계</th><th>이름</th><th>연락처</th><th>2~3단계 상세</th><th>일시</th><th style="width:60px">작업</th></tr>`
-:`<tr><th style="width:30px"><input type="checkbox" class="cb" onchange="tA(this.checked)"/></th><th>번호</th><th>상태</th>${keys.map(k=>`<th>${k}</th>`).join("")}<th>일시</th><th style="width:60px">작업</th></tr>`;
+const th=`<tr><th style="width:30px"><input type="checkbox" class="cb" onchange="tA(this.checked)"/></th><th>번호</th><th>상태</th>${keys.map(k=>`<th>${k}</th>`).join("")}<th>일시</th><th style="width:60px">작업</th></tr>`;
 const tb=ps.map(r=>{const st=r.p._status||0;
-const submitted=r.p._submitted;
-const stpBg=submitted?"#16a34a":(STP_C[r.p._step]||"#888");
-const stpTxt=submitted?"제출완료":stpL(r.p._step);
-const appCols=isApp?`
-<td><span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;background:#eef2ff;color:#1a365d">${srcL(r.p._source)}</span></td>
-<td><span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;color:#fff;background:${TYP_C[r.p._type]||'#888'}">${typL(r.p._type)}</span></td>
-<td><span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;color:#fff;background:${stpBg}">${stpTxt}</span></td>
-<td onclick="tD(this.parentElement,${r.id})">${eh(String(r.p.name||r.p.orgName||"—").slice(0,15))}</td>
-<td>${eh(String(r.p.phone||"—").slice(0,15))}</td>
-<td onclick="tD(this.parentElement,${r.id})" style="max-width:300px;white-space:normal;font-size:10px;color:#555">${eh(appExtra(r.p))}</td>`
-:(eM?keys.map(k=>`<td><input class="emi" data-id="${r.id}" data-key="${k}" value="${eh(fv(r.p[k]))}" style="width:100%;padding:2px 4px;border:1px solid #ccc;border-radius:2px;font-size:11px"/></td>`).join(""):keys.map(k=>`<td onclick="tD(this.parentElement,${r.id})" title="클릭하면 상세">${eh(fv(r.p[k]))}</td>`).join(""));
 return`<tr data-id="${r.id}" data-d="${r.created_at||""}" data-src="${r.p._source||""}" data-ty="${r.p._type||""}" data-stp="${r.p._step||""}">
 <td><input type="checkbox" class="cb" ${sel.has(r.id)?"checked":""} onclick="tSel(${r.id},this.checked)"/></td>
 <td><span class="bid">${rn(cT,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</td>
 <td><span class="bs s${st}" onclick="cyS(${r.id})" title="클릭하면 상태 변경" style="cursor:pointer">${ST[st]}</span></td>
-${appCols}
+${eM?keys.map(k=>`<td><input class="emi" data-id="${r.id}" data-key="${k}" value="${eh(fv(r.p[k]))}" style="width:100%;padding:2px 4px;border:1px solid #ccc;border-radius:2px;font-size:11px"/></td>`).join(""):keys.map(k=>`<td onclick="tD(this.parentElement,${r.id})" title="클릭하면 상세">${eh(fv(r.p[k]))}</td>`).join("")}
 <td>${(r.created_at||"").slice(5,16)}</td>
 <td class="acts">${eM?`<span class="ic sc" onclick="svRow(${r.id})" title="저장">&#10004;</span>`:`<span class="ic" onclick="qE(${r.id})" title="수정">&#9998;</span>`}<span class="ic xc" onclick="dOne(${r.id})" title="삭제">&#128465;</span></td>
 </tr>`}).join("");
