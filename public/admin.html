@@ -124,11 +124,11 @@ function sA(){lo.style.display="none";app.classList.add("v");const u=JSON.parse(
 
 const C={"신청":{t:["applications"]},"번역":{t:["translation_contacts","translation_quotes","translation_translators","translation_integrated","translation_experts","translation_orders"]},
 "윤리":{t:["aiethics_applications"]},"고전번역":{t:["classic_inquiries","classic_specialist_apps"]},
-"레벨테스트":{t:["level_test_submissions"]},"대표님":{t:["story_posts"]}};
+"레벨테스트":{t:["level_test_submissions"]},"대표님":{t:["story_posts"]},"AITe CBT":{t:["cbt_results"],link:"/cbt-admin.html"}};
 const L={applications:"통합신청",aiethics_applications:"전문가모집",classic_inquiries:"문의",classic_specialist_apps:"전문가신청",
 translation_contacts:"문의",translation_quotes:"견적",translation_translators:"번역사",
 translation_integrated:"통합신청",translation_experts:"전문가지원",translation_orders:"번역신청",
-level_test_submissions:"답안",story_posts:"블로그"};
+level_test_submissions:"답안",story_posts:"블로그",cbt_results:"시험결과"};
 const ST=["신규","확인","처리완료"];
 const SRC_L={trans_general:"일반번역",trans_legal:"법률번역",trans_tech:"기술번역",trans_medical:"의학번역",trans_literary:"문학번역",
 reading_classic:"고전통독",reading_modern:"현대통독",reading_phil:"철학통독",reading_lit:"문학통독",reading_hist:"역사통독",
@@ -150,7 +150,7 @@ function f(u){return fetch(u).then(r=>r.json())}
 
 function aR(){let a=[];for(const t of T)(TD[t]||[]).forEach(r=>a.push({...r,_t:t}));return a.sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""))}
 function iT(d){return d&&d.startsWith(new Date().toISOString().slice(0,10))}
-function rn(t,id){const p={applications:"APP",aiethics_applications:"ETH",classic_inquiries:"CLS",classic_specialist_apps:"CSP",translation_contacts:"TCT",translation_quotes:"TQT",translation_translators:"TTR",translation_integrated:"TIN",translation_experts:"TEX",translation_orders:"TOR",level_test_submissions:"LVL",story_posts:"BLG"};return(p[t]||"W")+"-"+String(id).padStart(4,"0")}
+function rn(t,id){const p={applications:"APP",aiethics_applications:"ETH",classic_inquiries:"CLS",classic_specialist_apps:"CSP",translation_contacts:"TCT",translation_quotes:"TQT",translation_translators:"TTR",translation_integrated:"TIN",translation_experts:"TEX",translation_orders:"TOR",level_test_submissions:"LVL",story_posts:"BLG",cbt_results:"CBT"};return(p[t]||"W")+"-"+String(id).padStart(4,"0")}
 function gC(t){for(const[c,v]of Object.entries(C))if(v.t.includes(t))return c;return""}
 function gS(row){try{const d=JSON.parse(row.data);return d._status||0}catch{return 0}}
 function eh(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
@@ -168,7 +168,7 @@ const op=!cC.has(c);
 h+=`<div class="sg"><div class="sgt" onclick="tC('${c}')"><span>${c} (${cc})</span>${nc?`<span class="sc n">+${nc}</span>`:""}</div>`;
 if(op)for(const t of v.t){const nt=(TD[t]||[]).filter(r=>iT(r.created_at)).length;
 h+=`<div class="si ${t===cT?"a":""}" onclick="sT('${t}')"><span>${L[t]||t}</span><span class="sc${nt?" n":""}">${TC[t]||0}</span></div>`}
-h+=`</div>`}
+if(C[c].link)h+=`<div class="si" onclick="window.open(\x27${C[c].link}\x27)"><span>CBT 관리 →</span></div>`;h+=`</div>`}
 sb.innerHTML=h}
 function tC(c){cC.has(c)?cC.delete(c):cC.add(c);rS()}
 function sT(t){cT=t;sel.clear();cV="l";bD.className="";bL.className="a";rS();uB();rL()}
