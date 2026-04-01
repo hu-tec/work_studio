@@ -140,9 +140,9 @@ function doL(){const i=lid.value,p=lpw.value,u=U[i];if(u&&u.pw===p){sessionStora
 function doLO(){sessionStorage.removeItem("ws");location.reload()}
 function sA(){lo.style.display="none";app.classList.add("v");const u=JSON.parse(sessionStorage.ws);ui.textContent=u.n;init()}
 
-const C={"신청":{t:["applications"]},"번역":{t:["translation_contacts","translation_quotes","translation_translators","translation_integrated","translation_experts","translation_orders"]},
+const C={"번역":{t:["translation_contacts","translation_quotes","translation_translators","translation_integrated","translation_experts","translation_orders"]},
 "윤리":{t:["aiethics_applications"]},"고전번역":{t:["classic_inquiries","classic_specialist_apps"]},
-"레벨테스트":{t:["level_test_submissions"]},"대표님":{t:["story_posts"]},"AITe CBT":{t:["cbt_results"],link:"/cbt-admin.html"}};
+"시험":{t:["level_test_submissions","cbt_results"]},"기타":{t:["story_posts","applications"]}};
 const L={applications:"통합신청",aiethics_applications:"전문가모집",classic_inquiries:"문의",classic_specialist_apps:"전문가신청",
 translation_contacts:"문의",translation_quotes:"견적",translation_translators:"번역사",
 translation_integrated:"통합신청",translation_experts:"전문가지원",translation_orders:"번역신청",
@@ -175,7 +175,7 @@ function eh(s){const d=document.createElement("div");d.textContent=s;return d.in
 function fv(v){if(v==null)return"";if(Array.isArray(v))return v.join(", ");if(typeof v==="object")return Object.entries(v).map(([k,v])=>k+":"+v).join(" / ");const s=String(v);return s.length>60?s.slice(0,60)+"…":s}
 
 function sv(v){cV=v;bD.className=v==="d"?"a":"";bL.className=v==="l"?"a":"";rv()}
-function rv(){if(cV==="d"&&!cT)rD();else rL()}
+function rv(){if(!cT){cV==="l"?rAL():rD()}else rL()}
 
 function rS(){
 let h=`<div class="sa ${!cT?"a":""}" onclick="cT=null;sv('d')">전체</div>`;
@@ -258,6 +258,38 @@ function rApp(){cT=null;cV="d";bD.className="a";bL.className="";rS();rD()}
 
 function fQD(q){q=q.toLowerCase();document.querySelectorAll(".qr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?"":"none"})}
 function fQS(v){document.querySelectorAll(".qr").forEach(r=>{r.style.display=(!v||r.dataset.st===v)?"":"none"})}
+
+// All List — 전체 통합 플랫 리스트 (리스트 모드, cT=null)
+function rAL(){uB();const all=aR();
+if(!all.length){ca.innerHTML='<div class="ct"><div class="em">데이터 없음</div></div>';return}
+const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fAL(this.value)"/>
+<select onchange="fALS(this.value)"><option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
+<select onchange="fALC(this.value)"><option value="">전체분류</option>${Object.keys(C).map(c=>`<option value="${c}">${c}</option>`).join("")}</select>
+<select onchange="fALD(this.value)"><option value="">전체기간</option><option value="t">오늘</option><option value="w">7일</option><option value="m">30일</option></select>
+<span class="cnt">${all.length}건</span></div>`;
+
+const th=`<tr><th>접수번호</th><th>분류</th><th>종류</th><th>상태</th><th>이름</th><th>연락처</th><th>일시</th></tr>`;
+const tb=all.map(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}
+const st=p._status||0;const nm=p.name||p.title||p.studentName||p.orgName||"—";const ct=p.email||p.contact||p.phone||"";
+const cat=gC(r._t);const tb_=TB[r._t]||{l:"?",c:"#888"};
+return`<tr class="alr" data-cat="${cat}" data-st="${st}" data-d="${r.created_at||""}" onclick="cT='${r._t}';cV='l';bD.className='';bL.className='a';rS();uB();rL()">
+<td><span class="bid">${rn(r._t,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</td>
+<td><span class="rit">${cat}</span></td>
+<td><span class="qt" style="background:${tb_.c};display:inline-block">${tb_.l}</span></td>
+<td><span class="bs s${st}">${ST[st]}</span></td>
+<td>${eh(String(nm).slice(0,15))}</td><td>${eh(String(ct).slice(0,25))}</td>
+<td>${(r.created_at||"").slice(5,16)}</td></tr>`}).join("");
+
+ca.innerHTML=`<div class="ct">${tl}<div class="tw"><table><thead>${th}</thead><tbody id="tBAL">${tb}</tbody></table></div></div>`}
+
+function fAL(q){q=q.toLowerCase();document.querySelectorAll(".alr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?"":"none"})}
+function fALS(v){document.querySelectorAll(".alr").forEach(r=>{r.style.display=(!v||r.dataset.st===v)?"":"none"})}
+function fALC(v){document.querySelectorAll(".alr").forEach(r=>{r.style.display=(!v||r.dataset.cat===v)?"":"none"})}
+function fALD(v){const now=new Date();let cut=null;
+if(v==="t")cut=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+else if(v==="w"){cut=new Date(now);cut.setDate(cut.getDate()-7)}
+else if(v==="m"){cut=new Date(now);cut.setDate(cut.getDate()-30)}
+document.querySelectorAll(".alr").forEach(r=>{r.style.display=(!cut||(r.dataset.d&&new Date(r.dataset.d)>=cut))?"":"none"})}
 
 // List
 let eM=false; // edit mode
