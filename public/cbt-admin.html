@@ -65,10 +65,13 @@ label{font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:3px}
 <div id="modal"><div class="mc" id="modal-body"></div></div>
 
 <script>
-const API="http://localhost:3082/api/admin";
+const API="http://54.116.15.136:82/api/admin";
+const AK="aite-admin-2026";
 let cats=[],qs=[],exams=[];
 
-async function J(u,o){const r=await fetch(API+u,o);return r.json()}
+async function J(u,o){
+const opts={...o,headers:{"Content-Type":"application/json","X-Admin-Key":AK,...(o?.headers||{})}};
+const r=await fetch(API+u,opts);return r.json()}
 
 function showTab(t){
 document.querySelectorAll(".tab").forEach((e,i)=>e.classList.toggle("a",["categories","questions","exams"][i]===t));
@@ -95,7 +98,7 @@ document.getElementById("p-categories").innerHTML=h;
 async function addCat(){const n=document.getElementById("newCat").value.trim();if(!n)return;
 await J("/categories",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:n})});loadCats()}
 async function delCat(id){if(!confirm("삭제?"))return;
-await fetch(API+"/categories/"+id,{method:"DELETE"});loadCats()}
+await J("/categories/"+id,{method:"DELETE"});loadCats()}
 
 // === Questions ===
 const TL={MULTIPLE_CHOICE:"객관식(단일)",MULTIPLE_SELECT:"객관식(복수)",SHORT_ANSWER:"단답형",TRUE_FALSE:"O/X"};
@@ -181,7 +184,7 @@ if(id)await J("/questions/"+id,{method:"PUT",headers:{"Content-Type":"applicatio
 else await J("/questions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
 closeModal();loadQs();
 }
-async function delQ(id){if(!confirm("삭제?"))return;await fetch(API+"/questions/"+id,{method:"DELETE"});loadQs()}
+async function delQ(id){if(!confirm("삭제?"))return;await J("/questions/"+id,{method:"DELETE"});loadQs()}
 function showQDetail(id){const q=qs.find(x=>x.id===id);if(!q)return;
 let h=`<h3>문제 상세</h3><p style="margin:8px 0">${esc(q.content)}</p>`;
 if(q.options)h+=q.options.map(o=>`<div style="padding:2px 0;${o.isCorrect?"color:#16a34a;font-weight:700":""}">${o.label}. ${esc(o.text)} ${o.isCorrect?"(정답)":""}</div>`).join("");
@@ -251,7 +254,7 @@ if(id)await J("/exams/"+id,{method:"PUT",headers:{"Content-Type":"application/js
 else await J("/exams",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
 closeModal();loadExams();
 }
-async function delExam(id){if(!confirm("삭제?"))return;await fetch(API+"/exams/"+id,{method:"DELETE"});loadExams()}
+async function delExam(id){if(!confirm("삭제?"))return;await J("/exams/"+id,{method:"DELETE"});loadExams()}
 
 function closeModal(){document.getElementById("modal").classList.remove("v")}
 document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()}
