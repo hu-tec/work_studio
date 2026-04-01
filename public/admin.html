@@ -122,10 +122,10 @@ function doL(){const i=lid.value,p=lpw.value,u=U[i];if(u&&u.pw===p){sessionStora
 function doLO(){sessionStorage.removeItem("ws");location.reload()}
 function sA(){lo.style.display="none";app.classList.add("v");const u=JSON.parse(sessionStorage.ws);ui.textContent=u.n;init()}
 
-const C={"번역":{t:["translation_contacts","translation_quotes","translation_translators","translation_integrated","translation_experts","translation_orders"]},
+const C={"신청":{t:["applications"]},"번역":{t:["translation_contacts","translation_quotes","translation_translators","translation_integrated","translation_experts","translation_orders"]},
 "윤리":{t:["aiethics_applications"]},"고전번역":{t:["classic_inquiries","classic_specialist_apps"]},
 "레벨테스트":{t:["level_test_submissions"]},"대표님":{t:["story_posts"]}};
-const L={aiethics_applications:"전문가모집",classic_inquiries:"문의",classic_specialist_apps:"전문가신청",
+const L={applications:"통합신청",aiethics_applications:"전문가모집",classic_inquiries:"문의",classic_specialist_apps:"전문가신청",
 translation_contacts:"문의",translation_quotes:"견적",translation_translators:"번역사",
 translation_integrated:"통합신청",translation_experts:"전문가지원",translation_orders:"번역신청",
 level_test_submissions:"답안",story_posts:"블로그"};
@@ -139,7 +139,7 @@ function f(u){return fetch(u).then(r=>r.json())}
 
 function aR(){let a=[];for(const t of T)(TD[t]||[]).forEach(r=>a.push({...r,_t:t}));return a.sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""))}
 function iT(d){return d&&d.startsWith(new Date().toISOString().slice(0,10))}
-function rn(t,id){const p={aiethics_applications:"ETH",classic_inquiries:"CLS",classic_specialist_apps:"CSP",translation_contacts:"TCT",translation_quotes:"TQT",translation_translators:"TTR",translation_integrated:"TIN",translation_experts:"TEX",translation_orders:"TOR",level_test_submissions:"LVL",story_posts:"BLG"};return(p[t]||"W")+"-"+String(id).padStart(4,"0")}
+function rn(t,id){const p={applications:"APP",aiethics_applications:"ETH",classic_inquiries:"CLS",classic_specialist_apps:"CSP",translation_contacts:"TCT",translation_quotes:"TQT",translation_translators:"TTR",translation_integrated:"TIN",translation_experts:"TEX",translation_orders:"TOR",level_test_submissions:"LVL",story_posts:"BLG"};return(p[t]||"W")+"-"+String(id).padStart(4,"0")}
 function gC(t){for(const[c,v]of Object.entries(C))if(v.t.includes(t))return c;return""}
 function gS(row){try{const d=JSON.parse(row.data);return d._status||0}catch{return 0}}
 function eh(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
@@ -201,9 +201,13 @@ const aK=new Set();const ps=data.map(r=>{let d;try{d=JSON.parse(r.data)}catch{d=
 Object.keys(d).forEach(k=>{if(k!=="_status"&&k!=="_memo")aK.add(k)});return{...r,p:d}});
 const keys=[...aK].slice(0,5);
 
+const appFilters=cT==="applications"?`<select onchange="fSrc(this.value)"><option value="">전체출처</option>${[...new Set(ps.map(r=>r.p._source).filter(Boolean))].map(s=>`<option value="${s}">${s}</option>`).join("")}</select>
+<select onchange="fTy(this.value)"><option value="">전체유형</option><option value="user">사용자</option><option value="expert">전문가</option><option value="b2b">B2B</option></select>
+<select onchange="fStp(this.value)"><option value="">전체단계</option><option value="1">1단계</option><option value="2">2단계</option><option value="3">3단계</option></select>`:"";
 const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fT(this.value)"/>
 <select onchange="fS(this.value)"><option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
 <select onchange="fD(this.value)"><option value="">전체기간</option><option value="t">오늘</option><option value="w">7일</option><option value="m">30일</option></select>
+${appFilters}
 <span class="cnt">${ps.length}건</span>
 <button class="ab" onclick="sAF()">+추가</button>
 <button onclick="bSt(1)">확인처리</button><button onclick="bSt(2)">완료처리</button>
@@ -212,7 +216,7 @@ const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fT
 
 const th=`<tr><th style="width:30px"><input type="checkbox" class="cb" onchange="tA(this.checked)"/></th><th>번호</th><th>상태</th>${keys.map(k=>`<th>${k}</th>`).join("")}<th>일시</th><th style="width:60px">작업</th></tr>`;
 const tb=ps.map(r=>{const st=r.p._status||0;
-return`<tr data-id="${r.id}" data-d="${r.created_at||""}">
+return`<tr data-id="${r.id}" data-d="${r.created_at||""}" data-src="${r.p._source||""}" data-ty="${r.p._type||""}" data-stp="${r.p._step||""}">
 <td><input type="checkbox" class="cb" ${sel.has(r.id)?"checked":""} onclick="tSel(${r.id},this.checked)"/></td>
 <td><span class="bid">${rn(cT,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</td>
 <td><span class="bs s${st}" onclick="cyS(${r.id})" title="클릭하면 상태 변경" style="cursor:pointer">${ST[st]}</span></td>
@@ -280,6 +284,11 @@ else if(v==="w"){cut=new Date(now);cut.setDate(cut.getDate()-7)}
 else if(v==="m"){cut=new Date(now);cut.setDate(cut.getDate()-30)}
 document.querySelectorAll("#tB tr:not(.dr)").forEach(r=>{if(!cut){r.style.display="";return}
 r.style.display=(r.dataset.d&&new Date(r.dataset.d)>=cut)?"":"none"})}
+
+// Application filters
+function fSrc(v){document.querySelectorAll("#tB tr:not(.dr)").forEach(r=>{r.style.display=(!v||r.dataset.src===v)?"":"none"})}
+function fTy(v){document.querySelectorAll("#tB tr:not(.dr)").forEach(r=>{r.style.display=(!v||r.dataset.ty===v)?"":"none"})}
+function fStp(v){document.querySelectorAll("#tB tr:not(.dr)").forEach(r=>{r.style.display=(!v||r.dataset.stp===v)?"":"none"})}
 
 // Add form
 function sAF(){const af=document.getElementById("addF");if(af.style.display==="block"){af.style.display="none";return}

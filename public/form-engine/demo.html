@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FormEngine Demo</title>
+<style>
+body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f5;margin:0;padding:20px}
+.demo-header{max-width:640px;margin:0 auto 20px;text-align:center}
+.demo-header h1{font-size:18px;color:#1a365d}
+.demo-header p{font-size:12px;color:#888}
+.demo-tabs{max-width:640px;margin:0 auto 16px;display:flex;gap:6px;flex-wrap:wrap}
+.demo-tab{padding:6px 14px;border:1px solid #d1d5db;border-radius:20px;font-size:11px;cursor:pointer;background:#fff}
+.demo-tab.active{background:#1a365d;color:#fff;border-color:#1a365d}
+.demo-info{max-width:640px;margin:0 auto 16px;padding:10px 14px;background:#eef2ff;border-radius:8px;font-size:11px;color:#1a365d}
+</style>
+</head>
+<body>
+
+<div class="demo-header">
+  <h1>FormEngine Demo</h1>
+  <p>통합 신청 폼 엔진 테스트 페이지</p>
+</div>
+
+<div class="demo-tabs" id="tabs">
+  <span class="demo-tab active" onclick="loadDemo('trans_legal','user')">번역-사용자</span>
+  <span class="demo-tab" onclick="loadDemo('trans_legal','expert')">번역-전문가</span>
+  <span class="demo-tab" onclick="loadDemo('ethics_ai','user')">윤리-사용자</span>
+  <span class="demo-tab" onclick="loadDemo('ethics_ai','b2b')">윤리-B2B</span>
+  <span class="demo-tab" onclick="loadDemo('reading_classic','expert')">통독-전문가</span>
+</div>
+
+<div class="demo-info" id="info"></div>
+
+<div id="application-form"></div>
+
+<script src="engine.js"></script>
+<script>
+const SITES = {
+  trans_legal: {
+    label: '법률번역',
+    step1Extra: ['company'],
+    step2Extra: ['intro'],
+    step3: [
+      { key: 'sourceLang', label: '원본 언어', type: 'select', required: true, options: ['한국어','영어','일본어','중국어','독일어','프랑스어'] },
+      { key: 'targetLang', label: '번역 언어', type: 'select', required: true, options: ['한국어','영어','일본어','중국어','독일어','프랑스어'] },
+      { key: 'wordCount',  label: '예상 분량 (단어/페이지)', type: 'text', required: true, placeholder: '약 2,000단어 또는 10페이지' },
+      { key: 'deadline',   label: '희망 납기일', type: 'date', required: true },
+      { key: 'docType',    label: '문서 종류', type: 'select', required: false, options: ['계약서','소송문서','특허','규정/약관','기타'] },
+      { key: 'files',      label: '원문 파일 첨부', type: 'file', required: false },
+    ],
+  },
+  ethics_ai: {
+    label: 'AI 윤리',
+    step1Extra: ['company'],
+    step2Extra: ['intro'],
+    step3: [
+      { key: 'aiSystem',   label: '검토 대상 AI 시스템', type: 'text', required: true, placeholder: 'GPT-4, 사내 챗봇 등' },
+      { key: 'ethicsStd',  label: '적용 윤리 기준', type: 'select', required: true, options: ['EU AI Act','OECD AI 원칙','국내 AI 윤리기준','자체 기준'] },
+      { key: 'reportType', label: '보고서 유형', type: 'select', required: false, options: ['진단 보고서','인증 심사','자문 의견서'] },
+      { key: 'scope',      label: '검토 범위', type: 'textarea', required: false, placeholder: '검토 범위 및 특이사항' },
+    ],
+  },
+  reading_classic: {
+    label: '고전 통독',
+    step1Extra: ['birthDate'],
+    step2Extra: ['job', 'channel'],
+    step3: [
+      { key: 'textTitle', label: '희망 텍스트', type: 'text', required: true, placeholder: '논어, 맹자, 중용 등' },
+      { key: 'level',     label: '수준', type: 'select', required: true, options: ['입문','중급','고급','연구자'] },
+      { key: 'goal',      label: '학습 목표', type: 'textarea', required: false, placeholder: '통독을 통해 달성하고 싶은 목표' },
+      { key: 'schedule',  label: '희망 일정', type: 'select', required: false, options: ['주1회','주2회','주3회','집중과정'] },
+    ],
+  },
+};
+
+function loadDemo(source, type) {
+  document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const site = SITES[source];
+  document.getElementById('info').textContent =
+    `source: "${source}" | type: "${type}" | label: "${site.label}" | step3 필드: ${site.step3.length}개`;
+
+  FormEngine.init({
+    source: source,
+    type: type,
+    container: '#application-form',
+    apiUrl: window.location.origin,
+    step1Extra: site.step1Extra,
+    step2Extra: site.step2Extra,
+    step3: site.step3,
+  });
+}
+
+// Initial load
+loadDemo('trans_legal', 'user');
+</script>
+</body>
+</html>

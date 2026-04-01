@@ -17,6 +17,7 @@ const TABLES = [
   "translation_orders",        // 번역 - 번역 신청
   "level_test_submissions",    // 레벨테스트 답안
   "story_posts",               // 대표님 블로그
+  "applications",              // 통합 신청 (사용자/전문가/B2B)
 ];
 
 for (const table of TABLES) {
