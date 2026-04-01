@@ -31,6 +31,7 @@ tr:hover{background:#f8fafc}
 .badge-g{background:#d4edda;color:#155724}.badge-r{background:#f8d7da;color:#721c24}
 .badge-b{background:#cce5ff;color:#004085}.badge-y{background:#fff3cd;color:#856404}
 input,select,textarea{padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%}
+input[type=checkbox],input[type=radio]{width:auto;min-width:14px;max-width:14px;height:14px;margin:0;flex-shrink:0}
 textarea{resize:vertical;min-height:60px}
 .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .form-grid.c3{grid-template-columns:repeat(3,1fr)}
@@ -228,8 +229,8 @@ let h=`<h3>${e?"시험 수정":"시험 생성"}</h3>
 <div><label>모드</label><select id="eMode"><option value="MOCK" ${e?.mode==="MOCK"?"selected":""}>모의시험</option><option value="OFFICIAL" ${e?.mode==="OFFICIAL"?"selected":""}>본시험</option></select></div>
 <div><label>제한시간(분)</label><input id="eTime" type="number" value="${e?.timeLimitMin||60}"/></div>
 <div><label>합격점</label><input id="ePass" type="number" value="${e?.passingScore||70}"/></div>
-<div><label><input type="checkbox" id="eSQ" ${e?.shuffleQuestions!==false?"checked":""}/> 문제 셔플</label></div>
-<div><label><input type="checkbox" id="eSO" ${e?.shuffleOptions!==false?"checked":""}/> 보기 셔플</label></div>
+<div><label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="eSQ" ${e?.shuffleQuestions!==false?"checked":""}/> 문제 셔플</label></div>
+<div><label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="eSO" ${e?.shuffleOptions!==false?"checked":""}/> 보기 셔플</label></div>
 <div class="full"><label>설명</label><textarea id="eDesc" rows="2">${esc(e?.description||"")}</textarea></div>
 <div class="full"><label>문제 선택</label>
 <div style="max-height:200px;overflow-y:auto;border:1px solid #ddd;border-radius:4px;padding:6px">`;
