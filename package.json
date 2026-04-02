@@ -5,9 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js",
-    "build:db": "cd client-db && npm run build",
-    "install:db": "cd client-db && npm install"
+    "dev": "node --watch server.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1019.0",

@@ -128,14 +128,6 @@ app.get("/level-test", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "level-test.html"));
 });
 
-// --- DB 관리 페이지 ---
-app.get("/db", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "db", "index.html"));
-});
-app.get("/db/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "db", "index.html"));
-});
-
 // --- SPA fallback ---
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));

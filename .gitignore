@@ -1,5 +1,3 @@
 node_modules/
 *.db
 .env
-public/db/
-client-db/node_modules/
