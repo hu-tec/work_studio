@@ -162,11 +162,6 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 .ct-tab{flex:1;padding:8px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#888}
 .ct-tab:first-child{border-radius:6px 0 0 6px}.ct-tab:last-child{border-radius:0 6px 6px 0}
 .ct-tab.a{background:#1a365d;color:#fff;border-color:#1a365d}
-/* Status page */
-.sp-row{display:grid;grid-template-columns:40px 60px 60px 1fr 80px 80px 60px 80px;gap:4px;padding:5px 10px;border-bottom:1px solid #f0f0f0;font-size:10px;align-items:center}
-.sp-row:hover{background:#f8fafc}
-.sp-hd{background:#f8fafc;font-weight:700;color:#555;position:sticky;top:0}
-.sp-badge{font-size:8px;padding:1px 5px;border-radius:2px;font-weight:700;display:inline-block}
 /* Form Editor */
 .fe-wrap{display:flex;gap:12px;height:calc(100vh - 160px)}
 .fe-sidebar{width:240px;background:#fff;border-radius:6px;border:1px solid #eee;overflow-y:auto;flex-shrink:0}
@@ -239,7 +234,7 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 <div class="app" id="app">
 <header><h1 onclick="goHome()">Work Studio</h1><div class="hr"><span class="ui" id="ui"></span><button onclick="doLO()">로그아웃</button></div></header>
 <div class="tb"><div class="bc" id="bc">Work Studio</div>
-<div class="vt"><button id="bD" class="a" onclick="sv('d')">대시보드</button><button id="bL" onclick="sv('l')">리스트</button><button id="bF" onclick="sv('f')">신청서</button><button id="bS" onclick="sv('s')">통계</button><button id="bQ" onclick="sv('q')">콘텐츠</button><button id="bP" onclick="sv('p')">현황</button></div></div>
+<div class="vt"><button id="bD" class="a" onclick="sv('d')">대시보드</button><button id="bL" onclick="sv('l')">리스트</button><button id="bF" onclick="sv('f')">신청서</button><button id="bS" onclick="sv('s')">통계</button><button id="bQ" onclick="sv('q')">콘텐츠</button></div></div>
 <div class="nav-bar" id="navBar"></div>
 <div class="sub-nav" id="subNav"></div>
 <div class="mn"><div class="ca" id="ca"></div></div>
@@ -335,8 +330,8 @@ function eh(s){const d=document.createElement("div");d.textContent=s;return d.in
 function fv(v){if(v==null)return"";if(Array.isArray(v))return v.join(", ");if(typeof v==="object")return Object.entries(v).map(([k,v])=>k+":"+v).join(" / ");const s=String(v);return s.length>60?s.slice(0,60)+"…":s}
 
 // ═══ Navigation ═══
-function sv(v){cV=v;bD.className=v==="d"?"a":"";bL.className=v==="l"?"a":"";bF.className=v==="f"?"a":"";bS.className=v==="s"?"a":"";bQ.className=v==="q"?"a":"";bP.className=v==="p"?"a":"";rv()}
-function rv(){curPage=1;if(cV==="f"){rForms();return}if(cV==="s"){rStats();return}if(cV==="q"){rContent();return}if(cV==="p"){rStatus();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
+function sv(v){cV=v;bD.className=v==="d"?"a":"";bL.className=v==="l"?"a":"";bF.className=v==="f"?"a":"";bS.className=v==="s"?"a":"";bQ.className=v==="q"?"a":"";rv()}
+function rv(){curPage=1;if(cV==="f"){rForms();return}if(cV==="s"){rStats();return}if(cV==="q"){rContent();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
 
 function rNav(){
 const allCnt=T.reduce((s,t)=>s+(TC[t]||0),0);
@@ -1129,8 +1124,9 @@ let h=`<div class="ct-tabs">
 <div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';rContent()">교재 <span style="opacity:.6">${TC["textbooks"]||0}</span></div>
 </div>`;
 
+if(ctAdding)h+=renderCtForm();
 const data=TD[ctTab]||[];
-if(!data.length){
+if(!data.length&&!ctAdding){
 h+=`<div class="ct"><div style="padding:40px;text-align:center">
 <div style="font-size:14px;color:#888;margin-bottom:12px">${ctTab==="questions"?"문제가":ctTab==="curriculum"?"커리큘럼이":"교재가"} 없습니다</div>
 <button onclick="ctAddItem()" style="padding:8px 20px;background:#1a365d;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">+ ${ctTab==="questions"?"문제 추가":ctTab==="curriculum"?"과정 추가":"교재 추가"}</button>
@@ -1161,23 +1157,69 @@ ca.innerHTML=h}
 
 function fCT(q){document.querySelectorAll("#ctBody tr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?"":"none"})}
 
-function ctAddItem(){
-const fields=ctTab==="questions"?
-{domain:"종목",grade:"급수 (예: 교육 3급)",category:"소재 대분류",type:"문제유형 (객관식/주관식/서술형)",difficulty:"난이도 (상/중/하)",question:"문제 내용",answer:"정답",explanation:"해설"}:
-ctTab==="curriculum"?
-{domain:"종목",grade:"급수",week:"주차",topic:"주제",objective:"학습목표",activity:"학습활동",assessment:"평가방법"}:
-{domain:"종목",grade:"급수",unit:"단원",title:"제목",summary:"내용요약",difficulty:"난이도",pages:"페이지수"};
-const data={};
-for(const[k,label]of Object.entries(fields)){
-const v=prompt(label+":");if(v===null)return;if(v)data[k]=v}
-fetch(`/api/${ctTab}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)})
-.then(()=>lA().then(()=>{rNav();rContent()}))}
+let ctAdding=false;
+function ctAddItem(){ctAdding=!ctAdding;rContent()}
+function ctFieldDefs(){
+if(ctTab==="questions")return[
+{k:"domain",l:"종목",t:"select",o:EXAM_DOMAINS},
+{k:"division",l:"구분",t:"select",o:["교육","비즈니스","전문"]},
+{k:"grade",l:"급수",t:"select",o:["1급","2급","3급","4급","5급","6급","7급","8급"]},
+{k:"category",l:"소재 대분류",t:"select",o:Object.keys(FIELDS)},
+{k:"type",l:"문제유형",t:"select",o:["객관식","주관식","서술형","OX","빈칸채우기"]},
+{k:"difficulty",l:"난이도",t:"select",o:["상","중","하"]},
+{k:"question",l:"문제 내용",t:"textarea"},
+{k:"answer",l:"정답",t:"text"},
+{k:"explanation",l:"해설",t:"textarea"},
+];
+if(ctTab==="curriculum")return[
+{k:"domain",l:"종목",t:"select",o:EXAM_DOMAINS},
+{k:"division",l:"구분",t:"select",o:["교육","비즈니스","전문"]},
+{k:"grade",l:"급수",t:"select",o:["1급","2급","3급","4급","5급","6급","7급","8급"]},
+{k:"week",l:"주차",t:"text",ph:"예: 1주차"},
+{k:"topic",l:"주제",t:"text"},
+{k:"objective",l:"학습목표",t:"textarea"},
+{k:"activity",l:"학습활동",t:"textarea"},
+{k:"assessment",l:"평가방법",t:"select",o:["과제","시험","발표","실습","포트폴리오"]},
+];
+return[
+{k:"domain",l:"종목",t:"select",o:EXAM_DOMAINS},
+{k:"division",l:"구분",t:"select",o:["교육","비즈니스","전문"]},
+{k:"grade",l:"급수",t:"select",o:["1급","2급","3급","4급","5급","6급","7급","8급"]},
+{k:"unit",l:"단원",t:"text",ph:"예: 1단원"},
+{k:"title",l:"제목",t:"text"},
+{k:"summary",l:"내용 요약",t:"textarea"},
+{k:"difficulty",l:"난이도",t:"select",o:["초급","중급","고급"]},
+{k:"pages",l:"페이지수",t:"text"},
+];}
+
+function renderCtForm(){
+const fields=ctFieldDefs();
+let h=`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:16px;margin-bottom:12px">
+<div style="font-size:12px;font-weight:700;color:#1a365d;margin-bottom:12px">${ctTab==="questions"?"문제 추가":ctTab==="curriculum"?"과정 추가":"교재 추가"}</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">`;
+fields.forEach(f=>{
+h+=`<div${f.t==="textarea"?" style=\"grid-column:span 2\"":""}><label style="font-size:9px;font-weight:700;color:#555;display:block;margin-bottom:2px">${f.l}</label>`;
+if(f.t==="select")h+=`<select data-ct="${f.k}" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px"><option value="">선택</option>${(f.o||[]).map(o=>`<option value="${o}">${o}</option>`).join("")}</select>`;
+else if(f.t==="textarea")h+=`<textarea data-ct="${f.k}" rows="2" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px;resize:vertical" placeholder="${f.ph||""}"></textarea>`;
+else h+=`<input data-ct="${f.k}" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px" placeholder="${f.ph||""}"/>`;
+h+=`</div>`});
+h+=`</div><div style="margin-top:10px;display:flex;gap:6px">
+<button onclick="ctDoAdd()" style="padding:6px 16px;background:#1a365d;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer">저장</button>
+<button onclick="ctAdding=false;rContent()" style="padding:6px 16px;background:#fff;border:1px solid #ddd;border-radius:4px;font-size:11px;cursor:pointer">취소</button>
+</div></div>`;
+return h}
+
+async function ctDoAdd(){
+const data={};document.querySelectorAll("[data-ct]").forEach(el=>{if(el.value)data[el.dataset.ct]=el.value});
+if(!data.domain){alert("종목을 선택하세요");return}
+await fetch(`/api/${ctTab}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+ctAdding=false;await lA();rNav();rContent()}
 
 async function ctDel(id){if(!confirm("삭제?"))return;
 await fetch(`/api/${ctTab}/${id}`,{method:"DELETE"});await lA();rNav();rContent()}
 
-// ═══ 프로젝트 현황 (_tmp_pages 70개 항목) ═══
-const PROJ_ITEMS=[
+// 프로젝트 현황은 _tmp_pages.md로 관리
+const _REMOVED=[
 {n:1,cat:"개인",title:"대표미팅신폼",loc:"work_studio",st:"대기중",who:"지예"},
 {n:2,cat:"개인",title:"미수금관리",loc:"ai_studio",st:"대기중",who:"지예"},
 {n:3,cat:"관리",title:"바로가기페이지",loc:"ai_studio",st:"대기중",who:"지예"},
@@ -1283,9 +1325,7 @@ h+=`<div class="sp-row spr" data-loc="${p.loc}" data-st="${p.st}">
 h+=`</div></div>`;
 ca.innerHTML=h}
 
-function fSP(q){q=q.toLowerCase();document.querySelectorAll(".spr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?"":"none"})}
-function fSPL(v){document.querySelectorAll(".spr").forEach(r=>{r.style.display=(!v||r.dataset.loc.includes(v))?"":"none"})}
-function fSPS(v){document.querySelectorAll(".spr").forEach(r=>{r.style.display=(!v||r.dataset.st===v)?"":"none"})}
+/*REMOVED_PROJ_END*/
 
 if(sessionStorage.ws)sA();
 </script>
