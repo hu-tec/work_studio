@@ -19,6 +19,7 @@ const TABLES = [
   "story_posts",               // 대표님 블로그
   "applications",              // 통합 신청 (사용자/전문가/B2B)
   "cbt_results",               // AITe CBT 시험 결과
+  "members",                   // DB 페이지 - 회원관리
 ];
 
 for (const table of TABLES) {
