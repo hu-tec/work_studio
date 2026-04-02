@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>TESOL 전문가 과정 신청</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:15px/1.6 'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:#f0f2f5;color:#333;min-height:100vh;display:flex;justify-content:center;padding:40px 16px 60px}
+.wrap{width:100%;max-width:640px}
+/* Header */
+.hd{text-align:center;margin-bottom:32px}
+.hd h1{font-size:24px;font-weight:800;color:#1a365d;margin-bottom:4px}
+.hd p{font-size:13px;color:#888}
+/* Progress */
+.prog{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:28px}
+.prog .dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid #cbd5e0;color:#a0aec0;background:#fff;transition:all .25s;flex-shrink:0}
+.prog .dot.active{background:#1a365d;border-color:#1a365d;color:#fff}
+.prog .dot.done{background:#38a169;border-color:#38a169;color:#fff}
+.prog .line{width:80px;height:2px;background:#cbd5e0;transition:background .25s}
+.prog .line.active{background:#1a365d}
+.prog .lbl{font-size:11px;color:#a0aec0;margin-left:6px;white-space:nowrap;transition:color .25s}
+.prog .lbl.active{color:#1a365d;font-weight:600}
+/* Card */
+.card{background:#fff;border-radius:16px;padding:36px 32px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04)}
+@media(max-width:480px){.card{padding:28px 20px}}
+.card h2{font-size:18px;font-weight:700;color:#1a365d;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #edf2f7}
+/* Field */
+.fg{margin-bottom:20px}
+.fg label{display:block;font-size:13px;font-weight:600;color:#4a5568;margin-bottom:6px}
+.fg label .req{color:#e53e3e;margin-left:2px}
+.fg input[type="text"],.fg input[type="tel"],.fg input[type="email"],.fg input[type="date"],.fg select,.fg textarea{
+  width:100%;padding:10px 14px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;background:#fff;color:#333}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#1a365d;box-shadow:0 0 0 3px rgba(26,54,93,.08)}
+.fg textarea{resize:vertical;min-height:100px}
+.fg .hint{font-size:11px;color:#a0aec0;margin-top:4px}
+.fg.err input,.fg.err select,.fg.err textarea{border-color:#e53e3e}
+.fg.err .hint{color:#e53e3e}
+/* Radio / Checkbox group */
+.rg{display:flex;flex-wrap:wrap;gap:8px}
+.rg label{display:flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;font-weight:500;color:#4a5568;cursor:pointer;transition:all .15s;user-select:none}
+.rg label:hover{background:#f7fafc;border-color:#a0aec0}
+.rg input[type="radio"],.rg input[type="checkbox"]{accent-color:#1a365d;width:16px;height:16px;flex-shrink:0}
+.rg label:has(input:checked){background:#eef2ff;border-color:#1a365d;color:#1a365d}
+/* Consent */
+.consent{display:flex;align-items:flex-start;gap:10px;padding:16px;background:#f7fafc;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:20px}
+.consent input{margin-top:3px;width:18px;height:18px;accent-color:#1a365d;flex-shrink:0}
+.consent span{font-size:13px;color:#4a5568;line-height:1.5}
+.consent span a{color:#1a365d;text-decoration:underline}
+/* Buttons */
+.btns{display:flex;gap:12px;margin-top:28px}
+.btn{flex:1;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-primary{background:#1a365d;color:#fff}
+.btn-primary:hover{background:#2d4a7c}
+.btn-primary:active{transform:scale(.98)}
+.btn-secondary{background:#fff;color:#4a5568;border:1px solid #e2e8f0}
+.btn-secondary:hover{background:#f7fafc}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+/* Step visibility */
+.step{display:none}
+.step.active{display:block}
+/* Success */
+.success{text-align:center;padding:60px 20px}
+.success .ico{font-size:64px;margin-bottom:16px}
+.success h2{font-size:22px;font-weight:700;color:#1a365d;margin-bottom:8px}
+.success p{font-size:14px;color:#718096;line-height:1.7}
+/* Spinner */
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hd">
+    <h1>TESOL 전문가 과정 신청</h1>
+    <p>아래 양식을 작성하여 신청해 주세요.</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="prog">
+    <div class="dot active" id="dot1">1</div>
+    <span class="lbl active" id="lbl1">기본 인적사항</span>
+    <div class="line" id="line1"></div>
+    <div class="dot" id="dot2">2</div>
+    <span class="lbl" id="lbl2">상세 정보</span>
+  </div>
+
+  <div class="card">
+    <!-- Step 1 -->
+    <div class="step active" id="step1">
+      <h2>기본 인적사항</h2>
+
+      <div class="fg">
+        <label>지원 과정 (5대 종목)<span class="req">*</span></label>
+        <div class="rg">
+          <label><input type="radio" name="course" value="TESOL" checked/>TESOL</label>
+          <label><input type="radio" name="course" value="AI번역"/>AI번역</label>
+          <label><input type="radio" name="course" value="AI프롬프트"/>AI프롬프트</label>
+          <label><input type="radio" name="course" value="AI윤리"/>AI윤리</label>
+          <label><input type="radio" name="course" value="ITT정통번역"/>ITT정통번역</label>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>신청 유형<span class="req">*</span></label>
+        <div class="rg">
+          <label><input type="radio" name="appType" value="수업신청"/>수업신청</label>
+          <label><input type="radio" name="appType" value="레벨테스트"/>레벨테스트</label>
+          <label><input type="radio" name="appType" value="설명회신청"/>설명회신청</label>
+          <label><input type="radio" name="appType" value="테스트TIP"/>테스트TIP</label>
+          <label><input type="radio" name="appType" value="1:1문의"/>1:1문의</label>
+        </div>
+      </div>
+
+      <div class="fg" id="fg-name">
+        <label for="name">성명<span class="req">*</span></label>
+        <input type="text" id="name" placeholder="홍길동" required/>
+      </div>
+
+      <div class="fg" id="fg-phone">
+        <label for="phone">연락처<span class="req">*</span></label>
+        <input type="tel" id="phone" placeholder="010-1234-5678" required/>
+      </div>
+
+      <div class="fg" id="fg-email">
+        <label for="email">이메일<span class="req">*</span></label>
+        <input type="email" id="email" placeholder="example@email.com" required/>
+      </div>
+
+      <div class="fg">
+        <label for="birthDate">생년월일</label>
+        <input type="date" id="birthDate"/>
+      </div>
+
+      <div class="fg">
+        <label>내/외국인</label>
+        <div class="rg">
+          <label><input type="radio" name="nationality" value="내국인" checked/>내국인</label>
+          <label><input type="radio" name="nationality" value="외국인"/>외국인</label>
+          <label><input type="radio" name="nationality" value="재외국인"/>재외국인</label>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button class="btn btn-primary" onclick="goStep(2)">다음</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" id="step2">
+      <h2>상세 정보</h2>
+
+      <div class="fg">
+        <label>직업</label>
+        <div class="rg">
+          <label><input type="radio" name="job" value="학생"/>학생</label>
+          <label><input type="radio" name="job" value="대학생"/>대학생</label>
+          <label><input type="radio" name="job" value="직장인"/>직장인</label>
+          <label><input type="radio" name="job" value="교사"/>교사</label>
+          <label><input type="radio" name="job" value="기타"/>기타</label>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>알게 된 경로 (복수 선택 가능)</label>
+        <div class="rg">
+          <label><input type="checkbox" name="channel" value="네이버 검색"/>네이버 검색</label>
+          <label><input type="checkbox" name="channel" value="인스타그램"/>인스타그램</label>
+          <label><input type="checkbox" name="channel" value="유튜브"/>유튜브</label>
+          <label><input type="checkbox" name="channel" value="지인 추천"/>지인 추천</label>
+          <label><input type="checkbox" name="channel" value="오프라인 안내"/>오프라인 안내</label>
+          <label><input type="checkbox" name="channel" value="기타"/>기타</label>
+        </div>
+      </div>
+
+      <!-- Offline-only fields -->
+      <div class="fg cond-offline" style="display:none">
+        <label for="region">지역<span class="req">*</span></label>
+        <select id="region">
+          <option value="">선택해 주세요</option>
+          <option>서울 강남</option>
+          <option>부산 서면</option>
+          <option>대구</option>
+          <option>광주</option>
+          <option>경기도</option>
+          <option>충남</option>
+          <option>강원도</option>
+          <option>제주도</option>
+        </select>
+      </div>
+
+      <div class="fg cond-offline" style="display:none">
+        <label for="scheduleDate">희망 일자</label>
+        <input type="date" id="scheduleDate"/>
+      </div>
+
+      <div class="fg cond-offline" style="display:none">
+        <label for="scheduleTime">희망 시간</label>
+        <select id="scheduleTime">
+          <option value="">선택해 주세요</option>
+        </select>
+      </div>
+
+      <!-- Online-only field -->
+      <div class="fg cond-online" style="display:none">
+        <label for="inquiry">문의 내용</label>
+        <textarea id="inquiry" placeholder="문의하실 내용을 자유롭게 작성해 주세요."></textarea>
+      </div>
+
+      <div class="fg">
+        <label for="introduction">자기소개</label>
+        <textarea id="introduction" placeholder="간단한 자기소개를 작성해 주세요."></textarea>
+      </div>
+
+      <div class="consent" id="fg-consent">
+        <input type="checkbox" id="privacyConsent"/>
+        <span>
+          <strong>개인정보 수집 및 이용에 동의합니다.</strong><br/>
+          수집 항목: 성명, 연락처, 이메일, 생년월일 등 신청 양식에 기재된 정보<br/>
+          수집 목적: 과정 신청 접수 및 안내<br/>
+          보유 기간: 신청일로부터 1년
+        </span>
+      </div>
+
+      <div class="btns">
+        <button class="btn btn-secondary" onclick="goStep(1)">이전</button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">제출</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="step" id="stepDone">
+      <div class="success">
+        <div class="ico">&#10004;&#65039;</div>
+        <h2>신청이 완료되었습니다</h2>
+        <p>접수해 주셔서 감사합니다.<br/>담당자가 확인 후 연락드리겠습니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Populate time slots
+  const timeSel = document.getElementById('scheduleTime');
+  for(let h=9;h<=17;h++){
+    for(let m=0;m<60;m+=30){
+      if(h===17&&m===30) continue;
+      const t = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+      const o = document.createElement('option');
+      o.value=t; o.textContent=t;
+      timeSel.appendChild(o);
+    }
+  }
+  // Add 18:00
+  const o18 = document.createElement('option');
+  o18.value='18:00'; o18.textContent='18:00';
+  timeSel.appendChild(o18);
+
+  // Conditional fields based on appType
+  const offlineTypes = ['수업신청','레벨테스트','설명회신청'];
+  const onlineTypes = ['1:1문의'];
+
+  function updateConditional(){
+    const sel = document.querySelector('input[name="appType"]:checked');
+    const val = sel ? sel.value : '';
+    const isOffline = offlineTypes.includes(val);
+    const isOnline = onlineTypes.includes(val);
+    document.querySelectorAll('.cond-offline').forEach(el=>el.style.display=isOffline?'':'none');
+    document.querySelectorAll('.cond-online').forEach(el=>el.style.display=isOnline?'':'none');
+  }
+
+  document.querySelectorAll('input[name="appType"]').forEach(r=>r.addEventListener('change',updateConditional));
+  updateConditional();
+
+  // Step navigation
+  window.goStep = function(n){
+    if(n===2 && !validateStep1()) return;
+    document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+    document.getElementById(n===1?'step1':'step2').classList.add('active');
+    // Progress
+    const d1=document.getElementById('dot1'),d2=document.getElementById('dot2');
+    const l1=document.getElementById('lbl1'),l2=document.getElementById('lbl2');
+    const ln=document.getElementById('line1');
+    if(n===1){
+      d1.className='dot active';d2.className='dot';
+      l1.className='lbl active';l2.className='lbl';
+      ln.className='line';
+    } else {
+      d1.className='dot done'; d1.innerHTML='&#10003;';
+      d2.className='dot active';
+      l1.className='lbl active';l2.className='lbl active';
+      ln.className='line active';
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+
+  function clearErr(){document.querySelectorAll('.fg.err').forEach(f=>{f.classList.remove('err');const h=f.querySelector('.hint');if(h)h.remove();})}
+
+  function markErr(id,msg){
+    const fg=document.getElementById(id);
+    if(!fg)return;
+    fg.classList.add('err');
+    if(!fg.querySelector('.hint')){const s=document.createElement('div');s.className='hint';s.textContent=msg;fg.appendChild(s);}
+  }
+
+  function validateStep1(){
+    clearErr();
+    let ok=true;
+    if(!document.querySelector('input[name="appType"]:checked')){alert('신청 유형을 선택해 주세요.');ok=false;return ok;}
+    const name=document.getElementById('name').value.trim();
+    if(!name){markErr('fg-name','성명을 입력해 주세요.');ok=false;}
+    const phone=document.getElementById('phone').value.trim();
+    if(!phone){markErr('fg-phone','연락처를 입력해 주세요.');ok=false;}
+    const email=document.getElementById('email').value.trim();
+    if(!email){markErr('fg-email','이메일을 입력해 주세요.');ok=false;}
+    return ok;
+  }
+
+  window.submitForm = async function(){
+    clearErr();
+    const consent=document.getElementById('privacyConsent').checked;
+    if(!consent){
+      document.getElementById('fg-consent').style.borderColor='#e53e3e';
+      alert('개인정보 수집 및 이용에 동의해 주세요.');
+      return;
+    }
+    document.getElementById('fg-consent').style.borderColor='';
+
+    const appType = (document.querySelector('input[name="appType"]:checked')||{}).value||'';
+    const isOffline = offlineTypes.includes(appType);
+    const isOnline = onlineTypes.includes(appType);
+
+    const data = {
+      course: (document.querySelector('input[name="course"]:checked')||{}).value||'',
+      appType: appType,
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      birthDate: document.getElementById('birthDate').value||'',
+      nationality: (document.querySelector('input[name="nationality"]:checked')||{}).value||'',
+      job: (document.querySelector('input[name="job"]:checked')||{}).value||'',
+      channel: Array.from(document.querySelectorAll('input[name="channel"]:checked')).map(c=>c.value),
+      region: isOffline ? document.getElementById('region').value : '',
+      scheduleDate: isOffline ? document.getElementById('scheduleDate').value : '',
+      scheduleTime: isOffline ? document.getElementById('scheduleTime').value : '',
+      inquiry: isOnline ? document.getElementById('inquiry').value.trim() : '',
+      introduction: document.getElementById('introduction').value.trim(),
+      privacyConsent: true,
+      _status: 0
+    };
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled=true;
+    btn.innerHTML='<span class="spinner"></span>제출 중...';
+
+    try{
+      const res = await fetch('/api/tesol_expert_applications',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(data)
+      });
+      if(!res.ok) throw new Error('서버 오류: '+res.status);
+      document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+      document.getElementById('stepDone').classList.add('active');
+      // Update progress to done
+      document.getElementById('dot1').className='dot done';document.getElementById('dot1').innerHTML='&#10003;';
+      document.getElementById('dot2').className='dot done';document.getElementById('dot2').innerHTML='&#10003;';
+      document.getElementById('line1').className='line active';
+      document.getElementById('lbl1').className='lbl active';document.getElementById('lbl2').className='lbl active';
+    }catch(e){
+      alert('제출에 실패했습니다. 다시 시도해 주세요.\n'+e.message);
+      btn.disabled=false;
+      btn.textContent='제출';
+    }
+  };
+})();
+</script>
+</body>
+</html>

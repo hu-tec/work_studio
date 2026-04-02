@@ -118,6 +118,16 @@ app.get("/api/form-modules-list", (req, res) => {
   res.json(modules);
 });
 
+// --- TESOL 신청 페이지 ---
+app.get("/tesol-apply", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "tesol-apply.html"));
+});
+
+// --- 레벨테스트 페이지 ---
+app.get("/level-test", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "level-test.html"));
+});
+
 // --- DB 관리 페이지 ---
 app.get("/db", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "db", "index.html"));

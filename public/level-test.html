@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Level Test</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f6f8;color:#333;line-height:1.6}
+/* Layout */
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px;min-height:100vh}
+/* Header */
+.hdr{background:#1a365d;color:#fff;padding:20px 28px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center}
+.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.hdr .sub{font-size:12px;opacity:.7;margin-top:2px}
+.timer{background:rgba(255,255,255,.15);padding:8px 16px;border-radius:8px;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;display:none}
+.timer.danger{background:rgba(220,38,38,.8);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+/* Card */
+.card{background:#fff;border-radius:0 0 12px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:32px 28px;margin-bottom:24px}
+.card.top{border-radius:12px}
+/* Section visibility */
+.sec{display:none}.sec.active{display:block}
+/* Form */
+label{display:block;font-size:13px;font-weight:600;color:#1a365d;margin-bottom:6px}
+input[type=text],input[type=date],select,textarea{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;outline:none;transition:border .2s}
+input:focus,select:focus,textarea:focus{border-color:#1a365d;box-shadow:0 0 0 3px rgba(26,54,93,.1)}
+select{appearance:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center #fff}
+.fg{margin-bottom:20px}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 32px;border:none;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s}
+.btn-primary{background:#1a365d;color:#fff}.btn-primary:hover{background:#2d4a7c}
+.btn-primary:disabled{background:#94a3b8;cursor:not-allowed}
+.btn-outline{background:#fff;color:#1a365d;border:1px solid #1a365d}.btn-outline:hover{background:#eef2ff}
+.btn-block{width:100%;padding:14px}
+/* Progress */
+.progress{display:flex;gap:0;margin-bottom:24px;border-radius:8px;overflow:hidden}
+.pstep{flex:1;text-align:center;padding:10px 0;font-size:12px;font-weight:600;background:#e2e8f0;color:#94a3b8;transition:all .3s}
+.pstep.done{background:#1a365d;color:#fff}
+.pstep.cur{background:#2d4a7c;color:#fff}
+/* Passage */
+.passage{background:#f8fafc;border-left:4px solid #1a365d;padding:20px 24px;border-radius:0 8px 8px 0;margin-bottom:24px;font-size:14px;line-height:1.8;color:#444}
+.passage-label{font-size:11px;font-weight:700;color:#1a365d;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+/* Questions */
+.qblock{margin-bottom:24px;padding:20px;background:#fafbfc;border-radius:10px;border:1px solid #eee;transition:border-color .2s}
+.qblock.answered{border-color:#1a365d}
+.qnum{font-size:12px;font-weight:700;color:#fff;background:#1a365d;display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;margin-right:8px}
+.qtext{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:flex-start}
+.qtext span{margin-top:2px}
+.opts{display:flex;flex-direction:column;gap:8px;padding-left:34px}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:all .15s;font-size:13px}
+.opt:hover{background:#eef2ff;border-color:#a0b4d0}
+.opt.sel{background:#eef2ff;border-color:#1a365d;font-weight:600}
+.opt input{display:none}
+.opt .mark{width:20px;height:20px;border:2px solid #ccc;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.opt.sel .mark{border-color:#1a365d;background:#1a365d}
+.opt.sel .mark::after{content:'';width:8px;height:8px;background:#fff;border-radius:50%}
+/* Q Nav */
+.qnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.qnav button{width:36px;height:36px;border:1px solid #ddd;background:#fff;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;color:#555}
+.qnav button:hover{background:#eef2ff}
+.qnav button.ans{background:#1a365d;color:#fff;border-color:#1a365d}
+.qnav button.cur{box-shadow:0 0 0 2px #1a365d;border-color:#1a365d}
+/* Topic */
+.topic-card{padding:20px;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:12px}
+.topic-card:hover{border-color:#a0b4d0;background:#fafbfc}
+.topic-card.sel{border-color:#1a365d;background:#eef2ff}
+.topic-card h4{font-size:14px;color:#1a365d;margin-bottom:4px}
+.topic-card p{font-size:13px;color:#555}
+/* Word count */
+.wc{text-align:right;font-size:12px;color:#888;margin-top:6px}
+.wc b{color:#1a365d}
+/* Result */
+.result{text-align:center;padding:40px 20px}
+.result .icon{font-size:48px;margin-bottom:16px}
+.result h2{font-size:22px;color:#1a365d;margin-bottom:8px}
+.result .sub{color:#666;font-size:14px;margin-bottom:28px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;max-width:500px;margin:0 auto 28px}
+.stat{background:#f8fafc;border-radius:10px;padding:20px;text-align:center}
+.stat .val{font-size:24px;font-weight:700;color:#1a365d}
+.stat .lbl{font-size:12px;color:#888;margin-top:4px}
+/* Responsive */
+@media(max-width:600px){
+  .wrap{padding:12px 8px}
+  .hdr{padding:16px;flex-direction:column;gap:12px;text-align:center}
+  .card{padding:20px 16px}
+  .passage{padding:16px}
+  .opts{padding-left:0}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- Header -->
+  <div class="hdr">
+    <div>
+      <h1>Level Test</h1>
+      <div class="sub">HutechC 레벨 테스트</div>
+    </div>
+    <div class="timer" id="timer">30:00</div>
+  </div>
+
+  <div class="card">
+    <!-- Progress -->
+    <div class="progress" id="progress">
+      <div class="pstep cur" data-step="0">1. 시험 정보</div>
+      <div class="pstep" data-step="1">2. 독해</div>
+      <div class="pstep" data-step="2">3. 에세이</div>
+    </div>
+
+    <!-- Section 1: Intro -->
+    <div class="sec active" id="sec-intro">
+      <h2 style="font-size:18px;color:#1a365d;margin-bottom:4px">시험 정보 입력</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:24px">시험 시작 전 아래 정보를 입력해 주세요.</p>
+
+      <div class="fg">
+        <label for="f-name">성명 <span style="color:#e53e3e">*</span></label>
+        <input type="text" id="f-name" placeholder="이름을 입력하세요" required/>
+      </div>
+      <div class="fg">
+        <label for="f-program">시험 과정</label>
+        <select id="f-program">
+          <option value="TESOL">TESOL</option>
+          <option value="AI번역">AI번역</option>
+          <option value="AI프롬프트">AI프롬프트</option>
+          <option value="AI윤리">AI윤리</option>
+          <option value="ITT정통번역">ITT정통번역</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label for="f-date">시험 일자</label>
+        <input type="date" id="f-date"/>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btn-start">시험 시작</button>
+    </div>
+
+    <!-- Section 2: Reading -->
+    <div class="sec" id="sec-reading">
+      <h2 style="font-size:18px;color:#1a365d;margin-bottom:4px">독해 (Reading Comprehension)</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:20px">지문을 읽고 각 문제에 답하세요. 총 10문제, 제한 시간 30분입니다.</p>
+
+      <div class="qnav" id="qnav"></div>
+      <div id="reading-body"></div>
+
+      <div style="text-align:right;margin-top:24px">
+        <button class="btn btn-primary" id="btn-next-sec" disabled>다음 섹션</button>
+      </div>
+    </div>
+
+    <!-- Section 3: Writing -->
+    <div class="sec" id="sec-writing">
+      <h2 style="font-size:18px;color:#1a365d;margin-bottom:4px">에세이 (Writing)</h2>
+      <p style="font-size:13px;color:#888;margin-bottom:20px">아래 주제 중 하나를 선택하여 에세이를 작성하세요. (200단어 이상 권장)</p>
+
+      <div id="topic-list"></div>
+
+      <div class="fg" style="margin-top:20px">
+        <label>에세이 작성</label>
+        <textarea id="essay" rows="12" placeholder="에세이를 작성하세요..." disabled></textarea>
+        <div class="wc">단어 수: <b id="word-count">0</b></div>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btn-submit" disabled>제출</button>
+    </div>
+
+    <!-- Section 4: Result -->
+    <div class="sec" id="sec-result">
+      <div class="result">
+        <div class="icon">&#10004;&#65039;</div>
+        <h2>시험이 제출되었습니다</h2>
+        <div class="sub">수고하셨습니다. 아래는 제출 요약입니다.</div>
+        <div class="stat-grid" id="stat-grid"></div>
+        <button class="btn btn-outline" onclick="location.reload()">처음으로</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ─── Exam Data ───────────────────────────────────
+  const passages = [
+    {
+      label: 'Passage 1',
+      text: 'Artificial intelligence has transformed the translation industry in recent years. Machine translation systems, powered by neural networks, can now process documents at unprecedented speeds. However, human translators remain essential for nuanced content that requires cultural understanding and domain expertise. The role of translators is evolving from direct translation to post-editing and quality assurance of machine-generated output. This shift demands new skills, including proficiency with CAT tools and an understanding of how AI models process language.'
+    },
+    {
+      label: 'Passage 2',
+      text: 'Prompt engineering has emerged as a critical skill in the age of generative AI. The ability to craft effective prompts determines the quality of AI-generated output. Key techniques include providing clear context, specifying the desired format, and using examples to guide the model. Advanced practitioners employ chain-of-thought prompting and few-shot learning to handle complex tasks. As AI models become more capable, the art of prompt engineering continues to evolve, requiring practitioners to stay current with the latest developments.'
+    }
+  ];
+
+  const questions = [
+    // Passage 1: Questions 1-5
+    {
+      q: 'According to the passage, what has transformed the translation industry?',
+      opts: ['The internet','Artificial intelligence','Social media','Globalization'],
+      ans: 'B'
+    },
+    {
+      q: 'What powers modern machine translation systems?',
+      opts: ['Rule-based algorithms','Statistical models','Neural networks','Human oversight'],
+      ans: 'C'
+    },
+    {
+      q: 'Why do human translators remain essential?',
+      opts: ['Machines are too expensive','Nuanced content requires cultural understanding','Machines cannot translate at all','Legal regulations require it'],
+      ans: 'B'
+    },
+    {
+      q: 'What is the evolving role of translators according to the passage?',
+      opts: ['Becoming AI developers','Shifting to post-editing and quality assurance','Focusing solely on literary translation','Replacing machine translation'],
+      ans: 'B'
+    },
+    {
+      q: 'What does the word "unprecedented" most nearly mean in this context?',
+      opts: ['Slow','Never seen before','Traditional','Predictable'],
+      ans: 'B'
+    },
+    // Passage 2: Questions 6-10
+    {
+      q: 'What is described as a critical skill in the age of generative AI?',
+      opts: ['Data science','Prompt engineering','Web development','Graphic design'],
+      ans: 'B'
+    },
+    {
+      q: 'Which of the following is NOT mentioned as a key prompting technique?',
+      opts: ['Providing clear context','Specifying desired format','Using random inputs','Using examples to guide the model'],
+      ans: 'C'
+    },
+    {
+      q: 'What does "chain-of-thought prompting" help with?',
+      opts: ['Simple repetitive tasks','Complex tasks','Image generation only','Database management'],
+      ans: 'B'
+    },
+    {
+      q: 'According to the passage, what determines the quality of AI-generated output?',
+      opts: ['The size of the model','The ability to craft effective prompts','The speed of the hardware','The programming language used'],
+      ans: 'B'
+    },
+    {
+      q: 'What is implied about the future of prompt engineering?',
+      opts: ['It will become obsolete','It will remain static','It will continue to evolve','It is only a temporary trend'],
+      ans: 'C'
+    }
+  ];
+
+  const topics = [
+    { id: 1, title: '주제 1', desc: 'AI 번역 기술이 전문 번역가의 역할에 미치는 영향을 논하시오.' },
+    { id: 2, title: '주제 2', desc: '효과적인 프롬프트 작성의 핵심 원칙을 설명하시오.' }
+  ];
+
+  // ─── State ───────────────────────────────────────
+  let currentSection = 0;
+  let answers = {};
+  let selectedTopic = null;
+  let startTime = null;
+  let timerInterval = null;
+  let timeLeft = 30 * 60; // 30 min in seconds
+
+  // ─── DOM refs ────────────────────────────────────
+  const $=id=>document.getElementById(id);
+  const secIds = ['sec-intro','sec-reading','sec-writing','sec-result'];
+
+  // ─── Init ────────────────────────────────────────
+  $('f-date').value = new Date().toISOString().slice(0,10);
+
+  // ─── Section switching ───────────────────────────
+  function showSection(idx){
+    currentSection = idx;
+    secIds.forEach((s,i)=>{
+      $(s).classList.toggle('active', i===idx);
+    });
+    document.querySelectorAll('.pstep').forEach((el,i)=>{
+      el.classList.remove('done','cur');
+      if(i<idx) el.classList.add('done');
+      if(i===idx) el.classList.add('cur');
+    });
+    if(idx===1) $('timer').style.display='block';
+    if(idx>=2){ clearInterval(timerInterval); $('timer').style.display='none'; }
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // ─── Timer ───────────────────────────────────────
+  function startTimer(){
+    timerInterval = setInterval(()=>{
+      timeLeft--;
+      if(timeLeft<=0){ clearInterval(timerInterval); timeLeft=0; autoSubmitReading(); }
+      const m=Math.floor(timeLeft/60), s=timeLeft%60;
+      $('timer').textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      $('timer').classList.toggle('danger', timeLeft<=120);
+    },1000);
+  }
+
+  function autoSubmitReading(){
+    showSection(2);
+  }
+
+  // ─── Build Reading Section ───────────────────────
+  function buildReading(){
+    // Q nav
+    let navHtml='';
+    for(let i=1;i<=10;i++) navHtml+=`<button data-q="${i}" id="qn-${i}">${i}</button>`;
+    $('qnav').innerHTML=navHtml;
+
+    // Body
+    let html='';
+    passages.forEach((p,pi)=>{
+      html+=`<div class="passage-label">${p.label}</div>`;
+      html+=`<div class="passage">${p.text}</div>`;
+      const start=pi*5, end=start+5;
+      for(let i=start;i<end;i++){
+        const q=questions[i], num=i+1;
+        const labels=['A','B','C','D'];
+        html+=`<div class="qblock" id="qb-${num}">`;
+        html+=`<div class="qtext"><span class="qnum">${num}</span><span>${q.q}</span></div>`;
+        html+=`<div class="opts">`;
+        q.opts.forEach((o,oi)=>{
+          html+=`<div class="opt" data-q="${num}" data-v="${labels[oi]}">`;
+          html+=`<div class="mark"></div>`;
+          html+=`<span><b>${labels[oi]}.</b> ${o}</span>`;
+          html+=`</div>`;
+        });
+        html+=`</div></div>`;
+      }
+    });
+    $('reading-body').innerHTML=html;
+
+    // Option clicks
+    document.querySelectorAll('.opt').forEach(el=>{
+      el.addEventListener('click',function(){
+        const qn=this.dataset.q, v=this.dataset.v;
+        answers[qn]=v;
+        document.querySelectorAll(`.opt[data-q="${qn}"]`).forEach(o=>o.classList.remove('sel'));
+        this.classList.add('sel');
+        document.getElementById('qb-'+qn).classList.add('answered');
+        // update nav
+        const nb=document.getElementById('qn-'+qn);
+        if(nb) nb.classList.add('ans');
+        checkAllAnswered();
+      });
+    });
+
+    // Nav clicks — scroll to question
+    $('qnav').addEventListener('click',function(e){
+      const btn=e.target.closest('button');
+      if(!btn) return;
+      const qn=btn.dataset.q;
+      const block=document.getElementById('qb-'+qn);
+      if(block) block.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+  }
+
+  function checkAllAnswered(){
+    const all=Object.keys(answers).length>=10;
+    $('btn-next-sec').disabled=!all;
+  }
+
+  // ─── Build Writing Section ───────────────────────
+  function buildWriting(){
+    let html='';
+    topics.forEach(t=>{
+      html+=`<div class="topic-card" data-tid="${t.id}">`;
+      html+=`<h4>${t.title}</h4><p>${t.desc}</p></div>`;
+    });
+    $('topic-list').innerHTML=html;
+
+    document.querySelectorAll('.topic-card').forEach(el=>{
+      el.addEventListener('click',function(){
+        selectedTopic=parseInt(this.dataset.tid);
+        document.querySelectorAll('.topic-card').forEach(c=>c.classList.remove('sel'));
+        this.classList.add('sel');
+        $('essay').disabled=false;
+        updateSubmitBtn();
+      });
+    });
+
+    $('essay').addEventListener('input',function(){
+      const wc=this.value.trim()?this.value.trim().split(/\s+/).length:0;
+      $('word-count').textContent=wc;
+      updateSubmitBtn();
+    });
+  }
+
+  function updateSubmitBtn(){
+    const hasEssay=$('essay').value.trim().length>0;
+    $('btn-submit').disabled=!(selectedTopic && hasEssay);
+  }
+
+  // ─── Submit ──────────────────────────────────────
+  async function submit(){
+    $('btn-submit').disabled=true;
+    $('btn-submit').textContent='제출 중...';
+
+    const payload={
+      name: $('f-name').value.trim(),
+      program: $('f-program').value,
+      date: $('f-date').value,
+      answers: answers,
+      selectedTopic: selectedTopic,
+      essay: $('essay').value,
+      startTime: startTime,
+      submittedAt: new Date().toISOString(),
+      _status: 0
+    };
+
+    try{
+      const res=await fetch('/api/level_test_submissions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      if(!res.ok) throw new Error('Server error');
+    }catch(e){
+      console.error('Submit failed:',e);
+    }
+
+    showResult(payload);
+  }
+
+  function showResult(p){
+    showSection(3);
+    const wc=p.essay.trim()?p.essay.trim().split(/\s+/).length:0;
+    const answered=Object.keys(p.answers).length;
+    $('stat-grid').innerHTML=`
+      <div class="stat"><div class="val">${escHtml(p.name)}</div><div class="lbl">응시자</div></div>
+      <div class="stat"><div class="val">${escHtml(p.program)}</div><div class="lbl">시험 과정</div></div>
+      <div class="stat"><div class="val">${answered}/10</div><div class="lbl">답변 문항</div></div>
+      <div class="stat"><div class="val">${wc}</div><div class="lbl">에세이 단어 수</div></div>
+    `;
+  }
+
+  function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  // ─── Event Listeners ─────────────────────────────
+  $('btn-start').addEventListener('click',function(){
+    const name=$('f-name').value.trim();
+    if(!name){$('f-name').focus();$('f-name').style.borderColor='#e53e3e';return;}
+    startTime=Date.now();
+    buildReading();
+    buildWriting();
+    showSection(1);
+    startTimer();
+  });
+
+  $('btn-next-sec').addEventListener('click',function(){
+    showSection(2);
+  });
+
+  $('btn-submit').addEventListener('click',submit);
+
+})();
+</script>
+</body>
+</html>

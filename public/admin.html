@@ -345,8 +345,14 @@ const total=all.length;
 const newCnt=all.filter(r=>iT(r.created_at)).length;
 const stCnts=[0,0,0];all.forEach(r=>{try{const s=JSON.parse(r.data)._status||0;stCnts[s]++}catch{}});
 
+// Content type counts
+const ftCount=ftTemplates.length;
+const qCount=TC["questions"]||0;
+const cCount=TC["curriculum"]||0;
+const tbCount=TC["textbooks"]||0;
+
 let h=`<div class="qd-bar">
-<div class="qd-stat"><span class="qd-num">${total}</span><span class="qd-lbl">전체</span></div>
+<div class="qd-stat"><span class="qd-num">${total}</span><span class="qd-lbl">접수 전체</span></div>
 <div class="qd-sep"></div>
 ${newCnt?`<div class="qd-stat"><span style="font-size:14px;font-weight:900;color:#c53030">+${newCnt}</span><span class="qd-lbl">오늘</span></div><div class="qd-sep"></div>`:""}
 <div class="qd-stat"><span style="font-size:13px;font-weight:800;color:#f59e0b">${stCnts[0]}</span><span class="qd-lbl">신규</span></div>
@@ -356,6 +362,30 @@ ${newCnt?`<div class="qd-stat"><span style="font-size:14px;font-weight:900;color
 <input type="text" placeholder="검색…" oninput="fQD(this.value)" style="padding:3px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px;width:140px"/>
 <select onchange="fQS(this.value)" style="padding:3px 6px;border:1px solid #ddd;border-radius:4px;font-size:10px">
 <option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
+</div>`;
+
+// ── 콘텐츠 4카드 요약 ──
+h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px;cursor:pointer" onclick="sv('f')">
+<div style="font-size:9px;color:#888;font-weight:600">신청서 템플릿</div>
+<div style="font-size:20px;font-weight:900;color:#1a365d">${ftCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">개</span></div>
+<div style="font-size:9px;color:#aaa;margin-top:2px">${WEBSITES.length}개 홈페이지</div>
+</div>
+<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px">
+<div style="font-size:9px;color:#888;font-weight:600">문제은행</div>
+<div style="font-size:20px;font-weight:900;color:#7c3aed">${qCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">문제</span></div>
+<div style="font-size:9px;color:#aaa;margin-top:2px">5종목 × 급수</div>
+</div>
+<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px">
+<div style="font-size:9px;color:#888;font-weight:600">커리큘럼</div>
+<div style="font-size:20px;font-weight:900;color:#059669">${cCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">과정</span></div>
+<div style="font-size:9px;color:#aaa;margin-top:2px">주차별 관리</div>
+</div>
+<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px">
+<div style="font-size:9px;color:#888;font-weight:600">교재</div>
+<div style="font-size:20px;font-weight:900;color:#0891b2">${tbCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">건</span></div>
+<div style="font-size:9px;color:#aaa;margin-top:2px">단원별 관리</div>
+</div>
 </div>`;
 
 // Show either filtered site or all sites
