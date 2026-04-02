@@ -20,6 +20,7 @@ const TABLES = [
   "applications",              // 통합 신청 (사용자/전문가/B2B)
   "cbt_results",               // AITe CBT 시험 결과
   "members",                   // DB 페이지 - 회원관리
+  "form_templates",            // 신청서 템플릿 (홈페이지별 폼 구성)
 ];
 
 for (const table of TABLES) {

@@ -143,6 +143,38 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 .qd-num{font-size:16px;font-weight:900;color:#1a365d}
 .qd-lbl{font-size:9px;color:#888;font-weight:600}
 .qd-sep{width:1px;height:24px;background:#e2e8f0}
+/* Form Editor */
+.fe-wrap{display:flex;gap:12px;height:calc(100vh - 160px)}
+.fe-sidebar{width:240px;background:#fff;border-radius:6px;border:1px solid #eee;overflow-y:auto;flex-shrink:0}
+.fe-site{padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.fe-site:hover{background:#f8fafc}
+.fe-site.a{background:#eef2ff;font-weight:700;color:#1a365d;border-left:3px solid #1a365d}
+.fe-site .fe-url{font-size:9px;color:#aaa;font-weight:400}
+.fe-form-item{padding:6px 12px 6px 24px;cursor:pointer;font-size:11px;color:#555;border-bottom:1px solid #f8f8f8}
+.fe-form-item:hover{background:#f8fafc;color:#1a365d}
+.fe-form-item.a{background:#e8f4ff;font-weight:700;color:#1a365d}
+.fe-main{flex:1;overflow-y:auto}
+.fe-editor{background:#fff;border-radius:6px;border:1px solid #eee;padding:16px}
+.fe-editor h3{font-size:14px;font-weight:700;color:#1a365d;margin-bottom:12px}
+.fe-step{margin-bottom:16px;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden}
+.fe-step-hd{background:#f8fafc;padding:8px 12px;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0}
+.fe-step-hd button{font-size:10px;padding:2px 8px;border:1px solid #ddd;border-radius:3px;background:#fff;cursor:pointer}
+.fe-field{display:grid;grid-template-columns:30px 120px 1fr 80px 60px 40px 60px;gap:6px;align-items:center;padding:5px 10px;border-bottom:1px solid #f5f5f5;font-size:11px}
+.fe-field:hover{background:#fafbfc}
+.fe-field input,.fe-field select{padding:3px 6px;border:1px solid #ddd;border-radius:3px;font-size:10px;width:100%}
+.fe-field .fe-grip{cursor:grab;color:#ccc;text-align:center}
+.fe-field .fe-del{cursor:pointer;color:#ccc;text-align:center;font-size:14px}
+.fe-field .fe-del:hover{color:#c00}
+.fe-add-field{padding:6px 12px;text-align:center}
+.fe-add-field button{font-size:10px;padding:3px 12px;border:1px dashed #ccc;border-radius:3px;background:#fafbfc;cursor:pointer;color:#888}
+.fe-add-field button:hover{background:#eef2ff;color:#1a365d;border-color:#1a365d}
+.fe-toolbar{display:flex;gap:6px;margin-bottom:12px}
+.fe-toolbar button{padding:5px 14px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;border:none}
+.fe-empty{text-align:center;padding:40px;color:#999;font-size:12px}
+.fe-preview{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:16px;margin-top:12px;max-width:500px}
+.fe-preview label{display:block;font-size:10px;font-weight:600;color:#555;margin-bottom:2px;margin-top:8px}
+.fe-preview input,.fe-preview select,.fe-preview textarea{width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px}
+.fe-preview .fe-req{color:#c00;margin-left:2px}
 </style>
 </head>
 <body>
@@ -153,7 +185,7 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 <div class="app" id="app">
 <header><h1 onclick="goHome()">Work Studio</h1><div class="hr"><span class="ui" id="ui"></span><button onclick="doLO()">로그아웃</button></div></header>
 <div class="tb"><div class="bc" id="bc">Work Studio</div>
-<div class="vt"><button id="bD" class="a" onclick="sv('d')">대시보드</button><button id="bL" onclick="sv('l')">리스트</button></div></div>
+<div class="vt"><button id="bD" class="a" onclick="sv('d')">대시보드</button><button id="bL" onclick="sv('l')">리스트</button><button id="bF" onclick="sv('f')">신청서</button></div></div>
 <div class="nav-bar" id="navBar"></div>
 <div class="sub-nav" id="subNav"></div>
 <div class="mn"><div class="ca" id="ca"></div></div>
@@ -226,7 +258,7 @@ let sortKey=null,sortDir="desc",curPage=1;
 const PER_PAGE=15;
 
 // ═══ Init ═══
-async function init(){T=await f("/api/tables");await lA();rNav();rv()}
+async function init(){T=await f("/api/tables");await lA();await loadFormTemplates();rNav();rv()}
 async function lA(){for(const t of T){const r=await f("/api/"+t);TD[t]=r;TC[t]=r.length}}
 function f(u){return fetch(u).then(r=>r.json())}
 
@@ -242,8 +274,8 @@ function eh(s){const d=document.createElement("div");d.textContent=s;return d.in
 function fv(v){if(v==null)return"";if(Array.isArray(v))return v.join(", ");if(typeof v==="object")return Object.entries(v).map(([k,v])=>k+":"+v).join(" / ");const s=String(v);return s.length>60?s.slice(0,60)+"…":s}
 
 // ═══ Navigation ═══
-function sv(v){cV=v;bD.className=v==="d"?"a":"";bL.className=v==="l"?"a":"";rv()}
-function rv(){curPage=1;if(!cT){cV==="l"?rAL():rD()}else rL()}
+function sv(v){cV=v;bD.className=v==="d"?"a":"";bL.className=v==="l"?"a":"";bF.className=v==="f"?"a":"";rv()}
+function rv(){curPage=1;if(cV==="f"){rForms();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
 
 function rNav(){
 const allCnt=T.reduce((s,t)=>s+(TC[t]||0),0);
@@ -555,6 +587,237 @@ if(!targetTable&&afSite){const s=SITES.find(x=>x.id===afSite);if(s&&s.tables.len
 if(!targetTable){alert("저장할 테이블을 선택하세요");return}
 await fetch(`/api/${targetTable}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
 document.getElementById("addF").style.display="none";await lA();rNav();rv()}
+
+// ═══ Websites — 구체적 홈페이지 목록 ═══
+const WEBSITES=[
+{id:"tesol",name:"TESOL",url:"timestesol.com",cat:"edu"},
+{id:"ai_trans",name:"AI 번역",url:"aitranslation.co.kr",cat:"trans"},
+{id:"reading",name:"통독문서",url:"reading.hutechc.com",cat:"reading"},
+{id:"ai_ethics",name:"AI 윤리",url:"aiethics.hutechc.com",cat:"ethics"},
+{id:"exhibit",name:"전시/행사",url:"exhibit.hutechc.com",cat:"exhibit"},
+{id:"cbt",name:"시험사이트",url:"cbt.hutechc.com",cat:"exam"},
+{id:"matching",name:"전문가매칭",url:"matching.hutechc.com",cat:"match"},
+{id:"level_test",name:"레벨테스트",url:"leveltest.hutechc.com",cat:"edu"},
+];
+
+// ═══ Default Form Templates (TESOL 기반) ═══
+const DEFAULT_TEMPLATES=[
+{_site:"tesol",_formId:"orientation",name:"수업신청",steps:[
+{title:"기본 인적사항",fields:[
+{key:"name",label:"성명",type:"text",required:true},
+{key:"phone",label:"연락처",type:"tel",required:true},
+{key:"email",label:"이메일",type:"email",required:true},
+{key:"birthDate",label:"생년월일",type:"date",required:false},
+{key:"nationality",label:"국적구분",type:"select",required:true,options:["내국인","외국인","재외국인"]},
+{key:"course",label:"지원 구분",type:"select",required:true,options:["TESOL","프롬프트","AI 번역","AI윤리","ITT 번역교육"]},
+{key:"appType",label:"신청 유형",type:"select",required:true,options:["수업신청","레벨테스트","설명회신청","테스트 TIP","1:1문의"]},
+]},
+{title:"상세 정보",fields:[
+{key:"job",label:"직업",type:"select",required:false,options:["학생","대학생","직장인","교사","기타"]},
+{key:"channel",label:"알게 된 경로",type:"multiselect",required:false,options:["네이버 검색","인스타그램","유튜브","지인 추천","오프라인 안내","기타"]},
+{key:"region",label:"지역",type:"select",required:false,options:["서울 강남","부산 서면","대구","광주","경기도","충남","강원도","제주도"]},
+{key:"scheduleDate",label:"희망 일자",type:"date",required:false},
+{key:"intro",label:"자기소개",type:"textarea",required:false},
+{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
+]},
+]},
+{_site:"tesol",_formId:"level-test",name:"레벨테스트",steps:[
+{title:"기본 정보",fields:[
+{key:"name",label:"성명",type:"text",required:true},
+{key:"phone",label:"연락처",type:"tel",required:true},
+{key:"email",label:"이메일",type:"email",required:true},
+{key:"course",label:"과정",type:"select",required:true,options:["TESOL","프롬프트","AI 번역","AI윤리"]},
+]},
+{title:"테스트 정보",fields:[
+{key:"region",label:"지역",type:"select",required:false,options:["서울 강남","부산 서면","대구","광주","경기도"]},
+{key:"scheduleDate",label:"희망 일자",type:"date",required:false},
+{key:"scheduleTime",label:"희망 시간",type:"select",required:false,options:["09:00","09:30","10:00","10:30","11:00","14:00","14:30","15:00","15:30","16:00"]},
+{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
+]},
+]},
+{_site:"ai_trans",_formId:"quote",name:"견적 의뢰",steps:[
+{title:"기본 정보",fields:[
+{key:"name",label:"성명",type:"text",required:true},
+{key:"phone",label:"연락처",type:"tel",required:true},
+{key:"email",label:"이메일",type:"email",required:true},
+{key:"company",label:"소속/기관",type:"text",required:false},
+]},
+{title:"번역 상세",fields:[
+{key:"sourceLang",label:"출발어",type:"select",required:true,options:["한국어","영어","일본어","중국어","기타"]},
+{key:"targetLang",label:"도착어",type:"select",required:true,options:["한국어","영어","일본어","중국어","기타"]},
+{key:"docType",label:"문서 유형",type:"select",required:true,options:["일반","법률","의료","기술","문학","특허"]},
+{key:"wordCount",label:"분량(단어수)",type:"text",required:false},
+{key:"deadline",label:"납기일",type:"date",required:false},
+{key:"note",label:"요청사항",type:"textarea",required:false},
+{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
+]},
+]},
+{_site:"ai_trans",_formId:"translator",name:"번역사 신청",steps:[
+{title:"기본 정보",fields:[
+{key:"name",label:"성명",type:"text",required:true},
+{key:"phone",label:"연락처",type:"tel",required:true},
+{key:"email",label:"이메일",type:"email",required:true},
+]},
+{title:"전문가 정보",fields:[
+{key:"specialty",label:"전문 분야",type:"text",required:true},
+{key:"careerYears",label:"경력(년)",type:"number",required:true},
+{key:"experience",label:"경력 상세",type:"textarea",required:true},
+{key:"langPair",label:"언어쌍",type:"text",required:true,placeholder:"예: 한→영, 영→한"},
+{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
+]},
+]},
+{_site:"ai_ethics",_formId:"expert",name:"전문가 모집",steps:[
+{title:"기본 정보",fields:[
+{key:"name",label:"성명",type:"text",required:true},
+{key:"phone",label:"연락처",type:"tel",required:true},
+{key:"email",label:"이메일",type:"email",required:true},
+]},
+{title:"전문가 정보",fields:[
+{key:"specialty",label:"전문 분야",type:"select",required:true,options:["AI윤리","생명윤리","환경윤리","기업윤리","데이터윤리"]},
+{key:"experience",label:"경력(년)",type:"number",required:true},
+{key:"cert",label:"보유 자격",type:"text",required:false},
+{key:"motivation",label:"지원 동기",type:"textarea",required:false},
+{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
+]},
+]},
+];
+
+// ═══ Form Template State ═══
+let ftSite=null,ftFormId=null,ftData=null,ftTemplates=[],ftPreview=false;
+
+async function loadFormTemplates(){
+const rows=await f("/api/form_templates");
+ftTemplates=rows.map(r=>({id:r.id,...JSON.parse(r.data)}));
+// Seed defaults if empty
+if(!ftTemplates.length){
+for(const tpl of DEFAULT_TEMPLATES){
+await fetch("/api/form_templates",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(tpl)});
+}
+const rows2=await f("/api/form_templates");
+ftTemplates=rows2.map(r=>({id:r.id,...JSON.parse(r.data)}));
+}}
+
+// ═══ Form Editor View ═══
+function rForms(){
+uB();bc.innerHTML="Work Studio &rsaquo; <b>신청서 관리</b>";
+navBar.innerHTML=`<span class="nav-lbl">홈페이지</span><span class="nav-sep"></span>`;
+subNav.classList.remove("v");
+// Website chips in nav
+let nh=navBar.innerHTML;
+nh+=`<span class="chip ${!ftSite?"a":""}" onclick="ftSelSite(null)">전체</span>`;
+for(const w of WEBSITES)nh+=`<span class="chip ${ftSite===w.id?"a":""}" onclick="ftSelSite('${w.id}')">${w.name}</span>`;
+navBar.innerHTML=nh;
+
+if(!ftTemplates.length){loadFormTemplates().then(()=>rForms());return}
+
+// Sidebar: site list + forms
+const sites=ftSite?WEBSITES.filter(w=>w.id===ftSite):WEBSITES;
+let sb=`<div style="padding:8px 12px;font-size:10px;font-weight:700;color:#1a365d;background:#fafbfc;border-bottom:1px solid #eee">신청서 목록</div>`;
+for(const w of sites){
+const forms=ftTemplates.filter(t=>t._site===w.id);
+sb+=`<div class="fe-site ${ftSite===w.id&&!ftFormId?"a":""}" onclick="ftSelSite('${w.id}')"><span>${w.name}</span><span class="fe-url">${forms.length}개</span></div>`;
+if(ftSite===w.id){for(const fm of forms){
+sb+=`<div class="fe-form-item ${ftFormId===fm._formId?"a":""}" onclick="ftSelForm('${fm._formId}')">${fm.name}</div>`}
+sb+=`<div class="fe-form-item" onclick="ftAddForm('${w.id}')" style="color:#1a365d;font-style:italic">+ 신청서 추가</div>`}}
+
+// Main area
+let main="";
+if(ftFormId&&ftData){main=renderFormEditor()}
+else if(ftSite){
+const w=WEBSITES.find(x=>x.id===ftSite);
+const forms=ftTemplates.filter(t=>t._site===ftSite);
+main=`<div class="fe-editor"><h3>${w?w.name:""} 신청서</h3>
+<p style="font-size:11px;color:#888;margin-bottom:12px">${w?w.url:""} — ${forms.length}개 신청서</p>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${forms.map(fm=>`
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:12px;cursor:pointer" onclick="ftSelForm('${fm._formId}')">
+<div style="font-size:12px;font-weight:700;color:#1a365d;margin-bottom:4px">${fm.name}</div>
+<div style="font-size:10px;color:#888">${fm.steps?fm.steps.length:0}단계 · ${fm.steps?fm.steps.reduce((s,st)=>s+st.fields.length,0):0}개 필드</div>
+</div>`).join("")}</div></div>`}
+else{main=`<div class="fe-empty">좌측에서 홈페이지를 선택하세요</div>`}
+
+ca.innerHTML=`<div class="fe-wrap"><div class="fe-sidebar">${sb}</div><div class="fe-main">${main}</div></div>`}
+
+function ftSelSite(id){ftSite=id;ftFormId=null;ftData=null;ftPreview=false;rForms()}
+function ftSelForm(fid){ftFormId=fid;ftData=JSON.parse(JSON.stringify(ftTemplates.find(t=>t._site===ftSite&&t._formId===fid)));ftPreview=false;rForms()}
+
+function ftAddForm(siteId){
+const name=prompt("신청서 이름:");if(!name)return;
+const fid=name.toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_가-힣]/g,"");
+const tpl={_site:siteId,_formId:fid,name,steps:[{title:"기본 정보",fields:[
+{key:"name",label:"성명",type:"text",required:true},
+{key:"phone",label:"연락처",type:"tel",required:true},
+{key:"email",label:"이메일",type:"email",required:true},
+]}]};
+fetch("/api/form_templates",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(tpl)})
+.then(()=>loadFormTemplates().then(()=>{ftFormId=fid;ftSelForm(fid);rForms()}))}
+
+function renderFormEditor(){
+if(!ftData)return"";
+const w=WEBSITES.find(x=>x.id===ftSite);
+let h=`<div class="fe-editor">`;
+h+=`<div class="fe-toolbar">
+<button style="background:#1a365d;color:#fff" onclick="ftSave()">저장</button>
+<button style="background:#fff;border:1px solid #ddd" onclick="ftPreview=!ftPreview;rForms()">${ftPreview?"편집으로":"미리보기"}</button>
+<button style="background:#fff;border:1px solid #ddd" onclick="ftAddStep()">+단계 추가</button>
+<button style="background:#fff;border:1px solid #c00;color:#c00" onclick="ftDeleteForm()">삭제</button>
+<span style="margin-left:auto;font-size:10px;color:#888">${w?w.name:""} › ${ftData.name}</span></div>`;
+h+=`<div style="margin-bottom:8px"><label style="font-size:10px;font-weight:600;color:#555">신청서 이름</label>
+<input value="${eh(ftData.name)}" onchange="ftData.name=this.value" style="padding:4px 8px;border:1px solid #ddd;border-radius:3px;font-size:12px;font-weight:700;width:300px"/></div>`;
+
+if(ftPreview){h+=renderFormPreview();h+=`</div>`;return h}
+
+// Steps
+(ftData.steps||[]).forEach((step,si)=>{
+h+=`<div class="fe-step"><div class="fe-step-hd">
+<span><input value="${eh(step.title)}" onchange="ftData.steps[${si}].title=this.value" style="border:none;font-size:12px;font-weight:700;background:transparent;width:200px"/> (${step.fields.length}필드)</span>
+<span><button onclick="ftMoveStep(${si},-1)">↑</button><button onclick="ftMoveStep(${si},1)">↓</button><button onclick="ftDelStep(${si})" style="color:#c00">삭제</button></span></div>`;
+// Field header
+h+=`<div class="fe-field" style="background:#f0f2f5;font-weight:600;font-size:9px;color:#888"><span></span><span>Key</span><span>라벨</span><span>타입</span><span>필수</span><span></span><span></span></div>`;
+// Fields
+step.fields.forEach((fld,fi)=>{
+h+=`<div class="fe-field">
+<span class="fe-grip">⠿</span>
+<input value="${eh(fld.key)}" onchange="ftData.steps[${si}].fields[${fi}].key=this.value"/>
+<input value="${eh(fld.label)}" onchange="ftData.steps[${si}].fields[${fi}].label=this.value"/>
+<select onchange="ftData.steps[${si}].fields[${fi}].type=this.value">
+${["text","tel","email","date","number","select","multiselect","textarea","checkbox","file"].map(t=>`<option value="${t}" ${fld.type===t?"selected":""}>${t}</option>`).join("")}</select>
+<label style="text-align:center"><input type="checkbox" ${fld.required?"checked":""} onchange="ftData.steps[${si}].fields[${fi}].required=this.checked"/></label>
+<span class="fe-del" onclick="ftData.steps[${si}].fields.splice(${fi},1);rForms()" title="삭제">×</span>
+<span>${(fld.type==="select"||fld.type==="multiselect")?`<input value="${eh((fld.options||[]).join(","))}" onchange="ftData.steps[${si}].fields[${fi}].options=this.value.split(',')" placeholder="옵션(,구분)" style="font-size:9px"/>`:""}</span>
+</div>`});
+h+=`<div class="fe-add-field"><button onclick="ftAddField(${si})">+ 필드 추가</button></div></div>`});
+h+=`</div>`;return h}
+
+function renderFormPreview(){
+let h=`<div class="fe-preview"><div style="font-size:13px;font-weight:700;color:#1a365d;margin-bottom:12px">${eh(ftData.name)} — 미리보기</div>`;
+(ftData.steps||[]).forEach((step,si)=>{
+h+=`<div style="font-size:11px;font-weight:700;color:#555;margin-top:12px;padding-bottom:4px;border-bottom:1px solid #eee">Step ${si+1}: ${eh(step.title)}</div>`;
+step.fields.forEach(fld=>{
+h+=`<label>${eh(fld.label)}${fld.required?'<span class="fe-req">*</span>':""}</label>`;
+if(fld.type==="textarea")h+=`<textarea rows="2" disabled></textarea>`;
+else if(fld.type==="select")h+=`<select disabled>${(fld.options||[]).map(o=>`<option>${o}</option>`).join("")}</select>`;
+else if(fld.type==="multiselect")h+=`<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:2px">${(fld.options||[]).map(o=>`<span style="font-size:10px;padding:2px 8px;border:1px solid #ddd;border-radius:12px;background:#f8fafc">${o}</span>`).join("")}</div>`;
+else if(fld.type==="checkbox")h+=`<label style="font-size:11px;font-weight:400;display:flex;align-items:center;gap:4px"><input type="checkbox" disabled/> ${eh(fld.label)}</label>`;
+else h+=`<input type="${fld.type}" disabled placeholder="${eh(fld.label)}"/>`})});
+h+=`</div>`;return h}
+
+function ftAddField(si){ftData.steps[si].fields.push({key:"new_field",label:"새 필드",type:"text",required:false});rForms()}
+function ftAddStep(){ftData.steps.push({title:"새 단계",fields:[]});rForms()}
+function ftDelStep(si){if(!confirm("이 단계를 삭제하시겠습니까?"))return;ftData.steps.splice(si,1);rForms()}
+function ftMoveStep(si,dir){const ni=si+dir;if(ni<0||ni>=ftData.steps.length)return;[ftData.steps[si],ftData.steps[ni]]=[ftData.steps[ni],ftData.steps[si]];rForms()}
+
+async function ftSave(){
+const existing=ftTemplates.find(t=>t._site===ftSite&&t._formId===ftFormId);
+if(!existing)return;
+const{id,...data}=ftData;
+await fetch(`/api/form_templates/${existing.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+await loadFormTemplates();alert("저장 완료");rForms()}
+
+async function ftDeleteForm(){if(!confirm("이 신청서를 삭제하시겠습니까?"))return;
+const existing=ftTemplates.find(t=>t._site===ftSite&&t._formId===ftFormId);
+if(!existing)return;
+await fetch(`/api/form_templates/${existing.id}`,{method:"DELETE"});
+ftFormId=null;ftData=null;await loadFormTemplates();rForms()}
 
 if(sessionStorage.ws)sA();
 </script>
