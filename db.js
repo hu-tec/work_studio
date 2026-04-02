@@ -22,6 +22,10 @@ const TABLES = [
   "members",                   // DB 페이지 - 회원관리
   "form_templates",            // 신청서 템플릿 (홈페이지별 폼 구성)
   "form_modules",              // 신청서 모듈 (공통/세부 재사용 필드그룹)
+  "tesol_expert_applications", // TESOL 전문가 지원서 (ai_studio에서 이관)
+  "questions",                 // 문제은행
+  "curriculum",                // 커리큘럼
+  "textbooks",                 // 교재
 ];
 
 for (const table of TABLES) {
