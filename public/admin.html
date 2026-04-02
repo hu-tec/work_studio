@@ -630,125 +630,147 @@ const WEBSITES=[
 {id:"level_test",name:"레벨테스트",url:"leveltest.hutechc.com",cat:"edu"},
 ];
 
-// ═══ Default Form Templates (TESOL 기반) ═══
-const DEFAULT_TEMPLATES=[
-{_site:"tesol",_formId:"orientation",name:"수업신청",steps:[
-{title:"기본 인적사항",fields:[
-{key:"name",label:"성명",type:"text",required:true},
-{key:"phone",label:"연락처",type:"tel",required:true},
-{key:"email",label:"이메일",type:"email",required:true},
-{key:"birthDate",label:"생년월일",type:"date",required:false},
-{key:"nationality",label:"국적구분",type:"select",required:true,options:["내국인","외국인","재외국인"]},
+// ═══ Default Modules — 공통/세부 모듈 시드 ═══
+const DEFAULT_MODULES=[
+// ── 공통 모듈 ──
+{moduleId:"common_identity",name:"기본 인적사항",category:"common",order:1,fields:[
+{key:"name",label:"성명",type:"text",required:true,placeholder:"홍길동"},
+{key:"phone",label:"연락처",type:"tel",required:true,placeholder:"010-1234-5678"},
+{key:"email",label:"이메일",type:"email",required:true,placeholder:"example@email.com"},
+]},
+{moduleId:"common_qualification",name:"기본 자격사항",category:"common",order:2,fields:[
+{key:"availableTime",label:"활동 가능 시간",type:"multiselect",required:false,options:["평일오전","평일오후","평일저녁","주말오전","주말오후","주말저녁","월","화","수","목","금","토","일"]},
+{key:"experience",label:"경력",type:"select",required:false,options:["1년미만","1-3년","3-5년","5-10년","10년이상"]},
+{key:"education",label:"최종 학력",type:"select",required:false,options:["고졸","전문대졸","대졸","석사","박사","기타"]},
+{key:"callAvailable",label:"통화 가능 여부",type:"select",required:false,options:["가능","불가능","협의후결정"]},
+{key:"occupation",label:"현재 직업",type:"select",required:false,options:["학생","대학생","직장인","교사","프리랜서","기타"]},
+{key:"workGoal",label:"지원 목적",type:"multiselect",required:false,options:["전문활동","경력개발","지식공유","추가부수입","자기계발"]},
+]},
+{moduleId:"common_additional",name:"추가 정보",category:"common",order:99,fields:[
+{key:"introduction",label:"자기소개 및 핵심 역량",type:"textarea",required:false,placeholder:"간단히 적어주세요"},
+{key:"remarks",label:"비고 (포트폴리오/링크 등)",type:"textarea",required:false},
+{key:"privacyConsent",label:"개인정보 수집 및 이용에 동의합니다",type:"checkbox",required:true},
+]},
+// ── 세부 모듈: 강사 ──
+{moduleId:"spec_teacher_class",name:"강의 분류 (대중소 급수)",category:"specialty",order:10,fields:[
+{key:"majorCategory",label:"강의 분야 대분류",type:"multiselect",required:true,options:["TESOL","프롬프트","번역","윤리"]},
+{key:"midCategory",label:"강의 대상 중분류",type:"multiselect",required:false,options:["교육용","일반","전문"]},
+{key:"gradeEdu",label:"교육용 급수",type:"multiselect",required:false,options:["1급","2급","3급","4급","5급","6급","7급","8급"]},
+{key:"gradeGeneral",label:"일반 급수",type:"multiselect",required:false,options:["1급","2급","3급"]},
+{key:"gradePro",label:"전문 급수",type:"multiselect",required:false,options:["1급","2급"]},
+]},
+{moduleId:"spec_teacher_expertise",name:"강의 전문성",category:"specialty",order:11,fields:[
+{key:"lectureField",label:"주요 강의 분야",type:"multiselect",required:false,options:["기초이론","심화실습","자격증대비","기업출강","공공기관","초중고교육","대학강의","온라인클래스"]},
+{key:"lectureTool",label:"비대면 강의 도구",type:"multiselect",required:false,options:["Zoom","GoogleMeet","Teams","Webex","유튜브라이브","OBS Studio"]},
+]},
+{moduleId:"spec_teacher_skills",name:"강사 스킬셋",category:"specialty",order:12,fields:[
+{key:"aiTeachingTools",label:"AI 교육 도구",type:"multiselect",required:false,options:["ChatGPT","Claude","Gemini","Copilot","Midjourney","DALL-E","기타"]},
+{key:"promptEngineering",label:"프롬프트 엔지니어링",type:"multiselect",required:false,options:["프롬프트 설계","페르소나 설정","체인오브쏘트","Few-shot","RAG","기타"]},
+{key:"contentCreation",label:"콘텐츠 제작",type:"multiselect",required:false,options:["교안설계","영상제작","PPT","퀴즈/평가","e러닝","기타"]},
+{key:"teachingCompetency",label:"교수 역량",type:"multiselect",required:false,options:["커리큘럼설계","학습평가","피드백","멘토링","클래스관리","기타"]},
+]},
+// ── 세부 모듈: 번역/전문가 ──
+{moduleId:"spec_translation",name:"번역 전문성",category:"specialty",order:20,fields:[
+{key:"languages",label:"가능 언어",type:"multiselect",required:true,options:["영어","일본어","중국어","한국어","스페인어","프랑스어","독일어","러시아어","포르투갈어","아랍어","기타"]},
+{key:"translationField",label:"전문 번역 분야",type:"multiselect",required:false,options:["IT/기술","법률/계약","의료/제약","금융/경제","문학/출판","게임/엔터","마케팅","특허","교육","건축","예술","환경","기타"]},
+{key:"catTools",label:"CAT 도구",type:"multiselect",required:false,options:["Trados","MemoQ","Wordfast","OmegaT","GTT","DeepL","경험없음"]},
+{key:"mtExperience",label:"기계번역 경험",type:"multiselect",required:false,options:["GoogleTranslate","DeepL","Papago","ChatGPT","Claude","경험없음"]},
+]},
+{moduleId:"spec_expert_skills",name:"전문가/번역가 스킬셋",category:"specialty",order:21,fields:[
+{key:"aiVibeCoding",label:"AI Vibe Coding",type:"multiselect",required:false,options:["Cursor","Windsurf","Replit","기타","경험없음"]},
+{key:"promptUsage",label:"프롬프트 활용",type:"multiselect",required:false,options:["ChatGPT","Claude","Gemini","Copilot","기타"]},
+{key:"designTools",label:"디자인 도구",type:"multiselect",required:false,options:["Figma","Photoshop","Illustrator","Canva","기타","경험없음"]},
+{key:"docWriting",label:"문서 작성",type:"multiselect",required:false,options:["한글","Word","Excel","PPT","Notion","기타"]},
+]},
+// ── 세부 모듈: 과정 선택 (TESOL 등) ──
+{moduleId:"spec_course_select",name:"과정/수업 선택",category:"specialty",order:30,fields:[
 {key:"course",label:"지원 구분",type:"select",required:true,options:["TESOL","프롬프트","AI 번역","AI윤리","ITT 번역교육"]},
 {key:"appType",label:"신청 유형",type:"select",required:true,options:["수업신청","레벨테스트","설명회신청","테스트 TIP","1:1문의"]},
-]},
-{title:"상세 정보",fields:[
-{key:"job",label:"직업",type:"select",required:false,options:["학생","대학생","직장인","교사","기타"]},
-{key:"channel",label:"알게 된 경로",type:"multiselect",required:false,options:["네이버 검색","인스타그램","유튜브","지인 추천","오프라인 안내","기타"]},
 {key:"region",label:"지역",type:"select",required:false,options:["서울 강남","부산 서면","대구","광주","경기도","충남","강원도","제주도"]},
 {key:"scheduleDate",label:"희망 일자",type:"date",required:false},
-{key:"intro",label:"자기소개",type:"textarea",required:false},
-{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
-]},
-]},
-{_site:"tesol",_formId:"level-test",name:"레벨테스트",steps:[
-{title:"기본 정보",fields:[
-{key:"name",label:"성명",type:"text",required:true},
-{key:"phone",label:"연락처",type:"tel",required:true},
-{key:"email",label:"이메일",type:"email",required:true},
-{key:"course",label:"과정",type:"select",required:true,options:["TESOL","프롬프트","AI 번역","AI윤리"]},
-]},
-{title:"테스트 정보",fields:[
-{key:"region",label:"지역",type:"select",required:false,options:["서울 강남","부산 서면","대구","광주","경기도"]},
-{key:"scheduleDate",label:"희망 일자",type:"date",required:false},
 {key:"scheduleTime",label:"희망 시간",type:"select",required:false,options:["09:00","09:30","10:00","10:30","11:00","14:00","14:30","15:00","15:30","16:00"]},
-{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
 ]},
-]},
-{_site:"ai_trans",_formId:"quote",name:"견적 의뢰",steps:[
-{title:"기본 정보",fields:[
-{key:"name",label:"성명",type:"text",required:true},
-{key:"phone",label:"연락처",type:"tel",required:true},
-{key:"email",label:"이메일",type:"email",required:true},
-{key:"company",label:"소속/기관",type:"text",required:false},
-]},
-{title:"번역 상세",fields:[
+// ── 세부 모듈: 견적/의뢰 ──
+{moduleId:"spec_quote",name:"견적/의뢰 정보",category:"specialty",order:40,fields:[
 {key:"sourceLang",label:"출발어",type:"select",required:true,options:["한국어","영어","일본어","중국어","기타"]},
 {key:"targetLang",label:"도착어",type:"select",required:true,options:["한국어","영어","일본어","중국어","기타"]},
 {key:"docType",label:"문서 유형",type:"select",required:true,options:["일반","법률","의료","기술","문학","특허"]},
 {key:"wordCount",label:"분량(단어수)",type:"text",required:false},
 {key:"deadline",label:"납기일",type:"date",required:false},
 {key:"note",label:"요청사항",type:"textarea",required:false},
-{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
-]},
-]},
-{_site:"ai_trans",_formId:"translator",name:"번역사 신청",steps:[
-{title:"기본 정보",fields:[
-{key:"name",label:"성명",type:"text",required:true},
-{key:"phone",label:"연락처",type:"tel",required:true},
-{key:"email",label:"이메일",type:"email",required:true},
-]},
-{title:"전문가 정보",fields:[
-{key:"specialty",label:"전문 분야",type:"text",required:true},
-{key:"careerYears",label:"경력(년)",type:"number",required:true},
-{key:"experience",label:"경력 상세",type:"textarea",required:true},
-{key:"langPair",label:"언어쌍",type:"text",required:true,placeholder:"예: 한→영, 영→한"},
-{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
-]},
-]},
-{_site:"ai_ethics",_formId:"expert",name:"전문가 모집",steps:[
-{title:"기본 정보",fields:[
-{key:"name",label:"성명",type:"text",required:true},
-{key:"phone",label:"연락처",type:"tel",required:true},
-{key:"email",label:"이메일",type:"email",required:true},
-]},
-{title:"전문가 정보",fields:[
-{key:"specialty",label:"전문 분야",type:"select",required:true,options:["AI윤리","생명윤리","환경윤리","기업윤리","데이터윤리"]},
-{key:"experience",label:"경력(년)",type:"number",required:true},
-{key:"cert",label:"보유 자격",type:"text",required:false},
-{key:"motivation",label:"지원 동기",type:"textarea",required:false},
-{key:"privacyConsent",label:"개인정보 동의",type:"checkbox",required:true},
-]},
 ]},
 ];
 
+// ═══ Default Form Templates — 모듈 참조 방식 ═══
+const DEFAULT_TEMPLATES=[
+{_site:"tesol",_formId:"orientation",name:"TESOL 수업신청",modules:["common_identity","spec_course_select","common_qualification","common_additional"]},
+{_site:"tesol",_formId:"level-test",name:"레벨테스트",modules:["common_identity","spec_course_select","common_additional"]},
+{_site:"tesol",_formId:"teacher_apply",name:"강사 지원서",modules:["common_identity","spec_teacher_class","common_qualification","spec_teacher_expertise","spec_teacher_skills","common_additional"]},
+{_site:"ai_trans",_formId:"quote",name:"견적 의뢰",modules:["common_identity","spec_quote","common_additional"]},
+{_site:"ai_trans",_formId:"translator",name:"번역사 신청",modules:["common_identity","common_qualification","spec_translation","spec_expert_skills","common_additional"]},
+{_site:"ai_ethics",_formId:"expert",name:"전문가 모집",modules:["common_identity","common_qualification","spec_translation","common_additional"]},
+{_site:"cbt",_formId:"exam_apply",name:"시험 신청",modules:["common_identity","spec_course_select","common_additional"]},
+];
+
 // ═══ Form Template State ═══
-let ftSite=null,ftFormId=null,ftData=null,ftTemplates=[],ftPreview=false;
+let ftSite=null,ftFormId=null,ftData=null,ftTemplates=[],ftModules=[];
 
 async function loadFormTemplates(){
-const rows=await f("/api/form_templates");
-ftTemplates=rows.map(r=>({id:r.id,...JSON.parse(r.data)}));
-// Seed defaults if empty
-if(!ftTemplates.length){
-for(const tpl of DEFAULT_TEMPLATES){
-await fetch("/api/form_templates",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(tpl)});
+// Load modules
+let mRows=await f("/api/form_modules");
+ftModules=mRows.map(r=>({id:r.id,...JSON.parse(r.data)}));
+// Seed modules if empty
+if(!ftModules.length){
+for(const mod of DEFAULT_MODULES)await fetch("/api/form_modules",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(mod)});
+mRows=await f("/api/form_modules");ftModules=mRows.map(r=>({id:r.id,...JSON.parse(r.data)}));
 }
-const rows2=await f("/api/form_templates");
-ftTemplates=rows2.map(r=>({id:r.id,...JSON.parse(r.data)}));
+// Load templates
+let tRows=await f("/api/form_templates");
+ftTemplates=tRows.map(r=>({id:r.id,...JSON.parse(r.data)}));
+// Seed templates if empty
+if(!ftTemplates.length){
+for(const tpl of DEFAULT_TEMPLATES)await fetch("/api/form_templates",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(tpl)});
+tRows=await f("/api/form_templates");ftTemplates=tRows.map(r=>({id:r.id,...JSON.parse(r.data)}));
 }}
+
+function getModule(modId){return ftModules.find(m=>m.moduleId===modId)}
+function assembleForm(tpl){
+const sections=[];
+for(const modId of(tpl.modules||[])){const mod=getModule(modId);if(mod)sections.push({...mod})}
+if(tpl.extraFields&&tpl.extraFields.length)sections.push({moduleId:"_extra",name:"추가 항목",category:"extra",fields:tpl.extraFields});
+return sections;
+}
 
 // ═══ Form Editor View ═══
 function rForms(){
 uB();bc.innerHTML="Work Studio &rsaquo; <b>신청서 관리</b>";
 navBar.innerHTML=`<span class="nav-lbl">홈페이지</span><span class="nav-sep"></span>`;
 subNav.classList.remove("v");
-// Website chips in nav
 let nh=navBar.innerHTML;
 nh+=`<span class="chip ${!ftSite?"a":""}" onclick="ftSelSite(null)">전체</span>`;
 for(const w of WEBSITES)nh+=`<span class="chip ${ftSite===w.id?"a":""}" onclick="ftSelSite('${w.id}')">${w.name}</span>`;
 navBar.innerHTML=nh;
 
-if(!ftTemplates.length){loadFormTemplates().then(()=>rForms());return}
+if(!ftTemplates.length&&!ftModules.length){loadFormTemplates().then(()=>rForms());return}
 
-// Sidebar: site list + forms
+// Sidebar: site→forms + module library
 const sites=ftSite?WEBSITES.filter(w=>w.id===ftSite):WEBSITES;
 let sb=`<div style="padding:8px 12px;font-size:10px;font-weight:700;color:#1a365d;background:#fafbfc;border-bottom:1px solid #eee">신청서 목록</div>`;
 for(const w of sites){
 const forms=ftTemplates.filter(t=>t._site===w.id);
 sb+=`<div class="fe-site ${ftSite===w.id&&!ftFormId?"a":""}" onclick="ftSelSite('${w.id}')"><span>${w.name}</span><span class="fe-url">${forms.length}개</span></div>`;
 if(ftSite===w.id){for(const fm of forms){
-sb+=`<div class="fe-form-item ${ftFormId===fm._formId?"a":""}" onclick="ftSelForm('${fm._formId}')">${fm.name}</div>`}
+const secs=assembleForm(fm);const fCount=secs.reduce((s,sec)=>s+sec.fields.length,0);
+sb+=`<div class="fe-form-item ${ftFormId===fm._formId?"a":""}" onclick="ftSelForm('${fm._formId}')">${fm.name} <span style="font-size:9px;color:#aaa">${fCount}필드</span></div>`}
 sb+=`<div class="fe-form-item" onclick="ftAddForm('${w.id}')" style="color:#1a365d;font-style:italic">+ 신청서 추가</div>`}}
+// Module library
+sb+=`<div style="padding:8px 12px;font-size:10px;font-weight:700;color:#059669;background:#ecfdf5;border-top:2px solid #059669;border-bottom:1px solid #eee;margin-top:8px">모듈 라이브러리</div>`;
+const commonMods=ftModules.filter(m=>m.category==="common").sort((a,b)=>(a.order||0)-(b.order||0));
+const specMods=ftModules.filter(m=>m.category==="specialty").sort((a,b)=>(a.order||0)-(b.order||0));
+sb+=`<div style="padding:4px 12px;font-size:9px;font-weight:700;color:#888;background:#fafbfc">공통 (자동포함)</div>`;
+for(const m of commonMods)sb+=`<div class="fe-form-item" style="font-size:10px;color:#059669">📦 ${m.name} <span style="color:#aaa">${m.fields.length}</span></div>`;
+sb+=`<div style="padding:4px 12px;font-size:9px;font-weight:700;color:#888;background:#fafbfc">세부 (선택적)</div>`;
+for(const m of specMods)sb+=`<div class="fe-form-item" style="font-size:10px;color:#7c3aed">📋 ${m.name} <span style="color:#aaa">${m.fields.length}</span></div>`;
 
 // Main area
 let main="";
@@ -758,11 +780,19 @@ const w=WEBSITES.find(x=>x.id===ftSite);
 const forms=ftTemplates.filter(t=>t._site===ftSite);
 main=`<div class="fe-editor"><h3>${w?w.name:""} 신청서</h3>
 <p style="font-size:11px;color:#888;margin-bottom:12px">${w?w.url:""} — ${forms.length}개 신청서</p>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${forms.map(fm=>`
-<div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:12px;cursor:pointer" onclick="ftSelForm('${fm._formId}')">
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${forms.map(fm=>{
+const secs=assembleForm(fm);const fCount=secs.reduce((s,sec)=>s+sec.fields.length,0);
+return`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:12px;cursor:pointer" onclick="ftSelForm('${fm._formId}')">
 <div style="font-size:12px;font-weight:700;color:#1a365d;margin-bottom:4px">${fm.name}</div>
-<div style="font-size:10px;color:#888">${fm.steps?fm.steps.length:0}단계 · ${fm.steps?fm.steps.reduce((s,st)=>s+st.fields.length,0):0}개 필드</div>
-</div>`).join("")}</div></div>`}
+<div style="font-size:10px;color:#888">${secs.length}모듈 · ${fCount}필드</div>
+<div style="margin-top:6px;display:flex;gap:3px;flex-wrap:wrap">${(fm.modules||[]).map(mid=>{const mod=getModule(mid);return mod?`<span style="font-size:8px;padding:1px 5px;border-radius:8px;background:${mod.category==="common"?"#ecfdf5":"#f5f3ff"};color:${mod.category==="common"?"#059669":"#7c3aed"}">${mod.name}</span>`:""}).join("")}</div>
+</div>`}).join("")}</div>
+<div style="margin-top:16px"><h4 style="font-size:12px;color:#888;margin-bottom:8px">API 연동 예시</h4>
+<pre style="background:#1a365d;color:#a0d2db;padding:12px;border-radius:6px;font-size:10px;overflow-x:auto">GET /api/form-config/${ftSite}/{formId}
+→ { site, formId, name, sections: [{moduleId, name, fields: [...]}], submitUrl }
+
+POST /api/applications
+→ { ...formData }</pre></div></div>`}
 else{main=`<div class="fe-empty">좌측에서 홈페이지를 선택하세요</div>`}
 
 ca.innerHTML=`<div class="fe-wrap"><div class="fe-sidebar">${sb}</div><div class="fe-main">${main}</div></div>`}
@@ -773,75 +803,157 @@ function ftSelForm(fid){ftFormId=fid;ftData=JSON.parse(JSON.stringify(ftTemplate
 function ftAddForm(siteId){
 const name=prompt("신청서 이름:");if(!name)return;
 const fid=name.toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_가-힣]/g,"");
-const tpl={_site:siteId,_formId:fid,name,steps:[{title:"기본 정보",fields:[
-{key:"name",label:"성명",type:"text",required:true},
-{key:"phone",label:"연락처",type:"tel",required:true},
-{key:"email",label:"이메일",type:"email",required:true},
-]}]};
+const tpl={_site:siteId,_formId:fid,name,modules:["common_identity","common_qualification","common_additional"],extraFields:[]};
 fetch("/api/form_templates",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(tpl)})
 .then(()=>loadFormTemplates().then(()=>{ftFormId=fid;ftSelForm(fid);rForms()}))}
 
 function renderFormEditor(){
 if(!ftData)return"";
 const w=WEBSITES.find(x=>x.id===ftSite);
+const sections=assembleForm(ftData);
+const totalFields=sections.reduce((s,sec)=>s+sec.fields.length,0);
+
 let h=`<div class="fe-editor">`;
 h+=`<div class="fe-toolbar">
 <button style="background:#1a365d;color:#fff" onclick="ftSave()">저장</button>
-<button style="background:#fff;border:1px solid #ddd" onclick="ftShowPreview()">미리보기</button>
-<button style="background:#fff;border:1px solid #ddd" onclick="ftAddStep()">+단계 추가</button>
+<button style="background:#fff;border:1px solid #ddd" onclick="ftShowPreview()">실제 미리보기</button>
 <button style="background:#fff;border:1px solid #c00;color:#c00" onclick="ftDeleteForm()">삭제</button>
-<span style="margin-left:auto;font-size:10px;color:#888">${w?w.name:""} › ${ftData.name}</span></div>`;
-h+=`<div style="margin-bottom:8px"><label style="font-size:10px;font-weight:600;color:#555">신청서 이름</label>
-<input value="${eh(ftData.name)}" onchange="ftData.name=this.value" style="padding:4px 8px;border:1px solid #ddd;border-radius:3px;font-size:12px;font-weight:700;width:300px"/></div>`;
+<span style="margin-left:auto;font-size:10px;color:#888">${w?w.name:""} › ${ftData.name} · ${sections.length}모듈 · ${totalFields}필드</span></div>`;
 
-// Steps
-(ftData.steps||[]).forEach((step,si)=>{
-h+=`<div class="fe-step"><div class="fe-step-hd">
-<span><input value="${eh(step.title)}" onchange="ftData.steps[${si}].title=this.value" style="border:none;font-size:12px;font-weight:700;background:transparent;width:200px"/> (${step.fields.length}필드)</span>
-<span><button onclick="ftMoveStep(${si},-1)">↑</button><button onclick="ftMoveStep(${si},1)">↓</button><button onclick="ftDelStep(${si})" style="color:#c00">삭제</button></span></div>`;
-// Field header
-h+=`<div class="fe-field" style="background:#f0f2f5;font-weight:600;font-size:9px;color:#888"><span></span><span>Key</span><span>라벨</span><span>타입</span><span>필수</span><span></span><span></span></div>`;
-// Fields
-step.fields.forEach((fld,fi)=>{
+h+=`<div style="margin-bottom:12px;display:flex;gap:12px;align-items:end">
+<div><label style="font-size:10px;font-weight:600;color:#555">신청서 이름</label>
+<input value="${eh(ftData.name)}" onchange="ftData.name=this.value" style="padding:4px 8px;border:1px solid #ddd;border-radius:3px;font-size:12px;font-weight:700;width:250px"/></div>
+<div style="font-size:10px;color:#888">API: <code style="background:#f0f0f0;padding:1px 4px;border-radius:2px">/api/form-config/${ftSite}/${ftFormId}</code></div>
+</div>`;
+
+// ── 모듈 구성 ──
+h+=`<div style="margin-bottom:12px;padding:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px">
+<div style="font-size:11px;font-weight:700;color:#555;margin-bottom:6px">포함된 모듈 (드래그하여 순서 변경)</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">`;
+(ftData.modules||[]).forEach((mid,i)=>{
+const mod=getModule(mid);if(!mod)return;
+const isCom=mod.category==="common";
+h+=`<span style="display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;background:${isCom?"#ecfdf5":"#f5f3ff"};color:${isCom?"#059669":"#7c3aed"};border:1px solid ${isCom?"#a7f3d0":"#ddd6fe"}">
+${mod.name}
+<span onclick="ftRemoveModule(${i})" style="cursor:pointer;margin-left:4px;color:#999;font-size:12px" title="제거">×</span>
+</span>`});
+h+=`</div>`;
+// Add module dropdown
+const usedIds=new Set(ftData.modules||[]);
+const available=ftModules.filter(m=>!usedIds.has(m.moduleId));
+if(available.length){
+h+=`<div style="margin-top:6px"><select onchange="ftAddModule(this.value);this.value=''" style="padding:3px 8px;border:1px solid #ddd;border-radius:3px;font-size:10px">
+<option value="">+ 모듈 추가...</option>
+${available.map(m=>`<option value="${m.moduleId}">${m.category==="common"?"📦":"📋"} ${m.name} (${m.fields.length}필드)</option>`).join("")}
+</select></div>`}
+h+=`</div>`;
+
+// ── 조립된 섹션별 필드 표시 ──
+sections.forEach((sec,si)=>{
+const isCom=sec.category==="common";
+h+=`<div class="fe-step"><div class="fe-step-hd" style="background:${isCom?"#ecfdf5":"#f5f3ff"}">
+<span style="color:${isCom?"#059669":"#7c3aed"}">${isCom?"📦 공통":"📋 세부"} ${sec.name} (${sec.fields.length}필드)</span>
+<span><button onclick="ftEditModule('${sec.moduleId}')">모듈 편집</button></span></div>`;
+// Field display (read-only summary)
+sec.fields.forEach(fld=>{
+h+=`<div style="display:grid;grid-template-columns:140px 1fr 80px 50px;gap:6px;padding:4px 10px;border-bottom:1px solid #f5f5f5;font-size:10px;color:#555">
+<span style="font-weight:600">${eh(fld.label)}</span>
+<span style="color:#888">${fld.key}</span>
+<span style="color:#999">${fld.type}${fld.options?" ("+fld.options.length+"옵션)":""}</span>
+<span>${fld.required?'<span style="color:#e53e3e;font-weight:700">필수</span>':""}</span>
+</div>`});
+h+=`</div>`});
+
+// Extra fields section
+h+=`<div style="margin-top:8px"><div style="font-size:10px;font-weight:600;color:#888;margin-bottom:4px">추가 필드 (이 신청서 전용)</div>`;
+if(ftData.extraFields&&ftData.extraFields.length){
+ftData.extraFields.forEach((fld,fi)=>{
 h+=`<div class="fe-field">
 <span class="fe-grip">⠿</span>
-<input value="${eh(fld.key)}" onchange="ftData.steps[${si}].fields[${fi}].key=this.value"/>
-<input value="${eh(fld.label)}" onchange="ftData.steps[${si}].fields[${fi}].label=this.value"/>
-<select onchange="ftData.steps[${si}].fields[${fi}].type=this.value">
+<input value="${eh(fld.key)}" onchange="ftData.extraFields[${fi}].key=this.value"/>
+<input value="${eh(fld.label)}" onchange="ftData.extraFields[${fi}].label=this.value"/>
+<select onchange="ftData.extraFields[${fi}].type=this.value">
 ${["text","tel","email","date","number","select","multiselect","textarea","checkbox","file"].map(t=>`<option value="${t}" ${fld.type===t?"selected":""}>${t}</option>`).join("")}</select>
-<label style="text-align:center"><input type="checkbox" ${fld.required?"checked":""} onchange="ftData.steps[${si}].fields[${fi}].required=this.checked"/></label>
-<span class="fe-del" onclick="ftData.steps[${si}].fields.splice(${fi},1);rForms()" title="삭제">×</span>
-<span>${(fld.type==="select"||fld.type==="multiselect")?`<input value="${eh((fld.options||[]).join(","))}" onchange="ftData.steps[${si}].fields[${fi}].options=this.value.split(',')" placeholder="옵션(,구분)" style="font-size:9px"/>`:""}</span>
-</div>`});
-h+=`<div class="fe-add-field"><button onclick="ftAddField(${si})">+ 필드 추가</button></div></div>`});
+<label style="text-align:center"><input type="checkbox" ${fld.required?"checked":""} onchange="ftData.extraFields[${fi}].required=this.checked"/></label>
+<span class="fe-del" onclick="ftData.extraFields.splice(${fi},1);rForms()" title="삭제">×</span>
+<span>${(fld.type==="select"||fld.type==="multiselect")?`<input value="${eh((fld.options||[]).join(","))}" onchange="ftData.extraFields[${fi}].options=this.value.split(',')" placeholder="옵션(,)" style="font-size:9px"/>`:""}</span>
+</div>`})}
+h+=`<div class="fe-add-field"><button onclick="if(!ftData.extraFields)ftData.extraFields=[];ftData.extraFields.push({key:'new_field',label:'새 필드',type:'text',required:false});rForms()">+ 추가 필드</button></div></div>`;
+
 h+=`</div>`;return h}
+
+function ftAddModule(modId){if(!modId||!ftData)return;if(!ftData.modules)ftData.modules=[];ftData.modules.push(modId);rForms()}
+function ftRemoveModule(idx){if(!ftData||!ftData.modules)return;ftData.modules.splice(idx,1);rForms()}
+
+function ftEditModule(modId){
+const mod=ftModules.find(m=>m.moduleId===modId);if(!mod)return;
+// Open module editor in a simple prompt-like UI
+const h=`<div class="fp-overlay" onclick="if(event.target===this)this.remove()">
+<div class="fp-modal" style="width:700px"><span class="fp-close" onclick="this.closest('.fp-overlay').remove()">×</span>
+<div class="fp-header"><h2>모듈 편집: ${eh(mod.name)}</h2><p>${mod.category==="common"?"📦 공통 모듈 — 모든 신청서에 자동 포함":"📋 세부 모듈 — 선택적 포함"}</p></div>
+<div class="fp-body" id="modEditBody"></div></div></div>`;
+document.body.insertAdjacentHTML("beforeend",h);
+renderModuleEditor(mod)}
+
+function renderModuleEditor(mod){
+const body=document.getElementById("modEditBody");if(!body)return;
+let h=`<div style="margin-bottom:12px;display:flex;gap:8px">
+<div><label style="font-size:10px;font-weight:600">모듈 이름</label><input value="${eh(mod.name)}" onchange="ftUpdateModName('${mod.moduleId}',this.value)" style="padding:4px 8px;border:1px solid #ddd;border-radius:3px;font-size:12px;width:200px"/></div>
+<button onclick="ftSaveModule('${mod.moduleId}')" style="padding:5px 14px;background:#1a365d;color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;align-self:end">저장</button>
+</div>`;
+h+=`<div class="fe-field" style="background:#f0f2f5;font-weight:600;font-size:9px;color:#888"><span></span><span>Key</span><span>라벨</span><span>타입</span><span>필수</span><span></span><span></span></div>`;
+mod.fields.forEach((fld,fi)=>{
+h+=`<div class="fe-field">
+<span class="fe-grip">⠿</span>
+<input value="${eh(fld.key)}" onchange="ftModField('${mod.moduleId}',${fi},'key',this.value)"/>
+<input value="${eh(fld.label)}" onchange="ftModField('${mod.moduleId}',${fi},'label',this.value)"/>
+<select onchange="ftModField('${mod.moduleId}',${fi},'type',this.value)">
+${["text","tel","email","date","number","select","multiselect","textarea","checkbox","file"].map(t=>`<option value="${t}" ${fld.type===t?"selected":""}>${t}</option>`).join("")}</select>
+<label style="text-align:center"><input type="checkbox" ${fld.required?"checked":""} onchange="ftModField('${mod.moduleId}',${fi},'required',this.checked)"/></label>
+<span class="fe-del" onclick="ftModDelField('${mod.moduleId}',${fi})" title="삭제">×</span>
+<span>${(fld.type==="select"||fld.type==="multiselect")?`<input value="${eh((fld.options||[]).join(","))}" onchange="ftModField('${mod.moduleId}',${fi},'options',this.value.split(','))" placeholder="옵션(,)" style="font-size:9px"/>`:""}</span>
+</div>`});
+h+=`<div class="fe-add-field"><button onclick="ftModAddField('${mod.moduleId}')">+ 필드 추가</button></div>`;
+body.innerHTML=h}
+
+function ftModField(modId,fi,key,val){const mod=ftModules.find(m=>m.moduleId===modId);if(mod)mod.fields[fi][key]=val}
+function ftModDelField(modId,fi){const mod=ftModules.find(m=>m.moduleId===modId);if(mod){mod.fields.splice(fi,1);renderModuleEditor(mod)}}
+function ftModAddField(modId){const mod=ftModules.find(m=>m.moduleId===modId);if(mod){mod.fields.push({key:"new_field",label:"새 필드",type:"text",required:false});renderModuleEditor(mod)}}
+function ftUpdateModName(modId,name){const mod=ftModules.find(m=>m.moduleId===modId);if(mod)mod.name=name}
+async function ftSaveModule(modId){const mod=ftModules.find(m=>m.moduleId===modId);if(!mod)return;
+const{id,...data}=mod;
+await fetch(`/api/form_modules/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+await loadFormTemplates();alert("모듈 저장됨");document.querySelector(".fp-overlay")?.remove();rForms()}
 
 let fpStep=0;
 function ftShowPreview(){if(!ftData)return;fpStep=0;renderPreviewModal()}
 
 function renderPreviewModal(){
 const w=WEBSITES.find(x=>x.id===ftSite);
-const steps=ftData.steps||[];
-const totalSteps=steps.length;
-const step=steps[fpStep]||{title:"",fields:[]};
+const sections=assembleForm(ftData);
+const totalSteps=sections.length;
+const sec=sections[fpStep]||{name:"",fields:[]};
 
 let h=`<div class="fp-overlay" onclick="if(event.target===this)closePreview()">
 <div class="fp-modal"><span class="fp-close" onclick="closePreview()">×</span>
 <div class="fp-header"><h2>${eh(ftData.name)}</h2><p>${w?w.name:""} · ${w?w.url:""}</p></div>
 <div class="fp-body">`;
 
-// Step progress bar
+// Progress bar
 h+=`<div class="fp-progress">`;
 for(let i=0;i<totalSteps;i++){
 const cls=i<fpStep?"done":i===fpStep?"active":"";
-h+=`<div class="fp-step-dot ${cls}" onclick="fpStep=${i};renderPreviewModal()" style="cursor:pointer">Step ${i+1}<br><span style="font-size:10px;font-weight:400">${eh(steps[i].title)}</span></div>`}
+const isCom=sections[i].category==="common";
+h+=`<div class="fp-step-dot ${cls}" onclick="fpStep=${i};renderPreviewModal()" style="cursor:pointer">
+${isCom?"📦":"📋"} Step ${i+1}<br><span style="font-size:10px;font-weight:400">${eh(sections[i].name)}</span></div>`}
 h+=`</div>`;
 
-// Step title
-h+=`<div class="fp-step-title">${eh(step.title)}</div>`;
+// Section title
+const isCom=sec.category==="common";
+h+=`<div class="fp-step-title"><span style="color:${isCom?"#059669":"#7c3aed"}">${isCom?"공통":"세부"}</span> ${eh(sec.name)}</div>`;
 
 // Fields
-step.fields.forEach(fld=>{
+sec.fields.forEach(fld=>{
 if(fld.type==="checkbox"){
 h+=`<div class="fp-check-row"><input type="checkbox" id="fp-${fld.key}"/><label for="fp-${fld.key}">${eh(fld.label)}${fld.required?'<span class="req">*</span>':""}</label></div>`;return}
 h+=`<div class="fp-group"><label class="fp-label">${eh(fld.label)}${fld.required?'<span class="req">*</span>':""}</label>`;
@@ -852,31 +964,24 @@ else if(fld.type==="file")h+=`<div class="fp-file-zone">📎 파일을 드래그
 else h+=`<input class="fp-input" type="${fld.type||"text"}" placeholder="${eh(fld.placeholder||fld.label)}"/>`;
 h+=`</div>`});
 
-// Navigation buttons
+// Nav buttons
 h+=`<div class="fp-btns">`;
 if(fpStep>0)h+=`<button class="fp-btn fp-btn-prev" onclick="fpStep--;renderPreviewModal()">이전</button>`;
 if(fpStep<totalSteps-1)h+=`<button class="fp-btn fp-btn-next" onclick="fpStep++;renderPreviewModal()">저장 후 다음</button>`;
 else h+=`<button class="fp-btn fp-btn-submit">최종 제출</button>`;
-h+=`</div>`;
+h+=`</div></div></div></div>`;
 
-h+=`</div></div></div>`;
-
-// Remove existing overlay
 const ex=document.querySelector(".fp-overlay");if(ex)ex.remove();
 document.body.insertAdjacentHTML("beforeend",h)}
 
 function closePreview(){const el=document.querySelector(".fp-overlay");if(el)el.remove()}
 
-function ftAddField(si){ftData.steps[si].fields.push({key:"new_field",label:"새 필드",type:"text",required:false});rForms()}
-function ftAddStep(){ftData.steps.push({title:"새 단계",fields:[]});rForms()}
-function ftDelStep(si){if(!confirm("이 단계를 삭제하시겠습니까?"))return;ftData.steps.splice(si,1);rForms()}
-function ftMoveStep(si,dir){const ni=si+dir;if(ni<0||ni>=ftData.steps.length)return;[ftData.steps[si],ftData.steps[ni]]=[ftData.steps[ni],ftData.steps[si]];rForms()}
 
 async function ftSave(){
 const existing=ftTemplates.find(t=>t._site===ftSite&&t._formId===ftFormId);
 if(!existing)return;
-const{id,...data}=ftData;
-await fetch(`/api/form_templates/${existing.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+const saveData={_site:ftData._site,_formId:ftData._formId,name:ftData.name,modules:ftData.modules||[],extraFields:ftData.extraFields||[]};
+await fetch(`/api/form_templates/${existing.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(saveData)});
 await loadFormTemplates();alert("저장 완료");rForms()}
 
 async function ftDeleteForm(){if(!confirm("이 신청서를 삭제하시겠습니까?"))return;

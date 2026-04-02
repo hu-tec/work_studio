@@ -21,6 +21,7 @@ const TABLES = [
   "cbt_results",               // AITe CBT 시험 결과
   "members",                   // DB 페이지 - 회원관리
   "form_templates",            // 신청서 템플릿 (홈페이지별 폼 구성)
+  "form_modules",              // 신청서 모듈 (공통/세부 재사용 필드그룹)
 ];
 
 for (const table of TABLES) {

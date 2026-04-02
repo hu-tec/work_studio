@@ -78,6 +78,46 @@ app.post("/api/upload/presign", async (req, res) => {
   }
 });
 
+// --- 신청서 설정 API (외부 사이트 → work_studio) ---
+app.get("/api/form-config/:siteId/:formId", (req, res) => {
+  const { siteId, formId } = req.params;
+  // Find template
+  const templates = getAll("form_templates");
+  const tpl = templates.find(r => {
+    try { const d = JSON.parse(r.data); return d._site === siteId && d._formId === formId; } catch { return false; }
+  });
+  if (!tpl) return res.status(404).json({ error: "Form template not found" });
+  const tplData = JSON.parse(tpl.data);
+
+  // Load modules
+  const modules = getAll("form_modules").map(r => ({ id: r.id, ...JSON.parse(r.data) }));
+
+  // Assemble form: resolve module references
+  const assembledSections = [];
+  for (const modId of (tplData.modules || [])) {
+    const mod = modules.find(m => m.moduleId === modId);
+    if (mod) assembledSections.push({ moduleId: mod.moduleId, name: mod.name, category: mod.category, fields: mod.fields });
+  }
+  // Add any extra inline fields
+  if (tplData.extraFields && tplData.extraFields.length) {
+    assembledSections.push({ moduleId: "_extra", name: "추가 항목", category: "extra", fields: tplData.extraFields });
+  }
+
+  res.json({
+    site: tplData._site,
+    formId: tplData._formId,
+    name: tplData.name,
+    sections: assembledSections,
+    submitUrl: `/api/applications`,
+  });
+});
+
+// --- 모듈 목록 API ---
+app.get("/api/form-modules-list", (req, res) => {
+  const modules = getAll("form_modules").map(r => ({ id: r.id, ...JSON.parse(r.data) }));
+  res.json(modules);
+});
+
 // --- DB 관리 페이지 ---
 app.get("/db", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "db", "index.html"));
