@@ -143,6 +143,30 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 .qd-num{font-size:16px;font-weight:900;color:#1a365d}
 .qd-lbl{font-size:9px;color:#888;font-weight:600}
 .qd-sep{width:1px;height:24px;background:#e2e8f0}
+/* Stats */
+.st-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.st-card{background:#fff;border-radius:8px;border:1px solid #e2e8f0;padding:12px}
+.st-card .st-label{font-size:10px;color:#888;font-weight:600}
+.st-card .st-val{font-size:22px;font-weight:900;margin-top:2px}
+.st-card .st-sub{font-size:9px;color:#aaa;margin-top:2px}
+.st-dist{background:#fff;border-radius:8px;border:1px solid #e2e8f0;padding:12px}
+.st-dist h4{font-size:12px;font-weight:700;color:#222;margin-bottom:8px}
+.st-bar-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.st-bar-row .st-bar-lbl{font-size:10px;color:#555;width:70px;flex-shrink:0;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+.st-bar-row .st-bar-bg{flex:1;height:14px;background:#eceef2;border-radius:7px;overflow:hidden}
+.st-bar-row .st-bar-fill{height:100%;border-radius:7px;transition:width .3s}
+.st-bar-row .st-bar-cnt{font-size:10px;color:#222;width:28px;text-align:right}
+.st-bar-row .st-bar-pct{font-size:9px;color:#999;width:32px;text-align:right}
+/* Content tabs */
+.ct-tabs{display:flex;gap:0;margin-bottom:12px}
+.ct-tab{flex:1;padding:8px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#888}
+.ct-tab:first-child{border-radius:6px 0 0 6px}.ct-tab:last-child{border-radius:0 6px 6px 0}
+.ct-tab.a{background:#1a365d;color:#fff;border-color:#1a365d}
+/* Status page */
+.sp-row{display:grid;grid-template-columns:40px 60px 60px 1fr 80px 80px 60px 80px;gap:4px;padding:5px 10px;border-bottom:1px solid #f0f0f0;font-size:10px;align-items:center}
+.sp-row:hover{background:#f8fafc}
+.sp-hd{background:#f8fafc;font-weight:700;color:#555;position:sticky;top:0}
+.sp-badge{font-size:8px;padding:1px 5px;border-radius:2px;font-weight:700;display:inline-block}
 /* Form Editor */
 .fe-wrap{display:flex;gap:12px;height:calc(100vh - 160px)}
 .fe-sidebar{width:240px;background:#fff;border-radius:6px;border:1px solid #eee;overflow-y:auto;flex-shrink:0}
@@ -215,7 +239,7 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 <div class="app" id="app">
 <header><h1 onclick="goHome()">Work Studio</h1><div class="hr"><span class="ui" id="ui"></span><button onclick="doLO()">로그아웃</button></div></header>
 <div class="tb"><div class="bc" id="bc">Work Studio</div>
-<div class="vt"><button id="bD" class="a" onclick="sv('d')">대시보드</button><button id="bL" onclick="sv('l')">리스트</button><button id="bF" onclick="sv('f')">신청서</button></div></div>
+<div class="vt"><button id="bD" class="a" onclick="sv('d')">대시보드</button><button id="bL" onclick="sv('l')">리스트</button><button id="bF" onclick="sv('f')">신청서</button><button id="bS" onclick="sv('s')">통계</button><button id="bQ" onclick="sv('q')">콘텐츠</button><button id="bP" onclick="sv('p')">현황</button></div></div>
 <div class="nav-bar" id="navBar"></div>
 <div class="sub-nav" id="subNav"></div>
 <div class="mn"><div class="ca" id="ca"></div></div>
@@ -311,8 +335,8 @@ function eh(s){const d=document.createElement("div");d.textContent=s;return d.in
 function fv(v){if(v==null)return"";if(Array.isArray(v))return v.join(", ");if(typeof v==="object")return Object.entries(v).map(([k,v])=>k+":"+v).join(" / ");const s=String(v);return s.length>60?s.slice(0,60)+"…":s}
 
 // ═══ Navigation ═══
-function sv(v){cV=v;bD.className=v==="d"?"a":"";bL.className=v==="l"?"a":"";bF.className=v==="f"?"a":"";rv()}
-function rv(){curPage=1;if(cV==="f"){rForms();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
+function sv(v){cV=v;bD.className=v==="d"?"a":"";bL.className=v==="l"?"a":"";bF.className=v==="f"?"a":"";bS.className=v==="s"?"a":"";bQ.className=v==="q"?"a":"";bP.className=v==="p"?"a":"";rv()}
+function rv(){curPage=1;if(cV==="f"){rForms();return}if(cV==="s"){rStats();return}if(cV==="q"){rContent();return}if(cV==="p"){rStatus();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
 
 function rNav(){
 const allCnt=T.reduce((s,t)=>s+(TC[t]||0),0);
@@ -1029,6 +1053,239 @@ const existing=ftTemplates.find(t=>t._site===ftSite&&t._formId===ftFormId);
 if(!existing)return;
 await fetch(`/api/form_templates/${existing.id}`,{method:"DELETE"});
 ftFormId=null;ftData=null;await loadFormTemplates();rForms()}
+
+// ═══ 통계 뷰 (DB v2 패턴) ═══
+function rStats(){
+uB();bc.innerHTML="Work Studio &rsaquo; <b>통계</b>";
+navBar.innerHTML=`<span class="nav-lbl">통계 대시보드</span>`;
+subNav.classList.remove("v");
+const all=aR();const total=all.length;
+const stCnts=[0,0,0];all.forEach(r=>{try{const s=JSON.parse(r.data)._status||0;stCnts[s]++}catch{}});
+
+// Site counts
+const siteCnts={};SITES.forEach(s=>{let c=0;s.tables.filter(t=>T.includes(t)).forEach(t=>c+=(TC[t]||0));siteCnts[s.label]=c});
+// Today
+const todayCnt=all.filter(r=>iT(r.created_at)).length;
+
+let h=`<div class="st-cards">`;
+const cards=[
+{l:"전체 접수",v:total,u:"건",c:"#1a365d"},
+{l:"오늘 신규",v:todayCnt,u:"건",c:"#c53030"},
+{l:"신규(미확인)",v:stCnts[0],u:"건",c:"#f59e0b"},
+{l:"확인 완료",v:stCnts[1],u:"건",c:"#16a34a"},
+{l:"처리 완료",v:stCnts[2],u:"건",c:"#94a3b8"},
+{l:"신청서 템플릿",v:ftTemplates.length,u:"개",c:"#1a365d"},
+{l:"문제은행",v:TC["questions"]||0,u:"문제",c:"#7c3aed"},
+{l:"커리큘럼",v:TC["curriculum"]||0,u:"과정",c:"#059669"},
+{l:"교재",v:TC["textbooks"]||0,u:"건",c:"#0891b2"},
+{l:"홈페이지",v:WEBSITES.length,u:"개",c:"#64748b"},
+{l:"DB 테이블",v:T.length,u:"개",c:"#555"},
+{l:"모듈",v:ftModules.length,u:"개",c:"#059669"},
+];
+cards.forEach(c=>{h+=`<div class="st-card"><div class="st-label">${c.l}</div><div class="st-val" style="color:${c.c}">${c.v}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">${c.u}</span></div></div>`});
+h+=`</div>`;
+
+// Distribution tables
+h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">`;
+
+// Site distribution
+h+=`<div class="st-dist"><h4>홈페이지별 접수</h4>`;
+Object.entries(siteCnts).forEach(([name,cnt])=>{
+const pct=total>0?Math.round(cnt/total*100):0;
+h+=`<div class="st-bar-row"><span class="st-bar-lbl">${name}</span><div class="st-bar-bg"><div class="st-bar-fill" style="width:${pct}%;background:#2563eb"></div></div><span class="st-bar-cnt">${cnt}</span><span class="st-bar-pct">${pct}%</span></div>`});
+h+=`</div>`;
+
+// Status distribution
+h+=`<div class="st-dist"><h4>상태별 분포</h4>`;
+[{n:"신규",c:stCnts[0],cl:"#f59e0b"},{n:"확인",c:stCnts[1],cl:"#16a34a"},{n:"처리완료",c:stCnts[2],cl:"#94a3b8"}].forEach(s=>{
+const pct=total>0?Math.round(s.c/total*100):0;
+h+=`<div class="st-bar-row"><span class="st-bar-lbl">${s.n}</span><div class="st-bar-bg"><div class="st-bar-fill" style="width:${pct}%;background:${s.cl}"></div></div><span class="st-bar-cnt">${s.c}</span><span class="st-bar-pct">${pct}%</span></div>`});
+h+=`</div>`;
+
+// Domain distribution (5 종목)
+h+=`<div class="st-dist"><h4>종목별 (5대 종목)</h4>`;
+EXAM_DOMAINS.forEach(d=>{
+h+=`<div class="st-bar-row"><span class="st-bar-lbl">${d}</span><div class="st-bar-bg"><div class="st-bar-fill" style="width:0%;background:#7c3aed"></div></div><span class="st-bar-cnt">0</span><span class="st-bar-pct">—</span></div>`});
+h+=`</div>`;
+
+h+=`</div>`;
+ca.innerHTML=h}
+
+// ═══ 콘텐츠 관리 (문제은행/커리큘럼/교재) ═══
+let ctTab="questions";
+function rContent(){
+uB();bc.innerHTML="Work Studio &rsaquo; <b>콘텐츠 관리</b>";
+navBar.innerHTML=`<span class="nav-lbl">콘텐츠</span><span class="nav-sep"></span>`;
+// 종목 필터 chips
+let nh=navBar.innerHTML;
+nh+=`<span class="chip a" onclick="">전체</span>`;
+EXAM_DOMAINS.forEach(d=>{nh+=`<span class="chip">${d}</span>`});
+navBar.innerHTML=nh;
+subNav.classList.remove("v");
+
+let h=`<div class="ct-tabs">
+<div class="ct-tab ${ctTab==="questions"?"a":""}" onclick="ctTab='questions';rContent()">문제은행 <span style="opacity:.6">${TC["questions"]||0}</span></div>
+<div class="ct-tab ${ctTab==="curriculum"?"a":""}" onclick="ctTab='curriculum';rContent()">커리큘럼 <span style="opacity:.6">${TC["curriculum"]||0}</span></div>
+<div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';rContent()">교재 <span style="opacity:.6">${TC["textbooks"]||0}</span></div>
+</div>`;
+
+const data=TD[ctTab]||[];
+if(!data.length){
+h+=`<div class="ct"><div style="padding:40px;text-align:center">
+<div style="font-size:14px;color:#888;margin-bottom:12px">${ctTab==="questions"?"문제가":ctTab==="curriculum"?"커리큘럼이":"교재가"} 없습니다</div>
+<button onclick="ctAddItem()" style="padding:8px 20px;background:#1a365d;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">+ ${ctTab==="questions"?"문제 추가":ctTab==="curriculum"?"과정 추가":"교재 추가"}</button>
+</div></div>`}
+else{
+const ps=data.map(r=>{let d;try{d=JSON.parse(r.data)}catch{d={}}return{...r,p:d}});
+h+=`<div class="ct"><div class="tl">
+<input type="text" placeholder="검색…" oninput="fCT(this.value)"/>
+<span class="cnt">${ps.length}건</span>
+<button class="ab" onclick="ctAddItem()">+추가</button></div>`;
+h+=`<div class="tw"><table><thead><tr><th>번호</th><th>종목</th><th>급수</th><th>소재</th>`;
+if(ctTab==="questions")h+=`<th>문제유형</th><th>난이도</th>`;
+else if(ctTab==="curriculum")h+=`<th>주차</th><th>주제</th>`;
+else h+=`<th>단원</th><th>제목</th>`;
+h+=`<th>일시</th><th>작업</th></tr></thead><tbody id="ctBody">`;
+ps.forEach(r=>{
+h+=`<tr data-id="${r.id}"><td><span class="bid">${r.id}</span></td>
+<td>${eh(r.p._level_area||r.p.domain||"—")}</td>
+<td>${eh(r.p._level_div?r.p._level_div+" "+r.p._level_grade+"급":r.p.grade||"—")}</td>
+<td>${eh(r.p._field_big||r.p.category||"—")}</td>`;
+if(ctTab==="questions")h+=`<td>${eh(r.p.type||"—")}</td><td>${eh(r.p.difficulty||"—")}</td>`;
+else if(ctTab==="curriculum")h+=`<td>${eh(r.p.week||"—")}</td><td>${eh(r.p.topic||"—")}</td>`;
+else h+=`<td>${eh(r.p.unit||"—")}</td><td>${eh(r.p.title||"—")}</td>`;
+h+=`<td>${(r.created_at||"").slice(5,16)}</td>
+<td><span class="ic xc" onclick="ctDel(${r.id})" title="삭제">&#128465;</span></td></tr>`});
+h+=`</tbody></table></div></div>`}
+ca.innerHTML=h}
+
+function fCT(q){document.querySelectorAll("#ctBody tr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?"":"none"})}
+
+function ctAddItem(){
+const fields=ctTab==="questions"?
+{domain:"종목",grade:"급수 (예: 교육 3급)",category:"소재 대분류",type:"문제유형 (객관식/주관식/서술형)",difficulty:"난이도 (상/중/하)",question:"문제 내용",answer:"정답",explanation:"해설"}:
+ctTab==="curriculum"?
+{domain:"종목",grade:"급수",week:"주차",topic:"주제",objective:"학습목표",activity:"학습활동",assessment:"평가방법"}:
+{domain:"종목",grade:"급수",unit:"단원",title:"제목",summary:"내용요약",difficulty:"난이도",pages:"페이지수"};
+const data={};
+for(const[k,label]of Object.entries(fields)){
+const v=prompt(label+":");if(v===null)return;if(v)data[k]=v}
+fetch(`/api/${ctTab}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)})
+.then(()=>lA().then(()=>{rNav();rContent()}))}
+
+async function ctDel(id){if(!confirm("삭제?"))return;
+await fetch(`/api/${ctTab}/${id}`,{method:"DELETE"});await lA();rNav();rContent()}
+
+// ═══ 프로젝트 현황 (_tmp_pages 70개 항목) ═══
+const PROJ_ITEMS=[
+{n:1,cat:"개인",title:"대표미팅신폼",loc:"work_studio",st:"대기중",who:"지예"},
+{n:2,cat:"개인",title:"미수금관리",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:3,cat:"관리",title:"바로가기페이지",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:4,cat:"관리",title:"강의시간표",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:5,cat:"관리",title:"관리자통합시스템",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:6,cat:"관리",title:"신청서모음",loc:"work_studio",st:"대기중",who:"지예"},
+{n:8,cat:"관리",title:"신청서 관리",loc:"work_studio",st:"대기중",who:"준걸"},
+{n:9,cat:"관리",title:"신청서 관리 v2",loc:"work_studio",st:"대기중",who:"준걸"},
+{n:10,cat:"관리",title:"랜딩페이지 관리",loc:"work_studio",st:"대기중",who:"준걸"},
+{n:11,cat:"규정",title:"평가기준정밀설정",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:13,cat:"규정",title:"규정관리",loc:"ai_studio",st:"대기중",who:"준걸"},
+{n:14,cat:"규정",title:"강사커리",loc:"ai_studio",st:"진행",who:"준걸"},
+{n:15,cat:"규정",title:"마케팅",loc:"ai_studio",st:"대기중",who:"준걸"},
+{n:16,cat:"규정",title:"문제은행 사이트",loc:"work_studio",st:"불가",who:"준걸"},
+{n:17,cat:"규정",title:"레벨테스트",loc:"work_studio",st:"완료",who:"준걸"},
+{n:19,cat:"규정",title:"프롬사용법-개발자규정",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:20,cat:"규정",title:"규정매뉴얼",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:21,cat:"규정",title:"규정_레이아웃공통",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:22,cat:"규정",title:"규정관리v1",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:23,cat:"메인",title:"TESOL 랜딩",loc:"work_studio",st:"대기중",who:"지예"},
+{n:24,cat:"메인",title:"대표님홈페이지",loc:"work_studio",st:"대기중",who:"지예"},
+{n:25,cat:"메인",title:"번역사이트_아랍",loc:"work_studio",st:"대기중",who:"지예"},
+{n:26,cat:"메인",title:"통독-전체v3",loc:"work_studio",st:"대기중",who:"지예"},
+{n:27,cat:"메인",title:"번역전체",loc:"work_studio",st:"대기중",who:"지예"},
+{n:28,cat:"메인",title:"대표님홈페이지v3",loc:"work_studio",st:"대기중",who:"지예"},
+{n:30,cat:"메인",title:"AITE",loc:"work_studio",st:"대기중",who:"지예"},
+{n:31,cat:"메인",title:"휴텍씨홈페이지v4",loc:"work_studio",st:"대기중",who:"지예"},
+{n:32,cat:"메인",title:"결합홈페이지",loc:"work_studio",st:"대기중",who:"지예"},
+{n:33,cat:"메인",title:"IITA협회",loc:"work_studio",st:"대기중",who:"지예"},
+{n:34,cat:"메인",title:"원페이지",loc:"work_studio",st:"대기중",who:"준걸"},
+{n:35,cat:"메인",title:"반도체_조선_방산",loc:"work_studio",st:"대기중",who:"준걸"},
+{n:36,cat:"메인",title:"피지컬페이지",loc:"work_studio",st:"대기중",who:"준걸"},
+{n:37,cat:"사내",title:"출퇴근관리",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:38,cat:"사내",title:"업무일지v3",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:39,cat:"사내",title:"사진대시보드",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:40,cat:"사내",title:"사내업무지침",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:41,cat:"사내",title:"미팅관리v2",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:42,cat:"사내",title:"거래처아웃콜",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:43,cat:"사내",title:"서약서",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:44,cat:"사내",title:"면접관리v3",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:45,cat:"사내",title:"면접매뉴얼",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:46,cat:"사내",title:"매뉴얼리스트",loc:"ai_studio",st:"대기중",who:"준걸"},
+{n:48,cat:"서브",title:"AI STUDIO v3",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:49,cat:"시험",title:"시험지_응시자용",loc:"work_studio",st:"대기중",who:"지예"},
+{n:51,cat:"전문가",title:"번역가_지원자용v2",loc:"work_studio",st:"대기중",who:"지예"},
+{n:52,cat:"전문가",title:"강사_지원자용v2",loc:"work_studio",st:"대기중",who:"지예"},
+{n:53,cat:"전문가",title:"이사-강사채점",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:54,cat:"전문가",title:"강사_지원자용v3",loc:"work_studio",st:"대기중",who:"지예"},
+{n:55,cat:"전문가",title:"전문가지원서1장",loc:"work_studio",st:"대기중",who:"지예"},
+{n:56,cat:"전문가",title:"전문가신청1단계",loc:"work_studio",st:"대기중",who:"준걸"},
+{n:57,cat:"전문가",title:"강사면접플로우",loc:"ai_studio",st:"대기중",who:"지예"},
+{n:58,cat:"전문가",title:"전문가_관리자용",loc:"work_studio",st:"대기중",who:"지예"},
+{n:59,cat:"전문가",title:"전문가상담관리",loc:"work_studio",st:"대기중",who:"지예"},
+{n:62,cat:"기타",title:"TESOL신청서_공유용",loc:"work_studio",st:"대기중",who:"—"},
+{n:63,cat:"기타",title:"신청서",loc:"work_studio",st:"대기중",who:"—"},
+{n:64,cat:"기타",title:"TESOL신청서(모듈제외)",loc:"work_studio",st:"완료",who:"—"},
+{n:65,cat:"기타",title:"ai-ethics 사이트",loc:"work_studio",st:"대기중",who:"—"},
+{n:66,cat:"기타",title:"classic-translation",loc:"work_studio",st:"대기중",who:"—"},
+{n:67,cat:"기타",title:"company_hutec",loc:"work_studio",st:"대기중",who:"—"},
+{n:68,cat:"기타",title:"personal_page",loc:"work_studio",st:"대기중",who:"—"},
+{n:69,cat:"기타",title:"TESOL v2",loc:"work_studio",st:"대기중",who:"—"},
+{n:70,cat:"기타",title:"integrated-web v2",loc:"work_studio",st:"대기중",who:"—"},
+];
+
+function rStatus(){
+uB();bc.innerHTML="Work Studio &rsaquo; <b>프로젝트 현황</b>";
+navBar.innerHTML=`<span class="nav-lbl">프로젝트 현황 (${PROJ_ITEMS.length}건)</span>`;
+subNav.classList.remove("v");
+
+const ws=PROJ_ITEMS.filter(p=>p.loc.includes("work_studio"));
+const ai=PROJ_ITEMS.filter(p=>p.loc==="ai_studio");
+const done=PROJ_ITEMS.filter(p=>p.st==="완료").length;
+const prog=PROJ_ITEMS.filter(p=>p.st==="진행").length;
+const wait=PROJ_ITEMS.filter(p=>p.st==="대기중").length;
+const fail=PROJ_ITEMS.filter(p=>p.st==="불가").length;
+
+let h=`<div class="st-cards" style="grid-template-columns:repeat(6,1fr)">
+<div class="st-card"><div class="st-label">전체</div><div class="st-val" style="color:#1a365d">${PROJ_ITEMS.length}</div></div>
+<div class="st-card"><div class="st-label">work_studio</div><div class="st-val" style="color:#2563eb">${ws.length}</div></div>
+<div class="st-card"><div class="st-label">ai_studio</div><div class="st-val" style="color:#7c3aed">${ai.length}</div></div>
+<div class="st-card"><div class="st-label">완료</div><div class="st-val" style="color:#16a34a">${done}</div></div>
+<div class="st-card"><div class="st-label">진행중</div><div class="st-val" style="color:#f59e0b">${prog}</div></div>
+<div class="st-card"><div class="st-label">대기중</div><div class="st-val" style="color:#888">${wait}</div></div>
+</div>`;
+
+h+=`<div class="ct"><div class="tl"><input type="text" placeholder="검색…" oninput="fSP(this.value)"/>
+<select onchange="fSPL(this.value)"><option value="">전체 위치</option><option value="work_studio">work_studio</option><option value="ai_studio">ai_studio</option></select>
+<select onchange="fSPS(this.value)"><option value="">전체 상태</option><option value="대기중">대기중</option><option value="진행">진행</option><option value="완료">완료</option><option value="불가">불가</option></select>
+<span class="cnt">${PROJ_ITEMS.length}건</span></div>`;
+h+=`<div class="tw" style="max-height:calc(100vh - 240px)">`;
+h+=`<div class="sp-row sp-hd"><span>#</span><span>분류</span><span>상태</span><span>제목</span><span>위치</span><span>담당</span><span></span><span></span></div>`;
+PROJ_ITEMS.forEach(p=>{
+const stColor=p.st==="완료"?"#d4edda;color:#155724":p.st==="진행"?"#fff3cd;color:#856404":p.st==="불가"?"#f8d7da;color:#721c24":"#e8ecf0;color:#555";
+const locColor=p.loc.includes("work_studio")?"#eff6ff;color:#2563eb":"#f5f3ff;color:#7c3aed";
+h+=`<div class="sp-row spr" data-loc="${p.loc}" data-st="${p.st}">
+<span style="color:#aaa">${p.n}</span>
+<span class="sp-badge" style="background:#f0f0f0;color:#555">${p.cat}</span>
+<span class="sp-badge" style="background:${stColor}">${p.st}</span>
+<span style="font-weight:600">${eh(p.title)}</span>
+<span class="sp-badge" style="background:${locColor}">${p.loc.replace("work_studio","WS").replace("ai_studio","AI")}</span>
+<span style="color:#888">${p.who}</span>
+<span></span><span></span></div>`});
+h+=`</div></div>`;
+ca.innerHTML=h}
+
+function fSP(q){q=q.toLowerCase();document.querySelectorAll(".spr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?"":"none"})}
+function fSPL(v){document.querySelectorAll(".spr").forEach(r=>{r.style.display=(!v||r.dataset.loc.includes(v))?"":"none"})}
+function fSPS(v){document.querySelectorAll(".spr").forEach(r=>{r.style.display=(!v||r.dataset.st===v)?"":"none"})}
 
 if(sessionStorage.ws)sA();
 </script>
