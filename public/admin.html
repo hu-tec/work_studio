@@ -171,10 +171,40 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 .fe-toolbar{display:flex;gap:6px;margin-bottom:12px}
 .fe-toolbar button{padding:5px 14px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;border:none}
 .fe-empty{text-align:center;padding:40px;color:#999;font-size:12px}
-.fe-preview{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:16px;margin-top:12px;max-width:500px}
-.fe-preview label{display:block;font-size:10px;font-weight:600;color:#555;margin-bottom:2px;margin-top:8px}
-.fe-preview input,.fe-preview select,.fe-preview textarea{width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px}
-.fe-preview .fe-req{color:#c00;margin-left:2px}
+/* Live Preview Modal — form-engine 스타일 재현 */
+.fp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center}
+.fp-modal{background:#fff;border-radius:12px;width:680px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative}
+.fp-close{position:absolute;top:12px;right:16px;font-size:20px;cursor:pointer;color:#999;z-index:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f5f5f5}
+.fp-close:hover{background:#eee;color:#333}
+.fp-header{padding:20px 24px 12px;border-bottom:1px solid #eee}
+.fp-header h2{font-size:18px;font-weight:700;color:#1a365d;margin-bottom:4px}
+.fp-header p{font-size:11px;color:#888}
+.fp-body{padding:24px;font-family:'Pretendard',-apple-system,sans-serif}
+/* form-engine 스타일 재현 */
+.fp-body .fp-progress{display:flex;gap:0;margin-bottom:24px}
+.fp-body .fp-step-dot{flex:1;text-align:center;padding:10px 0;font-size:12px;font-weight:600;border-bottom:3px solid #e2e8f0;color:#999;transition:.2s}
+.fp-body .fp-step-dot.active{border-color:#1a365d;color:#1a365d}
+.fp-body .fp-step-dot.done{border-color:#16a34a;color:#16a34a}
+.fp-body .fp-group{margin-bottom:16px}
+.fp-body .fp-label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px}
+.fp-body .fp-label .req{color:#e53e3e;margin-left:2px}
+.fp-body .fp-input,.fp-body .fp-select,.fp-body .fp-textarea{width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;outline:none;background:#fff}
+.fp-body .fp-textarea{resize:vertical;min-height:80px}
+.fp-body .fp-select{appearance:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%23666' fill='none'/%3E%3C/svg%3E") right 12px center no-repeat #fff}
+.fp-body .fp-check-row{display:flex;align-items:center;gap:8px;padding:8px 0}
+.fp-body .fp-check-row input[type=checkbox]{width:18px;height:18px;accent-color:#1a365d}
+.fp-body .fp-check-row label{font-size:12px;color:#555;cursor:pointer}
+.fp-body .fp-multi{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.fp-body .fp-chip{padding:6px 14px;border:1px solid #d1d5db;border-radius:20px;font-size:12px;cursor:pointer;user-select:none;transition:.15s}
+.fp-body .fp-chip:hover{border-color:#1a365d}
+.fp-body .fp-chip.sel{background:#1a365d;color:#fff;border-color:#1a365d}
+.fp-body .fp-file-zone{border:2px dashed #d1d5db;border-radius:8px;padding:20px;text-align:center;font-size:12px;color:#888}
+.fp-body .fp-btns{display:flex;gap:8px;margin-top:24px}
+.fp-body .fp-btn{flex:1;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:default}
+.fp-body .fp-btn-prev{background:#e2e8f0;color:#555}
+.fp-body .fp-btn-next{background:#1a365d;color:#fff}
+.fp-body .fp-btn-submit{background:#16a34a;color:#fff}
+.fp-body .fp-step-title{font-size:14px;font-weight:700;color:#1a365d;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #eee}
 </style>
 </head>
 <body>
@@ -757,14 +787,12 @@ const w=WEBSITES.find(x=>x.id===ftSite);
 let h=`<div class="fe-editor">`;
 h+=`<div class="fe-toolbar">
 <button style="background:#1a365d;color:#fff" onclick="ftSave()">저장</button>
-<button style="background:#fff;border:1px solid #ddd" onclick="ftPreview=!ftPreview;rForms()">${ftPreview?"편집으로":"미리보기"}</button>
+<button style="background:#fff;border:1px solid #ddd" onclick="ftShowPreview()">미리보기</button>
 <button style="background:#fff;border:1px solid #ddd" onclick="ftAddStep()">+단계 추가</button>
 <button style="background:#fff;border:1px solid #c00;color:#c00" onclick="ftDeleteForm()">삭제</button>
 <span style="margin-left:auto;font-size:10px;color:#888">${w?w.name:""} › ${ftData.name}</span></div>`;
 h+=`<div style="margin-bottom:8px"><label style="font-size:10px;font-weight:600;color:#555">신청서 이름</label>
 <input value="${eh(ftData.name)}" onchange="ftData.name=this.value" style="padding:4px 8px;border:1px solid #ddd;border-radius:3px;font-size:12px;font-weight:700;width:300px"/></div>`;
-
-if(ftPreview){h+=renderFormPreview();h+=`</div>`;return h}
 
 // Steps
 (ftData.steps||[]).forEach((step,si)=>{
@@ -788,18 +816,56 @@ ${["text","tel","email","date","number","select","multiselect","textarea","check
 h+=`<div class="fe-add-field"><button onclick="ftAddField(${si})">+ 필드 추가</button></div></div>`});
 h+=`</div>`;return h}
 
-function renderFormPreview(){
-let h=`<div class="fe-preview"><div style="font-size:13px;font-weight:700;color:#1a365d;margin-bottom:12px">${eh(ftData.name)} — 미리보기</div>`;
-(ftData.steps||[]).forEach((step,si)=>{
-h+=`<div style="font-size:11px;font-weight:700;color:#555;margin-top:12px;padding-bottom:4px;border-bottom:1px solid #eee">Step ${si+1}: ${eh(step.title)}</div>`;
+let fpStep=0;
+function ftShowPreview(){if(!ftData)return;fpStep=0;renderPreviewModal()}
+
+function renderPreviewModal(){
+const w=WEBSITES.find(x=>x.id===ftSite);
+const steps=ftData.steps||[];
+const totalSteps=steps.length;
+const step=steps[fpStep]||{title:"",fields:[]};
+
+let h=`<div class="fp-overlay" onclick="if(event.target===this)closePreview()">
+<div class="fp-modal"><span class="fp-close" onclick="closePreview()">×</span>
+<div class="fp-header"><h2>${eh(ftData.name)}</h2><p>${w?w.name:""} · ${w?w.url:""}</p></div>
+<div class="fp-body">`;
+
+// Step progress bar
+h+=`<div class="fp-progress">`;
+for(let i=0;i<totalSteps;i++){
+const cls=i<fpStep?"done":i===fpStep?"active":"";
+h+=`<div class="fp-step-dot ${cls}" onclick="fpStep=${i};renderPreviewModal()" style="cursor:pointer">Step ${i+1}<br><span style="font-size:10px;font-weight:400">${eh(steps[i].title)}</span></div>`}
+h+=`</div>`;
+
+// Step title
+h+=`<div class="fp-step-title">${eh(step.title)}</div>`;
+
+// Fields
 step.fields.forEach(fld=>{
-h+=`<label>${eh(fld.label)}${fld.required?'<span class="fe-req">*</span>':""}</label>`;
-if(fld.type==="textarea")h+=`<textarea rows="2" disabled></textarea>`;
-else if(fld.type==="select")h+=`<select disabled>${(fld.options||[]).map(o=>`<option>${o}</option>`).join("")}</select>`;
-else if(fld.type==="multiselect")h+=`<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:2px">${(fld.options||[]).map(o=>`<span style="font-size:10px;padding:2px 8px;border:1px solid #ddd;border-radius:12px;background:#f8fafc">${o}</span>`).join("")}</div>`;
-else if(fld.type==="checkbox")h+=`<label style="font-size:11px;font-weight:400;display:flex;align-items:center;gap:4px"><input type="checkbox" disabled/> ${eh(fld.label)}</label>`;
-else h+=`<input type="${fld.type}" disabled placeholder="${eh(fld.label)}"/>`})});
-h+=`</div>`;return h}
+if(fld.type==="checkbox"){
+h+=`<div class="fp-check-row"><input type="checkbox" id="fp-${fld.key}"/><label for="fp-${fld.key}">${eh(fld.label)}${fld.required?'<span class="req">*</span>':""}</label></div>`;return}
+h+=`<div class="fp-group"><label class="fp-label">${eh(fld.label)}${fld.required?'<span class="req">*</span>':""}</label>`;
+if(fld.type==="textarea")h+=`<textarea class="fp-textarea" placeholder="${eh(fld.placeholder||fld.label)}"></textarea>`;
+else if(fld.type==="select")h+=`<select class="fp-select"><option value="">선택하세요</option>${(fld.options||[]).map(o=>`<option>${eh(o)}</option>`).join("")}</select>`;
+else if(fld.type==="multiselect")h+=`<div class="fp-multi">${(fld.options||[]).map(o=>`<span class="fp-chip" onclick="this.classList.toggle('sel')">${eh(o)}</span>`).join("")}</div>`;
+else if(fld.type==="file")h+=`<div class="fp-file-zone">📎 파일을 드래그하거나 클릭하여 업로드</div>`;
+else h+=`<input class="fp-input" type="${fld.type||"text"}" placeholder="${eh(fld.placeholder||fld.label)}"/>`;
+h+=`</div>`});
+
+// Navigation buttons
+h+=`<div class="fp-btns">`;
+if(fpStep>0)h+=`<button class="fp-btn fp-btn-prev" onclick="fpStep--;renderPreviewModal()">이전</button>`;
+if(fpStep<totalSteps-1)h+=`<button class="fp-btn fp-btn-next" onclick="fpStep++;renderPreviewModal()">저장 후 다음</button>`;
+else h+=`<button class="fp-btn fp-btn-submit">최종 제출</button>`;
+h+=`</div>`;
+
+h+=`</div></div></div>`;
+
+// Remove existing overlay
+const ex=document.querySelector(".fp-overlay");if(ex)ex.remove();
+document.body.insertAdjacentHTML("beforeend",h)}
+
+function closePreview(){const el=document.querySelector(".fp-overlay");if(el)el.remove()}
 
 function ftAddField(si){ftData.steps[si].fields.push({key:"new_field",label:"새 필드",type:"text",required:false});rForms()}
 function ftAddStep(){ftData.steps.push({title:"새 단계",fields:[]});rForms()}
