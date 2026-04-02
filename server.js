@@ -21,6 +21,18 @@ app.get("/api/tables", (req, res) => {
   res.json(TABLES);
 });
 
+// --- 분류표 데이터 API (단일 소스) — CRUD 라우트보다 먼저 등록 ---
+const dataDefsPath = path.join(__dirname, "modules", "data-definitions");
+app.get("/api/definitions/:name", (req, res) => {
+  const filePath = path.join(dataDefsPath, req.params.name + ".json");
+  res.sendFile(filePath, (err) => { if (err) res.status(404).json({ error: "Not found" }); });
+});
+app.get("/api/definitions", (req, res) => {
+  const fs = require("fs");
+  const files = fs.readdirSync(dataDefsPath).filter(f => f.endsWith(".json")).map(f => f.replace(".json", ""));
+  res.json(files);
+});
+
 // --- 범용 CRUD: /api/:table ---
 app.get("/api/:table", (req, res) => {
   const { table } = req.params;
@@ -76,18 +88,6 @@ app.post("/api/upload/presign", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Presigned URL 생성 실패", detail: err.message });
   }
-});
-
-// --- 분류표 데이터 API (단일 소스) ---
-const dataDefsPath = path.join(__dirname, "modules", "data-definitions");
-app.get("/api/definitions/:name", (req, res) => {
-  const filePath = path.join(dataDefsPath, req.params.name + ".json");
-  res.sendFile(filePath, (err) => { if (err) res.status(404).json({ error: "Not found" }); });
-});
-app.get("/api/definitions", (req, res) => {
-  const fs = require("fs");
-  const files = fs.readdirSync(dataDefsPath).filter(f => f.endsWith(".json")).map(f => f.replace(".json", ""));
-  res.json(files);
 });
 
 // --- 신청서 설정 API (외부 사이트 → work_studio) ---
