@@ -1,0 +1,13 @@
+{
+  "_meta": { "name": "E. 역할 & 권한 (RBAC)", "updated": "2026-04-02" },
+  "roles": [
+    { "id": "alba", "label": "알바", "type": "내부 비정규", "permissions": { "read": true, "create": false, "edit": false, "delete": false, "approve": false, "system": false }, "scope": "배정된 업무만" },
+    { "id": "newbie", "label": "신입", "type": "내부 정규", "permissions": { "read": true, "create": true, "edit": false, "delete": false, "approve": false, "system": false }, "scope": "소속 팀 테이블" },
+    { "id": "instructor", "label": "강사", "type": "내부 전문", "permissions": { "read": true, "create": true, "edit": true, "delete": false, "approve": false, "system": false }, "scope": "소속 종목 전체" },
+    { "id": "leader", "label": "팀장", "type": "내부 관리", "permissions": { "read": true, "create": true, "edit": true, "delete": true, "approve": false, "system": false }, "scope": "소속 팀 전체" },
+    { "id": "dev", "label": "개발", "type": "기술", "permissions": { "read": true, "create": true, "edit": true, "delete": true, "approve": false, "system": true }, "scope": "전체 (기술 운영)" },
+    { "id": "external", "label": "외부", "type": "외부", "permissions": { "read": true, "create": true, "edit": false, "delete": false, "approve": false, "system": false }, "scope": "계약 범위만" },
+    { "id": "executive", "label": "임원", "type": "경영", "permissions": { "read": true, "create": true, "edit": true, "delete": true, "approve": true, "system": false }, "scope": "전체 데이터" },
+    { "id": "ceo", "label": "대표", "type": "최고경영", "permissions": { "read": true, "create": true, "edit": true, "delete": true, "approve": true, "system": true }, "scope": "전체 + 최종 결재" }
+  ]
+}

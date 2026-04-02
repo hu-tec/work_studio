@@ -78,6 +78,18 @@ app.post("/api/upload/presign", async (req, res) => {
   }
 });
 
+// --- 분류표 데이터 API (단일 소스) ---
+const dataDefsPath = path.join(__dirname, "modules", "data-definitions");
+app.get("/api/definitions/:name", (req, res) => {
+  const filePath = path.join(dataDefsPath, req.params.name + ".json");
+  res.sendFile(filePath, (err) => { if (err) res.status(404).json({ error: "Not found" }); });
+});
+app.get("/api/definitions", (req, res) => {
+  const fs = require("fs");
+  const files = fs.readdirSync(dataDefsPath).filter(f => f.endsWith(".json")).map(f => f.replace(".json", ""));
+  res.json(files);
+});
+
 // --- 신청서 설정 API (외부 사이트 → work_studio) ---
 app.get("/api/form-config/:siteId/:formId", (req, res) => {
   const { siteId, formId } = req.params;
