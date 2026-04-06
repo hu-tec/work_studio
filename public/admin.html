@@ -162,6 +162,71 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 .ct-tab{flex:1;padding:8px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#888}
 .ct-tab:first-child{border-radius:6px 0 0 6px}.ct-tab:last-child{border-radius:0 6px 6px 0}
 .ct-tab.a{background:#1a365d;color:#fff;border-color:#1a365d}
+/* ── 분류 선택기 패널 (3열 캐스케이드) ── */
+.clf-panel{display:flex;gap:0;border:1px solid #e2e8f0;border-radius:8px;background:#fff;overflow:hidden;margin-bottom:10px}
+.clf-col{flex:1;min-width:0;border-right:1px solid #e2e8f0;padding:8px 0}
+.clf-col:last-child{border-right:none}
+.clf-col-title{font-size:10px;font-weight:700;color:#1a365d;padding:0 10px 6px;border-bottom:1px solid #eef2ff;margin-bottom:4px}
+.clf-sub{padding:0 6px;margin-bottom:4px}
+.clf-sub-title{font-size:9px;font-weight:700;color:#7c3aed;padding:3px 4px;margin-bottom:2px}
+.clf-item{padding:4px 10px;font-size:11px;cursor:pointer;border-radius:4px;margin:1px 4px;color:#555;transition:.1s}
+.clf-item:hover{background:#eef2ff;color:#1a365d}
+.clf-item.a{background:#1a365d;color:#fff;font-weight:600}
+.clf-item.a:hover{background:#2d4a7c}
+.clf-placeholder{padding:6px 10px;font-size:10px;color:#bbb;font-style:italic}
+/* ── 문제 등록/상세 ── */
+.ct-dr{background:#f8fafc}
+.ct-dr td{padding:12px 16px}
+.ct-meta{display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:10px;color:#888;flex-wrap:wrap}
+.ct-meta .rit{margin-right:2px}
+.ct-acts{display:flex;gap:4px;margin-left:auto}
+.ct-acts button{padding:3px 10px;border-radius:3px;font-size:10px;cursor:pointer;border:1px solid #ddd;background:#fff}
+.ct-acts .ct-edit{color:#1a365d;border-color:#1a365d}
+.ct-acts .ct-del{color:#c00;border-color:#c00}
+.ct-detail{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.ct-di{font-size:11px;padding:5px 0;border-bottom:1px solid #f0f0f0}
+.ct-di.sp2{grid-column:span 2}.ct-di.sp3{grid-column:span 3}.ct-di.sp4{grid-column:span 4}
+.ct-di .ct-lbl{font-size:9px;color:#888;font-weight:600}
+.ct-di .ct-val{margin-top:2px;line-height:1.5;word-break:break-word;white-space:pre-wrap}
+.ct-di input,.ct-di textarea{display:none;width:100%;padding:4px 6px;border:1px solid #ccc;border-radius:3px;font-size:11px;margin-top:2px}
+.ct-di textarea{resize:vertical;min-height:50px}
+/* 문제 미리보기 */
+.q-preview{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-top:6px}
+.q-preview .q-passage{background:#f8fafc;padding:8px 10px;border-radius:4px;font-size:11px;line-height:1.6;margin-bottom:8px;border-left:3px solid #7c3aed}
+.q-preview .q-text{font-size:12px;font-weight:600;margin-bottom:8px;line-height:1.5}
+.q-preview .q-choice{display:flex;align-items:flex-start;gap:6px;padding:5px 8px;border-radius:4px;font-size:11px;margin-bottom:3px}
+.q-preview .q-choice:hover{background:#f5f5f5}
+.q-preview .q-choice.correct{background:#dcfce7;font-weight:600}
+.q-preview .q-choice .q-num{font-weight:700;color:#7c3aed;flex-shrink:0;width:16px}
+.q-preview .q-answer{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700}
+.q-preview .q-answer.ox-o{background:#dcfce7;color:#16a34a}.q-preview .q-answer.ox-x{background:#fee2e2;color:#dc2626}
+.q-preview .q-explain{margin-top:8px;padding:8px;background:#fffbeb;border-radius:4px;font-size:10px;line-height:1.5;border-left:3px solid #d97706}
+/* 보기 입력 필드 */
+.q-choices-input{margin-top:4px}
+.q-choice-row{display:flex;gap:6px;align-items:center;margin-bottom:4px}
+.q-choice-row .q-num{font-size:11px;font-weight:700;color:#7c3aed;width:14px;flex-shrink:0}
+.q-choice-row input{flex:1;padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px}
+.q-choice-row .q-ans-btn{padding:3px 8px;border:1px solid #ddd;border-radius:4px;font-size:9px;cursor:pointer;background:#fff;color:#888}
+.q-choice-row .q-ans-btn.a{background:#16a34a;color:#fff;border-color:#16a34a}
+/* OX 선택 */
+.q-ox{display:flex;gap:8px;margin-top:4px}
+.q-ox-btn{width:48px;height:48px;border-radius:50%;font-size:20px;font-weight:900;cursor:pointer;border:2px solid #ddd;background:#fff;display:flex;align-items:center;justify-content:center}
+.q-ox-btn:hover{border-color:#aaa}
+.q-ox-btn.a-o{background:#16a34a;color:#fff;border-color:#16a34a}
+.q-ox-btn.a-x{background:#dc2626;color:#fff;border-color:#dc2626}
+/* 문제유형 선택 */
+.q-type-bar{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px}
+.q-type-btn{padding:5px 12px;border:1px solid #ddd;border-radius:4px;font-size:10px;cursor:pointer;background:#fff;color:#555}
+.q-type-btn:hover{background:#eef2ff;border-color:#1a365d}
+.q-type-btn.a{background:#7c3aed;color:#fff;border-color:#7c3aed}
+/* 폼 */
+.ct-form{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:16px;margin-bottom:12px}
+.ct-form .ct-ftitle{font-size:12px;font-weight:700;color:#1a365d;margin-bottom:10px}
+.ct-form .ct-fsec{font-size:10px;font-weight:600;color:#888;margin:10px 0 4px;padding-bottom:4px;border-bottom:1px solid #eee}
+.ct-form .ct-fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ct-form label{font-size:9px;font-weight:700;color:#555;display:block;margin-bottom:2px}
+.ct-form input,.ct-form textarea{width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px}
+.ct-form textarea{resize:vertical}
 /* Form Editor */
 .fe-wrap{display:flex;gap:12px;height:calc(100vh - 160px)}
 .fe-sidebar{width:240px;background:#fff;border-radius:6px;border:1px solid #eee;overflow-y:auto;flex-shrink:0}
@@ -448,17 +513,17 @@ h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margi
 <div style="font-size:20px;font-weight:900;color:#1a365d">${ftCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">개</span></div>
 <div style="font-size:9px;color:#aaa;margin-top:2px">${WEBSITES.length}개 홈페이지</div>
 </div>
-<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px">
+<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px;cursor:pointer" onclick="ctTab='questions';sv('q')">
 <div style="font-size:9px;color:#888;font-weight:600">문제은행</div>
 <div style="font-size:20px;font-weight:900;color:#7c3aed">${qCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">문제</span></div>
 <div style="font-size:9px;color:#aaa;margin-top:2px">5종목 × 급수</div>
 </div>
-<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px">
+<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px;cursor:pointer" onclick="ctTab='curriculum';sv('q')">
 <div style="font-size:9px;color:#888;font-weight:600">커리큘럼</div>
 <div style="font-size:20px;font-weight:900;color:#059669">${cCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">과정</span></div>
 <div style="font-size:9px;color:#aaa;margin-top:2px">주차별 관리</div>
 </div>
-<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px">
+<div style="background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:10px 14px;cursor:pointer" onclick="ctTab='textbooks';sv('q')">
 <div style="font-size:9px;color:#888;font-weight:600">교재</div>
 <div style="font-size:20px;font-weight:900;color:#0891b2">${tbCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">건</span></div>
 <div style="font-size:9px;color:#aaa;margin-top:2px">단원별 관리</div>
@@ -1164,110 +1229,417 @@ h+=`</div>`;
 h+=`</div>`;
 ca.innerHTML=h}
 
-// ═══ 콘텐츠 관리 (문제은행/커리큘럼/교재) ═══
-let ctTab="questions";
+// ═══ 콘텐츠 관리 (문제은행 / 커리큘럼 / 교재) ═══
+let ctTab="questions",ctAdding=false,ctDomainF="",ctExpId=null;
+const CT_LABELS={questions:"문제",curriculum:"과정",textbooks:"교재"};
+const Q_TYPES=["객관식(4지선다)","객관식(5지선다)","OX","주관식(단답)","주관식(서술)","빈칸채우기","듣기","읽기이해"];
+
+// ── 3열 패널 분류 선택기 (스크린샷 기반) ──
+function ctClfPanel(id,vals={}){
+const v={domain:vals._level_area||vals.domain||"",division:vals._level_div||vals.division||"",
+grade:vals._level_grade||vals.grade||"",fieldBig:vals._field_big||vals.fieldBig||"",
+fieldMid:vals._field_mid||vals.fieldMid||"",fieldSm:vals._field_sm||vals.fieldSm||""};
+// A분야 열
+let colA=`<div class="clf-col"><div class="clf-col-title">A. 분야 (소재)</div>`;
+colA+=`<div class="clf-sub"><div class="clf-sub-title">대 카테고리</div>`;
+Object.keys(FIELDS).forEach(k=>{colA+=`<div class="clf-item${v.fieldBig===k?" a":""}" data-ck="fieldBig" data-cv="${k}">${k}</div>`});
+colA+=`</div>`;
+colA+=`<div class="clf-sub"><div class="clf-sub-title">중 카테고리</div>`;
+if(v.fieldBig&&FIELDS[v.fieldBig]){
+Object.keys(FIELDS[v.fieldBig]).forEach(m=>{colA+=`<div class="clf-item${v.fieldMid===m?" a":""}" data-ck="fieldMid" data-cv="${m}">${m}</div>`})}
+else colA+=`<div class="clf-placeholder">대 카테고리를 선택하세요</div>`;
+colA+=`</div>`;
+colA+=`<div class="clf-sub"><div class="clf-sub-title">소 카테고리</div>`;
+if(v.fieldBig&&v.fieldMid&&(FIELDS[v.fieldBig]||{})[v.fieldMid]){
+const sms=(FIELDS[v.fieldBig]||{})[v.fieldMid]||[];
+if(sms.length)sms.forEach(s=>{colA+=`<div class="clf-item${v.fieldSm===s?" a":""}" data-ck="fieldSm" data-cv="${s}">${s}</div>`});
+else colA+=`<div class="clf-placeholder">소분류 없음</div>`}
+else colA+=`<div class="clf-placeholder">대/중 카테고리를 선택하세요</div>`;
+colA+=`</div></div>`;
+// B급수 열
+let colB=`<div class="clf-col"><div class="clf-col-title">B. 급수</div>`;
+colB+=`<div class="clf-sub"><div class="clf-sub-title">대 카테고리 (종목)</div>`;
+EXAM_DOMAINS.forEach(d=>{colB+=`<div class="clf-item${v.domain===d?" a":""}" data-ck="domain" data-cv="${d}">${d}</div>`});
+colB+=`</div>`;
+colB+=`<div class="clf-sub"><div class="clf-sub-title">중 카테고리 (구분)</div>`;
+if(v.domain){['교육','비즈니스','전문'].forEach(d=>{colB+=`<div class="clf-item${v.division===d?" a":""}" data-ck="division" data-cv="${d}">${d}</div>`})}
+else colB+=`<div class="clf-placeholder">종목을 선택하세요</div>`;
+colB+=`</div>`;
+colB+=`<div class="clf-sub"><div class="clf-sub-title">소 카테고리 (급수)</div>`;
+if(v.domain&&v.division){
+const grades=(LEVELS[v.domain]||{})[v.division]||[];
+grades.forEach(g=>{colB+=`<div class="clf-item${v.grade===g+"급"?" a":""}" data-ck="grade" data-cv="${g}급">${g}급</div>`})}
+else colB+=`<div class="clf-placeholder">구분을 선택하세요</div>`;
+colB+=`</div></div>`;
+// 선택 요약 열
+let colC=`<div class="clf-col"><div class="clf-col-title">선택 현황</div><div style="padding:6px 10px;font-size:10px;line-height:1.8">`;
+colC+=`<div><span style="color:#888">종목:</span> <b>${v.domain||"—"}</b></div>`;
+colC+=`<div><span style="color:#888">구분:</span> <b>${v.division||"—"}</b></div>`;
+colC+=`<div><span style="color:#888">급수:</span> <b>${v.grade||"—"}</b></div>`;
+colC+=`<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee"><span style="color:#888">소재 대:</span> <b>${v.fieldBig||"—"}</b></div>`;
+colC+=`<div><span style="color:#888">소재 중:</span> <b>${v.fieldMid||"—"}</b></div>`;
+colC+=`<div><span style="color:#888">소재 소:</span> <b>${v.fieldSm||"—"}</b></div>`;
+colC+=`</div></div>`;
+return`<div class="clf-panel" id="${id}">${colA}${colB}${colC}</div>`}
+
+function ctClfBind(id){
+const el=document.getElementById(id);if(!el)return;
+el.querySelectorAll("[data-ck]").forEach(item=>{item.onclick=()=>{
+const k=item.dataset.ck,v=item.dataset.cv;
+// 토글
+if(el.dataset[k]===v)el.dataset[k]="";else el.dataset[k]=v;
+if(k==="fieldBig"){el.dataset.fieldMid="";el.dataset.fieldSm=""}
+if(k==="fieldMid")el.dataset.fieldSm="";
+if(k==="domain"){el.dataset.division="";el.dataset.grade=""}
+if(k==="division")el.dataset.grade="";
+// 리렌더
+const vals={domain:el.dataset.domain||"",division:el.dataset.division||"",grade:el.dataset.grade||"",
+fieldBig:el.dataset.fieldBig||"",fieldMid:el.dataset.fieldMid||"",fieldSm:el.dataset.fieldSm||""};
+el.outerHTML=ctClfPanel(id,vals);
+ctClfBind(id)}})}
+
+function ctClfInit(id,vals={}){
+const el=document.getElementById(id);if(!el)return;
+el.dataset.domain=vals._level_area||vals.domain||"";
+el.dataset.division=vals._level_div||vals.division||"";
+el.dataset.grade=vals._level_grade||vals.grade||"";
+el.dataset.fieldBig=vals._field_big||vals.fieldBig||"";
+el.dataset.fieldMid=vals._field_mid||vals.fieldMid||"";
+el.dataset.fieldSm=vals._field_sm||vals.fieldSm||"";
+el.outerHTML=ctClfPanel(id,vals);
+ctClfBind(id)}
+
+function ctClfVals(id){
+const el=document.getElementById(id);if(!el)return{};
+return{_level_area:el.dataset.domain||"",_level_div:el.dataset.division||"",_level_grade:el.dataset.grade||"",
+_field_big:el.dataset.fieldBig||"",_field_mid:el.dataset.fieldMid||"",_field_sm:el.dataset.fieldSm||""}}
+
+// ── 문제유형별 동적 폼 ──
+function qTypeForm(type,data={}){
+const t=type||"";
+let h="";
+if(t.startsWith("객관식")){
+const n=t.includes("5")?5:4;
+const choices=data.choices||[];
+const ans=data.answer||"";
+h+=`<div style="grid-column:span 4"><label>보기</label><div class="q-choices-input" id="qChoicesWrap">`;
+for(let i=1;i<=n;i++){
+const cv=choices[i-1]||"";
+h+=`<div class="q-choice-row"><span class="q-num">${i}</span>
+<input data-qc="${i}" value="${eh(cv)}" placeholder="${i}번 보기"/>
+<span class="q-ans-btn${String(ans)===String(i)?" a":""}" onclick="qSetAns(this,${i})">${String(ans)===String(i)?"정답":"선택"}</span></div>`}
+h+=`</div><input type="hidden" id="qAnswer" value="${eh(ans)}"/></div>`}
+else if(t==="OX"){
+const ans=data.answer||"";
+h+=`<div style="grid-column:span 4"><label>정답</label><div class="q-ox">
+<div class="q-ox-btn${ans==="O"?" a-o":""}" onclick="qSetOX(this,'O')">O</div>
+<div class="q-ox-btn${ans==="X"?" a-x":""}" onclick="qSetOX(this,'X')">X</div>
+</div><input type="hidden" id="qAnswer" value="${eh(ans)}"/></div>`}
+else if(t==="주관식(단답)"){
+h+=`<div style="grid-column:span 4"><label>정답</label><input id="qAnswer" value="${eh(data.answer||"")}" placeholder="정답을 입력하세요"/></div>`}
+else if(t==="주관식(서술)"){
+h+=`<div style="grid-column:span 4"><label>모범 답안</label><textarea id="qAnswer" rows="3" placeholder="모범 답안을 입력하세요">${eh(data.answer||"")}</textarea></div>`}
+else if(t==="빈칸채우기"){
+h+=`<div style="grid-column:span 4"><label>정답 (빈칸에 들어갈 단어)</label><input id="qAnswer" value="${eh(data.answer||"")}" placeholder="빈칸 정답"/></div>`}
+else{
+h+=`<div style="grid-column:span 4"><label>정답</label><input id="qAnswer" value="${eh(data.answer||"")}" placeholder="정답"/></div>`}
+return h}
+
+function qSetAns(btn,n){
+btn.closest(".q-choices-input").querySelectorAll(".q-ans-btn").forEach(b=>{b.classList.remove("a");b.textContent="선택"});
+btn.classList.add("a");btn.textContent="정답";
+const h=document.getElementById("qAnswer");if(h)h.value=n}
+function qSetOX(btn,v){
+btn.parentElement.querySelectorAll(".q-ox-btn").forEach(b=>{b.classList.remove("a-o","a-x")});
+btn.classList.add(v==="O"?"a-o":"a-x");
+const h=document.getElementById("qAnswer");if(h)h.value=v}
+
+// ── 메인 렌더 ──
 function rContent(){
 uB();bc.innerHTML="Work Studio &rsaquo; <b>콘텐츠 관리</b>";
-navBar.innerHTML=`<span class="nav-lbl">콘텐츠</span><span class="nav-sep"></span>`;
-// 종목 필터 chips
-let nh=navBar.innerHTML;
-nh+=`<span class="chip a" onclick="">전체</span>`;
-EXAM_DOMAINS.forEach(d=>{nh+=`<span class="chip">${d}</span>`});
-navBar.innerHTML=nh;
-subNav.classList.remove("v");
+let nh=`<span class="nav-lbl">종목 필터</span><span class="nav-sep"></span>`;
+nh+=`<span class="chip ${!ctDomainF?"a":""}" onclick="ctDomainF='';rContent()">전체</span>`;
+EXAM_DOMAINS.forEach(d=>{nh+=`<span class="chip ${ctDomainF===d?"a":""}" onclick="ctDomainF='${d}';rContent()">${d}</span>`});
+navBar.innerHTML=nh;subNav.classList.remove("v");
 
 let h=`<div class="ct-tabs">
-<div class="ct-tab ${ctTab==="questions"?"a":""}" onclick="ctTab='questions';rContent()">문제은행 <span style="opacity:.6">${TC["questions"]||0}</span></div>
-<div class="ct-tab ${ctTab==="curriculum"?"a":""}" onclick="ctTab='curriculum';rContent()">커리큘럼 <span style="opacity:.6">${TC["curriculum"]||0}</span></div>
-<div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';rContent()">교재 <span style="opacity:.6">${TC["textbooks"]||0}</span></div>
-</div>`;
+<div class="ct-tab ${ctTab==="questions"?"a":""}" onclick="ctTab='questions';ctAdding=false;ctExpId=null;rContent()">문제은행 <span style="opacity:.6">${TC.questions||0}</span></div>
+<div class="ct-tab ${ctTab==="curriculum"?"a":""}" onclick="ctTab='curriculum';ctAdding=false;ctExpId=null;rContent()">커리큘럼 <span style="opacity:.6">${TC.curriculum||0}</span></div>
+<div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';ctAdding=false;ctExpId=null;rContent()">교재 <span style="opacity:.6">${TC.textbooks||0}</span></div></div>`;
 
-if(ctAdding)h+=renderCtForm();
-const data=TD[ctTab]||[];
-if(!data.length&&!ctAdding){
+if(ctAdding)h+=ctRenderForm();
+let ps=(TD[ctTab]||[]).map(r=>{let d;try{d=JSON.parse(r.data)}catch{d={}}return{...r,p:d}});
+if(ctDomainF)ps=ps.filter(r=>(r.p._level_area||r.p.domain)===ctDomainF);
+
+if(!ps.length&&!ctAdding){
 h+=`<div class="ct"><div style="padding:40px;text-align:center">
-<div style="font-size:14px;color:#888;margin-bottom:12px">${ctTab==="questions"?"문제가":ctTab==="curriculum"?"커리큘럼이":"교재가"} 없습니다</div>
-<button onclick="ctAddItem()" style="padding:8px 20px;background:#1a365d;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">+ ${ctTab==="questions"?"문제 추가":ctTab==="curriculum"?"과정 추가":"교재 추가"}</button>
-</div></div>`}
-else{
-const ps=data.map(r=>{let d;try{d=JSON.parse(r.data)}catch{d={}}return{...r,p:d}});
-h+=`<div class="ct"><div class="tl">
-<input type="text" placeholder="검색…" oninput="fCT(this.value)"/>
-<span class="cnt">${ps.length}건</span>
-<button class="ab" onclick="ctAddItem()">+추가</button></div>`;
-h+=`<div class="tw"><table><thead><tr><th>번호</th><th>종목</th><th>급수</th><th>소재</th>`;
-if(ctTab==="questions")h+=`<th>문제유형</th><th>난이도</th>`;
+<div style="font-size:14px;color:#888;margin-bottom:12px">${ctDomainF?ctDomainF+" ":""}${CT_LABELS[ctTab]}이(가) 없습니다</div>
+<button onclick="ctAddItem()" style="padding:8px 20px;background:#1a365d;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">+ ${CT_LABELS[ctTab]} 추가</button></div></div>`}
+else if(ps.length){
+h+=`<div class="ct"><div class="tl"><input type="text" placeholder="검색…" oninput="fCT(this.value)"/>
+<span class="cnt">${ps.length}건</span><button class="ab" onclick="ctAddItem()">+ ${CT_LABELS[ctTab]} 추가</button></div>`;
+h+=`<div class="tw"><table><thead><tr><th>번호</th><th>종목</th><th>구분</th><th>급수</th><th>소재</th>`;
+if(ctTab==="questions")h+=`<th>문제유형</th><th>난이도</th><th>배점</th>`;
 else if(ctTab==="curriculum")h+=`<th>주차</th><th>주제</th>`;
-else h+=`<th>단원</th><th>제목</th>`;
-h+=`<th>일시</th><th>작업</th></tr></thead><tbody id="ctBody">`;
+else h+=`<th>단원</th><th>제목</th><th>난이도</th>`;
+h+=`<th>일시</th></tr></thead><tbody id="ctBody">`;
 ps.forEach(r=>{
-h+=`<tr data-id="${r.id}"><td><span class="bid">${r.id}</span></td>
-<td>${eh(r.p._level_area||r.p.domain||"—")}</td>
-<td>${eh(r.p._level_div?r.p._level_div+" "+r.p._level_grade+"급":r.p.grade||"—")}</td>
-<td>${eh(r.p._field_big||r.p.category||"—")}</td>`;
-if(ctTab==="questions")h+=`<td>${eh(r.p.type||"—")}</td><td>${eh(r.p.difficulty||"—")}</td>`;
+const dom=r.p._level_area||r.p.domain||"—",div=r.p._level_div||r.p.division||"—",
+grd=r.p._level_grade||r.p.grade||"—",fbig=r.p._field_big||r.p.fieldBig||"—";
+h+=`<tr data-id="${r.id}" onclick="ctToggle(${r.id})" style="cursor:pointer">
+<td><span class="bid">${r.id}</span></td><td><span class="rit">${eh(dom)}</span></td>
+<td>${eh(div)}</td><td>${eh(grd)}</td><td>${eh(fbig)}</td>`;
+if(ctTab==="questions")h+=`<td>${eh(r.p.type||"—")}</td><td>${eh(r.p.difficulty||"—")}</td><td>${eh(r.p.points||"—")}</td>`;
 else if(ctTab==="curriculum")h+=`<td>${eh(r.p.week||"—")}</td><td>${eh(r.p.topic||"—")}</td>`;
-else h+=`<td>${eh(r.p.unit||"—")}</td><td>${eh(r.p.title||"—")}</td>`;
-h+=`<td>${(r.created_at||"").slice(5,16)}</td>
-<td><span class="ic xc" onclick="ctDel(${r.id})" title="삭제">&#128465;</span></td></tr>`});
+else h+=`<td>${eh(r.p.unit||"—")}</td><td>${eh(r.p.title||"—")}</td><td>${eh(r.p.difficulty||"—")}</td>`;
+h+=`<td>${(r.created_at||"").slice(5,16)}</td></tr>`;
+if(ctExpId===r.id)h+=ctDetailRow(r)});
 h+=`</tbody></table></div></div>`}
-ca.innerHTML=h}
+ca.innerHTML=h;
+if(ctAdding)setTimeout(()=>{ctClfInit("ctClfAdd");ctBindTypeChange()},0)}
 
-function fCT(q){document.querySelectorAll("#ctBody tr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?"":"none"})}
+function fCT(q){document.querySelectorAll("#ctBody tr:not(.ct-dr)").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?"":"none"})}
+function ctAddItem(){ctAdding=!ctAdding;ctExpId=null;rContent()}
 
-let ctAdding=false;
-function ctAddItem(){ctAdding=!ctAdding;rContent()}
+// ── 상세 펼치기 + 문제 미리보기 ──
+function ctToggle(id){ctExpId=ctExpId===id?null:id;rContent()}
 
-function renderCtForm(){
-const extraFields=ctTab==="questions"?[
-{k:"type",l:"문제유형",t:"select",o:["객관식","주관식","서술형","OX","빈칸채우기"]},
-{k:"difficulty",l:"난이도",t:"select",o:["상","중","하"]},
-{k:"question",l:"문제 내용",t:"textarea"},{k:"answer",l:"정답",t:"text"},{k:"explanation",l:"해설",t:"textarea"}]:
-ctTab==="curriculum"?[
-{k:"week",l:"주차",t:"text",ph:"예: 1주차"},{k:"topic",l:"주제",t:"text"},
-{k:"objective",l:"학습목표",t:"textarea"},{k:"activity",l:"학습활동",t:"textarea"},
-{k:"assessment",l:"평가방법",t:"select",o:["과제","시험","발표","실습","포트폴리오"]}]:
-[{k:"unit",l:"단원",t:"text",ph:"예: 1단원"},{k:"title",l:"제목",t:"text"},
-{k:"summary",l:"내용 요약",t:"textarea"},{k:"difficulty",l:"난이도",t:"select",o:["초급","중급","고급"]},{k:"pages",l:"페이지수",t:"text"}];
-
-let h=`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:16px;margin-bottom:12px">
-<div style="font-size:12px;font-weight:700;color:#1a365d;margin-bottom:8px">${ctTab==="questions"?"문제 추가":ctTab==="curriculum"?"과정 추가":"교재 추가"}</div>
-<div style="font-size:10px;font-weight:600;color:#888;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid #eee">분류 선택</div>
-<div id="ctClassifier"></div>
-<div style="font-size:10px;font-weight:600;color:#888;margin:8px 0 4px;padding-bottom:4px;border-bottom:1px solid #eee">상세 정보</div>
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">`;
-extraFields.forEach(f=>{
-h+=`<div${f.t==="textarea"?" style=\"grid-column:span 2\"":""}><label style="font-size:9px;font-weight:700;color:#555;display:block;margin-bottom:2px">${f.l}</label>`;
-if(f.t==="select")h+=`<select data-ct="${f.k}" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px"><option value="">선택</option>${(f.o||[]).map(o=>`<option value="${o}">${o}</option>`).join("")}</select>`;
-else if(f.t==="textarea")h+=`<textarea data-ct="${f.k}" rows="2" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px;resize:vertical" placeholder="${f.ph||""}"></textarea>`;
-else h+=`<input data-ct="${f.k}" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px" placeholder="${f.ph||""}"/>`;
-h+=`</div>`});
-h+=`</div><div style="margin-top:10px;display:flex;gap:6px">
-<button onclick="ctDoAdd()" style="padding:6px 16px;background:#1a365d;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer">저장</button>
-<button onclick="ctAdding=false;rContent()" style="padding:6px 16px;background:#fff;border:1px solid #ddd;border-radius:4px;font-size:11px;cursor:pointer">취소</button>
+function ctDetailRow(r){
+const p=r.p;
+const clf={_level_area:p._level_area||p.domain||"",_level_div:p._level_div||p.division||"",
+_level_grade:p._level_grade||p.grade||"",_field_big:p._field_big||p.fieldBig||"",
+_field_mid:p._field_mid||p.fieldMid||"",_field_sm:p._field_sm||p.fieldSm||""};
+let h=`<tr class="ct-dr"><td colspan="99">
+<div class="ct-meta">
+<span class="rit">${eh(clf._level_area)}</span> <span>${eh(clf._level_div)} ${eh(clf._level_grade)}</span>
+<span>소재: ${eh(clf._field_big)}${clf._field_mid?" › "+eh(clf._field_mid):""}${clf._field_sm?" › "+eh(clf._field_sm):""}</span>
+<span style="color:#aaa">${r.created_at||""}</span>
+<div class="ct-acts">
+<button class="ct-edit" onclick="event.stopPropagation();ctEditStart(${r.id})">수정</button>
+<button class="ct-del" onclick="event.stopPropagation();ctDel(${r.id})">삭제</button>
 </div></div>`;
-// 렌더 후 분류 선택기 초기화
-setTimeout(()=>initClassifier('ctClassifier',{showDomain:true,showLevel:true,showField:true}),0);
+// 분류 편집 영역 (수정 시 표시)
+h+=`<div id="ctClfEdit-${r.id}" style="display:none;margin-bottom:8px"></div>`;
+// 탭별 상세
+if(ctTab==="questions")h+=ctQPreview(p,r.id);
+else if(ctTab==="curriculum")h+=ctCurrPreview(p,r.id);
+else h+=ctTextbookPreview(p,r.id);
+h+=`</td></tr>`;
 return h}
+
+// 문제 미리보기
+function ctQPreview(p,id){
+const type=p.type||"";
+let h=`<div class="q-preview" id="ctDtl-${id}">`;
+// 유형/난이도/배점
+h+=`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:10px">
+<span class="rit" style="background:#f3e8ff;color:#7c3aed">${eh(type||"미분류")}</span>
+<span class="rit" style="background:#fef3c7;color:#92400e">난이도: ${eh(p.difficulty||"—")}</span>
+<span class="rit" style="background:#e0f2fe;color:#0369a1">배점: ${eh(p.points||"—")}점</span></div>`;
+// 지문
+if(p.passage)h+=`<div class="q-passage">${eh(p.passage)}</div>`;
+// 문제
+h+=`<div class="q-text">${eh(p.question||"(문제 내용 없음)")}</div>`;
+// 보기 (객관식)
+if(type.startsWith("객관식")&&Array.isArray(p.choices)){
+p.choices.forEach((c,i)=>{
+const isAns=String(p.answer)===String(i+1);
+h+=`<div class="q-choice${isAns?" correct":""}"><span class="q-num">${i+1}</span><span>${eh(c)}</span>${isAns?" ✓":""}</div>`})}
+// OX
+else if(type==="OX"&&p.answer){
+h+=`<div style="margin:4px 0"><span class="q-answer ${p.answer==="O"?"ox-o":"ox-x"}">${p.answer}</span></div>`}
+// 주관식/단답/서술/빈칸
+else if(p.answer){
+h+=`<div style="margin:4px 0;font-size:11px"><span style="color:#888">정답:</span> <b>${eh(p.answer)}</b></div>`}
+// 해설
+if(p.explanation)h+=`<div class="q-explain"><b>해설:</b> ${eh(p.explanation)}</div>`;
+h+=`</div>`;return h}
+
+// 커리큘럼 미리보기
+function ctCurrPreview(p,id){
+let h=`<div class="ct-detail" id="ctDtl-${id}">`;
+const fields=[{k:"week",l:"주차",sp:1},{k:"topic",l:"주제",sp:3},{k:"objective",l:"학습목표",sp:4},{k:"activity",l:"학습활동",sp:4},
+{k:"assessment",l:"평가방법",sp:2},{k:"textbookRef",l:"교재 연결",sp:2}];
+fields.forEach(fd=>{
+h+=`<div class="ct-di${fd.sp>=4?" sp4":fd.sp>=2?" sp2":""}"><div class="ct-lbl">${fd.l}</div>
+<div class="ct-val">${eh(p[fd.k]||"—")}</div>
+${fd.sp>=4?`<textarea data-ctf="${fd.k}" rows="2">${eh(p[fd.k]||"")}</textarea>`:`<input data-ctf="${fd.k}" value="${eh(p[fd.k]||"")}"/>`}
+</div>`});
+h+=`</div>`;return h}
+
+// 교재 미리보기
+function ctTextbookPreview(p,id){
+let h=`<div class="ct-detail" id="ctDtl-${id}">`;
+const fields=[{k:"unit",l:"단원",sp:1},{k:"title",l:"제목",sp:3},{k:"summary",l:"내용 요약",sp:4},
+{k:"difficulty",l:"난이도",sp:1},{k:"pages",l:"페이지수",sp:1},{k:"fileUrl",l:"파일 URL",sp:2}];
+fields.forEach(fd=>{
+const val=p[fd.k]||"";
+let display=eh(val||"—");
+if(fd.k==="fileUrl"&&val)display=`<a href="${eh(val)}" target="_blank" style="color:#2563eb;font-size:10px">${eh(val)}</a>`;
+h+=`<div class="ct-di${fd.sp>=4?" sp4":fd.sp>=2?" sp2":""}"><div class="ct-lbl">${fd.l}</div>
+<div class="ct-val">${display}</div>
+${fd.sp>=4?`<textarea data-ctf="${fd.k}" rows="2">${eh(val)}</textarea>`:`<input data-ctf="${fd.k}" value="${eh(val)}"/>`}
+</div>`});
+h+=`</div>`;return h}
+
+// ── 편집 모드 ──
+function ctEditStart(id){
+const dtl=document.getElementById("ctDtl-"+id);if(!dtl)return;
+// 분류 패널 표시
+const clfWrap=document.getElementById("ctClfEdit-"+id);
+if(clfWrap){const row=(TD[ctTab]||[]).find(r=>r.id===id);if(row){let p;try{p=JSON.parse(row.data)}catch{p={}}
+clfWrap.style.display="block";
+clfWrap.innerHTML=`<div style="font-size:10px;font-weight:600;color:#888;margin-bottom:4px">분류 수정</div>${ctClfPanel("ctClfE-"+id,p)}`;
+setTimeout(()=>ctClfBind("ctClfE-"+id),0)}}
+// 값→입력 전환
+if(ctTab!=="questions"){
+dtl.querySelectorAll(".ct-val").forEach(v=>v.style.display="none");
+dtl.querySelectorAll("input[data-ctf],textarea[data-ctf]").forEach(i=>i.style.display="block")}
+else{
+// 문제는 전체 폼으로 교체
+const row=(TD[ctTab]||[]).find(r=>r.id===id);if(!row)return;
+let p;try{p=JSON.parse(row.data)}catch{p={}}
+dtl.innerHTML=ctQEditForm(p,id)}
+// 버튼 전환
+const acts=dtl.closest("td").querySelector(".ct-acts");
+if(acts)acts.innerHTML=`<button style="padding:3px 10px;border-radius:3px;font-size:10px;cursor:pointer;background:#16a34a;color:#fff;border:1px solid #16a34a" onclick="event.stopPropagation();ctEditSave(${id})">저장</button>
+<button style="padding:3px 10px;border-radius:3px;font-size:10px;cursor:pointer;border:1px solid #ddd;background:#fff" onclick="event.stopPropagation();rContent()">취소</button>`}
+
+function ctQEditForm(p,id){
+const type=p.type||"";
+let h=`<div class="ct-fgrid" style="gap:8px">`;
+// 유형
+h+=`<div style="grid-column:span 4"><label style="font-size:9px;font-weight:700;color:#555">문제유형</label>
+<div class="q-type-bar">${Q_TYPES.map(t=>`<span class="q-type-btn${type===t?" a":""}" onclick="ctEditTypeChange(this,'${t}',${id})">${t}</span>`).join("")}</div></div>`;
+// 난이도 + 배점
+h+=`<div style="grid-column:span 2"><label style="font-size:9px;font-weight:700;color:#555">난이도</label>
+<div class="q-type-bar">${["상","중","하"].map(d=>`<span class="q-type-btn${p.difficulty===d?" a":""}" onclick="this.parentElement.querySelectorAll('.q-type-btn').forEach(b=>b.classList.remove('a'));this.classList.add('a')">${d}</span>`).join("")}</div></div>`;
+h+=`<div style="grid-column:span 2"><label style="font-size:9px;font-weight:700;color:#555">배점</label><input data-ctf="points" value="${eh(p.points||"")}"/></div>`;
+// 지문+문제
+h+=`<div style="grid-column:span 4"><label style="font-size:9px;font-weight:700;color:#555">지문 (선택)</label><textarea data-ctf="passage" rows="2">${eh(p.passage||"")}</textarea></div>`;
+h+=`<div style="grid-column:span 4"><label style="font-size:9px;font-weight:700;color:#555">문제 내용</label><textarea data-ctf="question" rows="2">${eh(p.question||"")}</textarea></div>`;
+// 유형별 보기/정답
+h+=`<div id="qTypeArea-${id}">${qTypeForm(type,p)}</div>`;
+// 해설
+h+=`<div style="grid-column:span 4"><label style="font-size:9px;font-weight:700;color:#555">해설</label><textarea data-ctf="explanation" rows="2">${eh(p.explanation||"")}</textarea></div>`;
+h+=`</div>`;
+return h}
+
+function ctEditTypeChange(btn,type,id){
+btn.parentElement.querySelectorAll(".q-type-btn").forEach(b=>b.classList.remove("a"));btn.classList.add("a");
+const area=document.getElementById("qTypeArea-"+id);if(area)area.innerHTML=qTypeForm(type,{})}
+
+async function ctEditSave(id){
+const row=(TD[ctTab]||[]).find(r=>r.id===id);if(!row)return;
+let old;try{old=JSON.parse(row.data)}catch{old={}}
+const data={...old};
+// 분류
+const clfEl=document.getElementById("ctClfE-"+id);
+if(clfEl){Object.assign(data,ctClfVals("ctClfE-"+id))}
+const dtl=document.getElementById("ctDtl-"+id);if(!dtl)return;
+// 문제유형
+if(ctTab==="questions"){
+const typeBtn=dtl.querySelector(".q-type-bar .q-type-btn.a");
+if(typeBtn)data.type=typeBtn.textContent;
+// 난이도
+const diffBtns=dtl.querySelectorAll(".q-type-bar");
+if(diffBtns[1]){const db=diffBtns[1].querySelector(".q-type-btn.a");if(db)data.difficulty=db.textContent}
+// 보기 수집 (객관식)
+const choiceInputs=dtl.querySelectorAll("[data-qc]");
+if(choiceInputs.length){data.choices=[];choiceInputs.forEach(ci=>data.choices.push(ci.value))}
+// 정답
+const ans=dtl.querySelector("#qAnswer");if(ans)data.answer=ans.value}
+// 일반 필드
+dtl.querySelectorAll("input[data-ctf],textarea[data-ctf]").forEach(i=>{data[i.dataset.ctf]=i.value});
+await fetch(`/api/${ctTab}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+await lA();rNav();rContent()}
+
+// ── 추가 폼 ──
+let ctFormType="";
+function ctRenderForm(){
+let h=`<div class="ct-form"><div class="ct-ftitle">+ ${CT_LABELS[ctTab]} 추가</div>
+<div class="ct-fsec">분류 선택</div>${ctClfPanel("ctClfAdd")}`;
+if(ctTab==="questions"){
+h+=`<div class="ct-fsec">문제 정보</div><div class="ct-fgrid" id="ctFormFields">`;
+// 유형
+h+=`<div style="grid-column:span 4"><label>문제유형</label>
+<div class="q-type-bar" id="ctTypeBar">${Q_TYPES.map(t=>`<span class="q-type-btn${ctFormType===t?" a":""}" onclick="ctFormTypeChange(this,'${t}')">${t}</span>`).join("")}</div></div>`;
+// 난이도 + 배점
+h+=`<div style="grid-column:span 2"><label>난이도</label>
+<div class="q-type-bar">${["상","중","하"].map(d=>`<span class="q-type-btn" onclick="this.parentElement.querySelectorAll('.q-type-btn').forEach(b=>b.classList.remove('a'));this.classList.add('a')">${d}</span>`).join("")}</div></div>`;
+h+=`<div style="grid-column:span 2"><label>배점</label><input data-cta="points" placeholder="예: 5"/></div>`;
+// 지문+문제
+h+=`<div style="grid-column:span 4"><label>지문 (선택)</label><textarea data-cta="passage" rows="2" placeholder="지문이 있으면 입력"></textarea></div>`;
+h+=`<div style="grid-column:span 4"><label>문제 내용</label><textarea data-cta="question" rows="2" placeholder="문제를 입력하세요"></textarea></div>`;
+// 유형별 보기/정답
+h+=`<div id="ctFormTypeArea">${qTypeForm(ctFormType)}</div>`;
+// 해설
+h+=`<div style="grid-column:span 4"><label>해설</label><textarea data-cta="explanation" rows="2" placeholder="해설을 입력하세요"></textarea></div>`;
+h+=`</div>`}
+else if(ctTab==="curriculum"){
+h+=`<div class="ct-fsec">과정 정보</div><div class="ct-fgrid">`;
+h+=`<div><label>주차</label><input data-cta="week" placeholder="예: 1"/></div>`;
+h+=`<div style="grid-column:span 3"><label>주제</label><input data-cta="topic" placeholder="주제"/></div>`;
+h+=`<div style="grid-column:span 4"><label>학습목표</label><textarea data-cta="objective" rows="2"></textarea></div>`;
+h+=`<div style="grid-column:span 4"><label>학습활동</label><textarea data-cta="activity" rows="2"></textarea></div>`;
+h+=`<div style="grid-column:span 2"><label>평가방법</label>
+<div class="q-type-bar">${["과제","시험","발표","실습","포트폴리오","복합"].map(a=>`<span class="q-type-btn" onclick="this.parentElement.querySelectorAll('.q-type-btn').forEach(b=>b.classList.remove('a'));this.classList.add('a')">${a}</span>`).join("")}</div></div>`;
+h+=`<div style="grid-column:span 2"><label>교재 연결 (ID)</label><input data-cta="textbookRef" placeholder="교재 ID"/></div>`;
+h+=`</div>`}
+else{
+h+=`<div class="ct-fsec">교재 정보</div><div class="ct-fgrid">`;
+h+=`<div><label>단원</label><input data-cta="unit" placeholder="예: 1"/></div>`;
+h+=`<div style="grid-column:span 3"><label>제목</label><input data-cta="title"/></div>`;
+h+=`<div style="grid-column:span 4"><label>내용 요약</label><textarea data-cta="summary" rows="2"></textarea></div>`;
+h+=`<div><label>난이도</label><div class="q-type-bar">${["초급","중급","고급"].map(d=>`<span class="q-type-btn" onclick="this.parentElement.querySelectorAll('.q-type-btn').forEach(b=>b.classList.remove('a'));this.classList.add('a')">${d}</span>`).join("")}</div></div>`;
+h+=`<div><label>페이지수</label><input data-cta="pages"/></div>`;
+h+=`<div style="grid-column:span 2"><label>파일 URL</label><input data-cta="fileUrl" placeholder="https://..."/></div>`;
+h+=`</div>`}
+h+=`<div style="margin-top:12px;display:flex;gap:6px">
+<button onclick="ctDoAdd()" style="padding:6px 16px;background:#1a365d;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer">저장</button>
+<button onclick="ctAdding=false;ctFormType='';rContent()" style="padding:6px 16px;background:#fff;border:1px solid #ddd;border-radius:4px;font-size:11px;cursor:pointer">취소</button>
+</div></div>`;
+return h}
+
+function ctFormTypeChange(btn,type){
+btn.parentElement.querySelectorAll(".q-type-btn").forEach(b=>b.classList.remove("a"));btn.classList.add("a");
+ctFormType=type;
+const area=document.getElementById("ctFormTypeArea");if(area)area.innerHTML=qTypeForm(type,{})}
+function ctBindTypeChange(){ctClfBind("ctClfAdd")}
 
 async function ctDoAdd(){
 const data={};
-// 분류 선택기 값
-const clf=getClassifierValues('ctClassifier');
-if(clf.domain)data.domain=clf.domain;
-if(clf.division)data.division=clf.division;
-if(clf.grade)data.grade=clf.grade;
-if(clf.fieldBig)data.fieldBig=clf.fieldBig;
-if(clf.fieldMid)data.fieldMid=clf.fieldMid;
-if(clf.fieldSm)data.fieldSm=clf.fieldSm;
-// 상세 필드
-document.querySelectorAll("[data-ct]").forEach(el=>{if(el.value)data[el.dataset.ct]=el.value});
-if(!data.domain){alert("종목을 선택하세요");return}
+const clf=ctClfVals("ctClfAdd");
+Object.entries(clf).forEach(([k,v])=>{if(v)data[k]=v});
+if(!data._level_area){alert("종목을 선택하세요");return}
+// 문제 특수 처리
+if(ctTab==="questions"){
+const typeBtn=document.querySelector("#ctTypeBar .q-type-btn.a");
+if(typeBtn)data.type=typeBtn.textContent;
+// 난이도
+const diffBars=document.querySelectorAll(".ct-fgrid .q-type-bar");
+if(diffBars[1]){const db=diffBars[1].querySelector(".q-type-btn.a");if(db)data.difficulty=db.textContent}
+// 보기
+const choiceInputs=document.querySelectorAll("[data-qc]");
+if(choiceInputs.length){data.choices=[];choiceInputs.forEach(ci=>data.choices.push(ci.value))}
+// 정답
+const ans=document.getElementById("qAnswer");if(ans)data.answer=ans.value}
+else{
+// 커리큘럼/교재: 버튼 선택값
+document.querySelectorAll(".ct-fgrid .q-type-bar").forEach(bar=>{
+const sel=bar.querySelector(".q-type-btn.a");
+if(sel){
+const label=bar.closest("div[style]")?.querySelector("label");
+if(label){
+const key=label.textContent.includes("난이도")?"difficulty":label.textContent.includes("평가")?"assessment":"";
+if(key)data[key]=sel.textContent}}})}
+// 일반 필드
+document.querySelectorAll("[data-cta]").forEach(el=>{if(el.value)data[el.dataset.cta]=el.value});
 await fetch(`/api/${ctTab}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
-ctAdding=false;await lA();rNav();rContent()}
+ctAdding=false;ctFormType="";await lA();rNav();rContent()}
 
 async function ctDel(id){if(!confirm("삭제?"))return;
-await fetch(`/api/${ctTab}/${id}`,{method:"DELETE"});await lA();rNav();rContent()}
+await fetch(`/api/${ctTab}/${id}`,{method:"DELETE"});ctExpId=null;await lA();rNav();rContent()}
 
 // 프로젝트 현황은 _tmp_pages.md로 관리
 const _REMOVED=[
