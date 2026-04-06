@@ -315,6 +315,7 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 <div class="sb-item" data-v="f" onclick="sv('f')" title="신청서"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>신청서</span></div>
 <div class="sb-item" data-v="s" onclick="sv('s')" title="통계"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>통계</span></div>
 <div class="sb-item" data-v="q" onclick="sv('q')" title="콘텐츠"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span>콘텐츠</span></div>
+<div class="sb-item" data-v="od" onclick="sv('od')" title="홈(old)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>홈(old)</span></div>
 </nav>
 <div class="sb-bot"><span class="sb-user" id="ui"></span>
 <div class="sb-item" onclick="doLO()" title="로그아웃"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>로그아웃</span></div>
@@ -477,7 +478,7 @@ function fv(v){if(v==null)return"";if(Array.isArray(v))return v.join(", ");if(ty
 
 // ═══ Navigation ═══
 function sv(v){cV=v;document.querySelectorAll('.sb-item[data-v]').forEach(b=>{b.classList.toggle('a',b.dataset.v===v)});rv()}
-function rv(){curPage=1;if(cV==="f"){rForms();return}if(cV==="s"){rStats();return}if(cV==="q"){rContent();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
+function rv(){curPage=1;ca.style.padding="16px 20px";ca.style.overflow="";if(cV==="f"){rForms();return}if(cV==="s"){rStats();return}if(cV==="q"){rContent();return}if(cV==="od"){rOldHome();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
 
 function rNav(){
 const allCnt=T.reduce((s,t)=>s+(TC[t]||0),0);
@@ -1772,6 +1773,14 @@ h+=`</div></div>`;
 ca.innerHTML=h}
 
 /*REMOVED_PROJ_END*/
+
+// ═══ 홈(old) — DB 관리 SPA embed ═══
+function rOldHome(){
+bc.innerHTML="Work Studio &rsaquo; <b>홈(old)</b>";
+navBar.innerHTML="";subNav.classList.remove("v");
+ca.innerHTML=`<iframe src="/db/" style="width:100%;height:100%;border:none;border-radius:6px"></iframe>`;
+ca.style.padding="0";ca.style.overflow="hidden";
+}
 
 if(sessionStorage.ws)sA();
 </script>
