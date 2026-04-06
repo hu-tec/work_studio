@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>번역가 등록 지원 신청서</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:12px/1.5 'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:#f0f2f5;color:#333;min-height:100vh;padding:24px 16px 60px}
+/* Toolbar */
+.tb{max-width:960px;margin:0 auto 12px;display:flex;justify-content:flex-end;gap:8px}
+.tb button{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;font:inherit;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e2e8f0;transition:all .15s}
+.tb .btn-pv{background:#fff;color:#4a5568}.tb .btn-pv:hover{background:#f7fafc}
+.tb .btn-pv.act{background:#1a365d;color:#fff;border-color:#1a365d}
+.tb .btn-pr{background:#111;color:#fff;border-color:#111}.tb .btn-pr:hover{background:#000}
+/* Page title */
+.pg-hd{max-width:960px;margin:0 auto 10px;display:flex;align-items:center;justify-content:space-between}
+.pg-hd h1{font-size:20px;font-weight:800;color:#1a365d;letter-spacing:-.5px}
+.pg-hd p{font-size:11px;color:#888}
+.pg-hd .badge{font-size:10px;font-weight:700;color:#38a169;background:#f0fff4;border:1px solid #c6f6d5;padding:3px 10px;border-radius:20px;display:none}
+.pg-hd .badge.show{display:inline-flex;align-items:center;gap:4px}
+/* Main card */
+.mc{max-width:960px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);overflow:hidden}
+/* Header banner */
+.bn{background:linear-gradient(135deg,#1a365d 0%,#2b4c7e 50%,#3b5998 100%);padding:16px 28px;color:#fff;display:flex;justify-content:space-between;align-items:center}
+.bn h2{font-size:15px;font-weight:800;letter-spacing:-.3px;text-transform:uppercase;margin-bottom:2px}
+.bn .sub{font-size:9px;opacity:.75;font-weight:500}
+.bn .no{background:rgba(255,255,255,.18);padding:4px 10px;border-radius:8px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,.1)}
+/* 2-col layout */
+.cols{display:grid;grid-template-columns:1fr 1fr}
+@media(max-width:720px){.cols{grid-template-columns:1fr}}
+.col-l{padding:20px;border-right:1px solid #f0f0f0}
+.col-r{padding:20px;background:#fff}
+/* Section header */
+.sh{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;color:#1a365d;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;padding-left:8px;border-left:3px solid #1a365d}
+.sh.ind{color:#4338ca;border-color:#4338ca}
+/* Field group */
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:9px;font-weight:700;color:#a0aec0;margin-bottom:3px;padding-left:4px}
+.fg label .req{color:#e53e3e;margin-left:2px}
+.fg input[type="text"],.fg input[type="tel"],.fg input[type="email"],.fg input[type="date"],.fg select,.fg textarea{
+  width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:8px;font:inherit;font-size:12px;outline:none;transition:border-color .2s,box-shadow .2s;background:#fff;color:#333}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#1a365d;box-shadow:0 0 0 3px rgba(26,54,93,.08)}
+.fg textarea{resize:vertical;min-height:40px}
+.fg .hint{font-size:10px;color:#a0aec0;margin-top:3px}
+.fg.err input,.fg.err select,.fg.err textarea{border-color:#e53e3e}
+.fg.err .emsg{color:#e53e3e;font-size:10px;margin-top:2px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* Checkbox group component */
+.cg{margin-bottom:10px}
+.cg .cg-hd{display:flex;align-items:center;gap:5px;margin-bottom:4px;padding-left:4px}
+.cg .cg-hd .ico{color:#1a365d;font-size:11px;opacity:.7}
+.cg .cg-hd span{font-size:10px;font-weight:800;color:#4a5568;letter-spacing:.3px}
+.cg .cg-hd .req{color:#e53e3e;font-size:8px;margin-left:2px}
+.cg .opts{background:rgba(255,255,255,.6);border:1px solid #f0f0f0;padding:6px 8px;border-radius:8px;display:flex;flex-wrap:wrap;gap:2px 10px}
+.cg .opts.grid2{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px}
+.cg .opts label{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;color:#666;transition:color .15s;white-space:nowrap}
+.cg .opts label:hover{color:#111}
+.cg .opts input[type="checkbox"]{width:12px;height:12px;accent-color:#1a365d;cursor:pointer;flex-shrink:0;border-radius:50%}
+/* File upload */
+.fu{margin-bottom:14px}
+.fu label{display:block;font-size:9px;font-weight:700;color:#a0aec0;margin-bottom:3px;padding-left:4px}
+.fu .drop{border:2px dashed #cbd5e0;border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:#fafbfc}
+.fu .drop:hover{border-color:#1a365d;background:#f7fafc}
+.fu .drop.over{border-color:#1a365d;background:#eef2ff}
+.fu .drop .ic{font-size:20px;color:#a0aec0;margin-bottom:4px}
+.fu .drop p{font-size:11px;color:#718096}
+.fu .drop .sm{font-size:9px;color:#a0aec0;margin-top:2px}
+.fu .flist{margin-top:6px}
+.fu .fitem{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:#f7fafc;border-radius:6px;margin-bottom:3px;font-size:10px}
+.fu .fitem .fn{color:#333;font-weight:500}
+.fu .fitem .fs{color:#a0aec0;font-size:9px}
+.fu .fitem button{background:none;border:none;color:#e53e3e;cursor:pointer;font-size:12px;padding:0 2px}
+/* Consent */
+.cns{background:#eef2ff;border:1px solid #c3dafe;padding:10px 12px;border-radius:10px;margin-bottom:12px;display:flex;gap:8px;align-items:flex-start}
+.cns input{width:14px;height:14px;accent-color:#1a365d;flex-shrink:0;margin-top:1px;cursor:pointer}
+.cns .txt{font-size:9px;color:#1a365d;line-height:1.5;font-weight:500}
+/* Submit */
+.btn-sub{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;background:#111;color:#fff;border:none;border-radius:10px;font:inherit;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .15s}
+.btn-sub:hover{background:#000}
+.btn-sub:active{transform:scale(.98)}
+.btn-sub:disabled{opacity:.5;cursor:not-allowed}
+/* Spinner */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Footer text */
+.ft{text-align:center;font-size:9px;color:#a0aec0;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:14px}
+/* Section spacing */
+.sec{margin-bottom:16px}
+.sec:last-child{margin-bottom:0}
+.sep{padding-top:12px;border-top:1px solid #f0f0f0}
+/* Success toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#111;color:#fff;padding:16px 20px;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.3);display:flex;align-items:center;gap:12px;z-index:50;transform:translateX(120%);transition:transform .4s ease}
+.toast.show{transform:translateX(0)}
+.toast .tico{width:36px;height:36px;background:#38a169;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.toast .tmsg strong{display:block;font-size:14px;margin-bottom:2px}
+.toast .tmsg span{font-size:11px;color:#a0aec0}
+.toast .tcl{background:none;border:none;color:#fff;cursor:pointer;font-size:16px;padding:4px;opacity:.6}
+.toast .tcl:hover{opacity:1}
+/* Print */
+@media print{
+  .tb,.pg-hd,.ft,.toast,.no-print{display:none!important}
+  body{background:#fff!important;padding:0!important}
+  .mc{border:none!important;box-shadow:none!important;border-radius:0!important;max-width:210mm;margin:0 auto}
+  .bn{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .cols{grid-template-columns:1fr 1fr!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .cg .opts{border-color:#ddd!important}
+  .btn-sub{display:none!important}
+}
+/* Preview mode */
+body.pv{background:#525659}
+body.pv .mc{width:210mm;min-height:297mm;box-shadow:0 0 50px rgba(0,0,0,.5);margin:0 auto}
+body.pv .tb{opacity:.9}
+</style>
+</head>
+<body>
+<!-- Toolbar -->
+<div class="tb no-print">
+  <button class="btn-pv" id="btnPv" onclick="togglePreview()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    <span id="pvLbl">출력 미리보기</span>
+  </button>
+  <button class="btn-pr" onclick="window.print()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    신청서 출력하기
+  </button>
+</div>
+
+<!-- Page header -->
+<div class="pg-hd no-print">
+  <div>
+    <h1>번역가 등록 지원 신청서</h1>
+    <p>입력하신 정보는 A4 규격에 맞춰 최적화되어 출력됩니다.</p>
+  </div>
+  <div class="badge" id="doneBadge">&#10003; 신청 완료됨</div>
+</div>
+
+<!-- Main card -->
+<div class="mc">
+  <!-- Banner -->
+  <div class="bn">
+    <div>
+      <h2>Translator Registration Form</h2>
+      <div class="sub">번역가 등록 지원 신청서 (Ver 2026.03)</div>
+    </div>
+    <div class="no">No. 2026-TR-01</div>
+  </div>
+
+  <!-- 2-column layout -->
+  <div class="cols">
+    <!-- LEFT COLUMN -->
+    <div class="col-l">
+      <!-- 01. Personal Identity -->
+      <div class="sec">
+        <div class="sh">01. Personal Identity</div>
+        <div class="row2">
+          <div class="fg" id="fg-name">
+            <label>이름 <span class="req">*</span></label>
+            <input type="text" id="f-name" placeholder="성함 입력"/>
+          </div>
+          <div class="fg" id="fg-phone">
+            <label>연락처 <span class="req">*</span></label>
+            <input type="tel" id="f-phone" placeholder="010-0000-0000"/>
+          </div>
+        </div>
+        <div class="fg" id="fg-email">
+          <label>이메일 <span class="req">*</span></label>
+          <input type="email" id="f-email" placeholder="example@domain.com"/>
+        </div>
+        <div class="row2">
+          <div class="fg">
+            <label>생년월일</label>
+            <input type="date" id="f-birth"/>
+          </div>
+          <div class="fg">
+            <label>국적</label>
+            <select id="f-nationality">
+              <option value="">선택</option>
+              <option value="내국인">내국인</option>
+              <option value="외국인">외국인</option>
+              <option value="재외국인">재외국인</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02. General Qualifications -->
+      <div class="sec">
+        <div class="sh">02. General Qualifications</div>
+        <div id="sec-general"></div>
+      </div>
+
+      <!-- 03. Translation Expertise -->
+      <div class="sec">
+        <div class="sh">03. Translation Expertise</div>
+        <div id="sec-trans"></div>
+        <div class="row2" id="sec-trans-grid"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col-r">
+      <!-- 04. Technical Skillsets -->
+      <div class="sec">
+        <div class="sh ind">04. Technical Skillsets</div>
+        <div id="sec-skills"></div>
+      </div>
+
+      <!-- 05. Additional Narrative -->
+      <div class="sec sep">
+        <div class="sh" style="color:#333;border-color:#333">05. Additional Narrative</div>
+        <div class="fg">
+          <label>자기소개 및 요약</label>
+          <textarea id="f-intro" rows="2" placeholder="핵심 경력을 간단히 작성해 주세요."></textarea>
+        </div>
+        <div class="fg">
+          <label>비고 (포트폴리오 링크 등)</label>
+          <textarea id="f-remarks" rows="2" placeholder="추가 전달 사항을 입력해 주세요."></textarea>
+        </div>
+      </div>
+
+      <!-- 06. Portfolio Upload -->
+      <div class="sec">
+        <div class="sh ind">06. Portfolio Upload</div>
+        <div class="fu">
+          <label>포트폴리오 / 이력서 파일</label>
+          <div class="drop" id="dropZone">
+            <div class="ic">&#128206;</div>
+            <p>파일을 드래그하거나 클릭하여 업로드</p>
+            <div class="sm">PDF, DOC, DOCX, ZIP (최대 10MB)</div>
+          </div>
+          <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.zip,.hwp,.txt" multiple style="display:none"/>
+          <div class="flist" id="fileList"></div>
+        </div>
+      </div>
+
+      <!-- Agreement & Submit -->
+      <div class="sec sep">
+        <div class="cns" id="fg-consent">
+          <input type="checkbox" id="f-agree"/>
+          <div class="txt">
+            위 기재사항은 사실과 다름없음을 확인하며, 번역가 등록을 신청합니다.<br/>
+            등록된 정보는 프로젝트 매칭 및 심사에 사용됩니다.<br/>
+            <strong>개인정보 수집 및 이용에 동의합니다.</strong>
+            수집 항목: 성명, 연락처, 이메일 등 신청 양식에 기재된 정보 | 보유 기간: 신청일로부터 1년
+          </div>
+        </div>
+        <button class="btn-sub" id="submitBtn" onclick="submitForm()">
+          Submit Application &#8594;
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="ft no-print">Translator Registration Form &mdash; HutechC Work Studio</p>
+
+<!-- Success toast -->
+<div class="toast" id="toast">
+  <div class="tico">&#10003;</div>
+  <div class="tmsg">
+    <strong>신청서가 성공적으로 전송되었습니다!</strong>
+    <span>번역가 등록 심사가 시작되었습니다.</span>
+  </div>
+  <button class="tcl" onclick="hideToast()">&times;</button>
+</div>
+
+<script>
+(function(){
+/* ========== DATA ========== */
+var langOpts=["영어","일본어","중국어","한국어","스페인어","프랑스어","독일어","러시아어","포르투갈어","아랍어","기타"];
+var timeOpts=["월~금 오전(09-12)","월~금 오후(13-18)","월~금 저녁(19-22)","월~금 심야(22-)","토요일 오전","토요일 오후","토요일 저녁","일요일 오전","일요일 오후","일요일 저녁","공휴일 가능","상시 가능","긴급 건 가능"];
+var expOpts=["1년 미만","1~3년","3~5년","5~10년","10년 이상"];
+var eduOpts=["고졸","전문대졸","대졸","석사","박사","기타"];
+var callOpts=["가능","불가능","협의 후 결정"];
+var occOpts=["학생","취준생","전문번역사","번역프리랜서","직장인","교수/강사","기타"];
+var goalOpts=["전문번역 프리랜서","어학 공부","추가 부수입","경력 개발","취미/자기계발"];
+var certOpts=["영어","일본어","중국어","한국어","기타 언어","번역 관련 자격증"];
+var mtOpts=["있음","없음","전혀 모름"];
+var fieldOpts=["IT/기술","법률/계약","의료/제약","금융/경제","문학/출판","게임/엔터","마케팅","특허","교육","건축","예술","환경","기타"];
+var toolOpts=["Trados","MemoQ","Wordfast","OmegaT","GTT","DeepL","경험 없음"];
+
+var generalGroups=[
+  {key:"time",ico:"&#128339;",lbl:"활동 가능 시간",opts:timeOpts},
+  {key:"exp",ico:"&#128188;",lbl:"실무 경력",opts:expOpts},
+  {key:"edu",ico:"&#127891;",lbl:"최종 학력",opts:eduOpts},
+  {key:"call",ico:"&#128222;",lbl:"통화 가능 여부",opts:callOpts},
+  {key:"occ",ico:"&#128101;",lbl:"현재 직업",opts:occOpts},
+  {key:"goal",ico:"&#127919;",lbl:"지원 목적",opts:goalOpts},
+  {key:"cert",ico:"&#127942;",lbl:"자격증 보유",opts:certOpts}
+];
+
+var transGroups=[
+  {key:"lang",ico:"&#127760;",lbl:"가능 언어",opts:langOpts},
+  {key:"field",ico:"&#128196;",lbl:"전문 번역 분야",opts:fieldOpts}
+];
+var transGridGroups=[
+  {key:"tool",ico:"&#128421;",lbl:"CAT 도구",opts:toolOpts,grid:true},
+  {key:"mt",ico:"&#128421;",lbl:"기계번역 경험",opts:mtOpts,grid:true}
+];
+
+var skillGroups=[
+  {key:"AI 바이브코딩",ico:"&#9881;",opts:["피그마 AI","커서","와프","엔티","Replit","볼트"]},
+  {key:"프롬프트 활용",ico:"&#129504;",opts:["제미나이","GPT","클로드","라마인덱스","오토GPT","퍼플렉시티"]},
+  {key:"디자인 툴",ico:"&#127912;",opts:["감마","미드저니","캔바","일러스트","포토샵"]},
+  {key:"기타 프로그램",ico:"&#9881;",opts:["MCP","노트북 LM","노션","트렐로","먼데이닷컴"]},
+  {key:"기타 역량",ico:"&#128187;",opts:["깃허브","슬랙","서버","카페 24","워드프레스","웹호스팅"]},
+  {key:"문서 작성",ico:"&#128196;",opts:["글쓰기","글정리","맥락파악","교정교열","요약기술"]},
+  {key:"번역 시스템",ico:"&#128200;",opts:["SDL","멤소스","Smartcat","Phrase","Memsource Desktop"]},
+  {key:"사용 경력",ico:"&#128197;",opts:["미리 캔버스","한컴오피스","MS오피스","구글워크스페이스","드롭박스"]},
+  {key:"업무 경력",ico:"&#128188;",opts:["사무","상담","문서정리","데이터정리","조직관리","일정관리"]}
+];
+
+/* ========== RENDER CHECKBOX GROUPS ========== */
+function renderCG(container,groups,prefix,useGrid){
+  groups.forEach(function(g){
+    var d=document.createElement('div');d.className='cg';
+    var hd='<div class="cg-hd"><span class="ico">'+g.ico+'</span><span>'+g.lbl+'</span></div>';
+    var cls=useGrid||g.grid?'opts grid2':'opts';
+    var opts='<div class="'+cls+'">';
+    g.opts.forEach(function(o){
+      var id=prefix+'_'+g.key+'_'+o.replace(/[\s\/]/g,'_');
+      opts+='<label><input type="checkbox" data-group="'+prefix+'_'+g.key+'" value="'+o+'" id="'+id+'"/>'+o+'</label>';
+    });
+    opts+='</div>';
+    d.innerHTML=hd+opts;
+    container.appendChild(d);
+  });
+}
+
+function renderSkillCG(container,groups){
+  groups.forEach(function(g){
+    var d=document.createElement('div');d.className='cg';
+    var hd='<div class="cg-hd"><span class="ico">'+g.ico+'</span><span>'+g.key+'</span></div>';
+    var opts='<div class="opts">';
+    g.opts.forEach(function(o){
+      var id='sk_'+g.key.replace(/[\s\/]/g,'_')+'_'+o.replace(/[\s\/]/g,'_');
+      opts+='<label><input type="checkbox" data-group="sk_'+g.key+'" value="'+o+'" id="'+id+'"/>'+o+'</label>';
+    });
+    opts+='</div>';
+    d.innerHTML=hd+opts;
+    container.appendChild(d);
+  });
+}
+
+renderCG(document.getElementById('sec-general'),generalGroups,'gen',false);
+renderCG(document.getElementById('sec-trans'),transGroups,'tr',false);
+renderCG(document.getElementById('sec-trans-grid'),transGridGroups,'tr',true);
+renderSkillCG(document.getElementById('sec-skills'),skillGroups);
+
+/* ========== FILE UPLOAD ========== */
+var uploadedFiles=[];
+var dropZone=document.getElementById('dropZone');
+var fileInput=document.getElementById('fileInput');
+var fileList=document.getElementById('fileList');
+
+dropZone.addEventListener('click',function(){fileInput.click()});
+dropZone.addEventListener('dragover',function(e){e.preventDefault();dropZone.classList.add('over')});
+dropZone.addEventListener('dragleave',function(){dropZone.classList.remove('over')});
+dropZone.addEventListener('drop',function(e){e.preventDefault();dropZone.classList.remove('over');handleFiles(e.dataTransfer.files)});
+fileInput.addEventListener('change',function(){handleFiles(fileInput.files);fileInput.value=''});
+
+function handleFiles(files){
+  for(var i=0;i<files.length;i++){
+    var f=files[i];
+    if(f.size>10*1024*1024){alert(f.name+': 파일 크기가 10MB를 초과합니다.');continue}
+    uploadedFiles.push(f);
+  }
+  renderFiles();
+}
+
+function renderFiles(){
+  fileList.innerHTML='';
+  uploadedFiles.forEach(function(f,idx){
+    var sz=f.size<1024?f.size+'B':f.size<1048576?(f.size/1024).toFixed(1)+'KB':(f.size/1048576).toFixed(1)+'MB';
+    var d=document.createElement('div');d.className='fitem';
+    d.innerHTML='<span class="fn">&#128206; '+f.name+'</span><span class="fs">'+sz+'</span><button onclick="removeFile('+idx+')">&times;</button>';
+    fileList.appendChild(d);
+  });
+}
+
+window.removeFile=function(idx){uploadedFiles.splice(idx,1);renderFiles()};
+
+async function uploadFile(file){
+  try{
+    var res=await fetch('/api/upload/presign',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({filename:file.name,contentType:file.type||'application/octet-stream'})
+    });
+    if(!res.ok) throw new Error('Presign failed');
+    var data=await res.json();
+    var upRes=await fetch(data.url,{method:'PUT',headers:{'Content-Type':file.type||'application/octet-stream'},body:file});
+    if(!upRes.ok) throw new Error('Upload failed');
+    return data.key||data.fileUrl||data.url;
+  }catch(e){
+    console.error('File upload error:',e);
+    return null;
+  }
+}
+
+/* ========== PREVIEW ========== */
+var isPv=false;
+window.togglePreview=function(){
+  isPv=!isPv;
+  document.body.classList.toggle('pv',isPv);
+  document.getElementById('btnPv').classList.toggle('act',isPv);
+  document.getElementById('pvLbl').textContent=isPv?'편집 모드':'출력 미리보기';
+};
+
+/* ========== COLLECT CHECKED ========== */
+function getChecked(groupName){
+  var vals=[];
+  document.querySelectorAll('input[data-group="'+groupName+'"]').forEach(function(cb){
+    if(cb.checked) vals.push(cb.value);
+  });
+  return vals;
+}
+
+/* ========== VALIDATION ========== */
+function clearErr(){
+  document.querySelectorAll('.fg.err').forEach(function(f){f.classList.remove('err');var e=f.querySelector('.emsg');if(e)e.remove()});
+  document.getElementById('fg-consent').style.borderColor='';
+}
+function markErr(id,msg){
+  var fg=document.getElementById(id);if(!fg)return;
+  fg.classList.add('err');
+  if(!fg.querySelector('.emsg')){var s=document.createElement('div');s.className='emsg';s.textContent=msg;fg.appendChild(s)}
+}
+function validate(){
+  clearErr();var ok=true;
+  if(!document.getElementById('f-name').value.trim()){markErr('fg-name','이름을 입력해 주세요.');ok=false}
+  if(!document.getElementById('f-phone').value.trim()){markErr('fg-phone','연락처를 입력해 주세요.');ok=false}
+  var em=document.getElementById('f-email').value.trim();
+  if(!em){markErr('fg-email','이메일을 입력해 주세요.');ok=false}
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){markErr('fg-email','유효한 이메일을 입력해 주세요.');ok=false}
+  if(!document.getElementById('f-agree').checked){
+    document.getElementById('fg-consent').style.borderColor='#e53e3e';
+    if(ok) alert('개인정보 수집 및 이용에 동의해 주세요.');
+    ok=false;
+  }
+  return ok;
+}
+
+/* ========== TOAST ========== */
+window.hideToast=function(){document.getElementById('toast').classList.remove('show')};
+
+/* ========== SUBMIT ========== */
+window.submitForm=async function(){
+  if(!validate()) return;
+  var btn=document.getElementById('submitBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>제출 중...';
+
+  // Collect basic info
+  var basic={
+    name:document.getElementById('f-name').value.trim(),
+    phone:document.getElementById('f-phone').value.trim(),
+    email:document.getElementById('f-email').value.trim(),
+    birthDate:document.getElementById('f-birth').value||'',
+    nationality:document.getElementById('f-nationality').value||'',
+    intro:document.getElementById('f-intro').value.trim()
+  };
+
+  // Collect general qualifications
+  var general={};
+  generalGroups.forEach(function(g){general[g.key]=getChecked('gen_'+g.key)});
+
+  // Collect translation expertise
+  var translation={};
+  transGroups.forEach(function(g){translation[g.key]=getChecked('tr_'+g.key)});
+  transGridGroups.forEach(function(g){translation[g.key]=getChecked('tr_'+g.key)});
+
+  // Collect skills
+  var skills={};
+  skillGroups.forEach(function(g){skills[g.key]=getChecked('sk_'+g.key)});
+
+  // Upload files
+  var fileUrls=[];
+  for(var i=0;i<uploadedFiles.length;i++){
+    var url=await uploadFile(uploadedFiles[i]);
+    if(url) fileUrls.push({name:uploadedFiles[i].name,url:url});
+  }
+
+  var formData={
+    basic:basic,
+    general:general,
+    translation:translation,
+    skills:skills,
+    remarks:document.getElementById('f-remarks').value.trim(),
+    portfolio:fileUrls,
+    privacyConsent:true,
+    _status:0,
+    submittedAt:new Date().toISOString()
+  };
+
+  try{
+    var res=await fetch('/api/translation_translators',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({data:formData})
+    });
+    if(!res.ok) throw new Error('서버 오류: '+res.status);
+    // Success
+    document.getElementById('doneBadge').classList.add('show');
+    document.getElementById('toast').classList.add('show');
+    btn.innerHTML='&#10003; 신청 완료';
+    btn.style.background='#38a169';
+  }catch(e){
+    alert('제출에 실패했습니다. 다시 시도해 주세요.\n'+e.message);
+    btn.disabled=false;
+    btn.innerHTML='Submit Application &#8594;';
+  }
+};
+})();
+</script>
+</body>
+</html>

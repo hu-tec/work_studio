@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>전문가 관리 - Work Studio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:12px/1.4 'Pretendard',-apple-system,sans-serif;background:#f0f2f5;color:#333}
+/* Layout */
+.app{display:flex;flex-direction:column;height:100vh}
+header{background:#1a365d;color:#fff;padding:6px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+header h1{font-size:14px;font-weight:700;cursor:pointer}
+.hr{display:flex;align-items:center;gap:12px;font-size:11px}
+.hr button{padding:2px 10px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:3px;font-size:10px;cursor:pointer}
+.hr button:hover{background:rgba(255,255,255,.25)}
+/* Body: sidebar + main */
+.bd{display:flex;flex:1;overflow:hidden}
+/* Sidebar */
+.sb{width:220px;min-height:0;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb-title{padding:12px 16px;font-size:13px;font-weight:700;color:#1a365d;border-bottom:1px solid #e2e8f0}
+.sb-group{margin-bottom:2px}
+.sb-gh{padding:8px 16px;font-size:11px;color:#888;display:flex;align-items:center;gap:6px;font-weight:600}
+.sb-item{display:block;width:100%;text-align:left;padding:7px 16px 7px 36px;font-size:12px;color:#555;border:none;background:none;cursor:pointer;transition:all .15s}
+.sb-item:hover{background:#f5f7fa}
+.sb-item.a{background:#eef2ff;color:#1a365d;font-weight:700;border-right:2px solid #1a365d}
+/* Main */
+.mn{flex:1;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+/* Breadcrumb bar */
+.bc-bar{padding:8px 16px;font-size:11px;color:#888;background:#fff;border-bottom:1px solid #e2e8f0;flex-shrink:0}
+.bc-bar b{color:#1a365d}
+/* Content area */
+.ca{flex:1;overflow-y:auto;padding:16px}
+/* Tab bar (top nav tabs) */
+.tab-bar{display:flex;gap:0;margin-bottom:0;flex-shrink:0;padding:0 16px;background:#fff;border-bottom:1px solid #e2e8f0}
+.tab-btn{padding:8px 20px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:none;color:#888;border-bottom:2px solid transparent;transition:all .15s}
+.tab-btn:hover{color:#555}
+.tab-btn.a{color:#1a365d;border-bottom-color:#1a365d;font-weight:700}
+/* Stat cards */
+.st-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.st-cd{background:#fff;border-radius:6px;border:1px solid #e2e8f0;border-left:3px solid #888;padding:10px 14px}
+.st-cd .st-l{font-size:10px;color:#888;font-weight:600}
+.st-cd .st-v{font-size:22px;font-weight:900;margin-top:2px;color:#222}
+.st-cd .st-c{font-size:9px;color:#aaa;margin-top:1px}
+.st-cd.c1{border-left-color:#3b82f6}.st-cd.c2{border-left-color:#10b981}.st-cd.c3{border-left-color:#f59e0b}.st-cd.c4{border-left-color:#ef4444}.st-cd.c5{border-left-color:#8b5cf6}
+/* Charts row */
+.ch-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.ch-box{background:#fff;border-radius:6px;border:1px solid #e2e8f0;padding:14px;min-height:200px}
+.ch-box h4{font-size:12px;font-weight:700;margin-bottom:10px;color:#222}
+.bar-chart{display:flex;flex-direction:column;gap:6px}
+.bar-r{display:flex;align-items:center;gap:6px}
+.bar-r .bar-l{width:60px;font-size:10px;color:#555;text-align:right;flex-shrink:0}
+.bar-r .bar-bg{flex:1;height:18px;background:#f0f2f5;border-radius:4px;overflow:hidden;position:relative}
+.bar-r .bar-f{height:100%;border-radius:4px;transition:width .4s}
+.bar-r .bar-n{font-size:10px;color:#555;width:28px;text-align:right;flex-shrink:0}
+/* Status legend */
+.st-legend{display:flex;flex-direction:column;gap:8px}
+.st-lg-item{display:flex;align-items:center;gap:8px}
+.st-lg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.st-lg-lbl{font-size:11px;color:#555;flex:1}
+.st-lg-val{font-size:11px;font-weight:700;color:#222}
+.st-lg-bar{flex:2;height:6px;background:#f0f2f5;border-radius:3px;overflow:hidden}
+.st-lg-fill{height:100%;border-radius:3px}
+/* Filter bar */
+.fl{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fl input[type=text]{padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px;width:180px}
+.fl select{padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:10px}
+.fl .fl-cnt{font-size:10px;color:#888;margin-left:auto}
+.fl button{padding:4px 12px;border:1px solid #ddd;border-radius:4px;font-size:10px;cursor:pointer;background:#fff;color:#555}
+.fl button:hover{background:#f5f5f5}
+.fl .fl-reset{color:#c00;border-color:#c00}
+/* Table container */
+.ct{background:#fff;border-radius:6px;border:1px solid #e2e8f0;overflow:hidden}
+.tw{overflow-x:auto;max-height:calc(100vh - 320px);overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead th{text-align:left;padding:8px;background:#1e293b;color:#fff;font-weight:600;position:sticky;top:0;white-space:nowrap;font-size:10px}
+tbody tr{border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background .1s}
+tbody tr:nth-child(even){background:#fafbfc}
+tbody tr:hover{background:#eef2ff}
+tbody td{padding:6px 8px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+/* Badges */
+.bdg{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;display:inline-block}
+.bdg-blue{background:#dbeafe;color:#1e40af}
+.bdg-green{background:#dcfce7;color:#166534}
+.bdg-yellow{background:#fef3c7;color:#92400e}
+.bdg-red{background:#fee2e2;color:#991b1b}
+.bdg-gray{background:#f1f5f9;color:#475569}
+.bdg-purple{background:#f3e8ff;color:#6b21a8}
+/* Grade circle */
+.gc{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:700;color:#fff}
+.gc-a{background:#2563eb}.gc-b{background:#f97316}.gc-c{background:#94a3b8}
+/* Language tags */
+.lt{font-size:9px;background:#f1f5f9;color:#475569;padding:1px 5px;border-radius:2px;display:inline-block;margin:1px}
+/* Status dot */
+.sd{display:inline-flex;align-items:center;gap:3px;font-size:10px}
+.sd::before{content:'';width:6px;height:6px;border-radius:50%;display:inline-block}
+.sd.s-active::before{background:#22c55e}
+.sd.s-pending::before{background:#eab308}
+.sd.s-inactive::before{background:#6b7280}
+/* Expanded detail row */
+.dr{background:#f0f4ff}
+.dr td{padding:12px 16px}
+.dg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px 12px}
+.dg-sec{grid-column:1/-1;font-size:10px;font-weight:700;padding-bottom:4px;margin-top:8px;border-bottom:1px solid #c7d2fe}
+.dg-sec.sec-a{color:#2563eb;border-color:#bfdbfe}
+.dg-sec.sec-b{color:#7c3aed;border-color:#ddd6fe}
+.dg-sec.sec-c{color:#059669;border-color:#a7f3d0}
+.di{font-size:11px;padding:3px 0}
+.di .lbl{font-size:9px;color:#888;font-weight:600}
+.di .val{margin-top:1px}
+/* Action icons */
+.ic{cursor:pointer;padding:2px 4px;border-radius:2px;font-size:12px;opacity:.5;transition:.15s}
+.ic:hover{opacity:1;background:#eef2ff}
+/* Empty state */
+.em{padding:40px;text-align:center;color:#999;font-size:12px}
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-bg.v{display:flex}
+.modal{background:#fff;border-radius:10px;width:680px;max-width:95vw;max-height:90vh;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;flex-direction:column}
+.modal-hd{background:#1e293b;color:#fff;padding:20px 24px}
+.modal-hd .mh-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.modal-hd .mh-row{display:flex;align-items:center;gap:14px}
+.modal-hd .mh-avatar{width:48px;height:48px;background:#3b82f6;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
+.modal-hd h2{font-size:16px;font-weight:700}
+.modal-hd .mh-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.modal-bd{padding:20px 24px;overflow-y:auto;flex:1}
+.modal-ft{padding:12px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:8px;background:#f8fafc}
+.modal-ft button{padding:6px 18px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:none}
+.modal-ft .btn-cancel{background:#e2e8f0;color:#555}
+.modal-ft .btn-cancel:hover{background:#cbd5e1}
+.modal-ft .btn-primary{background:#1e293b;color:#fff}
+.modal-ft .btn-primary:hover{background:#334155}
+/* Detail sections in modal */
+.md-sec{margin-bottom:16px}
+.md-sec h4{font-size:11px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.md-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#f8fafc;border-radius:8px;padding:12px;border:1px solid #e2e8f0}
+.md-item{display:flex;justify-content:space-between;font-size:11px}
+.md-item .md-k{color:#888}
+.md-item .md-v{font-weight:700;color:#222}
+.md-info-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:6px}
+.md-info-row .md-ir-l{display:flex;align-items:center;gap:10px}
+.md-info-row .md-ir-icon{width:32px;height:32px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.md-info-row .md-ir-lbl{font-size:9px;color:#888;font-weight:700}
+.md-info-row .md-ir-val{font-size:11px;font-weight:600;color:#333}
+/* Registration form */
+.rf{background:#fff;border-radius:6px;border:1px solid #e2e8f0;overflow:hidden}
+.rf-hd{padding:10px 16px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+.rf-hd h3{font-size:13px;font-weight:700;color:#333}
+.rf-bd{padding:16px}
+.rf-sec{border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:12px}
+.rf-sec.sec-blue{border-color:#bfdbfe;background:#eff6ff}
+.rf-sec.sec-purple{border-color:#ddd6fe;background:#f5f3ff}
+.rf-sec.sec-green{border-color:#bbf7d0;background:#f0fdf4}
+.rf-sec h4{font-size:11px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.rf-sec h4 .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.rf-sec h4 .dot.d-gray{background:#94a3b8}.rf-sec h4 .dot.d-blue{background:#3b82f6}.rf-sec h4 .dot.d-purple{background:#7c3aed}.rf-sec h4 .dot.d-green{background:#22c55e}
+.rf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.rf-grid.g2{grid-template-columns:1fr 1fr}
+.rf-grid.g3{grid-template-columns:repeat(3,1fr)}
+.rf-field label{display:block;font-size:9px;font-weight:700;color:#555;margin-bottom:3px}
+.rf-field input,.rf-field select,.rf-field textarea{width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px;background:#fff}
+.rf-field textarea{resize:none;height:70px}
+.rf-field select:disabled{background:#f5f5f5;color:#aaa}
+.rf-btns{display:flex;justify-content:flex-end;gap:8px;padding-top:12px;border-top:1px solid #e2e8f0;margin-top:12px}
+.rf-btns button{padding:7px 24px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:none}
+.rf-btns .btn-outline{background:#fff;border:1px solid #ddd;color:#555}
+.rf-btns .btn-outline:hover{background:#f5f5f5}
+.rf-btns .btn-submit{background:#1a365d;color:#fff}
+.rf-btns .btn-submit:hover{background:#2d4a7c}
+.rf-note{font-size:10px;color:#3b82f6;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;padding:6px 10px;margin-top:6px}
+/* Grade chips */
+.gr-chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.gr-chip{font-size:9px;padding:2px 8px;border:1px solid #ddd;border-radius:3px;cursor:pointer;background:#fff;color:#555;transition:.15s}
+.gr-chip:hover{background:#eef2ff;border-color:#93c5fd}
+.gr-chip.a{background:#1a365d;color:#fff;border-color:#1a365d}
+/* Category tree */
+.cat-tree{margin-bottom:12px}
+.cat-tree .ct-title{font-size:10px;font-weight:700;color:#888;margin-bottom:6px}
+.cat-tree .ct-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.cat-node{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;transition:.15s}
+.cat-node:hover{background:#f5f7fa}
+.cat-node.a{background:#1a365d;color:#fff;border-color:#1a365d}
+.cat-node.lv1{font-weight:700}
+.cat-node.lv2{background:#f8fafc;font-size:9px}
+.cat-node.lv2.a{background:#2563eb;border-color:#2563eb}
+.cat-node.lv3{font-size:9px;border-color:#eee;color:#888}
+.cat-node.lv3.a{background:#059669;color:#fff;border-color:#059669}
+.cat-sub{margin-left:12px;padding:4px 0}
+/* Consultation list */
+.cs-list{background:#fff;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden}
+.cs-item{display:grid;grid-template-columns:40px 1fr 100px 80px 80px 60px;align-items:center;padding:8px 12px;border-bottom:1px solid #f0f0f0;font-size:11px}
+.cs-item:hover{background:#f8fafc}
+.cs-item .cs-id{font-family:monospace;font-size:9px;color:#888}
+.cs-hd{background:#f8fafc;font-weight:700;color:#555;font-size:10px}
+/* Toast */
+.toast{position:fixed;top:16px;right:16px;background:#1e293b;color:#fff;padding:10px 20px;border-radius:6px;font-size:11px;font-weight:600;z-index:2000;opacity:0;transform:translateY(-10px);transition:all .3s;pointer-events:none}
+.toast.v{opacity:1;transform:translateY(0)}
+/* Responsive */
+@media(max-width:900px){.sb{display:none}.st-row{grid-template-columns:repeat(2,1fr)}.ch-row{grid-template-columns:1fr}.dg{grid-template-columns:repeat(2,1fr)}.rf-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <header>
+    <h1 onclick="location.href='/admin.html'">Work Studio</h1>
+    <div class="hr">
+      <span style="opacity:.6">전문가 관리</span>
+      <button onclick="location.href='/admin.html'">관리자 홈</button>
+    </div>
+  </header>
+  <div class="bd">
+    <!-- Sidebar -->
+    <aside class="sb">
+      <div class="sb-title">전문가 관리</div>
+      <div class="sb-group">
+        <div class="sb-gh">&#128101; 전문가 관리</div>
+        <button class="sb-item a" data-view="dashboard" onclick="switchView('dashboard',this)">대시보드</button>
+        <button class="sb-item" data-view="list" onclick="switchView('list',this)">전문가 목록</button>
+        <button class="sb-item" data-view="register" onclick="switchView('register',this)">전문가 등록</button>
+        <button class="sb-item" data-view="grade" onclick="switchView('grade',this)">등급 설정</button>
+      </div>
+      <div class="sb-group">
+        <div class="sb-gh">&#128203; 상담 관리</div>
+        <button class="sb-item" data-view="consult" onclick="switchView('consult',this)">상담 내역</button>
+      </div>
+      <div class="sb-group">
+        <div class="sb-gh">&#128193; 분류 체계</div>
+        <button class="sb-item" data-view="category" onclick="switchView('category',this)">카테고리 관리</button>
+      </div>
+    </aside>
+    <!-- Main -->
+    <div class="mn">
+      <div class="bc-bar" id="bcBar">홈 &gt; 전문가 관리 &gt; <b>대시보드</b></div>
+      <div class="ca" id="contentArea"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="mh-top">
+        <span class="bdg bdg-blue" id="mdLevel"></span>
+        <span style="cursor:pointer;font-size:18px" onclick="closeModal()">&times;</span>
+      </div>
+      <div class="mh-row">
+        <div class="mh-avatar" id="mdAvatar"></div>
+        <div>
+          <h2 id="mdName"></h2>
+          <div class="mh-sub" id="mdSub"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-bd" id="mdBody"></div>
+    <div class="modal-ft">
+      <button class="btn-cancel" onclick="closeModal()">닫기</button>
+      <button class="btn-primary" onclick="closeModal()">승인 관리</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── Data & State ─── */
+const API='/api/translation_experts';
+let experts=[];
+let currentView='dashboard';
+
+/* ─── Classification Constants (from source B) ─── */
+const CLASSIFICATION_A=[
+  {large:"문서",medium:[{name:"비즈니스",small:["사업계획서","회사소개","PPT","엑셀","기획서"]},{name:"법률",small:["소송장","준비서면","형사","민사"]},{name:"의료",small:[]},{name:"특허",small:[]},{name:"노무",small:[]},{name:"교재",small:[]},{name:"논문",small:[]},{name:"기사",small:[]},{name:"고전",small:[]},{name:"그외",small:[]}]},
+  {large:"음성",medium:[{name:"아나운서",small:[]},{name:"관광가이드",small:[]},{name:"큐레이터",small:[]},{name:"안내 방송",small:[]},{name:"교육 강의",small:[]},{name:"실시간",small:[]},{name:"화상수업",small:[]}]},
+  {large:"영상/SNS",medium:[{name:"미디어/장르",small:["유튜브","다큐멘터리","영화","드라마","예능"]}]},
+  {large:"IT/개발",medium:[{name:"개발/보안",small:["AI","에이전트","디비(DB)","빅데이터","백엔드","프론트","프로그램"]},{name:"디자인/기획",small:["웹모바일 디자인","웹기획","홈페이지 UIUX","컨텐츠"]}]},
+  {large:"창의적활동",medium:[{name:"콘텐츠",small:["드라마","웹툰소설","소설","시","음악","미술"]}]},
+  {large:"번역",medium:[{name:"통번역 방식",small:["순차통역","동시통역","음성번역","자가선택"]}]},
+  {large:"프롬프트",medium:[]},
+  {large:"확장영역",medium:[{name:"라이프/전문",small:["암","요리","재무","주식","부동산","자녀","연애","입시","사주","결혼","영어","직장찾기","운동","사업"]}]}
+];
+
+const CLASSIFICATION_B=[
+  {large:"프롬",medium:[{name:"교육",small:["1급","2급","3급","4급","5급","6급","7급","8급"]},{name:"일반",small:["1급","2급","3급"]},{name:"전문",small:["1급","2급"]}]},
+  {large:"번역",medium:[{name:"교육",small:["1급","2급","3급","4급","5급","6급","7급","8급"]},{name:"일반",small:["1급","2급","3급"]},{name:"전문",small:["1급","2급"]}]},
+  {large:"윤리",medium:[{name:"교육",small:["1급","2급","3급","4급","5급","6급","7급","8급"]},{name:"일반",small:["1급","2급","3급"]},{name:"전문",small:["1급","2급"]}]}
+];
+
+const DEPARTMENTS=[
+  {large:"기획",medium:[]},{large:"홈피",medium:[]},{large:"영업",medium:[]},{large:"마케팅",medium:[]},{large:"회계",medium:[]},{large:"인사",medium:[]},{large:"관리",medium:[]},{large:"상담",medium:[]},{large:"총무",medium:[]},
+  {large:"강사 팀",medium:["테솔","프롬프트","AI번역","윤리"]},{large:"커리 교제 팀",medium:["테솔","프롬프트","AI번역","윤리"]},{large:"문제은행팀",medium:["프롬프트","AI번역","윤리"]}
+];
+
+const LEVELS=["S등급","A등급","B등급","C등급","D등급"];
+
+/* Mock data for demo (mirrors both sources) */
+const MOCK_EXPERTS=[
+  {id:1,name:"홍길동",categoryA:{large:"IT/개발",medium:"개발/보안",small:"AI"},gradeB:{large:"프롬",medium:"전문",small:"1급"},department:{large:"강사 팀",medium:"테솔"},level:"S등급",homepage:"www.hong-expert.com",status:"승인완료",date:"2024-03-01",contact:"010-1234-5678",email:"hong@email.com",languages:["한국어","영어"],experience:"10년이상",education:"박사"},
+  {id:2,name:"김철수",categoryA:{large:"문서",medium:"비즈니스",small:"사업계획서"},gradeB:{large:"번역",medium:"전문",small:"2급"},department:{large:"기획",medium:""},level:"A등급",homepage:"www.kim-biz.kr",status:"승인완료",date:"2024-03-05",contact:"010-9876-5432",email:"kim@email.com",languages:["한국어","영어","중국어"],experience:"4-10년",education:"석사"},
+  {id:3,name:"이영희",categoryA:{large:"영상/SNS",medium:"미디어/장르",small:"유튜브"},gradeB:{large:"윤리",medium:"일반",small:"1급"},department:{large:"상담",medium:""},level:"B등급",homepage:"www.lee-media.com",status:"검토중",date:"2024-03-08",contact:"010-1111-2222",email:"lee@email.com",languages:["한국어","일본어"],experience:"3년이하",education:"학사"},
+  {id:4,name:"박민수",categoryA:{large:"번역",medium:"통번역 방식",small:"동시통역"},gradeB:{large:"번역",medium:"교육",small:"1급"},department:{large:"커리 교제 팀",medium:"AI번역"},level:"A등급",homepage:"www.park-trans.com",status:"승인완료",date:"2024-03-09",contact:"010-3333-4444",email:"park@email.com",languages:["한국어","영어","러시아어"],experience:"10년이상",education:"석사"},
+  {id:5,name:"최수지",categoryA:{large:"창의적활동",medium:"콘텐츠",small:"음악"},gradeB:{large:"프롬",medium:"일반",small:"2급"},department:{large:"문제은행팀",medium:"윤리"},level:"C등급",homepage:"www.choi-music.net",status:"반려",date:"2024-03-10",contact:"010-5555-6666",email:"choi@email.com",languages:["한국어","영어"],experience:"3년이하",education:"학사"},
+  {id:6,name:"정우성",categoryA:{large:"IT/개발",medium:"개발/보안",small:"빅데이터"},gradeB:{large:"프롬",medium:"전문",small:"2급"},department:{large:"홈피",medium:""},level:"S등급",homepage:"www.jung-data.com",status:"승인완료",date:"2024-03-11",contact:"010-7777-8888",email:"jung@email.com",languages:["한국어","영어","중국어"],experience:"10년이상",education:"박사"},
+  {id:7,name:"한소희",categoryA:{large:"창의적활동",medium:"콘텐츠",small:"웹툰소설"},gradeB:{large:"윤리",medium:"전문",small:"1급"},department:{large:"마케팅",medium:""},level:"A등급",homepage:"www.han-toon.kr",status:"검토중",date:"2024-03-12",contact:"010-9999-0000",email:"han@email.com",languages:["한국어","영어","프랑스어"],experience:"4-10년",education:"석사"},
+  {id:8,name:"송중기",categoryA:{large:"문서",medium:"법률",small:"민사"},gradeB:{large:"번역",medium:"일반",small:"1급"},department:{large:"영업",medium:""},level:"B등급",homepage:"www.song-law.com",status:"승인완료",date:"2024-03-13",contact:"010-1234-1234",email:"song@email.com",languages:["한국어","영어"],experience:"4-10년",education:"학사"}
+];
+
+/* Consultation mock */
+const MOCK_CONSULTS=[
+  {id:"C-001",expertId:1,expertName:"홍길동",client:"ABC 주식회사",type:"AI 개발 상담",status:"진행중",date:"2024-03-15",note:"에이전트 구축 관련"},
+  {id:"C-002",expertId:2,expertName:"김철수",client:"XYZ 무역",type:"사업계획서 검토",status:"완료",date:"2024-03-12",note:"신규 사업 진출"},
+  {id:"C-003",expertId:4,expertName:"박민수",client:"글로벌 통역",type:"동시통역 의뢰",status:"진행중",date:"2024-03-14",note:"국제 컨퍼런스"},
+  {id:"C-004",expertId:6,expertName:"정우성",client:"빅데이터 랩",type:"데이터 분석 상담",status:"대기",date:"2024-03-16",note:"빅데이터 분석 프로젝트"},
+  {id:"C-005",expertId:3,expertName:"이영희",client:"유튜브 크리에이터",type:"영상 컨설팅",status:"완료",date:"2024-03-10",note:"채널 성장 전략"},
+  {id:"C-006",expertId:7,expertName:"한소희",client:"웹툰 스튜디오",type:"창작 자문",status:"대기",date:"2024-03-17",note:"웹툰 시나리오 감수"}
+];
+
+/* ─── Init ─── */
+async function init(){
+  await loadExperts();
+  renderView();
+}
+
+async function loadExperts(){
+  try{
+    const r=await fetch(API);
+    if(r.ok){
+      const rows=await r.json();
+      if(rows.length>0){
+        experts=rows.map(row=>{
+          const d=typeof row.data==='string'?JSON.parse(row.data):row.data;
+          return{...d,_id:row.id,_created:row.created_at};
+        });
+      }else{experts=[...MOCK_EXPERTS];}
+    }else{experts=[...MOCK_EXPERTS];}
+  }catch(e){experts=[...MOCK_EXPERTS];}
+}
+
+/* ─── View Router ─── */
+function switchView(view,btn){
+  currentView=view;
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('a'));
+  if(btn)btn.classList.add('a');
+  const labels={dashboard:'대시보드',list:'전문가 목록',register:'전문가 등록',grade:'등급 설정',consult:'상담 내역',category:'카테고리 관리'};
+  document.getElementById('bcBar').innerHTML='홈 &gt; 전문가 관리 &gt; <b>'+labels[view]+'</b>';
+  renderView();
+}
+
+function renderView(){
+  const c=document.getElementById('contentArea');
+  switch(currentView){
+    case 'dashboard':c.innerHTML=renderDashboard();break;
+    case 'list':c.innerHTML=renderExpertList();bindListEvents();break;
+    case 'register':c.innerHTML=renderRegistrationForm();bindRegFormEvents();break;
+    case 'grade':c.innerHTML=renderGradeSettings();bindGradeEvents();break;
+    case 'consult':c.innerHTML=renderConsultList();break;
+    case 'category':c.innerHTML=renderCategoryTree();bindCategoryEvents();break;
+    default:c.innerHTML='<div class="em">준비 중입니다.</div>';
+  }
+}
+
+/* ─── Toast ─── */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('v');
+  setTimeout(()=>t.classList.remove('v'),2500);
+}
+
+/* ─── 1. Dashboard ─── */
+function renderDashboard(){
+  const total=experts.length;
+  const approved=experts.filter(e=>e.status==='승인완료').length;
+  const pending=experts.filter(e=>e.status==='검토중').length;
+  const rejected=experts.filter(e=>e.status==='반려').length;
+  const catCounts={};
+  CLASSIFICATION_A.forEach(c=>catCounts[c.large]=0);
+  experts.forEach(e=>{if(e.categoryA&&catCounts[e.categoryA.large]!==undefined)catCounts[e.categoryA.large]++;});
+  const maxCat=Math.max(...Object.values(catCounts),1);
+
+  const statusData=[
+    {name:'승인완료',value:approved,color:'#10b981'},
+    {name:'검토중',value:pending,color:'#f59e0b'},
+    {name:'반려',value:rejected,color:'#ef4444'},
+    {name:'기타',value:total-approved-pending-rejected,color:'#6366f1'}
+  ];
+
+  const catColors=['#3b82f6','#10b981','#f59e0b','#6366f1','#ec4899','#8b5cf6','#14b8a6','#f97316'];
+
+  let h='';
+  // Stat cards
+  h+='<div class="st-row">';
+  h+='<div class="st-cd c1"><div class="st-l">총 전문가</div><div class="st-v">'+total+'</div><div class="st-c">전체 등록</div></div>';
+  h+='<div class="st-cd c2"><div class="st-l">승인완료</div><div class="st-v">'+approved+'</div><div class="st-c">활동 가능</div></div>';
+  h+='<div class="st-cd c3"><div class="st-l">검토중</div><div class="st-v">'+pending+'</div><div class="st-c">승인 대기</div></div>';
+  h+='<div class="st-cd c4"><div class="st-l">반려</div><div class="st-v">'+rejected+'</div><div class="st-c">재검토 필요</div></div>';
+  h+='<div class="st-cd c5"><div class="st-l">상담 건수</div><div class="st-v">'+MOCK_CONSULTS.length+'</div><div class="st-c">이번 달</div></div>';
+  h+='</div>';
+
+  // Charts row
+  h+='<div class="ch-row">';
+  // Bar chart - category
+  h+='<div class="ch-box"><h4>A 분야별 전문가 현황</h4><div class="bar-chart">';
+  let ci=0;
+  for(const[cat,cnt] of Object.entries(catCounts)){
+    const pct=Math.round((cnt/maxCat)*100);
+    h+='<div class="bar-r"><div class="bar-l">'+cat+'</div><div class="bar-bg"><div class="bar-f" style="width:'+pct+'%;background:'+catColors[ci%catColors.length]+'"></div></div><div class="bar-n">'+cnt+'</div></div>';
+    ci++;
+  }
+  h+='</div></div>';
+  // Status distribution
+  h+='<div class="ch-box"><h4>승인 상태 분포</h4><div class="st-legend">';
+  statusData.forEach(s=>{
+    const pct=total>0?Math.round((s.value/total)*100):0;
+    h+='<div class="st-lg-item">';
+    h+='<div class="st-lg-dot" style="background:'+s.color+'"></div>';
+    h+='<div class="st-lg-lbl">'+s.name+'</div>';
+    h+='<div class="st-lg-bar"><div class="st-lg-fill" style="width:'+pct+'%;background:'+s.color+'"></div></div>';
+    h+='<div class="st-lg-val">'+s.value+'건</div>';
+    h+='</div>';
+  });
+  h+='</div></div>';
+  h+='</div>';
+
+  // Recent experts
+  h+='<div class="ct"><div style="padding:8px 12px;border-bottom:1px solid #eee;font-size:12px;font-weight:700">최근 등록 전문가</div>';
+  h+='<div class="tw"><table><thead><tr><th>성명</th><th>분야</th><th>등급</th><th>상태</th><th>신청일</th></tr></thead><tbody>';
+  experts.slice(0,5).forEach(e=>{
+    h+='<tr><td>'+e.name+'</td><td>'+(e.categoryA?e.categoryA.large+' > '+e.categoryA.medium:'')+'</td><td>'+statusBdg(e.level)+'</td><td>'+statusBdg(e.status)+'</td><td>'+(e.date||'')+'</td></tr>';
+  });
+  h+='</tbody></table></div></div>';
+  return h;
+}
+
+function statusBdg(s){
+  if(!s)return'-';
+  if(s==='승인완료')return'<span class="bdg bdg-green">'+s+'</span>';
+  if(s==='검토중')return'<span class="bdg bdg-yellow">'+s+'</span>';
+  if(s==='반려')return'<span class="bdg bdg-red">'+s+'</span>';
+  if(s.includes('S'))return'<span class="bdg bdg-purple">'+s+'</span>';
+  if(s.includes('A'))return'<span class="bdg bdg-blue">'+s+'</span>';
+  if(s.includes('B'))return'<span class="bdg bdg-yellow">'+s+'</span>';
+  return'<span class="bdg bdg-gray">'+s+'</span>';
+}
+
+/* ─── 2. Expert List ─── */
+let listFilter={name:'',catA:'all',level:'all',status:'all',dept:'all'};
+let expandedRows=new Set();
+
+function getFilteredExperts(){
+  return experts.filter(e=>{
+    if(listFilter.name&&!e.name.toLowerCase().includes(listFilter.name.toLowerCase())&&!(e.email||'').toLowerCase().includes(listFilter.name.toLowerCase()))return false;
+    if(listFilter.catA!=='all'&&(!e.categoryA||e.categoryA.large!==listFilter.catA))return false;
+    if(listFilter.level!=='all'&&e.level!==listFilter.level)return false;
+    if(listFilter.status!=='all'&&e.status!==listFilter.status)return false;
+    if(listFilter.dept!=='all'&&(!e.department||e.department.large!==listFilter.dept))return false;
+    return true;
+  });
+}
+
+function renderExpertList(){
+  const filtered=getFilteredExperts();
+  let h='';
+  // Filter bar
+  h+='<div class="fl">';
+  h+='<input type="text" id="flName" placeholder="이름/이메일 검색" value="'+esc(listFilter.name)+'">';
+  h+='<select id="flCatA"><option value="all">A 분야 전체</option>';
+  CLASSIFICATION_A.forEach(c=>{h+='<option value="'+c.large+'"'+(listFilter.catA===c.large?' selected':'')+'>'+c.large+'</option>';});
+  h+='</select>';
+  h+='<select id="flLevel"><option value="all">등급 전체</option>';
+  LEVELS.forEach(l=>{h+='<option value="'+l+'"'+(listFilter.level===l?' selected':'')+'>'+l+'</option>';});
+  h+='</select>';
+  h+='<select id="flStatus"><option value="all">상태 전체</option><option value="승인완료"'+(listFilter.status==='승인완료'?' selected':'')+'>승인완료</option><option value="검토중"'+(listFilter.status==='검토중'?' selected':'')+'>검토중</option><option value="반려"'+(listFilter.status==='반려'?' selected':'')+'>반려</option></select>';
+  h+='<select id="flDept"><option value="all">부서 전체</option>';
+  DEPARTMENTS.forEach(d=>{h+='<option value="'+d.large+'"'+(listFilter.dept===d.large?' selected':'')+'>'+d.large+'</option>';});
+  h+='</select>';
+  h+='<button class="fl-reset" onclick="resetFilter()">초기화</button>';
+  h+='<span class="fl-cnt">총 '+filtered.length+'명</span>';
+  h+='</div>';
+
+  // Table
+  h+='<div class="ct"><div class="tw"><table><thead><tr>';
+  h+='<th style="width:30px"></th><th>성명</th><th>부서</th><th>분야/급수</th><th>등급</th><th>연락처</th><th>상태</th><th>신청일</th><th style="width:60px;text-align:center">상세</th>';
+  h+='</tr></thead><tbody>';
+  if(filtered.length===0){
+    h+='<tr><td colspan="9" class="em">검색 결과가 없습니다.</td></tr>';
+  }else{
+    filtered.forEach(e=>{
+      const exp=expandedRows.has(e.id);
+      h+='<tr onclick="toggleExpand('+e.id+')">';
+      h+='<td style="font-size:10px;color:#aaa">'+(exp?'&#9660;':'&#9654;')+'</td>';
+      h+='<td><strong>'+esc(e.name)+'</strong></td>';
+      h+='<td style="font-size:10px;color:#888">'+(e.department?e.department.large+(e.department.medium?' > '+e.department.medium:''):'—')+'</td>';
+      h+='<td>'+(e.categoryA?'<div style="font-size:9px;color:#888">'+e.categoryA.large+'</div><div style="font-weight:600">'+e.categoryA.medium+'</div>':'—')+'</td>';
+      h+='<td>'+statusBdg(e.level)+'</td>';
+      h+='<td style="font-size:10px">'+(e.contact||'—')+'</td>';
+      h+='<td>'+statusBdg(e.status)+'</td>';
+      h+='<td style="font-size:10px;color:#888">'+(e.date||'—')+'</td>';
+      h+='<td style="text-align:center"><span class="ic" onclick="event.stopPropagation();openModal('+e.id+')" title="상세보기">&#128065;</span></td>';
+      h+='</tr>';
+      if(exp){
+        h+='<tr class="dr"><td colspan="9"><div class="dg">';
+        h+='<div class="dg-sec sec-a">A 분야 정보</div>';
+        h+=di('대분류',e.categoryA?e.categoryA.large:'-')+di('중분류',e.categoryA?e.categoryA.medium:'-')+di('소분류',e.categoryA?e.categoryA.small||'-':'-');
+        h+='<div></div>';
+        h+='<div class="dg-sec sec-b">B 급수 정보</div>';
+        h+=di('대분류',e.gradeB?e.gradeB.large:'-')+di('중분류',e.gradeB?e.gradeB.medium:'-')+di('소분류',e.gradeB?e.gradeB.small||'-':'-');
+        h+='<div></div>';
+        h+='<div class="dg-sec sec-c">추가 정보</div>';
+        h+=di('이메일',e.email||'-')+di('홈페이지',e.homepage?'<a href="https://'+e.homepage+'" target="_blank" style="color:#2563eb">'+e.homepage+'</a>':'-');
+        h+=di('언어',(e.languages||[]).map(l=>'<span class="lt">'+l+'</span>').join(' ')||'-');
+        h+=di('경력',e.experience||'-');
+        h+='</div></td></tr>';
+      }
+    });
+  }
+  h+='</tbody></table></div></div>';
+  return h;
+}
+
+function di(label,val){return'<div class="di"><div class="lbl">'+label+'</div><div class="val">'+val+'</div></div>';}
+
+function bindListEvents(){
+  const nameEl=document.getElementById('flName');
+  const catEl=document.getElementById('flCatA');
+  const levelEl=document.getElementById('flLevel');
+  const statusEl=document.getElementById('flStatus');
+  const deptEl=document.getElementById('flDept');
+  if(nameEl)nameEl.oninput=function(){listFilter.name=this.value;renderView();};
+  if(catEl)catEl.onchange=function(){listFilter.catA=this.value;renderView();};
+  if(levelEl)levelEl.onchange=function(){listFilter.level=this.value;renderView();};
+  if(statusEl)statusEl.onchange=function(){listFilter.status=this.value;renderView();};
+  if(deptEl)deptEl.onchange=function(){listFilter.dept=this.value;renderView();};
+}
+
+function resetFilter(){
+  listFilter={name:'',catA:'all',level:'all',status:'all',dept:'all'};
+  renderView();
+}
+
+function toggleExpand(id){
+  if(expandedRows.has(id))expandedRows.delete(id);else expandedRows.add(id);
+  renderView();
+}
+
+/* ─── 3. Modal (Expert Detail) ─── */
+function openModal(id){
+  const e=experts.find(x=>x.id===id||x._id===id);
+  if(!e)return;
+  document.getElementById('mdLevel').textContent=e.level||'-';
+  document.getElementById('mdAvatar').textContent=e.name?e.name[0]:'?';
+  document.getElementById('mdName').textContent=e.name+' 전문가';
+  document.getElementById('mdSub').innerHTML=(e.department?e.department.large:'-')+' &nbsp;|&nbsp; '+(e.contact||'-');
+  let h='';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">';
+  h+='<div class="md-sec"><h4>A 분야 정보</h4><div class="md-grid">';
+  h+=mdI('대분류',e.categoryA?e.categoryA.large:'-')+mdI('중분류',e.categoryA?e.categoryA.medium:'-')+mdI('소분류',e.categoryA?e.categoryA.small||'-':'-');
+  h+='</div></div>';
+  h+='<div class="md-sec"><h4>B 급수 정보</h4><div class="md-grid">';
+  h+=mdI('대분류',e.gradeB?e.gradeB.large:'-')+mdI('중분류',e.gradeB?e.gradeB.medium:'-')+mdI('소분류',e.gradeB?e.gradeB.small||'-':'-');
+  h+='</div></div></div>';
+  h+='<div class="md-sec" style="margin-top:12px"><h4>웹사이트 및 관리 이력</h4>';
+  h+='<div class="md-info-row"><div class="md-ir-l"><div class="md-ir-icon">&#128279;</div><div><div class="md-ir-lbl">대표 홈페이지</div><div class="md-ir-val">'+(e.homepage||'-')+'</div></div></div>';
+  if(e.homepage)h+='<button style="padding:3px 10px;border:1px solid #ddd;border-radius:4px;font-size:10px;cursor:pointer;background:#fff" onclick="window.open(\'https://'+e.homepage+'\',\'_blank\')">바로가기</button>';
+  h+='</div>';
+  h+='<div class="md-info-row"><div class="md-ir-l"><div class="md-ir-icon">&#128197;</div><div><div class="md-ir-lbl">신청 일자</div><div class="md-ir-val">'+(e.date||'-')+'</div></div></div>'+statusBdg(e.status)+'</div>';
+  h+='</div>';
+  if(e.languages){
+    h+='<div class="md-sec" style="margin-top:12px"><h4>언어 / 경력</h4><div class="md-grid">';
+    h+=mdI('언어',(e.languages||[]).join(', '))+mdI('경력',e.experience||'-')+mdI('학력',e.education||'-')+mdI('이메일',e.email||'-');
+    h+='</div></div>';
+  }
+  document.getElementById('mdBody').innerHTML=h;
+  document.getElementById('modalBg').classList.add('v');
+}
+
+function mdI(k,v){return'<div class="md-item"><span class="md-k">'+k+'</span><span class="md-v">'+v+'</span></div>';}
+
+function closeModal(){document.getElementById('modalBg').classList.remove('v');}
+
+/* ─── 4. Registration Form ─── */
+function renderRegistrationForm(){
+  let h='<div class="rf"><div class="rf-hd"><h3>신규 전문가 등록 신청</h3><span class="bdg bdg-blue">작성중</span></div><div class="rf-bd">';
+
+  // Section 1: Personal info
+  h+='<div class="rf-sec"><h4><span class="dot d-gray"></span> 1. 전문가 인적사항</h4>';
+  h+='<div class="rf-grid">';
+  h+=rfField('rf-name','성명','text','실명 입력');
+  h+=rfField('rf-email','이메일','text','example@email.com');
+  h+=rfField('rf-contact','연락처','text','010-0000-0000');
+  h+=rfField('rf-homepage','홈페이지/SNS','text','www.domain.com');
+  h+='</div></div>';
+
+  // Section 2: A Category & B Grade
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+  // 2-A
+  h+='<div class="rf-sec sec-blue"><h4><span class="dot d-blue"></span> 2-A. 전문 분야 분류 (A 분야)</h4>';
+  h+='<div class="rf-grid g2">';
+  h+='<div class="rf-field"><label>대분류</label><select id="rf-catA-l" onchange="onCatALChange()"><option value="">선택</option>';
+  CLASSIFICATION_A.forEach(c=>{h+='<option value="'+c.large+'">'+c.large+'</option>';});
+  h+='</select></div>';
+  h+='<div class="rf-field"><label>중분류</label><select id="rf-catA-m" disabled><option value="">선택</option></select></div>';
+  h+='</div>';
+  h+='<div class="rf-field" style="margin-top:8px"><label>소분류 (상세)</label><input id="rf-catA-s" placeholder="상세 분야 입력" disabled></div>';
+  h+='</div>';
+  // 2-B
+  h+='<div class="rf-sec sec-purple"><h4><span class="dot d-purple"></span> 2-B. 자격 급수 (B 급수)</h4>';
+  h+='<div class="rf-grid g2">';
+  h+='<div class="rf-field"><label>유형</label><select id="rf-catB-l" onchange="onCatBLChange()"><option value="">선택</option>';
+  CLASSIFICATION_B.forEach(c=>{h+='<option value="'+c.large+'">'+c.large+'</option>';});
+  h+='</select></div>';
+  h+='<div class="rf-field"><label>급수 구분</label><select id="rf-catB-m" disabled><option value="">선택</option></select></div>';
+  h+='</div>';
+  h+='<div style="margin-top:8px;padding:6px;border:1px dashed #ddd6fe;border-radius:4px;background:#faf5ff">';
+  h+='<div style="font-size:9px;color:#7c3aed;font-weight:700;margin-bottom:4px">보유 자격 등급 선택</div>';
+  h+='<div class="gr-chips" id="rf-grade-chips">';
+  ["1급","2급","3급","4급","5급"].forEach(g=>{h+='<span class="gr-chip" onclick="this.classList.toggle(\'a\')">'+g+'</span>';});
+  h+='</div></div>';
+  h+='</div>';
+  h+='</div>';
+
+  // Section 3: Department & Level
+  h+='<div class="rf-sec sec-green"><h4><span class="dot d-green"></span> 3. 소속 부서 및 등급 관리</h4>';
+  h+='<div class="rf-grid g3">';
+  h+='<div class="rf-field"><label>대분류 (부서)</label><select id="rf-dept-l" onchange="onDeptLChange()"><option value="">선택</option>';
+  DEPARTMENTS.forEach(d=>{h+='<option value="'+d.large+'">'+d.large+'</option>';});
+  h+='</select></div>';
+  h+='<div class="rf-field"><label>중분류 (팀)</label><select id="rf-dept-m" disabled><option value="">선택</option></select></div>';
+  h+='<div class="rf-field"><label>E 전문가 등급</label><select id="rf-level"><option value="">선택</option>';
+  LEVELS.forEach(l=>{h+='<option value="'+l+'">'+l+'</option>';});
+  h+='</select></div>';
+  h+='</div></div>';
+
+  // Section 4: Notes
+  h+='<div class="rf-sec"><h4><span class="dot d-gray"></span> 4. 주요 경력 및 상세 자기소개</h4>';
+  h+='<div class="rf-field"><label>상세 메모 / 경력 사항</label><textarea id="rf-notes" placeholder="전문가의 주요 프로젝트 성과 및 경력을 상세히 기술해 주세요."></textarea></div>';
+  h+='<div class="rf-note">승인 프로세스는 영업일 기준 3~5일 소요됩니다.</div>';
+  h+='</div>';
+
+  h+='<div class="rf-btns"><button class="btn-outline" onclick="switchView(\'list\',document.querySelector(\'[data-view=list]\'))">취소</button><button class="btn-submit" onclick="submitRegistration()">신청 완료</button></div>';
+  h+='</div></div>';
+  return h;
+}
+
+function rfField(id,label,type,ph){
+  return'<div class="rf-field"><label>'+label+'</label><input id="'+id+'" type="'+(type||'text')+'" placeholder="'+(ph||'')+'"></div>';
+}
+
+function onCatALChange(){
+  const v=document.getElementById('rf-catA-l').value;
+  const mSel=document.getElementById('rf-catA-m');
+  const sSel=document.getElementById('rf-catA-s');
+  mSel.innerHTML='<option value="">선택</option>';
+  const cat=CLASSIFICATION_A.find(c=>c.large===v);
+  if(cat){
+    cat.medium.forEach(m=>{mSel.innerHTML+='<option value="'+m.name+'">'+m.name+'</option>';});
+    mSel.disabled=false;
+  }else{mSel.disabled=true;}
+  sSel.disabled=!v;sSel.value='';
+}
+
+function onCatBLChange(){
+  const v=document.getElementById('rf-catB-l').value;
+  const mSel=document.getElementById('rf-catB-m');
+  mSel.innerHTML='<option value="">선택</option>';
+  const cat=CLASSIFICATION_B.find(c=>c.large===v);
+  if(cat){
+    cat.medium.forEach(m=>{mSel.innerHTML+='<option value="'+m.name+'">'+m.name+'</option>';});
+    mSel.disabled=false;
+  }else{mSel.disabled=true;}
+}
+
+function onDeptLChange(){
+  const v=document.getElementById('rf-dept-l').value;
+  const mSel=document.getElementById('rf-dept-m');
+  mSel.innerHTML='<option value="">선택</option>';
+  const dept=DEPARTMENTS.find(d=>d.large===v);
+  if(dept&&dept.medium.length>0){
+    dept.medium.forEach(m=>{mSel.innerHTML+='<option value="'+m+'">'+m+'</option>';});
+    mSel.disabled=false;
+  }else{mSel.disabled=true;}
+}
+
+function bindRegFormEvents(){}
+
+async function submitRegistration(){
+  const name=gv('rf-name'),email=gv('rf-email'),contact=gv('rf-contact'),homepage=gv('rf-homepage');
+  if(!name){showToast('성명을 입력해 주세요.');return;}
+  const data={
+    id:experts.length+1,
+    name,email,contact,homepage,
+    categoryA:{large:gv('rf-catA-l'),medium:gv('rf-catA-m'),small:gv('rf-catA-s')},
+    gradeB:{large:gv('rf-catB-l'),medium:gv('rf-catB-m'),small:''},
+    department:{large:gv('rf-dept-l'),medium:gv('rf-dept-m')},
+    level:gv('rf-level'),
+    status:'검토중',
+    date:new Date().toISOString().slice(0,10),
+    languages:[],experience:'',education:'',
+    notes:gv('rf-notes')
+  };
+  try{
+    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:JSON.stringify(data)})});
+    experts.push(data);
+    showToast('전문가 등록 신청이 완료되었습니다.');
+    switchView('list',document.querySelector('[data-view=list]'));
+  }catch(e){
+    experts.push(data);
+    showToast('전문가 등록 신청이 완료되었습니다. (로컬)');
+    switchView('list',document.querySelector('[data-view=list]'));
+  }
+}
+
+function gv(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+
+/* ─── 5. Grade Settings ─── */
+const CRITERIA_LIST=[
+  {key:"languages",label:"가능언어",options:["한국어","영어","중국어","일본어","스페인어","러시아어","포르갈어","말레이시아어","태국어","프랑스어","인도어","베트남어"]},
+  {key:"nationality",label:"국적",options:["한국인","미국인","영국인","호주인","중국인","일본인","러시아인","프랑스인","베트남인"]},
+  {key:"translationLevel",label:"번역레벨",options:["최상","상","중","하"]},
+  {key:"availableTime",label:"번역가능시간",options:["언제든","상시","하루","이틀","3일 이상","10일 이상"]},
+  {key:"experience",label:"번역경력",options:["신입","3년이하","4-10년","10년이상"]},
+  {key:"occupation",label:"직업",options:["없음","일반번역(학생, 프리랜서, 직장인)","전문번역사","특수업직장인","전문직","번역사"]},
+  {key:"certifications",label:"언어자격증",options:["없음","토익","토플","IELTS","ITT동번역자격증","동번역대학원","해외거점활동","기타"]},
+  {key:"mtExperience",label:"MT경험",options:["있음","없음","전혀모름"]},
+  {key:"toolUsage",label:"번역기사용 유무",options:["있음","없음","전혀모름"]},
+  {key:"education",label:"학력",options:["고졸이하","고졸","초대졸","학사","석사","박사","교수"]},
+  {key:"overseasResidence",label:"해외거주기간",options:["없음","6개월~1년미만","1~3년","4~10년"]}
+];
+
+const EXPERT_TABS=[
+  {key:"general",label:"일반전문가",color:"#22c55e"},
+  {key:"advanced",label:"고급전문가",color:"#eab308"},
+  {key:"special",label:"특수전문가",color:"#a855f7"},
+  {key:"etc",label:"비고",color:"#94a3b8"}
+];
+
+let gradeState={activeTab:'general',configs:{}};
+EXPERT_TABS.forEach(t=>{
+  gradeState.configs[t.key]={grades:['A','B','C'],activeGrade:'A',criteria:{}};
+  ['A','B','C'].forEach(g=>{
+    gradeState.configs[t.key].criteria[g]={};
+    CRITERIA_LIST.forEach(c=>gradeState.configs[t.key].criteria[g][c.key]=[]);
+  });
+});
+
+function renderGradeSettings(){
+  const cfg=gradeState.configs[gradeState.activeTab];
+  const gc=cfg.criteria[cfg.activeGrade]||{};
+  let h='';
+  // Expert type tabs
+  h+='<div style="display:flex;gap:0">';
+  EXPERT_TABS.forEach(t=>{
+    const isA=gradeState.activeTab===t.key;
+    h+='<button onclick="gradeState.activeTab=\''+t.key+'\';renderView()" style="padding:8px 20px;font-size:12px;font-weight:600;border:1px solid '+(isA?'transparent':'#ddd')+';border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer;background:'+(isA?t.color:'#fff')+';color:'+(isA?'#fff':'#555')+'">'+t.label+'</button>';
+  });
+  h+='</div>';
+
+  h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:0 6px 6px 6px;padding:16px">';
+
+  // Grade selection
+  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:12px;color:#888">등급 선택:</span>';
+  cfg.grades.forEach(g=>{
+    const isG=cfg.activeGrade===g;
+    h+='<span onclick="gradeState.configs[gradeState.activeTab].activeGrade=\''+g+'\';renderView()" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-size:12px;font-weight:700;cursor:pointer;'+(isG?'background:#2563eb;color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.4)':'background:#f1f5f9;color:#555')+'">'+g+'</span>';
+  });
+  h+='<span onclick="addGrade()" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#dbeafe;color:#2563eb;font-size:16px;cursor:pointer">+</span>';
+  h+='</div>';
+
+  // Info
+  h+='<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;padding:8px 12px;font-size:11px;color:#1e40af;margin-bottom:12px">탭을 선택한 뒤, 아래 체크박스로 해당 등급의 기준을 설정하세요. A/B/C를 바꿔 가며 각 등급별 기준을 넣으면, 이에 따라 전문가가 <span style="color:#dc2626;text-decoration:underline">자동 배치</span>됩니다.</div>';
+
+  // Criteria table
+  h+='<div style="border:1px solid #e2e8f0;border-radius:6px;overflow:hidden"><table style="font-size:11px"><thead><tr style="background:#f8fafc"><th style="width:120px;background:#f8fafc;color:#555">조건명</th><th style="background:#f8fafc;color:#555">설정</th></tr></thead><tbody>';
+  CRITERIA_LIST.forEach((cr,i)=>{
+    const checked=gc[cr.key]||[];
+    h+='<tr style="background:'+(i%2===0?'#fff':'#fafbfc')+'"><td style="font-size:11px;color:#555;vertical-align:top;white-space:nowrap">'+cr.label+'</td><td><div style="display:flex;flex-wrap:wrap;gap:4px 12px">';
+    cr.options.forEach(o=>{
+      const ck=checked.includes(o);
+      h+='<label style="display:inline-flex;align-items:center;gap:3px;cursor:pointer;font-size:11px;color:#555"><input type="checkbox" '+(ck?'checked':'')+' onchange="toggleGradeOption(\''+cr.key+'\',\''+esc(o)+'\')" style="width:13px;height:13px;accent-color:#2563eb;cursor:pointer"> '+o+'</label>';
+    });
+    h+='</div></td></tr>';
+  });
+  h+='</tbody></table></div>';
+
+  h+='<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">';
+  h+='<button onclick="resetGrade()" style="padding:6px 16px;border:1px solid #ddd;border-radius:4px;font-size:11px;cursor:pointer;background:#fff;color:#555">초기화</button>';
+  h+='<button onclick="showToast(\'등급 기준이 저장되었습니다.\')" style="padding:6px 16px;border:none;border-radius:4px;font-size:11px;cursor:pointer;background:#1e293b;color:#fff;font-weight:700">저장</button>';
+  h+='</div></div>';
+  return h;
+}
+
+function addGrade(){
+  const cfg=gradeState.configs[gradeState.activeTab];
+  const letters='DEFGHIJKLMNOPQRSTUVWXYZ';
+  const next=letters.split('').find(l=>!cfg.grades.includes(l));
+  if(!next)return;
+  cfg.grades.push(next);
+  cfg.criteria[next]={};
+  CRITERIA_LIST.forEach(c=>cfg.criteria[next][c.key]=[]);
+  cfg.activeGrade=next;
+  renderView();
+}
+
+function toggleGradeOption(key,opt){
+  const cfg=gradeState.configs[gradeState.activeTab];
+  const gc=cfg.criteria[cfg.activeGrade];
+  if(!gc[key])gc[key]=[];
+  const idx=gc[key].indexOf(opt);
+  if(idx>=0)gc[key].splice(idx,1);else gc[key].push(opt);
+}
+
+function resetGrade(){
+  const cfg=gradeState.configs[gradeState.activeTab];
+  CRITERIA_LIST.forEach(c=>cfg.criteria[cfg.activeGrade][c.key]=[]);
+  renderView();
+  showToast('현재 등급의 설정이 초기화되었습니다.');
+}
+
+function bindGradeEvents(){}
+
+/* ─── 6. Consultation Management ─── */
+function renderConsultList(){
+  let h='<div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">';
+  h+='<div style="font-size:14px;font-weight:700;color:#222">상담 관리</div>';
+  h+='<span class="bdg bdg-blue">총 '+MOCK_CONSULTS.length+'건</span></div>';
+
+  h+='<div class="cs-list">';
+  h+='<div class="cs-item cs-hd"><div>#</div><div>전문가</div><div>고객</div><div>유형</div><div>상태</div><div>날짜</div></div>';
+  MOCK_CONSULTS.forEach(c=>{
+    let stCls='bdg-gray';
+    if(c.status==='진행중')stCls='bdg-blue';
+    else if(c.status==='완료')stCls='bdg-green';
+    else if(c.status==='대기')stCls='bdg-yellow';
+    h+='<div class="cs-item">';
+    h+='<div class="cs-id">'+c.id+'</div>';
+    h+='<div style="font-weight:700">'+c.expertName+'</div>';
+    h+='<div>'+c.client+'</div>';
+    h+='<div style="font-size:10px;color:#888">'+c.type+'</div>';
+    h+='<div><span class="bdg '+stCls+'">'+c.status+'</span></div>';
+    h+='<div style="font-size:10px;color:#888">'+c.date+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  // Consultation note
+  h+='<div style="margin-top:16px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:14px">';
+  h+='<div style="font-size:12px;font-weight:700;margin-bottom:8px">최근 상담 메모</div>';
+  MOCK_CONSULTS.slice(0,3).forEach(c=>{
+    h+='<div style="display:flex;gap:8px;align-items:baseline;padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:11px">';
+    h+='<span style="font-weight:700;color:#1a365d;width:60px;flex-shrink:0">'+c.expertName+'</span>';
+    h+='<span style="color:#888;flex:1">'+c.note+'</span>';
+    h+='<span style="font-size:9px;color:#aaa">'+c.date+'</span>';
+    h+='</div>';
+  });
+  h+='</div>';
+  return h;
+}
+
+/* ─── 7. Category Navigation (Tree) ─── */
+let catState={selectedA:null,selectedAMed:null,selectedB:null,selectedBMed:null};
+
+function renderCategoryTree(){
+  let h='<div style="font-size:14px;font-weight:700;margin-bottom:12px;color:#222">분류 체계 관리</div>';
+
+  // A Classification
+  h+='<div class="rf-sec sec-blue" style="margin-bottom:16px"><h4><span class="dot d-blue"></span> A 분야 (소재 분류)</h4>';
+  h+='<div class="cat-tree"><div class="ct-title">대분류</div><div class="ct-row" id="catA-large">';
+  CLASSIFICATION_A.forEach(c=>{
+    const isA=catState.selectedA===c.large;
+    h+='<span class="cat-node lv1'+(isA?' a':'')+'" data-val="'+c.large+'" onclick="selectCatA(\''+c.large+'\')">'+c.large+'</span>';
+  });
+  h+='</div>';
+  // Medium
+  if(catState.selectedA){
+    const cat=CLASSIFICATION_A.find(c=>c.large===catState.selectedA);
+    if(cat&&cat.medium.length>0){
+      h+='<div class="cat-sub"><div class="ct-title">중분류 ('+catState.selectedA+')</div><div class="ct-row">';
+      cat.medium.forEach(m=>{
+        const isA=catState.selectedAMed===m.name;
+        h+='<span class="cat-node lv2'+(isA?' a':'')+'" onclick="selectCatAMed(\''+m.name+'\')">'+m.name+'</span>';
+      });
+      h+='</div>';
+      // Small
+      if(catState.selectedAMed){
+        const med=cat.medium.find(m=>m.name===catState.selectedAMed);
+        if(med&&med.small.length>0){
+          h+='<div class="cat-sub"><div class="ct-title">소분류 ('+catState.selectedAMed+')</div><div class="ct-row">';
+          med.small.forEach(s=>{h+='<span class="cat-node lv3">'+s+'</span>';});
+          h+='</div></div>';
+        }
+      }
+      h+='</div>';
+    }
+  }
+  h+='</div></div>';
+
+  // B Classification
+  h+='<div class="rf-sec sec-purple" style="margin-bottom:16px"><h4><span class="dot d-purple"></span> B 급수 (자격 급수)</h4>';
+  h+='<div class="cat-tree"><div class="ct-title">대분류</div><div class="ct-row">';
+  CLASSIFICATION_B.forEach(c=>{
+    const isA=catState.selectedB===c.large;
+    h+='<span class="cat-node lv1'+(isA?' a':'')+'" onclick="selectCatB(\''+c.large+'\')">'+c.large+'</span>';
+  });
+  h+='</div>';
+  if(catState.selectedB){
+    const cat=CLASSIFICATION_B.find(c=>c.large===catState.selectedB);
+    if(cat&&cat.medium.length>0){
+      h+='<div class="cat-sub"><div class="ct-title">중분류 ('+catState.selectedB+')</div><div class="ct-row">';
+      cat.medium.forEach(m=>{
+        const isA=catState.selectedBMed===m.name;
+        h+='<span class="cat-node lv2'+(isA?' a':'')+'" onclick="selectCatBMed(\''+m.name+'\')">'+m.name+'</span>';
+      });
+      h+='</div>';
+      if(catState.selectedBMed){
+        const med=cat.medium.find(m=>m.name===catState.selectedBMed);
+        if(med&&med.small.length>0){
+          h+='<div class="cat-sub"><div class="ct-title">소분류 ('+catState.selectedBMed+')</div><div class="ct-row">';
+          med.small.forEach(s=>{h+='<span class="cat-node lv3">'+s+'</span>';});
+          h+='</div></div>';
+        }
+      }
+      h+='</div>';
+    }
+  }
+  h+='</div></div>';
+
+  // Department
+  h+='<div class="rf-sec sec-green"><h4><span class="dot d-green"></span> D 부서 조직</h4>';
+  h+='<div class="cat-tree"><div class="ct-row">';
+  DEPARTMENTS.forEach(d=>{
+    let sub=d.medium.length>0?' <span style="font-size:8px;opacity:.6">('+d.medium.join(', ')+')</span>':'';
+    h+='<span class="cat-node lv1">'+d.large+sub+'</span>';
+  });
+  h+='</div></div></div>';
+
+  return h;
+}
+
+function selectCatA(v){catState.selectedA=catState.selectedA===v?null:v;catState.selectedAMed=null;renderView();}
+function selectCatAMed(v){catState.selectedAMed=catState.selectedAMed===v?null:v;renderView();}
+function selectCatB(v){catState.selectedB=catState.selectedB===v?null:v;catState.selectedBMed=null;renderView();}
+function selectCatBMed(v){catState.selectedBMed=catState.selectedBMed===v?null:v;renderView();}
+function bindCategoryEvents(){}
+
+/* ─── Util ─── */
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ─── Boot ─── */
+init();
+</script>
+</body>
+</html>

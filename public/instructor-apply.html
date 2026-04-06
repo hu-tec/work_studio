@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>강사 등록 지원 신청서</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:12px/1.5 'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:#f0f2f5;color:#333;min-height:100vh}
+/* Wrap */
+.wr{max-width:960px;margin:0 auto;padding:32px 16px 60px}
+/* Header area (screen only) */
+.hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.hd h1{font-size:22px;font-weight:800;color:#1a365d}
+.hd p{font-size:11px;color:#888;margin-top:2px}
+.tb{display:flex;gap:8px}
+.tb .b{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#4a5568;transition:all .15s;font-family:inherit}
+.tb .b:hover{background:#f7fafc}
+.tb .b-pr{background:#1a365d;color:#fff;border-color:#1a365d}
+.tb .b-pr:hover{background:#2d4a7c}
+.tb .b-pv{background:#2563eb;color:#fff;border-color:#2563eb}
+/* Progress */
+.prog{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:20px}
+.prog .dt{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid #cbd5e0;color:#a0aec0;background:#fff;transition:all .25s;flex-shrink:0}
+.prog .dt.ac{background:#1a365d;border-color:#1a365d;color:#fff}
+.prog .dt.dn{background:#38a169;border-color:#38a169;color:#fff}
+.prog .ln{width:60px;height:2px;background:#cbd5e0;transition:background .25s}
+.prog .ln.ac{background:#1a365d}
+.prog .lb{font-size:10px;color:#a0aec0;margin-left:4px;white-space:nowrap;transition:color .25s}
+.prog .lb.ac{color:#1a365d;font-weight:600}
+/* Card */
+.cd{background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);overflow:hidden}
+/* Banner */
+.bn{background:linear-gradient(135deg,#1a365d 0%,#3730a3 100%);padding:18px 28px;color:#fff;display:flex;justify-content:space-between;align-items:center}
+.bn h2{font-size:16px;font-weight:800;letter-spacing:-.5px;text-transform:uppercase}
+.bn .sub{font-size:9px;opacity:.85;margin-top:2px;font-weight:700}
+.bn .tag{background:rgba(255,255,255,.2);padding:4px 12px;border-radius:8px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,.15)}
+/* Two-col */
+.cols{display:grid;grid-template-columns:1fr 1fr;background:#fafbfc}
+@media(max-width:768px){.cols{grid-template-columns:1fr}}
+.col{padding:20px}
+.col:first-child{border-right:1px solid #e2e8f0}
+.col-r{background:#fff}
+/* Section heading */
+.sh{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;color:#1a365d;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;border-left:3px solid #1a365d;padding-left:8px}
+.sh-i{color:#3730a3;border-color:#3730a3}
+/* Field group */
+.fg{margin-bottom:14px}
+.fg label,.fg .fl{display:block;font-size:10px;font-weight:700;color:#4a5568;margin-bottom:4px}
+.fg .req{color:#e53e3e;margin-left:2px}
+.fg input[type="text"],.fg input[type="tel"],.fg input[type="email"],.fg input[type="date"],.fg select,.fg textarea{
+  width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:11px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;background:#fff;color:#333}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#1a365d;box-shadow:0 0 0 2px rgba(26,54,93,.08)}
+.fg textarea{resize:vertical;min-height:50px}
+.fg .ht{font-size:10px;color:#a0aec0;margin-top:3px}
+.fg.err input,.fg.err select,.fg.err textarea{border-color:#e53e3e}
+.fg.err .ht{color:#e53e3e}
+.fg .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fg .row3{display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;align-items:center}
+/* Checkbox group */
+.cg{margin-bottom:12px}
+.cg .ct{display:flex;align-items:center;gap:5px;margin-bottom:4px;padding-left:2px}
+.cg .ct svg{width:12px;height:12px;color:#1a365d;flex-shrink:0}
+.cg .ct span{font-size:10px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:.3px}
+.cg .ct .req{color:#e53e3e;font-size:8px;margin-left:2px}
+.cg .cw{background:rgba(255,255,255,.6);border:1px solid #e8ecf0;padding:6px 8px;border-radius:8px;display:flex;flex-wrap:wrap;gap:3px 10px}
+.cg .cw label{display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap}
+.cg .cw label:hover span{color:#000}
+.cg .cw input[type="checkbox"]{width:12px;height:12px;accent-color:#1a365d;cursor:pointer;flex-shrink:0}
+.cg .cw span{font-size:10px;color:#555;font-weight:600;transition:color .1s}
+.cg .cw label:has(input:checked) span{color:#1a365d;font-weight:700}
+/* Lang pair */
+.lp{background:#eef2ff;border:1px solid #c7d2fe;padding:14px;border-radius:10px}
+.lp .tt{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.lp .tt svg{width:16px;height:16px;color:#3730a3}
+.lp .tt span{font-size:10px;font-weight:800;color:#312e81;text-transform:uppercase;letter-spacing:.3px}
+.lp .pr{display:flex;align-items:center;gap:8px}
+.lp .pr input{flex:1;background:#fff;border:1px solid #c7d2fe;padding:8px;border-radius:6px;font-size:10px;font-weight:700;text-align:center;outline:none;font-family:inherit}
+.lp .pr input:focus{border-color:#4f46e5}
+.lp .pr .ar{color:#4f46e5;font-size:12px;font-weight:800}
+.lp .nt{margin-top:10px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.5);padding:6px 8px;border-radius:6px;border:1px solid #e0e7ff}
+.lp .nt .dot{width:6px;height:6px;border-radius:50%;background:#4f46e5;animation:pulse 2s infinite}
+.lp .nt span{font-size:9px;color:#3730a3;font-weight:700;font-style:italic}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* Education grid */
+.eg{background:rgba(255,255,255,.6);border:1px solid #e8ecf0;padding:10px;border-radius:8px}
+.eg .er{display:grid;grid-template-columns:55px 1fr 1fr;gap:6px;align-items:center;margin-bottom:4px}
+.eg .er:last-child{margin-bottom:0}
+.eg .er span{font-size:10px;font-weight:800;color:#333}
+.eg .er input{background:#fff;border:1px solid #e8ecf0;padding:5px 8px;font-size:10px;font-weight:600;border-radius:4px;outline:none;font-family:inherit}
+.eg .er input:focus{border-color:#1a365d}
+/* File upload */
+.fu{border:1px dashed #cbd5e0;border-radius:8px;padding:12px;text-align:center;cursor:pointer;transition:all .15s;background:#fafbfc}
+.fu:hover{border-color:#1a365d;background:#f7fafc}
+.fu svg{width:20px;height:20px;color:#a0aec0;margin:0 auto 4px}
+.fu .fl{font-size:10px;color:#4a5568;font-weight:600}
+.fu .fs{font-size:9px;color:#a0aec0;margin-top:2px}
+.fu input{display:none}
+.fu .fn{margin-top:6px;font-size:10px;color:#38a169;font-weight:700;display:none}
+/* Consent */
+.cs{display:flex;align-items:flex-start;gap:8px;padding:12px;background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;margin-bottom:14px}
+.cs svg{width:16px;height:16px;color:#2563eb;flex-shrink:0;margin-top:1px}
+.cs p{font-size:10px;color:#1e3a5f;line-height:1.6;font-weight:700}
+.cs-chk{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:#f7fafc;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:14px}
+.cs-chk input{margin-top:2px;width:16px;height:16px;accent-color:#1a365d;flex-shrink:0}
+.cs-chk span{font-size:11px;color:#4a5568;line-height:1.5}
+.cs-chk span strong{display:block;margin-bottom:2px}
+/* Buttons */
+.btns{display:flex;gap:8px;margin-top:16px}
+.btn{flex:1;padding:12px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-p{background:#1a365d;color:#fff}
+.btn-p:hover{background:#2d4a7c}
+.btn-p:active{transform:scale(.98)}
+.btn-s{background:#fff;color:#4a5568;border:1px solid #e2e8f0}
+.btn-s:hover{background:#f7fafc}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+/* Step visibility */
+.stp{display:none}
+.stp.ac{display:block}
+/* Success */
+.ok{text-align:center;padding:50px 20px}
+.ok .ic{font-size:56px;margin-bottom:12px}
+.ok h2{font-size:20px;font-weight:700;color:#1a365d;margin-bottom:6px}
+.ok p{font-size:13px;color:#718096;line-height:1.7}
+/* Spinner */
+.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#1a365d;color:#fff;padding:16px 24px;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.25);display:flex;align-items:center;gap:12px;z-index:100;transform:translateX(calc(100% + 40px));transition:transform .4s ease}
+.toast.show{transform:translateX(0)}
+.toast .ti{width:36px;height:36px;background:#38a169;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toast .ti svg{width:18px;height:18px;color:#fff}
+.toast .tx h4{font-size:13px;font-weight:700;margin-bottom:2px}
+.toast .tx p{font-size:11px;color:rgba(255,255,255,.7)}
+
+/* ===== Print styles ===== */
+@media print{
+  .no-pr,header,footer,nav,.toast{display:none!important}
+  body,html{background:#fff!important;margin:0!important;padding:0!important;font-size:10px!important}
+  .wr{max-width:none;padding:0!important}
+  .pr-area{width:210mm;margin:0 auto;padding:0!important}
+  .cd{box-shadow:none!important;border:1px solid #ddd!important;border-radius:0!important}
+  .cols{grid-template-columns:1fr 1fr!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .fu{border:1px solid #ccc!important}
+  .btn,.btns,.prog{display:none!important}
+}
+/* Print preview mode */
+.pv-mode{background:#525659;min-height:100vh}
+.pv-mode .pr-area{width:210mm;min-height:297mm;background:#fff;margin:0 auto;box-shadow:0 0 50px rgba(0,0,0,.5);padding:0!important}
+.pv-mode .no-pr{opacity:.9}
+</style>
+</head>
+<body>
+<div class="wr">
+  <!-- Toolbar (screen only) -->
+  <div class="hd no-pr">
+    <div>
+      <h1>강사 등록 지원 신청서</h1>
+      <p>입력하신 정보는 A4 규격에 맞춰 최적화되어 출력됩니다.</p>
+    </div>
+    <div class="tb">
+      <button class="b" id="pvBtn" onclick="togglePreview()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        출력 미리보기
+      </button>
+      <button class="b b-pr" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        신청서 출력
+      </button>
+    </div>
+  </div>
+
+  <!-- Progress (screen only) -->
+  <div class="prog no-pr" id="prog">
+    <div class="dt ac" id="dt1">1</div>
+    <span class="lb ac" id="lb1">기본정보</span>
+    <div class="ln" id="ln1"></div>
+    <div class="dt" id="dt2">2</div>
+    <span class="lb" id="lb2">세부역량</span>
+    <div class="ln" id="ln2"></div>
+    <div class="dt" id="dt3">3</div>
+    <span class="lb" id="lb3">첨부/동의</span>
+  </div>
+
+  <!-- Main form card -->
+  <div class="pr-area">
+    <div class="cd">
+      <!-- Banner -->
+      <div class="bn">
+        <div>
+          <h2>Instructor Registration Form</h2>
+          <div class="sub">강사 등록 지원 신청서 (Ver 2026.04)</div>
+        </div>
+        <div class="tag">No. 2026-INS-PRO</div>
+      </div>
+
+      <!-- Step 1: Basic Info + Course Details -->
+      <div class="stp ac" id="stp1">
+        <div class="cols">
+          <!-- Left Column -->
+          <div class="col">
+            <!-- 01. Personal Info -->
+            <div class="sh">01. Personal Identity (기본정보)</div>
+
+            <div class="fg" id="fg-name">
+              <div class="row2">
+                <div>
+                  <label>성명<span class="req">*</span></label>
+                  <input type="text" id="f-name" placeholder="성함"/>
+                </div>
+                <div>
+                  <label>생년월일</label>
+                  <input type="text" id="f-birth" placeholder="YYYY.MM.DD"/>
+                </div>
+              </div>
+            </div>
+            <div class="fg" id="fg-contact">
+              <div class="row2">
+                <div>
+                  <label>연락처<span class="req">*</span></label>
+                  <input type="tel" id="f-phone" placeholder="010-0000-0000"/>
+                </div>
+                <div>
+                  <label>이메일<span class="req">*</span></label>
+                  <input type="email" id="f-email" placeholder="example@domain.com"/>
+                </div>
+              </div>
+            </div>
+            <div class="fg">
+              <label>주소</label>
+              <input type="text" id="f-addr" placeholder="상세 주소 입력"/>
+            </div>
+
+            <!-- 02. Course Content Details -->
+            <div class="sh" style="margin-top:16px">02. Course Content Details (세부 강의 내용)</div>
+
+            <div class="cg" id="cg-major">
+              <div class="ct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                <span>강의 분야<span class="req">*</span></span>
+              </div>
+              <div class="cw" id="cw-major"></div>
+            </div>
+
+            <div class="cg">
+              <div class="ct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                <span>강의 대상</span>
+              </div>
+              <div class="cw" id="cw-middle"></div>
+            </div>
+
+            <div class="cg">
+              <div class="ct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>현재 직업</span>
+              </div>
+              <div class="cw" id="cw-occ"></div>
+            </div>
+
+            <div class="fg">
+              <div class="row2">
+                <div>
+                  <label>강의 가능 시작일</label>
+                  <input type="text" id="f-startdate" placeholder="MM월 DD일"/>
+                </div>
+                <div>
+                  <label>세부 시간대</label>
+                  <input type="text" id="f-time" placeholder="( )시 ~ ( )시"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="cg">
+              <div class="ct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>활동 가능 요일</span>
+              </div>
+              <div class="cw" id="cw-days"></div>
+            </div>
+
+            <div class="cg">
+              <div class="ct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>활동 가능 시간대</span>
+              </div>
+              <div class="cw" id="cw-timeslot"></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div class="cg">
+                <div class="ct">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                  <span>업무 경력</span>
+                </div>
+                <div class="cw" id="cw-expwork"></div>
+              </div>
+              <div class="cg">
+                <div class="ct">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                  <span>강의/번역 경력</span>
+                </div>
+                <div class="cw" id="cw-explec"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="col col-r">
+            <!-- 03. Education & Qualifications -->
+            <div class="sh">03. Education & Qualifications (학력/자격)</div>
+
+            <div class="eg" id="edu-grid">
+              <!-- Populated by JS -->
+            </div>
+
+            <div class="fg" style="margin-top:10px">
+              <div class="row2">
+                <div>
+                  <label>지원 업무 자격증</label>
+                  <input type="text" id="f-cert1" placeholder="자격증명 입력"/>
+                </div>
+                <div>
+                  <label>기타 자격증</label>
+                  <input type="text" id="f-cert2" placeholder="자격증명 입력"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- 04. Language Pair -->
+            <div class="sh sh-i" style="margin-top:16px">04. Prompt & Language Specifics (프롬프트/언어)</div>
+
+            <div class="lp">
+              <div class="tt">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+                <span>번역강의 가능한 언어쌍 (FROM → TO)</span>
+              </div>
+              <div class="pr">
+                <input type="text" id="f-lang-from" placeholder="( ) 언어"/>
+                <span class="ar">▶</span>
+                <input type="text" id="f-lang-to" placeholder="( ) 언어"/>
+              </div>
+              <div class="nt">
+                <div class="dot"></div>
+                <span>※ 세부 강의 계획서 및 커리큘럼은 별도 첨부 필수</span>
+              </div>
+            </div>
+
+            <!-- Sub-category levels -->
+            <div style="margin-top:12px">
+              <div class="cg">
+                <div class="ct">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <span>교육용 급수 (소분류)</span>
+                </div>
+                <div class="cw" id="cw-sub-edu"></div>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <div class="cg" style="flex:1;min-width:120px">
+                  <div class="ct">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>일반 급수</span>
+                  </div>
+                  <div class="cw" id="cw-sub-gen"></div>
+                </div>
+                <div class="cg" style="flex:1;min-width:120px">
+                  <div class="ct">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>전문 급수</span>
+                  </div>
+                  <div class="cw" id="cw-sub-pro"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Narrative -->
+            <div class="sh" style="margin-top:16px">Professional Statement</div>
+            <div class="fg">
+              <label>강사 소개 및 핵심 역량 요약</label>
+              <textarea id="f-intro" rows="2" placeholder="핵심 강의 이력 및 전문성을 구체적으로 요약해 주세요."></textarea>
+            </div>
+            <div class="fg">
+              <label>비고 및 기타 전달사항</label>
+              <textarea id="f-remarks" rows="2" placeholder="온라인 포트폴리오 링크나 특이사항을 입력해 주세요."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Skills -->
+      <div class="stp" id="stp2">
+        <div class="cols">
+          <div class="col" id="sk-left"></div>
+          <div class="col col-r" id="sk-right"></div>
+        </div>
+      </div>
+
+      <!-- Step 3: Uploads & Consent -->
+      <div class="stp" id="stp3">
+        <div style="padding:24px;max-width:640px;margin:0 auto">
+          <div class="sh">06. 첨부 파일</div>
+
+          <div class="fg">
+            <label>이력서 (Resume)</label>
+            <div class="fu" id="fu-resume" onclick="document.getElementById('fi-resume').click()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div class="fl">클릭하여 이력서 파일 첨부</div>
+              <div class="fs">PDF, DOC, DOCX (최대 10MB)</div>
+              <input type="file" id="fi-resume" accept=".pdf,.doc,.docx" onchange="onFileSelect(this,'fu-resume')"/>
+              <div class="fn" id="fn-resume"></div>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label>포트폴리오 (Portfolio)</label>
+            <div class="fu" id="fu-portfolio" onclick="document.getElementById('fi-portfolio').click()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div class="fl">클릭하여 포트폴리오 파일 첨부</div>
+              <div class="fs">PDF, PPT, PPTX, ZIP (최대 20MB)</div>
+              <input type="file" id="fi-portfolio" accept=".pdf,.ppt,.pptx,.zip" onchange="onFileSelect(this,'fu-portfolio')"/>
+              <div class="fn" id="fn-portfolio"></div>
+            </div>
+          </div>
+
+          <div class="sh" style="margin-top:20px">07. 동의 및 제출</div>
+
+          <div class="cs">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <p>상기 기재사항은 사실과 다름없음을 확인하며, 강사 등록을 신청합니다.<br/>입력된 정보는 매칭 심사 및 교육과정 설계의 공식 자료로 활용됩니다.</p>
+          </div>
+
+          <div class="cs-chk" id="fg-consent">
+            <input type="checkbox" id="f-consent"/>
+            <span>
+              <strong>개인정보 수집 및 이용에 동의합니다.</strong>
+              수집 항목: 성명, 연락처, 이메일, 생년월일 등 신청 양식에 기재된 정보<br/>
+              수집 목적: 강사 등록 심사 및 매칭<br/>
+              보유 기간: 신청일로부터 1년
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success -->
+      <div class="stp" id="stp-done">
+        <div class="ok">
+          <div class="ic">&#10004;&#65039;</div>
+          <h2>강사 등록 신청이 완료되었습니다</h2>
+          <p>접수해 주셔서 감사합니다.<br/>담당자가 확인 후 연락드리겠습니다.</p>
+        </div>
+      </div>
+
+      <!-- Navigation buttons (inside card, outside steps for print hide) -->
+      <div class="no-pr" style="padding:0 24px 20px" id="nav-btns">
+        <div class="btns" id="btns-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast">
+  <div class="ti">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div class="tx">
+    <h4>신청서가 성공적으로 전송되었습니다!</h4>
+    <p>강사 등록 심사가 시작되었습니다.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* === Data Constants === */
+  var majorCats = ["프롬프트","AI번역","AI윤리","정통 통역번역"];
+  var middleCats = ["초중고학생","대학생","일반인","20년이상 업무 전문가"];
+  var occupations = ["학원강의","기업강의","교수","취업준비생","전문강사","프리랜서 강사","현업전문가","학생","전문 번역사","프리랜서 번역사"];
+  var days = ["월","화","수","목","금","토","일"];
+  var timeSlots = ["오전","오후","저녁","주말"];
+  var expOpts = ["1년 미만","1~3년","3~5년","5~10년","10년 이상"];
+  var subCats = {"교육용":["1급","2급","3급","4급","5급","6급","7급","8급"],"일반":["1급","2급","3급"],"전문":["1급","2급"]};
+  var eduRows = [
+    {key:"high",label:"고등학교"},{key:"univ",label:"대학교"},{key:"master",label:"석사"},
+    {key:"doctor",label:"박사"},{key:"overseas",label:"해외대학"}
+  ];
+
+  var skillGroups = [
+    {t:"AI 교육 및 챗봇",opts:["ChatGPT","Claude","Gemini","Perplexity","Gamma AI","Canva Magic"]},
+    {t:"프롬프트 엔지니어링",opts:["역할 정의","데이터 정제","출력 형식 지정","Chain of Thought","멀티모달","프롬프트 보안"]},
+    {t:"AI 코딩 및 에이전트",opts:["Cursor","Replit","GitHub Copilot","v0.dev","Bolt.new","Windsurf"]},
+    {t:"AI 비디오 & 아바타",opts:["Runway Gen-3","HeyGen","D-ID","Luma Dream Machine","Kling AI","Pika Art"]},
+    {t:"AI 오디오 & 번역자막",opts:["ElevenLabs","Vrew","Rask AI","Otter.ai","ClovaNote","Descript"]},
+    {t:"데이터 분석 & 리서치",opts:["GPT Data Analyst","Scholar AI","Consensus","WolframAlpha","Elicit","NotebookLM"]},
+    {t:"교안/콘텐츠 디자인",opts:["PPT 디자인","캔바(Canva)","망고보드","미리캔버스","포토샵","Napkin AI"]},
+    {t:"로컬 AI 및 인프라",opts:["Ollama","LM Studio","AnythingLLM","GPU 서버 활용","오픈소스 모델","로컬 RAG"]},
+    {t:"학습 관리 & 협업",opts:["구글 클래스룸","노션(Notion)","슬랙","디스코드","카카오톡 채널","LMS 관리"]},
+    {t:"상호작용 & 퍼실리테이션",opts:["패들렛","슬라이도","멘티미터","카훗","줌 화이트보드","미로(Miro)"]},
+    {t:"퀴즈 및 학습 평가",opts:["Quizgecko","QuestionWell","AI 시험지 제작","자동 피드백","Curipod","AI 채점 시스템"]},
+    {t:"자동화 & 워크플로우",opts:["Zapier","Make(Integromat)","Python 기초","API 활용","커스텀 GPTs","Scribe"]},
+    {t:"윤리 & 저작권 검수",opts:["GPTZero","Turnitin","Copyleaks","Originality.ai","저작권 가이드","AI 워터마크"]}
+  ];
+
+  /* === Helpers === */
+  function buildCheckboxes(containerId, items, groupName){
+    var c = document.getElementById(containerId);
+    if(!c) return;
+    items.forEach(function(item){
+      var lbl = document.createElement('label');
+      var inp = document.createElement('input');
+      inp.type='checkbox'; inp.name=groupName; inp.value=item;
+      var sp = document.createElement('span');
+      sp.textContent=item;
+      lbl.appendChild(inp);
+      lbl.appendChild(sp);
+      c.appendChild(lbl);
+    });
+  }
+
+  function getChecked(name){
+    return Array.from(document.querySelectorAll('input[name="'+name+'"]:checked')).map(function(c){return c.value});
+  }
+
+  function buildSkillGroup(container, group, idx){
+    var cg = document.createElement('div');
+    cg.className='cg';
+    var ct = document.createElement('div');
+    ct.className='ct';
+    ct.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;color:#1a365d"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span>'+group.t+'</span>';
+    cg.appendChild(ct);
+    var cw = document.createElement('div');
+    cw.className='cw';
+    var gn = 'sk_'+idx;
+    group.opts.forEach(function(opt){
+      var lbl = document.createElement('label');
+      var inp = document.createElement('input');
+      inp.type='checkbox'; inp.name=gn; inp.value=opt;
+      var sp = document.createElement('span');
+      sp.textContent=opt;
+      lbl.appendChild(inp);
+      lbl.appendChild(sp);
+      cw.appendChild(lbl);
+    });
+    cg.appendChild(cw);
+    container.appendChild(cg);
+  }
+
+  /* === Populate form === */
+  buildCheckboxes('cw-major', majorCats, 'major');
+  buildCheckboxes('cw-middle', middleCats, 'middle');
+  buildCheckboxes('cw-occ', occupations, 'occ');
+  buildCheckboxes('cw-days', days, 'days');
+  buildCheckboxes('cw-timeslot', timeSlots, 'timeslot');
+  buildCheckboxes('cw-expwork', expOpts, 'expwork');
+  buildCheckboxes('cw-explec', expOpts, 'explec');
+  buildCheckboxes('cw-sub-edu', subCats["교육용"], 'sub_edu');
+  buildCheckboxes('cw-sub-gen', subCats["일반"], 'sub_gen');
+  buildCheckboxes('cw-sub-pro', subCats["전문"], 'sub_pro');
+
+  /* Education grid */
+  var egrid = document.getElementById('edu-grid');
+  eduRows.forEach(function(r){
+    var row = document.createElement('div');
+    row.className='er';
+    row.innerHTML='<span>'+r.label+'</span><input type="text" id="edu-'+r.key+'-name" placeholder="학교명"/><input type="text" id="edu-'+r.key+'-major" placeholder="전공과목"/>';
+    egrid.appendChild(row);
+  });
+
+  /* Skills — split across two columns */
+  var skLeft = document.getElementById('sk-left');
+  var skRight = document.getElementById('sk-right');
+  var shL = document.createElement('div');
+  shL.className='sh sh-i';
+  shL.textContent='05. Technical Instructor Skillsets (기술 역량)';
+  skLeft.appendChild(shL);
+  var shR = document.createElement('div');
+  shR.className='sh sh-i';
+  shR.textContent='05. Skillsets (continued)';
+  skRight.appendChild(shR);
+  var half = Math.ceil(skillGroups.length/2);
+  skillGroups.forEach(function(g,i){
+    buildSkillGroup(i<half?skLeft:skRight, g, i);
+  });
+
+  /* === Step navigation === */
+  var curStep = 1;
+  var totalSteps = 3;
+
+  function renderBtns(){
+    var area = document.getElementById('btns-area');
+    area.innerHTML='';
+    if(curStep > totalSteps) { document.getElementById('nav-btns').style.display='none'; return; }
+    document.getElementById('nav-btns').style.display='';
+    if(curStep>1){
+      var prev = document.createElement('button');
+      prev.className='btn btn-s';
+      prev.textContent='이전';
+      prev.onclick=function(){ goStep(curStep-1); };
+      area.appendChild(prev);
+    }
+    if(curStep<totalSteps){
+      var next = document.createElement('button');
+      next.className='btn btn-p';
+      next.textContent='다음';
+      next.onclick=function(){ goStep(curStep+1); };
+      area.appendChild(next);
+    } else {
+      var sub = document.createElement('button');
+      sub.className='btn btn-p';
+      sub.id='submitBtn';
+      sub.textContent='신청서 제출';
+      sub.onclick=submitForm;
+      area.appendChild(sub);
+    }
+  }
+
+  function goStep(n){
+    if(n===2 && curStep===1 && !validateStep1()) return;
+    if(n===3 && curStep===2) { /* no special validation for step 2 */ }
+    curStep=n;
+    document.querySelectorAll('.stp').forEach(function(s){s.classList.remove('ac')});
+    var target = n>totalSteps ? 'stp-done' : 'stp'+n;
+    document.getElementById(target).classList.add('ac');
+    updateProgress();
+    renderBtns();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function updateProgress(){
+    for(var i=1;i<=totalSteps;i++){
+      var dt = document.getElementById('dt'+i);
+      var lb = document.getElementById('lb'+i);
+      var ln = document.getElementById('ln'+i);
+      if(i<curStep){
+        dt.className='dt dn'; dt.innerHTML='&#10003;';
+        lb.className='lb ac';
+        if(ln) ln.className='ln ac';
+      } else if(i===curStep){
+        dt.className='dt ac'; dt.textContent=String(i);
+        lb.className='lb ac';
+        if(ln) ln.className='ln';
+      } else {
+        dt.className='dt'; dt.textContent=String(i);
+        lb.className='lb';
+        if(ln) ln.className='ln';
+      }
+    }
+  }
+
+  renderBtns();
+
+  /* === Validation === */
+  function clearErr(){document.querySelectorAll('.fg.err').forEach(function(f){f.classList.remove('err');var h=f.querySelector('.ht');if(h)h.remove()})}
+
+  function markErr(id,msg){
+    var fg=document.getElementById(id);
+    if(!fg)return;
+    fg.classList.add('err');
+    if(!fg.querySelector('.ht')){var s=document.createElement('div');s.className='ht';s.textContent=msg;fg.appendChild(s)}
+  }
+
+  function validateStep1(){
+    clearErr();
+    var ok=true;
+    var name=document.getElementById('f-name').value.trim();
+    if(!name){markErr('fg-name','성명을 입력해 주세요.');ok=false}
+    var phone=document.getElementById('f-phone').value.trim();
+    var email=document.getElementById('f-email').value.trim();
+    if(!phone||!email){markErr('fg-contact','연락처와 이메일을 입력해 주세요.');ok=false}
+    if(getChecked('major').length===0){
+      alert('강의 분야를 1개 이상 선택해 주세요.');
+      ok=false;
+    }
+    return ok;
+  }
+
+  /* === File upload === */
+  var uploadedFiles = {};
+
+  window.onFileSelect = function(input, fuId){
+    var file = input.files[0];
+    if(!file) return;
+    var fn = document.getElementById('fn-'+fuId.replace('fu-',''));
+    fn.textContent = file.name+' ('+formatSize(file.size)+')';
+    fn.style.display='block';
+    uploadedFiles[fuId.replace('fu-','')] = file;
+  };
+
+  function formatSize(b){
+    if(b<1024) return b+'B';
+    if(b<1048576) return (b/1024).toFixed(1)+'KB';
+    return (b/1048576).toFixed(1)+'MB';
+  }
+
+  async function uploadFile(file, fieldName){
+    try{
+      var res = await fetch('/api/upload/presign',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({filename:file.name,contentType:file.type,field:fieldName})
+      });
+      if(!res.ok) throw new Error('presign failed');
+      var data = await res.json();
+      var upRes = await fetch(data.url,{
+        method:'PUT',
+        headers:{'Content-Type':file.type},
+        body:file
+      });
+      if(!upRes.ok) throw new Error('upload failed');
+      return data.key || data.fileUrl || file.name;
+    }catch(e){
+      console.warn('File upload skipped:',e.message);
+      return file.name;
+    }
+  }
+
+  /* === Submit === */
+  window.submitForm = async function(){
+    clearErr();
+    var consent = document.getElementById('f-consent').checked;
+    if(!consent){
+      document.getElementById('fg-consent').style.borderColor='#e53e3e';
+      alert('개인정보 수집 및 이용에 동의해 주세요.');
+      return;
+    }
+    document.getElementById('fg-consent').style.borderColor='';
+
+    var btn = document.getElementById('submitBtn');
+    btn.disabled=true;
+    btn.innerHTML='<span class="sp"></span>제출 중...';
+
+    /* Collect all form data */
+    var formData = {
+      basic:{
+        name: document.getElementById('f-name').value.trim(),
+        birthdate: document.getElementById('f-birth').value.trim(),
+        phone: document.getElementById('f-phone').value.trim(),
+        email: document.getElementById('f-email').value.trim(),
+        address: document.getElementById('f-addr').value.trim(),
+        intro: document.getElementById('f-intro').value.trim()
+      },
+      classification:{
+        major: getChecked('major'),
+        middle: getChecked('middle'),
+        subEdu: getChecked('sub_edu'),
+        subGen: getChecked('sub_gen'),
+        subPro: getChecked('sub_pro')
+      },
+      general:{
+        occ: getChecked('occ'),
+        days: getChecked('days'),
+        timeSlots: getChecked('timeslot'),
+        specificTime: document.getElementById('f-time').value.trim(),
+        startDate: document.getElementById('f-startdate').value.trim(),
+        expWork: getChecked('expwork'),
+        expLecture: getChecked('explec'),
+        certMain: document.getElementById('f-cert1').value.trim(),
+        certOther: document.getElementById('f-cert2').value.trim(),
+        langPair:{
+          from: document.getElementById('f-lang-from').value.trim(),
+          to: document.getElementById('f-lang-to').value.trim()
+        }
+      },
+      eduDetail:{}
+    };
+
+    /* Education */
+    eduRows.forEach(function(r){
+      formData.eduDetail[r.key]={
+        name: document.getElementById('edu-'+r.key+'-name').value.trim(),
+        major: document.getElementById('edu-'+r.key+'-major').value.trim()
+      };
+    });
+
+    /* Skills */
+    formData.skills={};
+    skillGroups.forEach(function(g,i){
+      var vals = getChecked('sk_'+i);
+      if(vals.length) formData.skills[g.t]=vals;
+    });
+
+    formData.remarks = document.getElementById('f-remarks').value.trim();
+    formData.privacyConsent = true;
+    formData._status = 0;
+
+    /* Upload files */
+    formData.files={};
+    for(var key in uploadedFiles){
+      if(uploadedFiles.hasOwnProperty(key)){
+        formData.files[key] = await uploadFile(uploadedFiles[key], key);
+      }
+    }
+
+    /* Submit */
+    try{
+      var res = await fetch('/api/applications',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({data:formData})
+      });
+      if(!res.ok) throw new Error('서버 오류: '+res.status);
+      goStep(totalSteps+1);
+      showToast();
+    }catch(e){
+      alert('제출에 실패했습니다. 다시 시도해 주세요.\n'+e.message);
+      btn.disabled=false;
+      btn.textContent='신청서 제출';
+    }
+  };
+
+  function showToast(){
+    var t=document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},5000);
+  }
+
+  /* === Print preview toggle === */
+  window.togglePreview = function(){
+    var body = document.body;
+    var pvBtn = document.getElementById('pvBtn');
+    var isP = body.classList.toggle('pv-mode');
+    if(!isP) body.classList.remove('pv-mode');
+    /* Show all steps in preview */
+    if(isP){
+      document.querySelectorAll('.stp').forEach(function(s){s.style.display='block'});
+      document.getElementById('stp-done').style.display='none';
+      pvBtn.classList.add('b-pv');
+      pvBtn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> 편집 모드';
+    } else {
+      document.querySelectorAll('.stp').forEach(function(s){s.style.display='none';s.classList.remove('ac')});
+      document.getElementById('stp'+curStep).classList.add('ac');
+      document.getElementById('stp'+curStep).style.display='';
+      pvBtn.classList.remove('b-pv');
+      pvBtn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> 출력 미리보기';
+    }
+  };
+})();
+</script>
+</body>
+</html>

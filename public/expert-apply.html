@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>번역 전문가 등록 신청</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:12px/1.5 'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:#f0f2f5;color:#333;min-height:100vh;display:flex;justify-content:center;padding:32px 12px 60px}
+.wr{width:100%;max-width:860px}
+
+/* Header */
+.hd{text-align:center;margin-bottom:24px}
+.hd h1{font-size:22px;font-weight:800;color:#1a365d;margin-bottom:4px}
+.hd p{font-size:12px;color:#888}
+
+/* Toolbar (print/preview) */
+.tb{display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px}
+.tb button{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;border:1px solid #cbd5e0;background:#fff;color:#4a5568;cursor:pointer;font-family:inherit;transition:all .15s}
+.tb button:hover{background:#f7fafc;border-color:#a0aec0}
+.tb .bt-pv.on{background:#1a365d;color:#fff;border-color:#1a365d}
+.tb .bt-pr{background:#1a365d;color:#fff;border-color:#1a365d}
+.tb .bt-pr:hover{background:#2d4a7c}
+
+/* Progress steps */
+.prog{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:20px}
+.prog .dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid #cbd5e0;color:#a0aec0;background:#fff;transition:all .25s;flex-shrink:0}
+.prog .dot.act{background:#1a365d;border-color:#1a365d;color:#fff}
+.prog .dot.dn{background:#38a169;border-color:#38a169;color:#fff}
+.prog .ln{width:60px;height:2px;background:#cbd5e0;transition:background .25s;margin:0 4px}
+.prog .ln.act{background:#1a365d}
+.prog .lb{font-size:10px;color:#a0aec0;margin-left:4px;white-space:nowrap;transition:color .25s}
+.prog .lb.act{color:#1a365d;font-weight:600}
+
+/* Card */
+.cd{background:#fff;border-radius:14px;padding:28px 24px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04)}
+@media(max-width:480px){.cd{padding:20px 14px}}
+
+/* Section header */
+.sh{font-size:11px;font-weight:800;color:#1a365d;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #edf2f7;display:flex;align-items:center;gap:6px}
+.sh .sn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#1a365d;color:#fff;font-size:10px;font-weight:800;flex-shrink:0}
+
+/* Field group */
+.fg{margin-bottom:14px}
+.fg label.fl{display:block;font-size:11px;font-weight:600;color:#4a5568;margin-bottom:4px}
+.fg .req{color:#e53e3e;margin-left:2px}
+.fg input[type="text"],.fg input[type="tel"],.fg input[type="email"],.fg select,.fg textarea{
+  width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;background:#fff;color:#333}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#1a365d;box-shadow:0 0 0 3px rgba(26,54,93,.08)}
+.fg textarea{resize:vertical;min-height:80px}
+.fg .ht{font-size:10px;color:#a0aec0;margin-top:3px}
+.fg.err input,.fg.err select,.fg.err textarea{border-color:#e53e3e}
+.fg.err .ht{color:#e53e3e}
+
+/* Grid helpers */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:640px){.g3,.g4{grid-template-columns:1fr 1fr}}
+
+/* Checkbox / Radio groups */
+.rg{display:flex;flex-wrap:wrap;gap:6px}
+.rg label{display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:11px;font-weight:500;color:#4a5568;cursor:pointer;transition:all .15s;user-select:none}
+.rg label:hover{background:#f7fafc;border-color:#a0aec0}
+.rg input[type="radio"],.rg input[type="checkbox"]{accent-color:#1a365d;width:14px;height:14px;flex-shrink:0}
+.rg label:has(input:checked){background:#eef2ff;border-color:#1a365d;color:#1a365d}
+
+/* Compact checkbox group (skills) */
+.cg{margin-bottom:10px}
+.cg .ct{font-size:10px;font-weight:700;color:#4a5568;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.cg .cb{background:#fafbfc;border:1px solid #edf2f7;border-radius:8px;padding:6px 8px;display:flex;flex-wrap:wrap;gap:4px 12px}
+.cg .cb label{display:flex;align-items:center;gap:4px;font-size:10px;color:#555;cursor:pointer;white-space:nowrap}
+.cg .cb input{width:12px;height:12px;accent-color:#1a365d}
+.cg .cb label:has(input:checked){color:#1a365d;font-weight:600}
+
+/* 2-col layout for step 2 */
+.tw{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.tw .cl{padding:20px}
+.tw .cl:first-child{border-right:1px solid #edf2f7}
+@media(max-width:700px){.tw{grid-template-columns:1fr}.tw .cl{border-right:none!important;border-bottom:1px solid #edf2f7}}
+
+/* Consent */
+.cn{display:flex;align-items:flex-start;gap:8px;padding:12px;background:#f7fafc;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:16px}
+.cn input{margin-top:2px;width:16px;height:16px;accent-color:#1a365d;flex-shrink:0}
+.cn span{font-size:11px;color:#4a5568;line-height:1.5}
+
+/* File upload */
+.fu{border:2px dashed #cbd5e0;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#fafbfc}
+.fu:hover{border-color:#1a365d;background:#f0f4ff}
+.fu.dragover{border-color:#1a365d;background:#eef2ff}
+.fu .fi{font-size:11px;color:#718096;margin-top:6px}
+.fu .ic{font-size:28px;opacity:.4}
+.fl-list{margin-top:8px}
+.fl-item{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:4px;font-size:11px}
+.fl-item .rm{color:#e53e3e;cursor:pointer;font-size:10px;font-weight:600;border:none;background:none;font-family:inherit}
+
+/* Buttons */
+.bts{display:flex;gap:10px;margin-top:20px}
+.bt{flex:1;padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.bt-p{background:#1a365d;color:#fff}
+.bt-p:hover{background:#2d4a7c}
+.bt-p:active{transform:scale(.98)}
+.bt-s{background:#fff;color:#4a5568;border:1px solid #e2e8f0}
+.bt-s:hover{background:#f7fafc}
+.bt:disabled{opacity:.5;cursor:not-allowed}
+
+/* Step visibility */
+.stp{display:none}
+.stp.act{display:block}
+
+/* Success */
+.ok{text-align:center;padding:48px 20px}
+.ok .oic{font-size:56px;margin-bottom:12px}
+.ok h2{font-size:20px;font-weight:700;color:#1a365d;margin-bottom:8px}
+.ok p{font-size:12px;color:#718096;line-height:1.7}
+.ok .sm{margin-top:16px;text-align:left;border:1px solid #e2e8f0;border-radius:8px;padding:12px;display:grid;grid-template-columns:80px 1fr;gap:4px 8px;font-size:11px;max-width:360px;margin-left:auto;margin-right:auto}
+.ok .sm .sk{color:#a0aec0}
+
+/* Info box */
+.ib{background:#f0f4ff;border:1px solid #d6e0f0;border-radius:8px;padding:10px 14px;font-size:10px;color:#4a6a96;line-height:1.6;margin-bottom:14px}
+
+/* Spinner */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#1a365d;color:#fff;padding:10px 20px;border-radius:10px;font-size:12px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.15);opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.err{background:#e53e3e}
+.toast.show{opacity:1}
+
+/* ═══ Print styles ═══ */
+@media print{
+  body{background:#fff!important;padding:0!important;font-size:10px}
+  .wr{max-width:210mm;margin:0 auto}
+  .no-pr,.tb,.prog,.bts,.ib,.fu,.toast{display:none!important}
+  .cd{box-shadow:none;border:1px solid #ddd;border-radius:0;padding:12px 16px}
+  .stp{display:block!important}
+  .stp.pr-hide{display:none!important}
+  .tw{grid-template-columns:1fr 1fr!important}
+  .tw .cl{padding:10px}
+  .fg input,.fg select,.fg textarea{border:none;border-bottom:1px solid #ccc;border-radius:0;padding:4px 2px;font-size:10px;background:transparent}
+  .rg label{padding:2px 6px;font-size:9px;border:none}
+  .rg label:has(input:checked){background:#eef2ff;border:1px solid #1a365d}
+  .rg label:not(:has(input:checked)){opacity:.3}
+  .cg .cb{padding:3px 4px;gap:2px 8px}
+  .cg .cb label{font-size:8px}
+  .cg .cb label:not(:has(input:checked)){opacity:.3}
+  .sh{font-size:10px;margin-bottom:8px;padding-bottom:4px}
+  .fg{margin-bottom:6px}
+  .cn{padding:6px 8px}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+
+/* Print preview mode */
+.pv body,.pv .wr{background:#525659}
+.pv .cd{width:210mm;min-height:297mm;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.5)}
+.pv .stp{display:block!important}
+.pv .stp.pr-hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wr">
+  <div class="hd no-pr">
+    <h1>번역 전문가 등록 신청</h1>
+    <p>아래 양식을 작성하여 전문가 등록을 신청해 주세요.</p>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="tb no-pr">
+    <button class="bt-pv" onclick="togglePreview()">&#128065; 출력 미리보기</button>
+    <button class="bt-pr" onclick="window.print()">&#128424; 신청서 출력</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="prog no-pr">
+    <div class="dot act" id="d1">1</div>
+    <span class="lb act" id="lb1">기본 정보</span>
+    <div class="ln" id="ln1"></div>
+    <div class="dot" id="d2">2</div>
+    <span class="lb" id="lb2">상세 정보</span>
+    <div class="ln" id="ln2"></div>
+    <div class="dot" id="d3">3</div>
+    <span class="lb" id="lb3">완료</span>
+  </div>
+
+  <div class="cd">
+
+    <!-- ══════ STEP 1: 기본 정보 ══════ -->
+    <div class="stp act" id="s1">
+      <div class="sh"><span class="sn">01</span> 기본 인적사항 (Personal Info)</div>
+
+      <div class="g3">
+        <div class="fg" id="fg-nm">
+          <label class="fl">이름<span class="req">*</span></label>
+          <input type="text" id="f-nm" placeholder="성함 입력"/>
+        </div>
+        <div class="fg" id="fg-ph">
+          <label class="fl">연락처<span class="req">*</span></label>
+          <input type="tel" id="f-ph" placeholder="010-1234-5678" maxlength="13" inputmode="numeric"/>
+        </div>
+        <div class="fg" id="fg-em">
+          <label class="fl">이메일<span class="req">*</span></label>
+          <input type="email" id="f-em" placeholder="example@email.com"/>
+        </div>
+      </div>
+
+      <div class="sh" style="margin-top:20px"><span class="sn">02</span> 전문가 분야 (Expert Category)</div>
+
+      <div class="fg" id="fg-cat">
+        <label class="fl">전문 분야 선택<span class="req">*</span></label>
+        <div class="rg" id="rg-cat">
+          <label><input type="radio" name="cat" value="AI·기술"/>AI·기술</label>
+          <label><input type="radio" name="cat" value="교육콘텐츠"/>교육콘텐츠</label>
+          <label><input type="radio" name="cat" value="법률·규정"/>법률·규정</label>
+          <label><input type="radio" name="cat" value="경영·전략"/>경영·전략</label>
+          <label><input type="radio" name="cat" value="산업·직무"/>산업·직무</label>
+        </div>
+      </div>
+
+      <div class="fg" id="fg-sub" style="display:none">
+        <label class="fl">세부 전문 분야<span class="req">*</span></label>
+        <div class="rg" id="rg-sub"></div>
+      </div>
+
+      <div class="fg">
+        <label class="fl">자기소개<span class="req">*</span></label>
+        <textarea id="f-intro" placeholder="전문 경험, 강점 등을 자유롭게 작성해 주세요."></textarea>
+      </div>
+
+      <div class="ib">
+        &#8505;&#65039; 제출 정보는 관리자 검토 후 승인 여부가 결정됩니다.<br/>
+        &#8987; 승인까지 약 3~5일 소요 · 등급 증명 자료 제출이 필요할 수 있습니다.
+      </div>
+
+      <div class="bts">
+        <button class="bt bt-p" onclick="goStep(2)">다음 &#8594;</button>
+      </div>
+    </div>
+
+    <!-- ══════ STEP 2: 상세 정보 ══════ -->
+    <div class="stp" id="s2">
+      <div class="tw">
+        <!-- LEFT: Qualifications & Career -->
+        <div class="cl">
+          <div class="sh"><span class="sn">03</span> 경력 및 자격 (Qualifications)</div>
+
+          <div class="fg">
+            <label class="fl">가능 언어<span class="req">*</span></label>
+            <div class="rg" id="rg-lang"></div>
+          </div>
+
+          <div class="g2">
+            <div class="fg">
+              <label class="fl">활동 가능 시간<span class="req">*</span></label>
+              <select id="f-time"><option value="">선택</option></select>
+            </div>
+            <div class="fg">
+              <label class="fl">실무 경력<span class="req">*</span></label>
+              <select id="f-exp"><option value="">선택</option></select>
+            </div>
+          </div>
+
+          <div class="g2">
+            <div class="fg">
+              <label class="fl">최종 학력<span class="req">*</span></label>
+              <select id="f-edu"><option value="">선택</option></select>
+            </div>
+            <div class="fg">
+              <label class="fl">통화 가능 시간<span class="req">*</span></label>
+              <select id="f-call"><option value="">선택</option></select>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">현재 직업<span class="req">*</span></label>
+            <div class="rg" id="rg-occ"></div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">지원 목적</label>
+            <div class="rg" id="rg-goal"></div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">해외 경험</label>
+            <div class="rg">
+              <label><input type="radio" name="overseas" value="있음"/>있음</label>
+              <label><input type="radio" name="overseas" value="없음"/>없음</label>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">번역 전문 분야</label>
+            <div class="rg" id="rg-tfield"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Skills & Tools -->
+        <div class="cl">
+          <div class="sh"><span class="sn">04</span> 기술 역량 (Skills & Tools)</div>
+
+          <div class="fg">
+            <label class="fl">CAT 도구 경험</label>
+            <div class="rg" id="rg-cat-tool"></div>
+          </div>
+          <div class="fg">
+            <label class="fl">기계번역(MT) 경험</label>
+            <div class="rg" id="rg-mt"></div>
+          </div>
+
+          <div id="skill-area"></div>
+
+          <div class="sh" style="margin-top:16px"><span class="sn">05</span> 추가 정보 (Additional)</div>
+
+          <div class="fg">
+            <label class="fl">서비스 유형 (컨설팅)</label>
+            <div class="rg" id="rg-svc"></div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">비고 (포트폴리오 링크 등)</label>
+            <textarea id="f-remarks" rows="2" placeholder="추가 전달 사항을 입력해 주세요."></textarea>
+          </div>
+
+          <div class="fg">
+            <label class="fl">포트폴리오 / 증빙 파일</label>
+            <div class="fu" id="dropzone">
+              <div class="ic">&#128206;</div>
+              <div style="font-size:12px;font-weight:600;color:#4a5568">파일을 드래그하거나 클릭하여 업로드</div>
+              <div class="fi">PDF, DOC, JPG, PNG (최대 10MB)</div>
+              <input type="file" id="f-file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display:none"/>
+            </div>
+            <div class="fl-list" id="file-list"></div>
+          </div>
+
+          <div class="cn">
+            <input type="checkbox" id="f-agree"/>
+            <span>
+              <strong>개인정보 수집 및 이용에 동의합니다.</strong><br/>
+              수집 항목: 성명, 연락처, 이메일 등 신청 양식에 기재된 정보<br/>
+              수집 목적: 전문가 등록 심사 및 프로젝트 매칭<br/>
+              보유 기간: 신청일로부터 1년<br/>
+              위 기재사항은 사실과 다름없음을 확인하며, 전문가 등록을 신청합니다.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bts">
+        <button class="bt bt-s" onclick="goStep(1)">&#8592; 이전</button>
+        <button class="bt bt-p" id="submitBtn" onclick="submitForm()">신청하기 &#8594;</button>
+      </div>
+    </div>
+
+    <!-- ══════ STEP 3: 완료 ══════ -->
+    <div class="stp pr-hide" id="s3">
+      <div class="ok">
+        <div class="oic">&#127881;</div>
+        <h2>신청이 완료되었습니다</h2>
+        <p>관리자 검토 후 승인 여부가 결정됩니다 (약 3~5일 소요).<br/>출력 버튼으로 신청서를 보관할 수 있습니다.</p>
+        <div class="sm" id="summary"></div>
+        <div class="bts" style="justify-content:center;max-width:200px;margin:20px auto 0">
+          <button class="bt bt-s" onclick="resetForm()">&#8617;&#65039; 새 신청서</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ═══ Data Constants ═══ */
+var CATS = {
+  'AI·기술':['IT/소프트웨어','데이터분석','AI/ML','클라우드','보안','블록체인'],
+  '교육콘텐츠':['TESOL','어학교육','교재개발','이러닝','평가설계','커리큘럼'],
+  '법률·규정':['계약법','지적재산','무역규정','노동법','개인정보','규제준수'],
+  '경영·전략':['경영컨설팅','마케팅','재무회계','인사조직','사업기획','스타트업'],
+  '산업·직무':['제조','의료/제약','금융','건설','물류','에너지/환경']
+};
+
+var LANGS = ['영어','일본어','중국어','한국어','스페인어','프랑스어','독일어','러시아어','포르투갈어','아랍어','기타'];
+var TIMES = ['종일','월~금 오전(09-12)','월~금 오후(13-18)','월~금 저녁(19-22)','토요일','일요일','공휴일 가능','상시 가능'];
+var EXPS = ['신입 (경험 없음)','1년 미만','1~3년','3~5년','5~10년','10년 이상'];
+var EDUS = ['고졸','전문대졸','대졸','석사','박사','기타'];
+var CALLS = ['오전 (09:00~12:00)','오후 (12:00~18:00)','저녁 (18:00~22:00)','언제나 가능'];
+var OCCS = ['학생','취준생','전문번역사','번역프리랜서','직장인','교수/강사','기타'];
+var GOALS = ['전문번역 프리랜서','어학 공부','추가 부수입','경력 개발','취미/자기계발'];
+var TFIELDS = ['IT/기술','법률/계약','의료/제약','금융/경제','문학/출판','게임/엔터','마케팅','특허','교육','건축','기타'];
+var CAT_TOOLS = ['Trados','MemoQ','Wordfast','OmegaT','GTT','DeepL','경험 없음'];
+var MT_OPTS = ['Google Translate','DeepL','Papago','ChatGPT','Claude','경험 없음'];
+var SVC_TYPES = ['번역 컨설팅','통역 지원','교정/교열','현지화','기술문서','교육/강의'];
+
+var SKILLS = [
+  {t:'AI 바이브코딩',o:['피그마 AI','커서','와프','엔티','Replit','볼트']},
+  {t:'프롬프트 활용',o:['제미나이','GPT','클로드','라마인덱스','오토GPT','퍼플렉시티']},
+  {t:'디자인 툴',o:['감마','미드저니','캔바','일러스트','포토샵']},
+  {t:'기타 프로그램',o:['MCP','노트북 LM','노션','트렐로','먼데이닷컴']},
+  {t:'기타 역량',o:['깃허브','슬랙','서버','카페 24','워드프레스','웹호스팅']},
+  {t:'문서 작성',o:['글쓰기','글정리','맥락파악','교정교열','요약기술']},
+  {t:'번역 시스템',o:['SDL','멤소스','Smartcat','Phrase','Memsource Desktop']},
+  {t:'사용 경력',o:['미리 캔버스','한컴오피스','MS오피스','구글워크스페이스','드롭박스']},
+  {t:'업무 경력',o:['사무','상담','문서정리','데이터정리','조직관리','일정관리']}
+];
+
+/* ═══ DOM Helpers ═══ */
+var $ = function(id){return document.getElementById(id)};
+
+function mkChk(containerId, items, nameAttr){
+  var c = $(containerId);
+  items.forEach(function(v){
+    var lb = document.createElement('label');
+    lb.innerHTML = '<input type="checkbox" name="'+nameAttr+'" value="'+v+'"/>'+v;
+    c.appendChild(lb);
+  });
+}
+
+function mkOpt(selId, items){
+  var s = $(selId);
+  items.forEach(function(v){
+    var o = document.createElement('option');
+    o.value=v; o.textContent=v;
+    s.appendChild(o);
+  });
+}
+
+function getChecked(name){
+  return Array.from(document.querySelectorAll('input[name="'+name+'"]:checked')).map(function(i){return i.value});
+}
+
+function getRadio(name){
+  var el = document.querySelector('input[name="'+name+'"]:checked');
+  return el ? el.value : '';
+}
+
+/* ═══ Build dynamic fields ═══ */
+mkChk('rg-lang', LANGS, 'lang');
+mkOpt('f-time', TIMES);
+mkOpt('f-exp', EXPS);
+mkOpt('f-edu', EDUS);
+mkOpt('f-call', CALLS);
+mkChk('rg-occ', OCCS, 'occ');
+mkChk('rg-goal', GOALS, 'goal');
+mkChk('rg-tfield', TFIELDS, 'tfield');
+mkChk('rg-cat-tool', CAT_TOOLS, 'cattool');
+mkChk('rg-mt', MT_OPTS, 'mt');
+mkChk('rg-svc', SVC_TYPES, 'svc');
+
+/* Skills groups */
+var sa = $('skill-area');
+SKILLS.forEach(function(g){
+  var d = document.createElement('div');
+  d.className = 'cg';
+  var hdr = '<div class="ct">'+g.t+'</div><div class="cb">';
+  g.o.forEach(function(o){
+    hdr += '<label><input type="checkbox" name="sk_'+g.t.replace(/\s/g,'')+'" value="'+o+'"/>'+o+'</label>';
+  });
+  hdr += '</div>';
+  d.innerHTML = hdr;
+  sa.appendChild(d);
+});
+
+/* ═══ Subcategory logic ═══ */
+document.querySelectorAll('input[name="cat"]').forEach(function(r){
+  r.addEventListener('change', function(){
+    var subs = CATS[this.value] || [];
+    var c = $('rg-sub');
+    c.innerHTML = '';
+    subs.forEach(function(v){
+      var lb = document.createElement('label');
+      lb.innerHTML = '<input type="checkbox" name="subcat" value="'+v+'"/>'+v;
+      c.appendChild(lb);
+    });
+    $('fg-sub').style.display = subs.length ? '' : 'none';
+  });
+});
+
+/* ═══ Phone formatting ═══ */
+$('f-ph').addEventListener('input', function(){
+  var n = this.value.replace(/[^0-9]/g,'');
+  if(n.length<=3) this.value=n;
+  else if(n.length<=7) this.value=n.slice(0,3)+'-'+n.slice(3);
+  else this.value=n.slice(0,3)+'-'+n.slice(3,7)+'-'+n.slice(7,11);
+});
+
+/* ═══ File upload ═══ */
+var uploadedFiles = [];
+var dz = $('dropzone');
+var fi = $('f-file');
+
+dz.addEventListener('click', function(){fi.click()});
+dz.addEventListener('dragover', function(e){e.preventDefault();dz.classList.add('dragover')});
+dz.addEventListener('dragleave', function(){dz.classList.remove('dragover')});
+dz.addEventListener('drop', function(e){
+  e.preventDefault();dz.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+fi.addEventListener('change', function(){handleFiles(this.files);this.value=''});
+
+function handleFiles(files){
+  Array.from(files).forEach(function(f){
+    if(f.size > 10*1024*1024){toast('파일 크기는 10MB 이하만 가능합니다.','err');return}
+    uploadedFiles.push(f);
+  });
+  renderFiles();
+}
+
+function renderFiles(){
+  var c = $('file-list');
+  c.innerHTML = '';
+  uploadedFiles.forEach(function(f,i){
+    var d = document.createElement('div');
+    d.className = 'fl-item';
+    var sz = (f.size/1024).toFixed(0)+'KB';
+    d.innerHTML = '<span>'+f.name+' ('+sz+')</span><button class="rm" data-i="'+i+'">삭제</button>';
+    c.appendChild(d);
+  });
+  c.querySelectorAll('.rm').forEach(function(b){
+    b.addEventListener('click',function(){
+      uploadedFiles.splice(parseInt(this.dataset.i),1);
+      renderFiles();
+    });
+  });
+}
+
+/* ═══ Toast ═══ */
+var toastTimer;
+function toast(msg, type){
+  var t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type==='err'?' err':'');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){t.className='toast'},2500);
+}
+window.toast = toast;
+
+/* ═══ Validation ═══ */
+function clearErr(){
+  document.querySelectorAll('.fg.err').forEach(function(f){
+    f.classList.remove('err');
+    var h=f.querySelector('.ht');
+    if(h)h.remove();
+  });
+}
+
+function markErr(fgId, msg){
+  var fg = $(fgId);
+  if(!fg) return;
+  fg.classList.add('err');
+  if(!fg.querySelector('.ht')){
+    var s = document.createElement('div');
+    s.className='ht';s.textContent=msg;
+    fg.appendChild(s);
+  }
+}
+
+function valStep1(){
+  clearErr();
+  var ok=true;
+  if(!$('f-nm').value.trim()){markErr('fg-nm','이름을 입력해 주세요.');ok=false}
+  if(!$('f-ph').value.trim()){markErr('fg-ph','연락처를 입력해 주세요.');ok=false}
+  var em=$('f-em').value.trim();
+  if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){markErr('fg-em','올바른 이메일을 입력해 주세요.');ok=false}
+  if(!getRadio('cat')){toast('전문 분야를 선택해 주세요.','err');ok=false}
+  if(!$('f-intro').value.trim()){toast('자기소개를 입력해 주세요.','err');ok=false}
+  if(!ok) toast('필수 항목을 확인해 주세요.','err');
+  return ok;
+}
+
+function valStep2(){
+  var ok=true;
+  if(getChecked('lang').length===0){toast('가능 언어를 선택해 주세요.','err');ok=false;return ok}
+  if(!$('f-time').value){toast('활동 가능 시간을 선택해 주세요.','err');ok=false;return ok}
+  if(!$('f-exp').value){toast('실무 경력을 선택해 주세요.','err');ok=false;return ok}
+  if(!$('f-edu').value){toast('최종 학력을 선택해 주세요.','err');ok=false;return ok}
+  if(!$('f-call').value){toast('통화 가능 시간을 선택해 주세요.','err');ok=false;return ok}
+  if(getChecked('occ').length===0){toast('직업을 선택해 주세요.','err');ok=false;return ok}
+  if(!$('f-agree').checked){toast('개인정보 수집 동의가 필요합니다.','err');ok=false}
+  return ok;
+}
+
+/* ═══ Step Navigation ═══ */
+window.goStep = function(n){
+  if(n===2 && !valStep1()) return;
+  showStep(n);
+};
+
+function showStep(n){
+  document.querySelectorAll('.stp').forEach(function(s){s.classList.remove('act')});
+  $('s'+n).classList.add('act');
+
+  // Progress dots
+  for(var i=1;i<=3;i++){
+    var dot=$('d'+i), lb=$('lb'+i);
+    if(i<n){dot.className='dot dn';dot.innerHTML='&#10003;';lb.className='lb act'}
+    else if(i===n){dot.className='dot act';dot.innerHTML=i;lb.className='lb act'}
+    else{dot.className='dot';dot.innerHTML=i;lb.className='lb'}
+  }
+  $('ln1').className = n>=2?'ln act':'ln';
+  $('ln2').className = n>=3?'ln act':'ln';
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ═══ Collect all skills ═══ */
+function collectSkills(){
+  var out = {};
+  SKILLS.forEach(function(g){
+    var name = 'sk_'+g.t.replace(/\s/g,'');
+    var vals = getChecked(name);
+    if(vals.length) out[g.t] = vals;
+  });
+  return out;
+}
+
+/* ═══ File upload via presigned URL ═══ */
+function uploadFiles(){
+  if(uploadedFiles.length===0) return Promise.resolve([]);
+  var promises = uploadedFiles.map(function(file){
+    return fetch('/api/upload/presign',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({filename:file.name,contentType:file.type})
+    })
+    .then(function(r){return r.json()})
+    .then(function(d){
+      return fetch(d.url,{method:'PUT',body:file,headers:{'Content-Type':file.type}})
+        .then(function(){return d.key||d.filename||file.name});
+    });
+  });
+  return Promise.all(promises);
+}
+
+/* ═══ Submit ═══ */
+window.submitForm = function(){
+  if(!valStep2()) return;
+  var btn = $('submitBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>전송 중...';
+
+  uploadFiles().then(function(fileKeys){
+    var data = {
+      applicant_id: crypto.randomUUID ? crypto.randomUUID() : 'ea-'+Date.now(),
+      status: 'pending',
+      applied_at: new Date().toISOString().split('T')[0],
+      basic:{
+        name: $('f-nm').value.trim(),
+        phone: $('f-ph').value.trim(),
+        email: $('f-em').value.trim(),
+        introduction: $('f-intro').value.trim()
+      },
+      category:{
+        main: getRadio('cat'),
+        sub: getChecked('subcat')
+      },
+      application:{
+        available_languages: getChecked('lang'),
+        available_time: $('f-time').value,
+        experience: $('f-exp').value,
+        education: $('f-edu').value,
+        call_time: $('f-call').value,
+        occupation: getChecked('occ'),
+        overseas_experience: getRadio('overseas')
+      },
+      translation:{
+        fields: getChecked('tfield'),
+        cat_tools: getChecked('cattool'),
+        mt_experience: getChecked('mt')
+      },
+      skills: collectSkills(),
+      service:{
+        types: getChecked('svc'),
+        remarks: $('f-remarks').value.trim()
+      },
+      extra:{
+        work_goals: getChecked('goal'),
+        files: fileKeys
+      }
+    };
+
+    return fetch('/api/translation_experts',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({data:data})
+    });
+  })
+  .then(function(r){
+    if(!r.ok) throw new Error('서버 오류');
+    return r.json();
+  })
+  .then(function(){
+    toast('신청이 완료되었습니다!');
+    showSummary();
+    showStep(3);
+  })
+  .catch(function(e){
+    toast('전송 실패: '+e.message,'err');
+  })
+  .finally(function(){
+    btn.disabled=false;
+    btn.innerHTML='신청하기 &#8594;';
+  });
+};
+
+function showSummary(){
+  var sm=$('summary');
+  sm.innerHTML=
+    '<span class="sk">이름</span><span>'+$('f-nm').value+'</span>'+
+    '<span class="sk">이메일</span><span>'+$('f-em').value+'</span>'+
+    '<span class="sk">전문 분야</span><span>'+getRadio('cat')+'</span>'+
+    '<span class="sk">언어</span><span>'+getChecked('lang').join(', ')+'</span>'+
+    '<span class="sk">경력</span><span>'+$('f-exp').value+'</span>'+
+    '<span class="sk">학력</span><span>'+$('f-edu').value+'</span>';
+}
+
+/* ═══ Reset ═══ */
+window.resetForm = function(){
+  document.querySelectorAll('input[type="text"],input[type="tel"],input[type="email"],textarea').forEach(function(i){i.value=''});
+  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0});
+  document.querySelectorAll('input[type="checkbox"],input[type="radio"]').forEach(function(i){i.checked=false});
+  $('fg-sub').style.display='none';
+  $('rg-sub').innerHTML='';
+  uploadedFiles=[];
+  renderFiles();
+  showStep(1);
+};
+
+/* ═══ Print Preview Toggle ═══ */
+window.togglePreview = function(){
+  document.body.parentElement.classList.toggle('pv');
+  var btn = document.querySelector('.bt-pv');
+  var on = document.body.parentElement.classList.contains('pv');
+  btn.classList.toggle('on',on);
+  btn.innerHTML = on ? '&#9998; 편집 모드' : '&#128065; 출력 미리보기';
+  if(on){
+    document.querySelectorAll('.stp').forEach(function(s){s.classList.add('act')});
+  } else {
+    // restore current step only
+    var cur = $('s3').classList.contains('act') ? 3 : ($('s2').classList.contains('act') ? 2 : 1);
+    document.querySelectorAll('.stp').forEach(function(s){s.classList.remove('act')});
+    $('s'+cur).classList.add('act');
+  }
+};
+
+})();
+</script>
+</body>
+</html>
