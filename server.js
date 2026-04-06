@@ -140,17 +140,7 @@ app.get("/level-test", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "level-test.html"));
 });
 
-// --- 홈: DB 관리 SPA ---
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "db", "index.html"));
-});
-
-// --- old 홈(관리자 대시보드) ---
-app.get("/old-admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "admin.html"));
-});
-
-// --- SPA fallback (admin) ---
+// --- SPA fallback ---
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
