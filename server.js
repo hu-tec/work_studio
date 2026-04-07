@@ -140,6 +140,11 @@ app.get("/level-test", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "level-test.html"));
 });
 
+// --- 커리큘럼 SPA fallback ---
+app.get("/curriculum/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "curriculum", "index.html"));
+});
+
 // --- SPA fallback ---
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));

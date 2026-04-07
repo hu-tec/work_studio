@@ -1391,6 +1391,11 @@ let h=`<div class="ct-tabs">
 <div class="ct-tab ${ctTab==="curriculum"?"a":""}" onclick="ctTab='curriculum';ctAdding=false;ctExpId=null;rContent()">커리큘럼 <span style="opacity:.6">${TC.curriculum||0}</span></div>
 <div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';ctAdding=false;ctExpId=null;rContent()">교재 <span style="opacity:.6">${TC.textbooks||0}</span></div></div>`;
 
+// 커리큘럼 탭: React 앱 iframe
+if(ctTab==="curriculum"){
+h+=`<div style="flex:1;display:flex;flex-direction:column"><iframe src="/curriculum/" style="width:100%;flex:1;min-height:calc(100vh - 140px);border:none;border-radius:8px"></iframe></div>`;
+ca.innerHTML=h;return}
+
 if(ctAdding)h+=ctRenderForm();
 let ps=(TD[ctTab]||[]).map(r=>{let d;try{d=JSON.parse(r.data)}catch{d={}}return{...r,p:d}});
 if(ctDomainF)ps=ps.filter(r=>(r.p._level_area||r.p.domain)===ctDomainF);
