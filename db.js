@@ -28,6 +28,7 @@ const TABLES = [
   "textbooks",                 // 교재
   "scorehub_submissions",      // AnalyzeAI - 분석 제출 (답안, 종목, 플랜)
   "scorehub_results",          // AnalyzeAI - 분석 결과 (점수, 세부항목, 코멘트)
+  "curriculum_files",          // 커리큘럼 교육자료 파일 메타데이터
 ];
 
 for (const table of TABLES) {
