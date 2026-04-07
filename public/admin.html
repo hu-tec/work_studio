@@ -1388,7 +1388,7 @@ navBar.innerHTML=nh;subNav.classList.remove("v");
 
 let h=`<div class="ct-tabs">
 <div class="ct-tab ${ctTab==="questions"?"a":""}" onclick="ctTab='questions';ctAdding=false;ctExpId=null;rContent()">문제은행 <span style="opacity:.6">${TC.questions||0}</span></div>
-<div class="ct-tab ${ctTab==="curriculum"?"a":""}" onclick="ctTab='curriculum';ctAdding=false;ctExpId=null;rContent()">커리큘럼</div>
+<div class="ct-tab ${ctTab==="curriculum"?"a":""}" onclick="ctTab='curriculum';ctAdding=false;ctExpId=null;rContent()">커리큘럼 <span style="opacity:.6">${TC.curriculum||0}</span></div>
 <div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';ctAdding=false;ctExpId=null;rContent()">교재 <span style="opacity:.6">${TC.textbooks||0}</span></div></div>`;
 
 // 커리큘럼 탭: React 앱 iframe
