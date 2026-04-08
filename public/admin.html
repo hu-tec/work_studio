@@ -315,6 +315,7 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 <div class="sb-item" data-v="f" onclick="sv('f')" title="신청서"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>신청서</span></div>
 <div class="sb-item" data-v="s" onclick="sv('s')" title="통계"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>통계</span></div>
 <div class="sb-item" data-v="q" onclick="sv('q')" title="콘텐츠"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span>콘텐츠</span></div>
+<div class="sb-item" data-v="p" onclick="sv('p')" title="페이지"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span>페이지</span></div>
 <div class="sb-item" data-v="od" onclick="sv('od')" title="홈(old)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>홈(old)</span></div>
 </nav>
 <div class="sb-bot"><span class="sb-user" id="ui"></span>
@@ -478,7 +479,7 @@ function fv(v){if(v==null)return"";if(Array.isArray(v))return v.join(", ");if(ty
 
 // ═══ Navigation ═══
 function sv(v){cV=v;document.querySelectorAll('.sb-item[data-v]').forEach(b=>{b.classList.toggle('a',b.dataset.v===v)});rv()}
-function rv(){curPage=1;ca.style.padding="16px 20px";ca.style.overflow="";if(cV==="f"){rForms();return}if(cV==="s"){rStats();return}if(cV==="q"){rContent();return}if(cV==="od"){rOldHome();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
+function rv(){curPage=1;ca.style.padding="16px 20px";ca.style.overflow="";if(cV==="f"){rForms();return}if(cV==="s"){rStats();return}if(cV==="q"){rContent();return}if(cV==="p"){rPages();return}if(cV==="od"){rOldHome();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
 
 function rNav(){
 const allCnt=T.reduce((s,t)=>s+(TC[t]||0),0);
@@ -551,6 +552,11 @@ h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margi
 <div style="font-size:9px;color:#888;font-weight:600">교재</div>
 <div style="font-size:20px;font-weight:900;color:#0891b2">${tbCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">건</span></div>
 <div style="font-size:9px;color:#aaa;margin-top:2px">단원별 관리</div>
+</div>
+<div style="background:#fff;border-radius:6px;border:1px solid #e3e5ed;padding:10px 14px;cursor:pointer" onclick="ctTab='leveltest';sv('q')">
+<div style="font-size:9px;color:#888;font-weight:600">레벨테스트</div>
+<div style="font-size:20px;font-weight:900;color:#dc2626">2<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">버전</span></div>
+<div style="font-size:9px;color:#aaa;margin-top:2px">v모름 / v준걸 비교</div>
 </div>
 </div>`;
 
@@ -1253,8 +1259,8 @@ h+=`</div>`;
 h+=`</div>`;
 ca.innerHTML=h}
 
-// ═══ 콘텐츠 관리 (문제은행 / 커리큘럼 / 교재) ═══
-let ctTab="questions",ctAdding=false,ctDomainF="",ctExpId=null;
+// ═══ 콘텐츠 관리 (문제은행 / 커리큘럼 / 교재 / 레벨테스트) ═══
+let ctTab="questions",ctAdding=false,ctDomainF="",ctExpId=null,ltVer="jungeol";
 const CT_LABELS={questions:"문제",curriculum:"과정",textbooks:"교재"};
 const Q_TYPES=["객관식(4지선다)","객관식(5지선다)","OX","주관식(단답)","주관식(서술)","빈칸채우기","듣기","읽기이해"];
 
@@ -1389,11 +1395,23 @@ navBar.innerHTML=nh;subNav.classList.remove("v");
 let h=`<div class="ct-tabs">
 <div class="ct-tab ${ctTab==="questions"?"a":""}" onclick="ctTab='questions';ctAdding=false;ctExpId=null;rContent()">문제은행 <span style="opacity:.6">${TC.questions||0}</span></div>
 <div class="ct-tab ${ctTab==="curriculum"?"a":""}" onclick="ctTab='curriculum';ctAdding=false;ctExpId=null;rContent()">커리큘럼 <span style="opacity:.6">${TC.curriculum||0}</span></div>
-<div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';ctAdding=false;ctExpId=null;rContent()">교재 <span style="opacity:.6">${TC.textbooks||0}</span></div></div>`;
+<div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';ctAdding=false;ctExpId=null;rContent()">교재 <span style="opacity:.6">${TC.textbooks||0}</span></div>
+<div class="ct-tab ${ctTab==="leveltest"?"a":""}" onclick="ctTab='leveltest';ctAdding=false;ctExpId=null;rContent()">레벨테스트</div></div>`;
 
 // 커리큘럼 탭: React 앱 iframe
 if(ctTab==="curriculum"){
 h+=`<div style="flex:1;display:flex;flex-direction:column"><iframe src="/curriculum/" style="width:100%;flex:1;min-height:calc(100vh - 140px);border:none;border-radius:8px"></iframe></div>`;
+ca.innerHTML=h;return}
+
+// 레벨테스트 탭: v모름 / v준걸 비교
+if(ctTab==="leveltest"){
+h+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+<span style="font-size:11px;color:#888">버전 선택</span>
+<button onclick="ltVer='jungeol';rContent()" style="padding:4px 14px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid ${ltVer==="jungeol"?"#0088ff":"#ddd"};background:${ltVer==="jungeol"?"#0088ff":"#fff"};color:${ltVer==="jungeol"?"#fff":"#555"}">v준걸 (React)</button>
+<button onclick="ltVer='old';rContent()" style="padding:4px 14px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid ${ltVer==="old"?"#0088ff":"#ddd"};background:${ltVer==="old"?"#0088ff":"#fff"};color:${ltVer==="old"?"#fff":"#555"}">v모름 (기존)</button>
+</div>`;
+const ltUrl=ltVer==="jungeol"?"/level-test-jungeol/":"/level-test";
+h+=`<div style="flex:1;display:flex;flex-direction:column"><iframe src="${ltUrl}" style="width:100%;flex:1;min-height:calc(100vh - 170px);border:1px solid #e3e5ed;border-radius:8px;background:#fff"></iframe></div>`;
 ca.innerHTML=h;return}
 
 if(ctAdding)h+=ctRenderForm();
