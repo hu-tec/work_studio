@@ -1,86 +1,31 @@
 import type { SavedCurriculum } from "./types";
 
-// ─── Step 1: 분류체계 ───
+// ─── Step 1: 분류체계 (A축 8대분류) ───
 export const CATEGORY_TREE: Record<string, Record<string, string[]>> = {
   "문서": {
-    "비즈니스": [],
-    "사업계획서": [],
-    "회사소개": [],
-    "PPT": [],
-    "엑셀": [],
-    "기획서": [],
-    "법률": ["소송장", "준비서면", "형사", "민사"],
-    "의료": [],
-    "특허": [],
-    "노무": [],
-    "교재": [],
-    "논문": [],
-    "기사": [],
-    "고전": [],
-    "그외": [],
+    "비즈니스": ["사업계획서","회사소개","PPT","엑셀","기획서"],
+    "법률": ["소송장","준비서면","형사","민사"],
+    "의료": [], "특허": [], "노무": [], "교재": [], "논문": [], "기사": [], "고전": [], "그외": [],
   },
   "음성": {
-    "아나운서": [],
-    "관광가이드": [],
-    "큐레이터": [],
-    "안내 방송": [],
-    "교육 강의": [],
-    "실시간": [],
-    "화상수업": [],
+    "아나운서": [], "관광가이드": [], "큐레이터": [], "안내 방송": [], "교육 강의": [], "실시간": [], "화상수업": [],
   },
-  "영상": {
-    "SNS": [],
-    "유튜브": [],
-    "다큐멘터리": [],
-    "영화": [],
-    "드라마": [],
-    "예능": [],
+  "영상/SNS": {
+    "미디어/장르": ["유튜브","다큐멘터리","영화","드라마","예능"],
   },
-  "개발": {
-    "보안": [],
-    "AI": [],
-    "에이전트": [],
-    "디자인-웹/모바일": [],
-    "기획-웹": [],
-    "웹기획": [],
-    "홈페이지 UIUX": [],
-    "디비(DB)": [],
-    "빅데이터": [],
-    "컨텐츠": [],
-    "백엔드": [],
-    "프론트": [],
-    "프로그램": [],
+  "IT/개발": {
+    "개발/보안": ["AI","에이전트","디비(DB)","빅데이터","백엔드","프론트","프로그램"],
+    "디자인/기획": ["웹모바일 디자인","웹기획","홈페이지 UIUX","컨텐츠"],
   },
   "창의적활동": {
-    "드라마": [],
-    "웹툰소설": [],
-    "소설": [],
-    "시": [],
-    "음악": [],
-    "미술": [],
+    "콘텐츠": ["드라마","웹툰소설","소설","시","음악","미술"],
   },
-  "번역추가": {
-    "순차통역": [],
-    "동시통역": [],
-    "음성번역": [],
-    "자가선택": [],
+  "번역": {
+    "통번역 방식": ["순차통역","동시통역","음성번역","자가선택"],
   },
-  "프롬프트추가": {},
+  "프롬프트": {},
   "확장영역": {
-    "암": [],
-    "요리": [],
-    "재무": [],
-    "주식": [],
-    "부동산": [],
-    "자녀": [],
-    "연애": [],
-    "입시": [],
-    "사주": [],
-    "결혼": [],
-    "영어": [],
-    "직장찾기": [],
-    "운동": [],
-    "사업": [],
+    "라이프/전문": ["암","요리","재무","주식","부동산","자녀","연애","입시","사주","결혼","영어","직장찾기","운동","사업"],
   },
 };
 
@@ -177,78 +122,7 @@ export function getFieldKeywords(field: string): { label: string; keywords: stri
   }
 }
 
-// ─── 더미 데이터 ───
-export const DUMMY_DATA: SavedCurriculum[] = [
-  {
-    id: "demo-01",
-    created_at: "2026-02-20",
-    category: { large: "문서", medium: "법률", small: "민사" },
-    instructor_grade: { field: "프롬프트", mid: "교육", level: "3급" },
-    targets: ["중학교"],
-    keywords: {
-      common: ["Pre-Prompt 설계 (목적별 프롬프트)", "AI 융합 실습 (GPT 프롬프트 매뉴얼)"],
-      prompt: ["생성형 AI 개론 및 기본 프롬프트 구조", "고급 프롬프트 설계 (조건문, 다중지시)"],
-      specialty: [],
-      ethics: [],
-    },
-    titles: { basicClass: "", practiceClass: "", basicUnits: ["g-edu34-1", "f-pr-1", "f-pr-2"], practiceUnits: ["p-c-1", "p-c-2"] },
-  },
-  {
-    id: "demo-02",
-    created_at: "2026-02-19",
-    category: { large: "개발", medium: "AI", small: "" },
-    instructor_grade: { field: "번역", mid: "일반", level: "1급" },
-    targets: ["일반 성인", "프롬프트 입문자"],
-    keywords: {
-      common: ["Post-Editing (결과물 품질 평가 및 수정)"],
-      prompt: [],
-      specialty: ["코딩·개발 (코드 생성 및 스크립트 자동화)"],
-      ethics: [],
-    },
-    titles: { basicClass: "", practiceClass: "", basicUnits: ["g-b-1", "g-b-2", "f-pr-8"], practiceUnits: ["p-c-1", "p-pr-4"] },
-  },
-  {
-    id: "demo-03",
-    created_at: "2026-02-18",
-    category: { large: "영상", medium: "유튜브", small: "" },
-    instructor_grade: { field: "AI 윤리", mid: "전문", level: "2급" },
-    targets: ["변호사", "회계사 등 고도화된 도메인 실무자"],
-    keywords: {
-      common: ["기말 모의 자격시험 (실무형 포맷)"],
-      prompt: [],
-      specialty: [],
-      ethics: ["저작권 및 오픈소스 라이선스 이해", "실전 케이스 기반 윤리 딜레마 토론"],
-    },
-    titles: { basicClass: "", practiceClass: "", basicUnits: ["g-e-1", "f-et-1", "f-et-2"], practiceUnits: ["p-c-3", "p-et-1"] },
-  },
-  {
-    id: "demo-04",
-    created_at: "2026-02-17",
-    category: { large: "음성", medium: "교육 강의", small: "" },
-    instructor_grade: { field: "프롬프트", mid: "교육", level: "7급" },
-    targets: ["고3"],
-    keywords: {
-      common: ["Prompt Translation (GPT 기반 작성)", "종합 포트폴리오 완성"],
-      prompt: ["도메인 특화 실전 프롬프트 (교육/법률/의료 등)"],
-      specialty: [],
-      ethics: [],
-    },
-    titles: { basicClass: "", practiceClass: "", basicUnits: ["g-edu78-1", "g-edu78-2", "f-pr-1"], practiceUnits: ["p-c-5", "p-pr-1"] },
-  },
-  {
-    id: "demo-05",
-    created_at: "2026-02-16",
-    category: { large: "문서", medium: "비즈니스", small: "" },
-    instructor_grade: { field: "번역", mid: "일반", level: "1급" },
-    targets: ["일반 성인", "프롬프트 입문자"],
-    keywords: {
-      common: ["AI 번역 실무 (전/후편집 및 품질 비교)", "언어별 실무 과정 (언어별 표현/스타일 가이드)"],
-      prompt: [],
-      specialty: ["문서·기획 (제안서, 홍보문 등 실무문서 생성)", "마케팅·SNS (광고 카피 및 캠페인 자동화)"],
-      ethics: [],
-    },
-    titles: { basicClass: "", practiceClass: "", basicUnits: ["g-i-1", "g-i-2", "f-pr-4", "f-pr-9"], practiceUnits: ["p-c-1", "p-c-4", "p-pr-4", "p-pr-9"] },
-  },
-];
+// ─── 실데이터 39건 (프롬프트/번역/윤리 × 교육/일반/전문 × 급수) ───
+export const DUMMY_DATA: SavedCurriculum[] = [{id:"real-pr-edu-1",created_at:"2026-04-07",category:{large:"문서",medium:"비즈니스",small:"사업계획서"},instructor_grade:{field:"프롬프트",mid:"교육",level:"1급"},targets:["초등 고학년"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu12-1","g-edu12-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-edu-2",created_at:"2026-04-07",category:{large:"음성",medium:"교육 강의",small:""},instructor_grade:{field:"프롬프트",mid:"교육",level:"2급"},targets:["초등 고학년"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu12-1","g-edu12-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-edu-3",created_at:"2026-04-07",category:{large:"영상/SNS",medium:"미디어/장르",small:"유튜브"},instructor_grade:{field:"프롬프트",mid:"교육",level:"3급"},targets:["중학교"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu34-1","g-edu34-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-edu-4",created_at:"2026-04-07",category:{large:"IT/개발",medium:"개발/보안",small:"AI"},instructor_grade:{field:"프롬프트",mid:"교육",level:"4급"},targets:["중학교"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu34-1","g-edu34-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-edu-5",created_at:"2026-04-07",category:{large:"창의적활동",medium:"콘텐츠",small:"웹툰소설"},instructor_grade:{field:"프롬프트",mid:"교육",level:"5급"},targets:["고1 ~ 고2"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu56-1","g-edu56-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-edu-6",created_at:"2026-04-07",category:{large:"문서",medium:"법률",small:"민사"},instructor_grade:{field:"프롬프트",mid:"교육",level:"6급"},targets:["고1 ~ 고2"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu56-1","g-edu56-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-edu-7",created_at:"2026-04-07",category:{large:"확장영역",medium:"라이프/전문",small:"입시"},instructor_grade:{field:"프롬프트",mid:"교육",level:"7급"},targets:["고3"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu78-1","g-edu78-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-edu-8",created_at:"2026-04-07",category:{large:"문서",medium:"교재",small:""},instructor_grade:{field:"프롬프트",mid:"교육",level:"8급"},targets:["고3"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu78-1","g-edu78-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-gen-1",created_at:"2026-04-07",category:{large:"문서",medium:"비즈니스",small:"PPT"},instructor_grade:{field:"프롬프트",mid:"일반",level:"1급"},targets:["일반 성인","비전공 대학생","프롬프트 입문자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-b-1","g-b-2","g-b-3","g-b-4","g-b-5","g-b-6","g-b-7","g-b-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-gen-2",created_at:"2026-04-07",category:{large:"IT/개발",medium:"디자인/기획",small:"웹기획"},instructor_grade:{field:"프롬프트",mid:"일반",level:"2급"},targets:["일반 성인","비전공 대학생","프롬프트 입문자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-b-1","g-b-2","g-b-3","g-b-4","g-b-5","g-b-6","g-b-7","g-b-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-gen-3",created_at:"2026-04-07",category:{large:"영상/SNS",medium:"미디어/장르",small:"다큐멘터리"},instructor_grade:{field:"프롬프트",mid:"일반",level:"3급"},targets:["기업 실무자","팀 리더","정책기획자","콘텐츠 기획자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-i-1","g-i-2","g-i-3","g-i-4","g-i-5","g-i-6","g-i-7","g-i-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-pro-1",created_at:"2026-04-07",category:{large:"문서",medium:"법률",small:"소송장"},instructor_grade:{field:"프롬프트",mid:"전문",level:"1급"},targets:["변호사","노무사","의사","회계사 등 고도화된 도메인 실무자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-e-1","g-e-2","g-e-3","g-e-4","g-e-5","g-e-6","g-e-7","g-e-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-pr-pro-2",created_at:"2026-04-07",category:{large:"문서",medium:"의료",small:""},instructor_grade:{field:"프롬프트",mid:"전문",level:"2급"},targets:["변호사","노무사","의사","회계사 등 고도화된 도메인 실무자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[...PROMPT_KEYWORDS],specialty:[],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-e-1","g-e-2","g-e-3","g-e-4","g-e-5","g-e-6","g-e-7","g-e-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-edu-1",created_at:"2026-04-07",category:{large:"문서",medium:"비즈니스",small:"회사소개"},instructor_grade:{field:"번역",mid:"교육",level:"1급"},targets:["초등 고학년"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu12-1","g-edu12-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-edu-2",created_at:"2026-04-07",category:{large:"음성",medium:"관광가이드",small:""},instructor_grade:{field:"번역",mid:"교육",level:"2급"},targets:["초등 고학년"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu12-1","g-edu12-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-edu-3",created_at:"2026-04-07",category:{large:"영상/SNS",medium:"미디어/장르",small:"영화"},instructor_grade:{field:"번역",mid:"교육",level:"3급"},targets:["중학교"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu34-1","g-edu34-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-edu-4",created_at:"2026-04-07",category:{large:"문서",medium:"논문",small:""},instructor_grade:{field:"번역",mid:"교육",level:"4급"},targets:["중학교"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu34-1","g-edu34-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-edu-5",created_at:"2026-04-07",category:{large:"창의적활동",medium:"콘텐츠",small:"소설"},instructor_grade:{field:"번역",mid:"교육",level:"5급"},targets:["고1 ~ 고2"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu56-1","g-edu56-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-edu-6",created_at:"2026-04-07",category:{large:"번역",medium:"통번역 방식",small:"순차통역"},instructor_grade:{field:"번역",mid:"교육",level:"6급"},targets:["고1 ~ 고2"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu56-1","g-edu56-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-edu-7",created_at:"2026-04-07",category:{large:"음성",medium:"아나운서",small:""},instructor_grade:{field:"번역",mid:"교육",level:"7급"},targets:["고3"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu78-1","g-edu78-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-edu-8",created_at:"2026-04-07",category:{large:"문서",medium:"기사",small:""},instructor_grade:{field:"번역",mid:"교육",level:"8급"},targets:["고3"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu78-1","g-edu78-2","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-gen-1",created_at:"2026-04-07",category:{large:"문서",medium:"비즈니스",small:"기획서"},instructor_grade:{field:"번역",mid:"일반",level:"1급"},targets:["일반 성인","비전공 대학생","프롬프트 입문자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-b-1","g-b-2","g-b-3","g-b-4","g-b-5","g-b-6","g-b-7","g-b-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-gen-2",created_at:"2026-04-07",category:{large:"번역",medium:"통번역 방식",small:"동시통역"},instructor_grade:{field:"번역",mid:"일반",level:"2급"},targets:["일반 성인","비전공 대학생","프롬프트 입문자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-b-1","g-b-2","g-b-3","g-b-4","g-b-5","g-b-6","g-b-7","g-b-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-gen-3",created_at:"2026-04-07",category:{large:"영상/SNS",medium:"미디어/장르",small:"드라마"},instructor_grade:{field:"번역",mid:"일반",level:"3급"},targets:["기업 실무자","팀 리더","정책기획자","콘텐츠 기획자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-i-1","g-i-2","g-i-3","g-i-4","g-i-5","g-i-6","g-i-7","g-i-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-pro-1",created_at:"2026-04-07",category:{large:"문서",medium:"특허",small:""},instructor_grade:{field:"번역",mid:"전문",level:"1급"},targets:["변호사","노무사","의사","회계사 등 고도화된 도메인 실무자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-e-1","g-e-2","g-e-3","g-e-4","g-e-5","g-e-6","g-e-7","g-e-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-tr-pro-2",created_at:"2026-04-07",category:{large:"문서",medium:"법률",small:"준비서면"},instructor_grade:{field:"번역",mid:"전문",level:"2급"},targets:["변호사","노무사","의사","회계사 등 고도화된 도메인 실무자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[...SPECIALTY_KEYWORDS],ethics:[]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-e-1","g-e-2","g-e-3","g-e-4","g-e-5","g-e-6","g-e-7","g-e-8","f-pr-1","f-pr-2","f-pr-3","f-pr-4","f-pr-5","f-pr-6","f-pr-7","f-pr-8","f-pr-9","f-pr-10","f-pr-11","f-pr-12","f-tr-1","f-tr-2","f-tr-3","f-tr-4","f-tr-5","f-tr-6","f-tr-7"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-pr-1","p-pr-2","p-pr-3","p-pr-4","p-pr-5","p-pr-6","p-pr-7","p-pr-8","p-pr-9","p-pr-10","p-pr-11","p-pr-12","p-tr-1","p-tr-2","p-tr-3","p-tr-4","p-tr-5","p-tr-6","p-tr-7"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-edu-1",created_at:"2026-04-07",category:{large:"IT/개발",medium:"개발/보안",small:"빅데이터"},instructor_grade:{field:"AI 윤리",mid:"교육",level:"1급"},targets:["초등 고학년"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu12-1","g-edu12-2","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-edu-2",created_at:"2026-04-07",category:{large:"문서",medium:"비즈니스",small:"엑셀"},instructor_grade:{field:"AI 윤리",mid:"교육",level:"2급"},targets:["초등 고학년"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu12-1","g-edu12-2","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-edu-3",created_at:"2026-04-07",category:{large:"영상/SNS",medium:"미디어/장르",small:"예능"},instructor_grade:{field:"AI 윤리",mid:"교육",level:"3급"},targets:["중학교"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu34-1","g-edu34-2","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-edu-4",created_at:"2026-04-07",category:{large:"IT/개발",medium:"디자인/기획",small:"컨텐츠"},instructor_grade:{field:"AI 윤리",mid:"교육",level:"4급"},targets:["중학교"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu34-1","g-edu34-2","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-edu-5",created_at:"2026-04-07",category:{large:"확장영역",medium:"라이프/전문",small:"재무"},instructor_grade:{field:"AI 윤리",mid:"교육",level:"5급"},targets:["고1 ~ 고2"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu56-1","g-edu56-2","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-edu-6",created_at:"2026-04-07",category:{large:"문서",medium:"노무",small:""},instructor_grade:{field:"AI 윤리",mid:"교육",level:"6급"},targets:["고1 ~ 고2"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu56-1","g-edu56-2","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-edu-7",created_at:"2026-04-07",category:{large:"확장영역",medium:"라이프/전문",small:"사업"},instructor_grade:{field:"AI 윤리",mid:"교육",level:"7급"},targets:["고3"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu78-1","g-edu78-2","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-edu-8",created_at:"2026-04-07",category:{large:"음성",medium:"큐레이터",small:""},instructor_grade:{field:"AI 윤리",mid:"교육",level:"8급"},targets:["고3"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-edu78-1","g-edu78-2","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-gen-1",created_at:"2026-04-07",category:{large:"IT/개발",medium:"개발/보안",small:"백엔드"},instructor_grade:{field:"AI 윤리",mid:"일반",level:"1급"},targets:["일반 성인","비전공 대학생","프롬프트 입문자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-b-1","g-b-2","g-b-3","g-b-4","g-b-5","g-b-6","g-b-7","g-b-8","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-gen-2",created_at:"2026-04-07",category:{large:"프롬프트",medium:"",small:""},instructor_grade:{field:"AI 윤리",mid:"일반",level:"2급"},targets:["일반 성인","비전공 대학생","프롬프트 입문자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-b-1","g-b-2","g-b-3","g-b-4","g-b-5","g-b-6","g-b-7","g-b-8","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-gen-3",created_at:"2026-04-07",category:{large:"확장영역",medium:"라이프/전문",small:"부동산"},instructor_grade:{field:"AI 윤리",mid:"일반",level:"3급"},targets:["기업 실무자","팀 리더","정책기획자","콘텐츠 기획자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-i-1","g-i-2","g-i-3","g-i-4","g-i-5","g-i-6","g-i-7","g-i-8","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-pro-1",created_at:"2026-04-07",category:{large:"문서",medium:"법률",small:"형사"},instructor_grade:{field:"AI 윤리",mid:"전문",level:"1급"},targets:["변호사","노무사","의사","회계사 등 고도화된 도메인 실무자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-e-1","g-e-2","g-e-3","g-e-4","g-e-5","g-e-6","g-e-7","g-e-8","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}},{id:"real-et-pro-2",created_at:"2026-04-07",category:{large:"문서",medium:"고전",small:""},instructor_grade:{field:"AI 윤리",mid:"전문",level:"2급"},targets:["변호사","노무사","의사","회계사 등 고도화된 도메인 실무자"],keywords:{common:[...COMMON_KEYWORDS],prompt:[],specialty:[],ethics:[...ETHICS_KEYWORDS]},titles:{basicClass:"",practiceClass:"",basicUnits:["g-e-1","g-e-2","g-e-3","g-e-4","g-e-5","g-e-6","g-e-7","g-e-8","f-et-1","f-et-2","f-et-3","f-et-4","f-et-5","f-et-6"],practiceUnits:["p-c-1","p-c-2","p-c-3","p-c-4","p-c-5","p-et-1","p-et-2","p-et-3","p-et-4","p-et-5"],basicUnitExtras:{},practiceUnitExtras:{},basicCustomUnits:[],practiceCustomUnits:[]}}];
 
-export const STORAGE_KEY = "instructor-curriculum-data-v7";
+export const STORAGE_KEY = "instructor-curriculum-data-v8";
