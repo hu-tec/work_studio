@@ -44,6 +44,24 @@ function Chip({ active, onClick, children, color }: {
   );
 }
 
+/* ── 그룹 태그 분류 ── */
+type GroupTag = "공통" | "분야별" | "급수별" | "평가" | "분야특화";
+const GROUP_TAGS: { tag: GroupTag; color: string }[] = [
+  { tag: "공통", color: "border-amber-300 bg-amber-50 text-amber-700" },
+  { tag: "분야별", color: "border-violet-300 bg-violet-50 text-violet-700" },
+  { tag: "급수별", color: "border-sky-300 bg-sky-50 text-sky-700" },
+  { tag: "평가", color: "border-pink-300 bg-pink-50 text-pink-700" },
+  { tag: "분야특화", color: "border-cyan-300 bg-cyan-50 text-cyan-700" },
+];
+
+function tagGroup(name: string): GroupTag {
+  if (/Ⅰ|공통/.test(name)) return "공통";
+  if (/Ⅱ|분야별/.test(name)) return "분야별";
+  if (/평가|인증/.test(name)) return "평가";
+  if (/^\d단계|^교육/.test(name)) return "급수별";
+  return "분야특화";
+}
+
 /* ── 단원 그룹 렌더 ── */
 function UnitGroupBlock({ groups, color, icon, label }: {
   groups: CurriculumGroup[];
@@ -106,17 +124,17 @@ function KeywordBlock({ categoryKey, keywords }: { categoryKey: string; keywords
 }
 
 /* ── 하나의 분야+급수 조합 카드 ── */
-function CombinationCard({ field, mid, level, showCommon, showFieldKw, showBasic, showPractice }: {
+function CombinationCard({ field, mid, level, showCommon, showFieldKw, showBasic, showPractice, groupFilter }: {
   field: string; mid: string; level: string;
   showCommon: boolean; showFieldKw: boolean; showBasic: boolean; showPractice: boolean;
+  groupFilter: Set<GroupTag>;
 }) {
   const targets = getTargets(mid, level);
   const fieldInfo = getFieldKeywords(field);
 
-  let basicGroups: CurriculumGroup[] = [...getGradeBasicCurriculum(mid, level)];
-  let practiceGroups: CurriculumGroup[] = [];
-  basicGroups = [...basicGroups, ...getFieldBasicCurriculum(field)];
-  practiceGroups = getPracticeCurriculum(field);
+  const filterGroups = (groups: CurriculumGroup[]) => groups.filter(g => groupFilter.has(tagGroup(g.name)));
+  let basicGroups: CurriculumGroup[] = filterGroups([...getGradeBasicCurriculum(mid, level), ...getFieldBasicCurriculum(field)]);
+  let practiceGroups: CurriculumGroup[] = filterGroups(getPracticeCurriculum(field));
 
   const hasKeywords = (showCommon && COMMON_KEYWORDS.length > 0) || (showFieldKw && fieldInfo.keywords.length > 0);
   const hasBasic = showBasic && basicGroups.length > 0;
@@ -187,6 +205,7 @@ export function CurriculumExpandView() {
   const [showFieldKw, setShowFieldKw] = useState(true);
   const [showBasic, setShowBasic] = useState(true);
   const [showPractice, setShowPractice] = useState(true);
+  const [groupFilter, setGroupFilter] = useState<Set<GroupTag>>(new Set(GROUP_TAGS.map(g => g.tag)));
 
   const toggleSet = <T,>(setter: React.Dispatch<React.SetStateAction<Set<T>>>, val: T) => {
     setter(prev => { const n = new Set(prev); if (n.has(val)) n.delete(val); else n.add(val); return n; });
@@ -206,10 +225,11 @@ export function CurriculumExpandView() {
 
       {/* 필터 바 — 한 줄 */}
       {(() => {
-        const allOn = showCommon && showFieldKw && showBasic && showPractice && selectedFields.size === FIELD_OPTIONS.length && selectedMids.size === MID_OPTIONS.length;
+        const allGroupOn = groupFilter.size === GROUP_TAGS.length;
+        const allOn = showCommon && showFieldKw && showBasic && showPractice && selectedFields.size === FIELD_OPTIONS.length && selectedMids.size === MID_OPTIONS.length && allGroupOn;
         const toggleAll = () => {
-          if (allOn) { setShowCommon(false); setShowFieldKw(false); setShowBasic(false); setShowPractice(false); setSelectedFields(new Set()); setSelectedMids(new Set()); }
-          else { setShowCommon(true); setShowFieldKw(true); setShowBasic(true); setShowPractice(true); setSelectedFields(new Set(FIELD_OPTIONS)); setSelectedMids(new Set(MID_OPTIONS)); }
+          if (allOn) { setShowCommon(false); setShowFieldKw(false); setShowBasic(false); setShowPractice(false); setSelectedFields(new Set()); setSelectedMids(new Set()); setGroupFilter(new Set()); }
+          else { setShowCommon(true); setShowFieldKw(true); setShowBasic(true); setShowPractice(true); setSelectedFields(new Set(FIELD_OPTIONS)); setSelectedMids(new Set(MID_OPTIONS)); setGroupFilter(new Set(GROUP_TAGS.map(g => g.tag))); }
         };
         return (
           <div className="rounded-lg border border-border bg-card px-3 py-2 flex items-center gap-1.5 flex-wrap">
@@ -232,6 +252,13 @@ export function CurriculumExpandView() {
               <Chip key={m} active={selectedMids.has(m)} onClick={() => toggleSet(setSelectedMids, m)}
                 color={selectedMids.has(m) ? "border-purple-300 bg-purple-50 text-purple-700" : undefined}>
                 {m}
+              </Chip>
+            ))}
+            <span className="text-muted-foreground/30">|</span>
+            {GROUP_TAGS.map(({ tag, color }) => (
+              <Chip key={tag} active={groupFilter.has(tag)} onClick={() => toggleSet(setGroupFilter, tag)}
+                color={groupFilter.has(tag) ? color : undefined}>
+                {tag}
               </Chip>
             ))}
           </div>
@@ -265,6 +292,7 @@ export function CurriculumExpandView() {
                         field={field} mid={mid} level={level}
                         showCommon={showCommon} showFieldKw={showFieldKw}
                         showBasic={showBasic} showPractice={showPractice}
+                        groupFilter={groupFilter}
                       />
                     ))}
                   </div>
