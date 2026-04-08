@@ -135,9 +135,15 @@ app.get("/tesol-apply", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "tesol-apply.html"));
 });
 
-// --- 레벨테스트 페이지 ---
+// --- 레벨테스트 페이지 (v모름: 기존) ---
 app.get("/level-test", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "level-test.html"));
+});
+
+// --- 레벨테스트 페이지 (v준걸: React SPA) ---
+app.use("/level-test-jungeol", express.static(path.join(__dirname, "public", "level-test-jungeol")));
+app.get("/level-test-jungeol/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "level-test-jungeol", "index.html"));
 });
 
 // --- 커리큘럼 SPA fallback ---
