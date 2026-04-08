@@ -204,56 +204,39 @@ export function CurriculumExpandView() {
         <span className="text-[0.7rem] text-muted-foreground">— 모든 분야 × 급수 조합별 키워드·단원 일람</span>
       </div>
 
-      {/* 필터 바 */}
-      <div className="rounded-lg border border-border bg-card p-3 space-y-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="flex items-center gap-1 text-[0.72rem] font-semibold text-muted-foreground shrink-0">
-            <Filter className="h-3 w-3" /> 블록:
-          </span>
-          <Chip active={showCommon} onClick={() => setShowCommon(!showCommon)} color="border-amber-300 bg-amber-50 text-amber-700">
-            공통 키워드
-          </Chip>
-          <Chip active={showFieldKw} onClick={() => setShowFieldKw(!showFieldKw)} color="border-green-300 bg-green-50 text-green-700">
-            분야 키워드
-          </Chip>
-          <Chip active={showBasic} onClick={() => setShowBasic(!showBasic)} color="border-indigo-300 bg-indigo-50 text-indigo-700">
-            기본 단원
-          </Chip>
-          <Chip active={showPractice} onClick={() => setShowPractice(!showPractice)} color="border-teal-300 bg-teal-50 text-teal-700">
-            실습 단원
-          </Chip>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[0.72rem] font-semibold text-muted-foreground shrink-0">분야:</span>
-          <Chip active={selectedFields.size === FIELD_OPTIONS.length} onClick={() => setSelectedFields(new Set(FIELD_OPTIONS))} color="border-gray-400 bg-gray-100 text-gray-700">
-            전체
-          </Chip>
-          {FIELD_OPTIONS.map(f => (
-            <Chip key={f} active={selectedFields.has(f)} onClick={() => toggleSet(setSelectedFields, f)}
-              color={selectedFields.has(f) ? (
-                f === "프롬프트" ? "border-blue-300 bg-blue-50 text-blue-700"
-                : f === "번역" ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                : "border-rose-300 bg-rose-50 text-rose-700"
-              ) : undefined}
-            >
-              {f}
-            </Chip>
-          ))}
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[0.72rem] font-semibold text-muted-foreground shrink-0">중구분:</span>
-          <Chip active={selectedMids.size === MID_OPTIONS.length} onClick={() => setSelectedMids(new Set(MID_OPTIONS))} color="border-gray-400 bg-gray-100 text-gray-700">
-            전체
-          </Chip>
-          {MID_OPTIONS.map(m => (
-            <Chip key={m} active={selectedMids.has(m)} onClick={() => toggleSet(setSelectedMids, m)}
-              color={selectedMids.has(m) ? "border-purple-300 bg-purple-50 text-purple-700" : undefined}
-            >
-              {m}
-            </Chip>
-          ))}
-        </div>
-      </div>
+      {/* 필터 바 — 한 줄 */}
+      {(() => {
+        const allOn = showCommon && showFieldKw && showBasic && showPractice && selectedFields.size === FIELD_OPTIONS.length && selectedMids.size === MID_OPTIONS.length;
+        const toggleAll = () => {
+          if (allOn) { setShowCommon(false); setShowFieldKw(false); setShowBasic(false); setShowPractice(false); setSelectedFields(new Set()); setSelectedMids(new Set()); }
+          else { setShowCommon(true); setShowFieldKw(true); setShowBasic(true); setShowPractice(true); setSelectedFields(new Set(FIELD_OPTIONS)); setSelectedMids(new Set(MID_OPTIONS)); }
+        };
+        return (
+          <div className="rounded-lg border border-border bg-card px-3 py-2 flex items-center gap-1.5 flex-wrap">
+            <Filter className="h-3 w-3 text-muted-foreground shrink-0" />
+            <Chip active={allOn} onClick={toggleAll} color="border-gray-400 bg-gray-100 text-gray-700">전체</Chip>
+            <span className="text-muted-foreground/30">|</span>
+            <Chip active={showCommon} onClick={() => setShowCommon(!showCommon)} color="border-amber-300 bg-amber-50 text-amber-700">공통KW</Chip>
+            <Chip active={showFieldKw} onClick={() => setShowFieldKw(!showFieldKw)} color="border-green-300 bg-green-50 text-green-700">분야KW</Chip>
+            <Chip active={showBasic} onClick={() => setShowBasic(!showBasic)} color="border-indigo-300 bg-indigo-50 text-indigo-700">기본단</Chip>
+            <Chip active={showPractice} onClick={() => setShowPractice(!showPractice)} color="border-teal-300 bg-teal-50 text-teal-700">실습단</Chip>
+            <span className="text-muted-foreground/30">|</span>
+            {FIELD_OPTIONS.map(f => (
+              <Chip key={f} active={selectedFields.has(f)} onClick={() => toggleSet(setSelectedFields, f)}
+                color={selectedFields.has(f) ? (f === "프롬프트" ? "border-blue-300 bg-blue-50 text-blue-700" : f === "번역" ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-rose-300 bg-rose-50 text-rose-700") : undefined}>
+                {f}
+              </Chip>
+            ))}
+            <span className="text-muted-foreground/30">|</span>
+            {MID_OPTIONS.map(m => (
+              <Chip key={m} active={selectedMids.has(m)} onClick={() => toggleSet(setSelectedMids, m)}
+                color={selectedMids.has(m) ? "border-purple-300 bg-purple-50 text-purple-700" : undefined}>
+                {m}
+              </Chip>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* 분야별 그룹 */}
       {activeFields.map((field) => (
