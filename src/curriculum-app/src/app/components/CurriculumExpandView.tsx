@@ -1,0 +1,302 @@
+import { useState } from "react";
+import {
+  COMMON_KEYWORDS, PROMPT_KEYWORDS, SPECIALTY_KEYWORDS, ETHICS_KEYWORDS,
+  FIELD_OPTIONS, MID_OPTIONS, LEVEL_BY_MID, getTargets, getFieldKeywords,
+} from "./data";
+import {
+  getGradeBasicCurriculum, getFieldBasicCurriculum,
+  getPracticeCurriculum, getTranslationBasicCurriculum, getTranslationPracticeCurriculum,
+} from "./curriculum-data";
+import type { CurriculumGroup } from "./curriculum-data";
+import {
+  Hash, BookText, Wrench, Award, Users, ChevronRight, Layers, Filter,
+} from "lucide-react";
+
+/* ── 색상 맵 ── */
+const fieldBg: Record<string, string> = {
+  "프롬프트": "bg-blue-50 border-blue-200",
+  "번역": "bg-emerald-50 border-emerald-200",
+  "AI 윤리": "bg-rose-50 border-rose-200",
+};
+const fieldBadge: Record<string, string> = {
+  "프롬프트": "bg-blue-500",
+  "번역": "bg-emerald-500",
+  "AI 윤리": "bg-rose-500",
+};
+const kwGroupCfg: Record<string, { label: string; dot: string }> = {
+  common:    { label: "공통",     dot: "bg-amber-400" },
+  prompt:    { label: "프롬프트", dot: "bg-blue-400" },
+  specialty: { label: "전문",     dot: "bg-emerald-400" },
+  ethics:    { label: "윤리",     dot: "bg-rose-400" },
+};
+
+/* ── 필터 토글 버튼 ── */
+function Chip({ active, onClick, children, color }: {
+  active: boolean; onClick: () => void; children: React.ReactNode; color?: string;
+}) {
+  const base = active
+    ? color || "border-primary/40 bg-primary/10 text-primary"
+    : "border-border text-muted-foreground hover:bg-muted/60";
+  return (
+    <button onClick={onClick} className={`rounded-md border px-2 py-0.5 text-[0.68rem] font-medium transition-all ${base}`}>
+      {children}
+    </button>
+  );
+}
+
+/* ── 단원 그룹 렌더 ── */
+function UnitGroupBlock({ groups, color, icon, label }: {
+  groups: CurriculumGroup[];
+  color: string;
+  icon: React.ReactNode;
+  label: string;
+}) {
+  if (groups.length === 0) return null;
+  const totalUnits = groups.reduce((s, g) => s + g.units.length, 0);
+  return (
+    <div className="rounded-lg border border-border overflow-hidden">
+      <div className={`px-3 py-1.5 ${color} border-b border-border/50 flex items-center gap-1.5`}>
+        {icon}
+        <span className="text-[0.72rem] font-semibold">{label}</span>
+        <span className="text-[0.62rem] text-muted-foreground">{totalUnits}단</span>
+      </div>
+      <div className="divide-y divide-border/30">
+        {groups.map((g) => (
+          <div key={g.name} className="px-3 py-1.5">
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="text-[0.7rem] font-medium">{g.name}</span>
+              {g.subtitle && <span className="text-[0.62rem] text-muted-foreground">{g.subtitle}</span>}
+            </div>
+            <div className="space-y-0.5 pl-2">
+              {g.units.map((u) => (
+                <div key={u.id} className="flex items-start gap-1.5 text-[0.66rem]">
+                  <span className="shrink-0 text-muted-foreground/60">·</span>
+                  <div className="min-w-0">
+                    <span className="font-medium">{u.title}</span>
+                    {u.hours && <span className="text-muted-foreground ml-1">({u.hours})</span>}
+                    <span className="text-muted-foreground ml-1">— {u.content}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── 키워드 블록 ── */
+function KeywordBlock({ categoryKey, keywords }: { categoryKey: string; keywords: string[] }) {
+  const cfg = kwGroupCfg[categoryKey];
+  if (!cfg || keywords.length === 0) return null;
+  return (
+    <div className="flex items-start gap-1.5">
+      <span className="shrink-0 flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-[0.62rem] font-medium text-muted-foreground">
+        <span className={`inline-block h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
+        {cfg.label} {keywords.length}
+      </span>
+      <div className="flex flex-wrap gap-1">
+        {keywords.map((kw, i) => (
+          <span key={`${kw}-${i}`} className="rounded bg-muted/60 px-1.5 py-0.5 text-[0.64rem] text-foreground/75">{kw}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── 하나의 분야+급수 조합 카드 ── */
+function CombinationCard({ field, mid, level, showCommon, showFieldKw, showBasic, showPractice }: {
+  field: string; mid: string; level: string;
+  showCommon: boolean; showFieldKw: boolean; showBasic: boolean; showPractice: boolean;
+}) {
+  const targets = getTargets(mid, level);
+  const fieldInfo = getFieldKeywords(field);
+
+  let basicGroups: CurriculumGroup[] = [...getGradeBasicCurriculum(mid, level)];
+  let practiceGroups: CurriculumGroup[] = [];
+  basicGroups = [...basicGroups, ...getFieldBasicCurriculum(field)];
+  practiceGroups = getPracticeCurriculum(field);
+
+  const hasKeywords = (showCommon && COMMON_KEYWORDS.length > 0) || (showFieldKw && fieldInfo.keywords.length > 0);
+  const hasBasic = showBasic && basicGroups.length > 0;
+  const hasPractice = showPractice && practiceGroups.length > 0;
+  if (!hasKeywords && !hasBasic && !hasPractice) return null;
+
+  return (
+    <div className="rounded-lg border border-border bg-card overflow-hidden">
+      <div className="px-3 py-1.5 bg-muted/30 border-b border-border/60 flex items-center gap-2">
+        <span className={`rounded px-1.5 py-0.5 text-[0.62rem] font-medium text-white ${fieldBadge[field] || "bg-gray-400"}`}>{field}</span>
+        <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[0.62rem] font-medium text-indigo-700">{mid}</span>
+        <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[0.62rem] font-medium text-blue-700">{level}</span>
+        {targets.length > 0 && (
+          <>
+            <ChevronRight className="h-2.5 w-2.5 text-muted-foreground/40" />
+            <span className="flex items-center gap-1 text-[0.62rem] text-muted-foreground">
+              <Users className="h-2.5 w-2.5" />
+              {targets.join(", ")}
+            </span>
+          </>
+        )}
+      </div>
+
+      <div className="p-2.5 space-y-2">
+        {hasKeywords && (
+          <div>
+            <div className="flex items-center gap-1 mb-1">
+              <Hash className="h-3 w-3 text-green-500" />
+              <span className="text-[0.7rem] font-semibold">키워드</span>
+            </div>
+            <div className="space-y-1">
+              {showCommon && <KeywordBlock categoryKey="common" keywords={COMMON_KEYWORDS} />}
+              {showFieldKw && <KeywordBlock categoryKey={fieldInfo.key} keywords={fieldInfo.keywords} />}
+            </div>
+          </div>
+        )}
+
+        {(hasBasic || hasPractice) && (
+          <div className="grid grid-cols-2 gap-2">
+            {hasBasic && (
+              <UnitGroupBlock
+                groups={basicGroups}
+                color="bg-indigo-50/50"
+                icon={<BookText className="h-3 w-3 text-indigo-500" />}
+                label="기본 수업"
+              />
+            )}
+            {hasPractice && (
+              <UnitGroupBlock
+                groups={practiceGroups}
+                color="bg-teal-50/50"
+                icon={<Wrench className="h-3 w-3 text-teal-500" />}
+                label="실습"
+              />
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── 메인 ── */
+export function CurriculumExpandView() {
+  const [selectedFields, setSelectedFields] = useState<Set<string>>(new Set(FIELD_OPTIONS));
+  const [selectedMids, setSelectedMids] = useState<Set<string>>(new Set(MID_OPTIONS));
+  const [showCommon, setShowCommon] = useState(true);
+  const [showFieldKw, setShowFieldKw] = useState(true);
+  const [showBasic, setShowBasic] = useState(true);
+  const [showPractice, setShowPractice] = useState(true);
+
+  const toggleSet = <T,>(setter: React.Dispatch<React.SetStateAction<Set<T>>>, val: T) => {
+    setter(prev => { const n = new Set(prev); if (n.has(val)) n.delete(val); else n.add(val); return n; });
+  };
+
+  const activeFields = FIELD_OPTIONS.filter(f => selectedFields.has(f));
+  const activeMids = MID_OPTIONS.filter(m => selectedMids.has(m));
+
+  return (
+    <div className="space-y-4">
+      {/* 헤더 */}
+      <div className="flex items-center gap-2">
+        <Layers className="h-4 w-4 text-primary" />
+        <span className="text-[0.85rem] font-semibold">전체 커리큘럼 펼치기</span>
+        <span className="text-[0.7rem] text-muted-foreground">— 모든 분야 × 급수 조합별 키워드·단원 일람</span>
+      </div>
+
+      {/* 필터 바 */}
+      <div className="rounded-lg border border-border bg-card p-3 space-y-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="flex items-center gap-1 text-[0.72rem] font-semibold text-muted-foreground shrink-0">
+            <Filter className="h-3 w-3" /> 블록:
+          </span>
+          <Chip active={showCommon} onClick={() => setShowCommon(!showCommon)} color="border-amber-300 bg-amber-50 text-amber-700">
+            공통 키워드
+          </Chip>
+          <Chip active={showFieldKw} onClick={() => setShowFieldKw(!showFieldKw)} color="border-green-300 bg-green-50 text-green-700">
+            분야 키워드
+          </Chip>
+          <Chip active={showBasic} onClick={() => setShowBasic(!showBasic)} color="border-indigo-300 bg-indigo-50 text-indigo-700">
+            기본 단원
+          </Chip>
+          <Chip active={showPractice} onClick={() => setShowPractice(!showPractice)} color="border-teal-300 bg-teal-50 text-teal-700">
+            실습 단원
+          </Chip>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[0.72rem] font-semibold text-muted-foreground shrink-0">분야:</span>
+          <Chip active={selectedFields.size === FIELD_OPTIONS.length} onClick={() => setSelectedFields(new Set(FIELD_OPTIONS))} color="border-gray-400 bg-gray-100 text-gray-700">
+            전체
+          </Chip>
+          {FIELD_OPTIONS.map(f => (
+            <Chip key={f} active={selectedFields.has(f)} onClick={() => toggleSet(setSelectedFields, f)}
+              color={selectedFields.has(f) ? (
+                f === "프롬프트" ? "border-blue-300 bg-blue-50 text-blue-700"
+                : f === "번역" ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                : "border-rose-300 bg-rose-50 text-rose-700"
+              ) : undefined}
+            >
+              {f}
+            </Chip>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[0.72rem] font-semibold text-muted-foreground shrink-0">중구분:</span>
+          <Chip active={selectedMids.size === MID_OPTIONS.length} onClick={() => setSelectedMids(new Set(MID_OPTIONS))} color="border-gray-400 bg-gray-100 text-gray-700">
+            전체
+          </Chip>
+          {MID_OPTIONS.map(m => (
+            <Chip key={m} active={selectedMids.has(m)} onClick={() => toggleSet(setSelectedMids, m)}
+              color={selectedMids.has(m) ? "border-purple-300 bg-purple-50 text-purple-700" : undefined}
+            >
+              {m}
+            </Chip>
+          ))}
+        </div>
+      </div>
+
+      {/* 분야별 그룹 */}
+      {activeFields.map((field) => (
+        <div key={field} className={`rounded-xl border overflow-hidden ${fieldBg[field] || "bg-muted/20 border-border"}`}>
+          <div className="px-4 py-2 border-b border-border/40 flex items-center gap-2">
+            <Award className="h-4 w-4" />
+            <span className={`rounded px-2 py-0.5 text-[0.74rem] font-semibold text-white ${fieldBadge[field] || "bg-gray-400"}`}>{field}</span>
+          </div>
+
+          <div className="p-3 space-y-3">
+            {activeMids.map((mid) => {
+              const levels = LEVEL_BY_MID[mid] || [];
+              if (levels.length === 0) return null;
+              return (
+                <div key={mid}>
+                  <div className="flex items-center gap-1.5 mb-2 pl-1">
+                    <ChevronRight className="h-3 w-3 text-muted-foreground/50" />
+                    <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[0.68rem] font-medium text-indigo-700">{mid}</span>
+                    <span className="text-[0.62rem] text-muted-foreground">{levels.length}개 급수</span>
+                  </div>
+                  <div className="space-y-2 pl-2">
+                    {levels.map((level) => (
+                      <CombinationCard
+                        key={`${field}-${mid}-${level}`}
+                        field={field} mid={mid} level={level}
+                        showCommon={showCommon} showFieldKw={showFieldKw}
+                        showBasic={showBasic} showPractice={showPractice}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      {activeFields.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground">
+          <Filter className="h-8 w-8 mx-auto mb-2 opacity-30" />
+          <p className="text-[0.82rem]">선택된 분야가 없습니다</p>
+        </div>
+      )}
+    </div>
+  );
+}

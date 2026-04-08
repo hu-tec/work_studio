@@ -1,0 +1,93 @@
+import { useState, useMemo } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { Sidebar } from './components/sidebar';
+import { AdminHeader } from './components/admin-header';
+import { TabNavigation } from './components/tab-navigation';
+import { SiteFilterChips } from './components/site-filter-chips';
+import { FilterSection } from './components/filter-section';
+import { MemberTable } from './components/member-table';
+import { StatisticsView } from './components/statistics-view';
+import { mockMembers, SiteType, TabType, MemberData } from './components/db-page-data';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<TabType>('전체');
+  const [selectedSite, setSelectedSite] = useState<SiteType | '전체'>('전체');
+  const [keyword, setKeyword] = useState('');
+  const [_filters, setFilters] = useState<Record<string, string[]>>({});
+
+  const siteCounts = useMemo(() => {
+    const counts: Record<string, number> = { '전체': mockMembers.length };
+    (['AI 번역', '통독문서', '교육센터', '전시/행사', '시험사이트'] as SiteType[]).forEach(s => {
+      counts[s] = mockMembers.filter(m => m.site === s).length;
+    });
+    return counts;
+  }, []);
+
+  const filteredData = useMemo(() => {
+    let result: MemberData[] = [...mockMembers];
+
+    if (selectedSite !== '전체') {
+      result = result.filter(m => m.site === selectedSite);
+    }
+
+    if (keyword) {
+      const kw = keyword.toLowerCase();
+      result = result.filter(m =>
+        m.name.toLowerCase().includes(kw) ||
+        m.email.toLowerCase().includes(kw) ||
+        m.managementNumber.toLowerCase().includes(kw)
+      );
+    }
+
+    return result;
+  }, [selectedSite, keyword, _filters]);
+
+  return (
+    <div className="min-h-screen bg-[#f2f3f7] font-['Noto_Sans_KR',sans-serif]">
+      <Sidebar />
+      <AdminHeader />
+
+      {/* Main content */}
+      <div className="ml-[60px] mt-[56px] p-[20px] flex flex-col gap-[16px]">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-[4px]">
+          <span className="text-[14px] text-[#808080] tracking-[-0.28px]">홈</span>
+          <ChevronRight size={16} className="text-[#808080]" />
+          <span className="text-[14px] text-[#222] tracking-[-0.28px]">회원관리</span>
+        </div>
+
+        {/* Title + Save */}
+        <div className="flex items-end justify-between">
+          <h1 className="text-[22px] font-bold text-[#222] tracking-[-0.44px] leading-[32px]">회원관리</h1>
+          <button className="h-[32px] px-[16px] bg-[#0088ff] text-white text-[14px] rounded-[6px] hover:bg-[#006fcc] cursor-pointer">
+            저장
+          </button>
+        </div>
+
+        {/* Tab Navigation */}
+        <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
+
+        {/* Site filter chips */}
+        <div className="flex items-center gap-[10px]">
+          <span className="text-[13px] text-[#808080] tracking-[-0.26px] shrink-0">홈페이지</span>
+          <div className="w-[1px] h-[16px] bg-[#ddd]" />
+          <SiteFilterChips selected={selectedSite} onChange={setSelectedSite} counts={siteCounts} />
+        </div>
+
+        {/* Filter section */}
+        <FilterSection
+          onFilterChange={setFilters}
+          onKeywordChange={setKeyword}
+          keyword={keyword}
+        />
+
+        {/* Content based on tab */}
+        {activeTab === '통계' ? (
+          <StatisticsView data={filteredData} />
+        ) : (
+          <MemberTable data={filteredData} activeTab={activeTab} />
+        )}
+      </div>
+    </div>
+  );
+}
