@@ -1779,113 +1779,11 @@ ca.innerHTML=h}
 
 /*REMOVED_PROJ_END*/
 
-// ═══ 홈(old) — 5축 분류 트리 탐색 ═══
+// ═══ 홈(old) — /db/ React 앱 iframe ═══
 function rOldHome(){
 bc.innerHTML="Work Studio &rsaquo; <b>홈(old)</b>";
 navBar.innerHTML="";subNav.classList.remove("v");
-const all=aR();
-const axes=[
-{key:"C",label:"홈페이지",icon:"🌐",build:()=>{
-  const out={};SITES.forEach(s=>{out[s.label]={_tables:s.tables,_color:s.color,_bg:s.bg}});return out}},
-{key:"B",label:"시험 급수",icon:"📋",build:()=>{
-  const out={};EXAM_DOMAINS.forEach(d=>{out[d]={};Object.entries(LEVELS[d]||{}).forEach(([div,grades])=>{out[d][div]={};(grades||[]).forEach(g=>{out[d][div][g+"급"]={}})})});return out}},
-{key:"A",label:"소재 분류",icon:"📁",build:()=>{
-  const out={};Object.entries(FIELDS).forEach(([big,mids])=>{out[big]={};Object.entries(mids).forEach(([mid,sms])=>{if(sms.length)out[big][mid]={};sms.forEach(sm=>{out[big][mid][sm]={}});if(!sms.length)out[big][mid]={}})});return out}},
-{key:"D",label:"담당 조직",icon:"🏢",build:()=>{
-  const out={};(GROUPS["부서"]||[]).forEach(d=>{out[d]={}});Object.entries(GROUPS["팀"]||{}).forEach(([team,subs])=>{out["팀: "+team]={};(subs||[]).forEach(s=>{out["팀: "+team][s]={}})});return out}},
-{key:"E",label:"역할/권한",icon:"👤",build:()=>{
-  const out={};GRADES.forEach(g=>{out[g]={}});return out}},
-];
-
-let h=`<div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap">`;
-h+=`<span style="font-size:11px;color:#888;line-height:24px">분류축</span>`;
-axes.forEach((a,i)=>{h+=`<span class="chip${i===0?" a":""}" onclick="odAxis(${i})" data-ax="${i}">${a.icon} ${a.label}</span>`});
-h+=`</div>`;
-h+=`<div id="od-tree"></div>`;
-ca.innerHTML=h;
-window._odAxes=axes;
-odAxis(0);
-}
-
-function odAxis(idx){
-document.querySelectorAll('[data-ax]').forEach(c=>{c.classList.toggle('a',+c.dataset.ax===idx)});
-const ax=window._odAxes[idx];
-const tree=ax.build();
-const el=document.getElementById('od-tree');
-el.innerHTML=odBuildTree(tree,0,ax.key);
-}
-
-function odBuildTree(obj,depth,axKey){
-if(!obj||typeof obj!=='object'||!Object.keys(obj).length)return'';
-const pad=depth*16;
-let h='';
-Object.entries(obj).forEach(([key,val])=>{
-  const isLeaf=!val||typeof val!=='object'||Object.keys(val).filter(k=>!k.startsWith('_')).length===0;
-  const tables=val&&val._tables?val._tables:[];
-  const color=val&&val._color?val._color:'#0088ff';
-  const bg=val&&val._bg?val._bg:'#f0f4ff';
-  const childKeys=val?Object.keys(val).filter(k=>!k.startsWith('_')):[];
-  const hasChildren=childKeys.length>0;
-  const dataRows=odGetRows(tables);
-
-  // count — 테이블이 있으면 row수, 없으면 자식 수
-  const cnt=tables.length?dataRows.length:(hasChildren?childKeys.length:0);
-
-  h+=`<div style="margin-left:${pad}px;margin-bottom:2px">`;
-  h+=`<div onclick="odToggle(this)" style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:${depth===0?bg:'#fff'};border:1px solid ${depth===0?color+'30':'#eee'};border-radius:5px;cursor:pointer;transition:.15s;user-select:none" onmouseover="this.style.background='${depth===0?color+'18':'#f8f9fb'}'" onmouseout="this.style.background='${depth===0?bg:'#fff'}'">`;
-  h+=`<span style="font-size:10px;color:#999;transition:.15s;display:inline-block" class="od-arrow">${hasChildren||tables.length?'▸':' '}</span>`;
-  h+=`<span style="font-size:${depth===0?'12':'11'}px;font-weight:${depth===0?'700':'500'};color:${depth===0?color:'#333'}">${key}</span>`;
-  if(cnt)h+=`<span style="font-size:9px;background:${color}18;color:${color};padding:0 5px;border-radius:8px;font-weight:600">${cnt}</span>`;
-  h+=`</div>`;
-  // children container (hidden)
-  h+=`<div class="od-children" style="display:none">`;
-  if(hasChildren)h+=odBuildTree(val,depth+1,axKey);
-  if(tables.length)h+=odBuildRows(dataRows,tables);
-  h+=`</div></div>`;
-});
-return h;
-}
-
-function odToggle(el){
-const children=el.nextElementSibling;
-if(!children)return;
-const open=children.style.display==='none';
-children.style.display=open?'block':'none';
-const arrow=el.querySelector('.od-arrow');
-if(arrow)arrow.textContent=open?'▾':'▸';
-}
-
-function odGetRows(tables){
-if(!tables||!tables.length)return[];
-const rows=[];
-tables.forEach(t=>{(TD[t]||[]).forEach(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}rows.push({...r,_t:t,p})})});
-rows.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
-return rows;
-}
-
-function odBuildRows(rows,tables){
-if(!rows.length)return`<div style="padding:8px 16px;color:#ccc;font-size:10px">데이터 없음</div>`;
-let h=`<div style="margin:4px 0 4px 16px">`;
-// 테이블별 그룹
-const byT={};rows.forEach(r=>{(byT[r._t]=byT[r._t]||[]).push(r)});
-Object.entries(byT).forEach(([t,rs])=>{
-  const tl=(TB[t]||{l:t}).l;
-  h+=`<div style="font-size:9px;font-weight:700;color:#888;padding:4px 0 2px">${tl} (${rs.length}건)</div>`;
-  h+=`<table style="width:100%;font-size:10px;border-collapse:collapse">`;
-  rs.slice(0,20).forEach(r=>{
-    const nm=r.p.name||r.p.title||r.p.studentName||r.p.orgName||'—';
-    const st=r.p._status||0;
-    h+=`<tr style="border-bottom:1px solid #f0f0f0;cursor:pointer" onclick="sT('${r._t}')" onmouseover="this.style.background='#f8f9fb'" onmouseout="this.style.background=''">`;
-    h+=`<td style="padding:3px 6px"><span class="bid">${rn(r._t,r.id)}</span></td>`;
-    h+=`<td style="padding:3px 6px">${eh(String(nm).slice(0,20))}</td>`;
-    h+=`<td style="padding:3px 6px"><span class="bs s${st}" style="font-size:8px">${ST[st]}</span></td>`;
-    h+=`<td style="padding:3px 6px;color:#999">${(r.created_at||'').slice(5,16)}</td></tr>`;
-  });
-  if(rs.length>20)h+=`<tr><td colspan="4" style="padding:4px 6px;color:#0088ff;font-size:9px;cursor:pointer" onclick="sT('${t}')">+${rs.length-20}건 더보기 →</td></tr>`;
-  h+=`</table>`;
-});
-h+=`</div>`;
-return h;
+ca.innerHTML=`<iframe src="/db/" style="width:100%;height:calc(100vh - 60px);border:none;border-radius:8px"></iframe>`;
 }
 
 if(sessionStorage.ws)sA();
