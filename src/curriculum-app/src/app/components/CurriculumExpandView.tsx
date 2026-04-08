@@ -238,26 +238,27 @@ export function CurriculumExpandView() {
         );
       })()}
 
-      {/* 분야별 그룹 */}
+      {/* 분야별 그룹 — 2단 */}
+      <div className="grid grid-cols-2 gap-3">
       {activeFields.map((field) => (
         <div key={field} className={`rounded-xl border overflow-hidden ${fieldBg[field] || "bg-muted/20 border-border"}`}>
-          <div className="px-4 py-2 border-b border-border/40 flex items-center gap-2">
-            <Award className="h-4 w-4" />
-            <span className={`rounded px-2 py-0.5 text-[0.74rem] font-semibold text-white ${fieldBadge[field] || "bg-gray-400"}`}>{field}</span>
+          <div className="px-3 py-1.5 border-b border-border/40 flex items-center gap-2">
+            <Award className="h-3.5 w-3.5" />
+            <span className={`rounded px-1.5 py-0.5 text-[0.68rem] font-semibold text-white ${fieldBadge[field] || "bg-gray-400"}`}>{field}</span>
           </div>
 
-          <div className="p-3 space-y-3">
+          <div className="p-2 space-y-2">
             {activeMids.map((mid) => {
               const levels = LEVEL_BY_MID[mid] || [];
               if (levels.length === 0) return null;
               return (
                 <div key={mid}>
-                  <div className="flex items-center gap-1.5 mb-2 pl-1">
-                    <ChevronRight className="h-3 w-3 text-muted-foreground/50" />
-                    <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[0.68rem] font-medium text-indigo-700">{mid}</span>
-                    <span className="text-[0.62rem] text-muted-foreground">{levels.length}개 급수</span>
+                  <div className="flex items-center gap-1.5 mb-1.5 pl-0.5">
+                    <ChevronRight className="h-2.5 w-2.5 text-muted-foreground/50" />
+                    <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[0.64rem] font-medium text-indigo-700">{mid}</span>
+                    <span className="text-[0.58rem] text-muted-foreground">{levels.length}급수</span>
                   </div>
-                  <div className="space-y-2 pl-2">
+                  <div className="space-y-1.5 pl-1.5">
                     {levels.map((level) => (
                       <CombinationCard
                         key={`${field}-${mid}-${level}`}
@@ -273,6 +274,7 @@ export function CurriculumExpandView() {
           </div>
         </div>
       ))}
+      </div>
 
       {activeFields.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">

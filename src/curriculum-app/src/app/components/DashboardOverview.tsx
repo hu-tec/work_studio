@@ -428,7 +428,9 @@ export function DashboardOverview({ savedList, onNavigate }: {
         />
       </div>
 
-      {/* A-1b: 분야 × 중분류 매트릭스 (가로: 분야=행, 중분류=열) */}
+      {/* A-1b + A-1c: 분야×중분류 + 분야×급수 2단 */}
+      <div className="grid grid-cols-2 gap-2">
+      {/* A-1b: 분야 × 중분류 매트릭스 */}
       {(() => {
         const mediumCols: { large: string; medium: string }[] = [];
         largeCats.forEach(large => {
@@ -441,33 +443,35 @@ export function DashboardOverview({ savedList, onNavigate }: {
           if (!crossMedium[f]) crossMedium[f] = {};
           crossMedium[f][k] = (crossMedium[f][k] || 0) + 1;
         });
+        const th0 = "px-1 py-0.5 text-[0.58rem] font-semibold text-muted-foreground bg-muted/40 border-b border-r border-border";
+        const td0 = "px-0 py-0.5 text-[0.58rem] border-b border-r border-border text-center tabular-nums";
         return (
           <div className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="px-3 py-1.5 bg-muted/40 border-b border-border flex items-center gap-2">
               <BarChart3 className="h-3.5 w-3.5 text-orange-600" />
               <span className="text-[0.78rem] font-semibold">분야 × 중분류</span>
-              <span className="rounded-full bg-orange-100 px-1.5 py-0 text-[0.64rem] font-medium text-orange-700">{savedList.length}건</span>
+              <span className="rounded-full bg-orange-100 px-1.5 py-0 text-[0.62rem] font-medium text-orange-700">{savedList.length}</span>
               <button onClick={() => setHideZero(!hideZero)}
-                className={`ml-auto flex items-center gap-1 rounded border px-1.5 py-0.5 text-[0.62rem] font-medium ${hideZero ? "border-primary/30 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"}`}>
+                className={`ml-auto flex items-center gap-1 rounded border px-1.5 py-0.5 text-[0.58rem] font-medium ${hideZero ? "border-primary/30 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"}`}>
                 {hideZero ? <Eye className="h-2.5 w-2.5" /> : <EyeOff className="h-2.5 w-2.5" />}
-                {hideZero ? "0건 표시" : "0건 숨기기"}
+                {hideZero ? "0건" : "0건"}
               </button>
             </div>
             <div className="overflow-x-auto">
-              <table style={{minWidth: mediumCols.length * 30 + 80}}>
+              <table style={{minWidth: mediumCols.length * 28 + 60}}>
                 <thead>
                   <tr>
-                    <th className="px-1 py-1 text-[0.6rem] font-semibold text-muted-foreground bg-muted/40 border-b border-r border-border text-left sticky left-0 bg-card z-10 w-[54px]" rowSpan={2}>분야</th>
+                    <th className={`${th0} text-left sticky left-0 bg-card z-10 w-[50px]`} rowSpan={2}>분야</th>
                     {largeCats.map(large => {
                       const cnt = Object.keys(CATEGORY_TREE[large]).length;
-                      return cnt > 0 ? <th key={large} className="px-0.5 py-0.5 text-[0.56rem] font-semibold text-muted-foreground bg-muted/40 border-b border-r border-border text-center" colSpan={cnt}>{large}</th> : null;
+                      return cnt > 0 ? <th key={large} className={`${th0} text-center text-[0.52rem]`} colSpan={cnt}>{large}</th> : null;
                     })}
-                    <th className="px-1 py-1 text-[0.6rem] font-semibold text-muted-foreground bg-muted/40 border-b border-r border-border text-center w-[28px]" rowSpan={2}>계</th>
+                    <th className={`${th0} text-center w-[26px]`} rowSpan={2}>계</th>
                   </tr>
                   <tr>
                     {mediumCols.map(({large, medium}) => (
-                      <th key={`${large}›${medium}`} className="px-0 py-0.5 text-[0.5rem] font-medium text-muted-foreground bg-muted/30 border-b border-r border-border text-center w-[28px]" title={`${large} › ${medium}`}>
-                        <span className="block truncate w-[28px]">{medium.slice(0, 2)}</span>
+                      <th key={`${large}›${medium}`} className={`${th0} text-center text-[0.48rem] w-[26px]`} title={`${large} › ${medium}`}>
+                        {medium.slice(0, 2)}
                       </th>
                     ))}
                   </tr>
@@ -477,32 +481,32 @@ export function DashboardOverview({ savedList, onNavigate }: {
                     const ft = savedByField[field] || 0;
                     return (
                       <tr key={field} className="hover:bg-muted/20">
-                        <td className="px-1 py-0.5 text-[0.62rem] font-medium border-b border-r border-border sticky left-0 bg-card z-10">
-                          <span className={`inline-block rounded px-1 py-0 text-[0.56rem] text-white ${fieldColors[field] || "bg-gray-400"}`}>{field}</span>
+                        <td className={`px-1 py-0.5 text-[0.58rem] font-medium border-b border-r border-border sticky left-0 bg-card z-10`}>
+                          <span className={`inline-block rounded px-1 py-0 text-[0.52rem] text-white ${fieldColors[field] || "bg-gray-400"}`}>{field}</span>
                         </td>
                         {mediumCols.map(({large, medium}) => {
                           const k = `${large}›${medium}`;
                           const cnt = crossMedium[field]?.[k] || 0;
                           return (
-                            <td key={k} className={`px-0 py-0.5 text-[0.58rem] border-b border-r border-border text-center tabular-nums ${cnt === 0 ? "text-muted-foreground/20" : "cursor-pointer hover:bg-blue-50 font-semibold text-foreground"}`}
+                            <td key={k} className={`${td0} ${cnt === 0 ? "text-muted-foreground/20" : "cursor-pointer hover:bg-blue-50 font-semibold"}`}
                               onClick={() => cnt > 0 && onNavigate?.({ field: [field], catLarge: [large] })}
                               title={`${field} × ${large}›${medium}: ${cnt}건`}>
                               {cnt || "·"}
                             </td>
                           );
                         })}
-                        <td className="px-0 py-0.5 text-[0.6rem] font-semibold border-b border-r border-border text-center tabular-nums">{ft}</td>
+                        <td className={`${td0} font-semibold`}>{ft}</td>
                       </tr>
                     );
                   })}
                   <tr className={grandTotalRow}>
-                    <td className="px-1 py-0.5 text-[0.6rem] text-right border-b border-r border-border sticky left-0 bg-indigo-50/80 z-10">합계</td>
+                    <td className="px-1 py-0.5 text-[0.56rem] text-right border-b border-r border-border sticky left-0 bg-indigo-50/80 z-10">합계</td>
                     {mediumCols.map(({large, medium}) => {
                       const k = `${large}›${medium}`;
                       const t = FIELD_OPTIONS.reduce((s, f) => s + (crossMedium[f]?.[k] || 0), 0);
-                      return <td key={k} className="px-0 py-0.5 text-[0.58rem] font-semibold border-b border-r border-border text-center tabular-nums">{t || "·"}</td>;
+                      return <td key={k} className={`${td0} font-semibold`}>{t || "·"}</td>;
                     })}
-                    <td className="px-0 py-0.5 text-[0.62rem] font-bold border-b border-r border-border text-center tabular-nums">{savedList.length}</td>
+                    <td className={`${td0} font-bold`}>{savedList.length}</td>
                   </tr>
                 </tbody>
               </table>
@@ -511,113 +515,72 @@ export function DashboardOverview({ savedList, onNavigate }: {
         );
       })()}
 
-      {/* A-1c + A-1d: 급수 교차 + 파일 현황 2단 */}
-      <div className="grid grid-cols-2 gap-2">
-
-      {/* A-1c: 분야 × 급수 교차 매트릭스 */}
+      {/* A-1c: 분야 × 급수 교차 (압축 스타일) */}
       {(() => {
         const allLevels: string[] = [];
-        MID_OPTIONS.forEach((mid) => {
-          (LEVEL_BY_MID[mid] || []).forEach((lv) => {
-            if (!allLevels.includes(lv)) allLevels.push(lv);
-          });
-        });
+        MID_OPTIONS.forEach((mid) => (LEVEL_BY_MID[mid] || []).forEach((lv) => { if (!allLevels.includes(lv)) allLevels.push(lv); }));
+        const th0 = "px-1 py-0.5 text-[0.58rem] font-semibold text-muted-foreground bg-muted/40 border-b border-r border-border";
+        const td0 = "px-0 py-0.5 text-[0.58rem] border-b border-r border-border text-center tabular-nums";
         return (
           <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="px-4 py-2 bg-muted/40 border-b border-border flex items-center gap-2">
-              <Award className="h-4 w-4 text-purple-600" />
-              <span className="text-[0.82rem] font-semibold">분야 × 급수 교차</span>
+            <div className="px-3 py-1.5 bg-muted/40 border-b border-border flex items-center gap-2">
+              <Award className="h-3.5 w-3.5 text-purple-600" />
+              <span className="text-[0.78rem] font-semibold">분야 × 급수</span>
             </div>
             {savedList.length === 0 ? (
-              <div className="text-center py-6 text-muted-foreground text-[0.78rem]">저장 데이터가 없습니다</div>
+              <div className="text-center py-4 text-muted-foreground text-[0.72rem]">데이터 없음</div>
             ) : (
               <table className="w-full">
-                <thead>
-                  <tr>
-                    <th className={`${thCls} w-[70px]`}>분야</th>
-                    <th className={`${thCls} w-[70px]`}>중 구분</th>
-                    {allLevels.map((lv) => (
-                      <th key={lv} className={`${thCls} w-[42px] text-center`}>{lv}</th>
-                    ))}
-                    <th className={`${thCls} w-[50px] text-center`}>소계</th>
-                  </tr>
-                </thead>
+                <thead><tr>
+                  <th className={`${th0} text-left w-[50px]`}>분야</th>
+                  <th className={`${th0} w-[36px]`}>중</th>
+                  {allLevels.map(lv => <th key={lv} className={`${th0} text-center w-[26px]`}>{lv}</th>)}
+                  <th className={`${th0} text-center w-[30px]`}>계</th>
+                </tr></thead>
                 <tbody>
-                  {FIELD_OPTIONS.map((field) => {
+                  {FIELD_OPTIONS.map(field => {
                     const fieldMids = crossFieldLevel[field] || {};
                     const fieldTotal = savedByField[field] || 0;
-                    const visibleMids = hideZero
-                      ? MID_OPTIONS.filter((mid) => {
+                    const visibleMids = hideZero ? MID_OPTIONS.filter(mid => Object.values(fieldMids[mid] || {}).reduce((s: number, n) => s + (n as number), 0) > 0) : MID_OPTIONS;
+                    if (visibleMids.length === 0) return null;
+                    return (
+                      <React.Fragment key={field}>
+                        {visibleMids.map((mid, mi) => {
                           const midLevels = fieldMids[mid] || {};
-                          return Object.values(midLevels).reduce((s: number, n) => s + (n as number), 0) > 0;
-                        })
-                      : MID_OPTIONS;
-
-                    if (visibleMids.length === 0) {
-                      return (
-                        <React.Fragment key={field}>
-                          <tr className="opacity-40">
-                            <td className={`${tdCls} font-medium`} rowSpan={2}>
-                              <span className={`inline-block rounded px-1.5 py-0 text-[0.64rem] text-white ${fieldColors[field] || "bg-gray-400"}`}>{field}</span>
-                            </td>
-                            <td className={`${tdCls} text-muted-foreground`}>—</td>
-                            {allLevels.map((lv) => (
-                              <td key={lv} className={`${tdNum} text-muted-foreground/50`}>0</td>
-                            ))}
-                            <td className={`${tdNum} text-muted-foreground/50`}>0</td>
-                          </tr>
-                          <tr className={subtotalRow}>
-                            <td className={`${tdCls} text-right`}>{field} 합계</td>
-                            {allLevels.map((lv) => <td key={lv} className={tdNum}>0</td>)}
-                            <td className={tdNum}>0</td>
-                          </tr>
-                        </React.Fragment>
-                      );
-                    }
-
-                    const midRows = visibleMids.map((mid, mi) => {
-                      const midLevels = fieldMids[mid] || {};
-                      const midTotal = Object.values(midLevels).reduce((s: number, n) => s + (n as number), 0);
-                      return (
-                        <tr key={`${field}-${mid}`} className={`hover:bg-muted/20 ${midTotal === 0 ? "opacity-50" : ""}`}>
-                          {mi === 0 && (
-                            <td className={`${tdCls} font-medium align-top`} rowSpan={visibleMids.length + 1}>
-                              <span className={`inline-block rounded px-1.5 py-0 text-[0.64rem] text-white ${fieldColors[field] || "bg-gray-400"}`}>{field}</span>
-                            </td>
-                          )}
-                          <td className={tdCls}>{mid}</td>
-                          {allLevels.map((lv) => {
-                            const cnt = midLevels[lv] || 0;
-                            return (
-                              <td key={lv} className={`${tdNum} ${cnt === 0 ? "text-muted-foreground/50" : "cursor-pointer hover:bg-purple-50"}`}
-                                onClick={() => cnt > 0 && onNavigate?.({ field: [field], mid: [mid] })}
-                                title={cnt > 0 ? `${field} × ${mid} × ${lv}: ${cnt}건` : ""}>
-                                {cnt}
-                              </td>
-                            );
-                          })}
-                          <td className={`${tdNum} ${midTotal === 0 ? "text-muted-foreground/50" : ""}`}>{midTotal}</td>
-                        </tr>
-                      );
-                    });
-                    const subRow = (
-                      <tr key={`${field}-sub`} className={subtotalRow}>
-                        <td className={`${tdCls} text-right`}>{field} 합계</td>
-                        {allLevels.map((lv) => {
-                          const cnt = MID_OPTIONS.reduce((s, mid) => s + ((fieldMids[mid] || {})[lv] || 0), 0);
-                          return <td key={lv} className={tdNum}>{cnt}</td>;
+                          const midTotal = Object.values(midLevels).reduce((s: number, n) => s + (n as number), 0);
+                          return (
+                            <tr key={`${field}-${mid}`} className="hover:bg-muted/20">
+                              {mi === 0 && (
+                                <td className={`px-1 py-0.5 text-[0.58rem] font-medium border-b border-r border-border align-top`} rowSpan={visibleMids.length + 1}>
+                                  <span className={`inline-block rounded px-1 py-0 text-[0.52rem] text-white ${fieldColors[field] || "bg-gray-400"}`}>{field}</span>
+                                </td>
+                              )}
+                              <td className={`px-1 py-0.5 text-[0.56rem] border-b border-r border-border`}>{mid}</td>
+                              {allLevels.map(lv => {
+                                const cnt = (midLevels[lv] as number) || 0;
+                                return <td key={lv} className={`${td0} ${cnt === 0 ? "text-muted-foreground/20" : "cursor-pointer hover:bg-purple-50 font-semibold"}`}
+                                  onClick={() => cnt > 0 && onNavigate?.({ field: [field], mid: [mid] })}
+                                  title={cnt > 0 ? `${field}×${mid}×${lv}: ${cnt}건` : ""}>{cnt || "·"}</td>;
+                              })}
+                              <td className={`${td0} ${midTotal > 0 ? "font-semibold" : "text-muted-foreground/20"}`}>{midTotal || "·"}</td>
+                            </tr>
+                          );
                         })}
-                        <td className={tdNum}>{fieldTotal}</td>
-                      </tr>
+                        <tr className={subtotalRow}>
+                          <td className="px-1 py-0.5 text-[0.56rem] text-right border-b border-r border-border">{field}</td>
+                          {allLevels.map(lv => {
+                            const cnt = MID_OPTIONS.reduce((s, mid) => s + (((fieldMids[mid] || {})[lv] as number) || 0), 0);
+                            return <td key={lv} className={`${td0} font-semibold`}>{cnt || "·"}</td>;
+                          })}
+                          <td className={`${td0} font-semibold`}>{fieldTotal}</td>
+                        </tr>
+                      </React.Fragment>
                     );
-                    return <React.Fragment key={field}>{midRows}{subRow}</React.Fragment>;
                   })}
                   <tr className={grandTotalRow}>
-                    <td className={`${tdCls} text-right`} colSpan={2}>총합계</td>
-                    {allLevels.map((lv) => (
-                      <td key={lv} className={tdNum}>{savedByLevel[lv] || 0}</td>
-                    ))}
-                    <td className={tdNum}>{savedList.length}</td>
+                    <td className="px-1 py-0.5 text-[0.56rem] text-right border-b border-r border-border" colSpan={2}>합계</td>
+                    {allLevels.map(lv => <td key={lv} className={`${td0} font-bold`}>{savedByLevel[lv] || 0}</td>)}
+                    <td className={`${td0} font-bold`}>{savedList.length}</td>
                   </tr>
                 </tbody>
               </table>
@@ -625,10 +588,12 @@ export function DashboardOverview({ savedList, onNavigate }: {
           </div>
         );
       })()}
-      {/* A-1d: 파일 현황 */}
-      <FileStatusSection />
+      </div>{/* /grid-cols-2 중분류+급수 */}
 
-      </div>{/* /grid-cols-2 교차 현황 */}
+      {/* A-1d: 파일 현황 (좌측 절반) */}
+      <div className="grid grid-cols-2 gap-2">
+        <FileStatusSection />
+      </div>
 
       {/* A-2: 분포 분석 — 분류체계 3단 */}
       <div className="grid grid-cols-3 gap-2.5">
