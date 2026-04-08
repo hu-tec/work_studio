@@ -428,16 +428,18 @@ export function DashboardOverview({ savedList, onNavigate }: {
         />
       </div>
 
-      {/* A-1b + A-1c: 교차 현황 + 파일 2단 */}
-      <div className="grid grid-cols-2 gap-2">
-      {/* A-1b: 분야 × 중분류 매트릭스 (전치: 중분류=행, 분야=열) */}
+      {/* A-1b: 분야 × 중분류 매트릭스 (가로: 분야=행, 중분류=열) */}
       {(() => {
+        const mediumCols: { large: string; medium: string }[] = [];
+        largeCats.forEach(large => {
+          Object.keys(CATEGORY_TREE[large]).forEach(med => mediumCols.push({ large, medium: med }));
+        });
         const crossMedium: Record<string, Record<string, number>> = {};
         savedList.forEach(item => {
           const f = item.instructor_grade.field;
-          const medKey = `${item.category.large}›${item.category.medium}`;
+          const k = `${item.category.large}›${item.category.medium}`;
           if (!crossMedium[f]) crossMedium[f] = {};
-          crossMedium[f][medKey] = (crossMedium[f][medKey] || 0) + 1;
+          crossMedium[f][k] = (crossMedium[f][k] || 0) + 1;
         });
         return (
           <div className="rounded-xl border border-border bg-card overflow-hidden">
@@ -451,54 +453,66 @@ export function DashboardOverview({ savedList, onNavigate }: {
                 {hideZero ? "0건 표시" : "0건 숨기기"}
               </button>
             </div>
-            <table className="w-full">
-              <thead><tr>
-                <th className={`${thCls} w-[60px]`}>대분류</th>
-                <th className={`${thCls} w-[80px]`}>중분류</th>
-                {FIELD_OPTIONS.map(f => (
-                  <th key={f} className={`${thCls} w-[52px] text-center`}>{f.replace("AI ", "")}</th>
-                ))}
-                <th className={`${thCls} w-[36px] text-center`}>계</th>
-              </tr></thead>
-              <tbody>
-                {largeCats.map(large => {
-                  const mediums = Object.keys(CATEGORY_TREE[large]);
-                  if (mediums.length === 0) return null;
-                  const visibleMeds = hideZero
-                    ? mediums.filter(med => FIELD_OPTIONS.some(f => (crossMedium[f]?.[`${large}›${med}`] || 0) > 0))
-                    : mediums;
-                  if (visibleMeds.length === 0) return null;
-                  return visibleMeds.map((med, mi) => {
-                    const rowTotal = FIELD_OPTIONS.reduce((s, f) => s + (crossMedium[f]?.[`${large}›${med}`] || 0), 0);
+            <div className="overflow-x-auto">
+              <table style={{minWidth: mediumCols.length * 30 + 80}}>
+                <thead>
+                  <tr>
+                    <th className="px-1 py-1 text-[0.6rem] font-semibold text-muted-foreground bg-muted/40 border-b border-r border-border text-left sticky left-0 bg-card z-10 w-[54px]" rowSpan={2}>분야</th>
+                    {largeCats.map(large => {
+                      const cnt = Object.keys(CATEGORY_TREE[large]).length;
+                      return cnt > 0 ? <th key={large} className="px-0.5 py-0.5 text-[0.56rem] font-semibold text-muted-foreground bg-muted/40 border-b border-r border-border text-center" colSpan={cnt}>{large}</th> : null;
+                    })}
+                    <th className="px-1 py-1 text-[0.6rem] font-semibold text-muted-foreground bg-muted/40 border-b border-r border-border text-center w-[28px]" rowSpan={2}>계</th>
+                  </tr>
+                  <tr>
+                    {mediumCols.map(({large, medium}) => (
+                      <th key={`${large}›${medium}`} className="px-0 py-0.5 text-[0.5rem] font-medium text-muted-foreground bg-muted/30 border-b border-r border-border text-center w-[28px]" title={`${large} › ${medium}`}>
+                        <span className="block truncate w-[28px]">{medium.slice(0, 2)}</span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {FIELD_OPTIONS.map(field => {
+                    const ft = savedByField[field] || 0;
                     return (
-                      <tr key={`${large}-${med}`} className="hover:bg-muted/20">
-                        {mi === 0 && <td className={`${tdCls} font-medium align-top text-[0.68rem]`} rowSpan={visibleMeds.length}>{large}</td>}
-                        <td className={`${tdCls} text-[0.68rem]`}>{med}</td>
-                        {FIELD_OPTIONS.map(f => {
-                          const cnt = crossMedium[f]?.[`${large}›${med}`] || 0;
+                      <tr key={field} className="hover:bg-muted/20">
+                        <td className="px-1 py-0.5 text-[0.62rem] font-medium border-b border-r border-border sticky left-0 bg-card z-10">
+                          <span className={`inline-block rounded px-1 py-0 text-[0.56rem] text-white ${fieldColors[field] || "bg-gray-400"}`}>{field}</span>
+                        </td>
+                        {mediumCols.map(({large, medium}) => {
+                          const k = `${large}›${medium}`;
+                          const cnt = crossMedium[field]?.[k] || 0;
                           return (
-                            <td key={f} className={`${tdNum} ${cnt === 0 ? "text-muted-foreground/30" : "cursor-pointer hover:bg-blue-50 font-medium"}`}
-                              onClick={() => cnt > 0 && onNavigate?.({ field: [f], catLarge: [large] })}
-                              title={cnt > 0 ? `${f} × ${large}›${med}: ${cnt}건` : ""}>
+                            <td key={k} className={`px-0 py-0.5 text-[0.58rem] border-b border-r border-border text-center tabular-nums ${cnt === 0 ? "text-muted-foreground/20" : "cursor-pointer hover:bg-blue-50 font-semibold text-foreground"}`}
+                              onClick={() => cnt > 0 && onNavigate?.({ field: [field], catLarge: [large] })}
+                              title={`${field} × ${large}›${medium}: ${cnt}건`}>
                               {cnt || "·"}
                             </td>
                           );
                         })}
-                        <td className={`${tdNum} ${rowTotal > 0 ? "font-medium" : "text-muted-foreground/30"}`}>{rowTotal || "·"}</td>
+                        <td className="px-0 py-0.5 text-[0.6rem] font-semibold border-b border-r border-border text-center tabular-nums">{ft}</td>
                       </tr>
                     );
-                  });
-                })}
-                <tr className={grandTotalRow}>
-                  <td className={`${tdCls} text-right`} colSpan={2}>합계</td>
-                  {FIELD_OPTIONS.map(f => <td key={f} className={tdNum}>{savedByField[f] || 0}</td>)}
-                  <td className={tdNum}>{savedList.length}</td>
-                </tr>
-              </tbody>
-            </table>
+                  })}
+                  <tr className={grandTotalRow}>
+                    <td className="px-1 py-0.5 text-[0.6rem] text-right border-b border-r border-border sticky left-0 bg-indigo-50/80 z-10">합계</td>
+                    {mediumCols.map(({large, medium}) => {
+                      const k = `${large}›${medium}`;
+                      const t = FIELD_OPTIONS.reduce((s, f) => s + (crossMedium[f]?.[k] || 0), 0);
+                      return <td key={k} className="px-0 py-0.5 text-[0.58rem] font-semibold border-b border-r border-border text-center tabular-nums">{t || "·"}</td>;
+                    })}
+                    <td className="px-0 py-0.5 text-[0.62rem] font-bold border-b border-r border-border text-center tabular-nums">{savedList.length}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         );
       })()}
+
+      {/* A-1c + A-1d: 급수 교차 + 파일 현황 2단 */}
+      <div className="grid grid-cols-2 gap-2">
 
       {/* A-1c: 분야 × 급수 교차 매트릭스 */}
       {(() => {
