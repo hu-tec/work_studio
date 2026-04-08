@@ -45,68 +45,49 @@ function CurriculumCard({
 
   return (
     <div
-      className={`group relative rounded-lg border bg-card p-3 transition-all hover:shadow-sm ${
+      className={`group relative rounded-md border bg-card p-2 transition-all hover:shadow-sm ${
         isEditing ? "border-primary ring-2 ring-primary/20" : "border-border"
       }`}
     >
-      <div className="absolute right-2 top-2 flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute right-1 top-1 flex gap-0 opacity-0 transition-opacity group-hover:opacity-100">
         <button onClick={(e) => { e.stopPropagation(); onEdit(); }}
-          className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-blue-50 hover:text-blue-600">
-          <Pencil className="h-3 w-3" />
+          className="rounded p-0.5 text-muted-foreground hover:bg-blue-50 hover:text-blue-600">
+          <Pencil className="h-2.5 w-2.5" />
         </button>
         <button onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600">
-          <Trash2 className="h-3 w-3" />
+          className="rounded p-0.5 text-muted-foreground hover:bg-red-50 hover:text-red-600">
+          <Trash2 className="h-2.5 w-2.5" />
         </button>
       </div>
 
-      <div className="mb-1.5 flex items-center gap-1 text-[0.78rem] font-semibold">
-        <Tag className="h-3 w-3 text-blue-500 shrink-0" />
-        <span className="truncate">{categoryPath}</span>
-      </div>
-
-      <div className="mb-1.5 flex flex-wrap gap-1">
-        <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[0.68rem] font-medium text-purple-700">{item.instructor_grade.field}</span>
-        <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[0.68rem] font-medium text-indigo-700">{item.instructor_grade.mid}</span>
-        <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[0.68rem] font-medium text-blue-700">{item.instructor_grade.level}</span>
-        {item.targets.slice(0, 2).map((t) => (
-          <span key={t} className="rounded bg-gray-100 px-1.5 py-0.5 text-[0.68rem] font-medium text-gray-600 truncate max-w-[100px]">{t}</span>
+      {/* 분류 + 분야/급수 한 줄 */}
+      <div className="flex items-center gap-1 mb-1 flex-wrap">
+        <Tag className="h-2.5 w-2.5 text-blue-500 shrink-0" />
+        <span className="text-[0.68rem] font-semibold truncate">{categoryPath}</span>
+        <span className="text-muted-foreground/30">·</span>
+        <span className="rounded bg-purple-100 px-1 py-0 text-[0.6rem] font-medium text-purple-700">{item.instructor_grade.field}</span>
+        <span className="rounded bg-indigo-100 px-1 py-0 text-[0.6rem] font-medium text-indigo-700">{item.instructor_grade.mid}</span>
+        <span className="rounded bg-blue-100 px-1 py-0 text-[0.6rem] font-medium text-blue-700">{item.instructor_grade.level}</span>
+        {item.targets.slice(0, 1).map((t) => (
+          <span key={t} className="rounded bg-gray-100 px-1 py-0 text-[0.58rem] font-medium text-gray-600 truncate max-w-[80px]">{t}</span>
         ))}
-        {item.targets.length > 2 && (
-          <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[0.68rem] font-medium text-gray-600">+{item.targets.length - 2}</span>
-        )}
+        {item.targets.length > 1 && <span className="text-[0.56rem] text-muted-foreground">+{item.targets.length - 1}</span>}
       </div>
 
-      <div className="mb-1.5 flex items-center justify-between text-[0.7rem] text-muted-foreground">
-        <div className="flex flex-col gap-0.5">
-          <span>키워드 {totalCount} ({kwCounts.join("·")})</span>
-          {(basicUnitCount > 0 || practiceUnitCount > 0) && (
-            <span className="flex items-center gap-2">
-              {basicUnitCount > 0 && (
-                <span className="flex items-center gap-0.5">
-                  <BookText className="h-2.5 w-2.5 text-indigo-500" />기본 {basicUnitCount}단
-                </span>
-              )}
-              {practiceUnitCount > 0 && (
-                <span className="flex items-center gap-0.5">
-                  <Wrench className="h-2.5 w-2.5 text-teal-500" />실습 {practiceUnitCount}단
-                </span>
-              )}
-            </span>
-          )}
-        </div>
-        <span className="flex items-center gap-0.5 shrink-0">
-          <Calendar className="h-2.5 w-2.5" />{item.created_at}
-        </span>
+      {/* 수량 + 날짜 한 줄 */}
+      <div className="flex items-center gap-2 text-[0.62rem] text-muted-foreground mb-1">
+        <span>KW {totalCount}</span>
+        {basicUnitCount > 0 && <span className="flex items-center gap-0.5"><BookText className="h-2 w-2 text-indigo-500" />{basicUnitCount}</span>}
+        {practiceUnitCount > 0 && <span className="flex items-center gap-0.5"><Wrench className="h-2 w-2 text-teal-500" />{practiceUnitCount}</span>}
+        <span className="ml-auto flex items-center gap-0.5"><Calendar className="h-2 w-2" />{item.created_at.slice(5)}</span>
       </div>
 
-      <div className="flex flex-wrap gap-1">
+      {/* 키워드 미리보기 */}
+      <div className="flex flex-wrap gap-0.5">
         {previewKws.map((kw) => (
-          <span key={kw} className="max-w-[140px] truncate rounded bg-muted px-1.5 py-0.5 text-[0.66rem] text-muted-foreground">{kw}</span>
+          <span key={kw} className="max-w-[120px] truncate rounded bg-muted px-1 py-0 text-[0.58rem] text-muted-foreground">{kw}</span>
         ))}
-        {overflow > 0 && (
-          <span className="rounded bg-muted px-1.5 py-0.5 text-[0.66rem] text-muted-foreground">+{overflow}</span>
-        )}
+        {overflow > 0 && <span className="rounded bg-muted px-1 py-0 text-[0.58rem] text-muted-foreground">+{overflow}</span>}
       </div>
     </div>
   );
@@ -120,7 +101,7 @@ const fieldColors: Record<string, string> = {
   "프롬프트": "bg-orange-500", "번역": "bg-emerald-500", "AI 윤리": "bg-rose-500",
 };
 
-/* ── 분류 필터 패널 ── */
+/* ── 분류 필터 — 한 줄 ── */
 function ClassificationFilter({
   selCatLarge, selFields, selMids,
   onToggleCat, onToggleField, onToggleMid,
@@ -130,68 +111,38 @@ function ClassificationFilter({
   onToggleCat: (v: string) => void; onToggleField: (v: string) => void; onToggleMid: (v: string) => void;
   onClearAll: () => void;
 }) {
-  const [open, setOpen] = useState(true);
   const largeCats = Object.keys(CATEGORY_TREE);
-  const hasFilter = selCatLarge.size < largeCats.length || selFields.size < FIELD_OPTIONS.length || selMids.size < MID_OPTIONS.length;
+  const allOn = selCatLarge.size === largeCats.length && selFields.size === FIELD_OPTIONS.length && selMids.size === MID_OPTIONS.length;
 
   return (
-    <div className="rounded-lg border border-border bg-card overflow-hidden">
-      <button onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-3 py-2 hover:bg-muted/30 transition-colors">
-        <div className="flex items-center gap-2">
-          <Filter className="h-3.5 w-3.5 text-blue-500" />
-          <span className="text-[0.78rem] font-semibold">분류 모듈</span>
-          {hasFilter && <span className="rounded-full bg-blue-100 px-1.5 py-0 text-[0.6rem] font-medium text-blue-700">필터 적용중</span>}
-        </div>
-        <div className="flex items-center gap-2">
-          {hasFilter && (
-            <button onClick={(e) => { e.stopPropagation(); onClearAll(); }}
-              className="text-[0.64rem] text-muted-foreground hover:text-foreground underline">초기화</button>
-          )}
-          {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
-        </div>
-      </button>
-      {open && (
-        <div className="border-t border-border p-3 space-y-2">
-          <div className="flex items-start gap-2 flex-wrap">
-            <span className="text-[0.68rem] font-semibold text-muted-foreground shrink-0 pt-0.5 w-12">대분류</span>
-            <div className="flex flex-wrap gap-1">
-              {largeCats.map(cat => (
-                <Chip key={cat} active={selCatLarge.has(cat)} onClick={() => onToggleCat(cat)}
-                  color={selCatLarge.has(cat) ? "border-blue-300 bg-blue-50 text-blue-700" : undefined}>
-                  {cat}
-                </Chip>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-start gap-2 flex-wrap">
-            <span className="text-[0.68rem] font-semibold text-muted-foreground shrink-0 pt-0.5 w-12">분야</span>
-            <div className="flex flex-wrap gap-1">
-              {FIELD_OPTIONS.map(f => (
-                <Chip key={f} active={selFields.has(f)} onClick={() => onToggleField(f)}
-                  color={selFields.has(f) ? (
-                    f === "프롬프트" ? "border-blue-300 bg-blue-50 text-blue-700"
-                    : f === "번역" ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                    : "border-rose-300 bg-rose-50 text-rose-700"
+    <div className="rounded-lg border border-border bg-card px-3 py-1.5 flex items-center gap-1.5 flex-wrap">
+      <Filter className="h-3 w-3 text-muted-foreground shrink-0" />
+      <Chip active={allOn} onClick={onClearAll} color="border-gray-400 bg-gray-100 text-gray-700">전체</Chip>
+      <span className="text-muted-foreground/30">|</span>
+      {largeCats.map(cat => (
+        <Chip key={cat} active={selCatLarge.has(cat)} onClick={() => onToggleCat(cat)}
+          color={selCatLarge.has(cat) ? "border-blue-300 bg-blue-50 text-blue-700" : undefined}>
+          {cat}
+        </Chip>
+      ))}
+      <span className="text-muted-foreground/30">|</span>
+      {FIELD_OPTIONS.map(f => (
+        <Chip key={f} active={selFields.has(f)} onClick={() => onToggleField(f)}
+          color={selFields.has(f) ? (
+            f === "프롬프트" ? "border-blue-300 bg-blue-50 text-blue-700"
+            : f === "번역" ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+            : "border-rose-300 bg-rose-50 text-rose-700"
                   ) : undefined}>
-                  {f}
-                </Chip>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-start gap-2 flex-wrap">
-            <span className="text-[0.68rem] font-semibold text-muted-foreground shrink-0 pt-0.5 w-12">중구분</span>
-            <div className="flex flex-wrap gap-1">
-              {MID_OPTIONS.map(m => (
-                <Chip key={m} active={selMids.has(m)} onClick={() => onToggleMid(m)}
-                  color={selMids.has(m) ? "border-purple-300 bg-purple-50 text-purple-700" : undefined}>
-                  {m}
-                </Chip>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+          {f}
+        </Chip>
+      ))}
+      <span className="text-muted-foreground/30">|</span>
+      {MID_OPTIONS.map(m => (
+        <Chip key={m} active={selMids.has(m)} onClick={() => onToggleMid(m)}
+          color={selMids.has(m) ? "border-purple-300 bg-purple-50 text-purple-700" : undefined}>
+          {m}
+        </Chip>
+      ))}
     </div>
   );
 }
