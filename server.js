@@ -156,6 +156,25 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Work Studio running at http://localhost:${PORT}`);
 });
+
+// --- Graceful shutdown (SQLite WAL 손상 방지) ---
+const db = require("./db").db;
+function shutdown(signal) {
+  console.log(`[${signal}] Graceful shutdown...`);
+  server.close(() => {
+    try { db.pragma("wal_checkpoint(TRUNCATE)"); } catch {}
+    try { db.close(); } catch {}
+    console.log("DB closed safely.");
+    process.exit(0);
+  });
+  setTimeout(() => {
+    console.warn("Force shutdown after timeout");
+    try { db.close(); } catch {}
+    process.exit(1);
+  }, 4500);
+}
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
