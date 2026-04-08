@@ -147,7 +147,9 @@ const grandTotalRow = "bg-indigo-50/80 font-semibold text-[0.74rem]";
 
 /* ═══ 파일 현황 섹션 ═══ */
 interface CurrFile { id: number; data: string; created_at: string; }
-interface ParsedFile { id: number; name: string; field: string; url: string; size: string; created_at: string; }
+interface ParsedFile { id: number; filename: string; field: string; mid: string; level: string; fileUrl: string; size: number; uploader: string; note: string; created_at: string; }
+
+function fmtSize(b: number) { return b < 1024 ? b + "B" : b < 1048576 ? (b / 1024).toFixed(1) + "KB" : (b / 1048576).toFixed(1) + "MB"; }
 
 function FileStatusSection() {
   const [files, setFiles] = useState<ParsedFile[]>([]);
@@ -158,8 +160,10 @@ function FileStatusSection() {
       const res = await fetch(`${API_BASE}/api/curriculum_files`);
       const arr: CurrFile[] = await res.json();
       setFiles(arr.map(r => {
-        try { const d = JSON.parse(r.data); return { id: r.id, name: d.name || "파일", field: d.field || "—", url: d.url || "", size: d.size || "—", created_at: r.created_at }; }
-        catch { return { id: r.id, name: "파일", field: "—", url: "", size: "—", created_at: r.created_at }; }
+        try {
+          const d = JSON.parse(r.data);
+          return { id: r.id, filename: d.filename || d.name || "파일", field: d.field || "—", mid: d.mid || "", level: d.level || "", fileUrl: d.fileUrl || d.url || "", size: typeof d.size === "number" ? d.size : 0, uploader: d.uploader || "", note: d.note || "", created_at: r.created_at };
+        } catch { return { id: r.id, filename: "파일", field: "—", mid: "", level: "", fileUrl: "", size: 0, uploader: "", note: "", created_at: r.created_at }; }
       }));
     } catch { /* ignore */ }
   }, []);
@@ -171,21 +175,16 @@ function FileStatusSection() {
     if (!file) return;
     setUploading(true);
     try {
-      const field = prompt("분야를 선택하세요 (프롬프트/번역/AI 윤리):", "프롬프트") || "프롬프트";
-      // 1) presigned URL 발급
+      const field = prompt("분야 (프롬프트/번역/AI 윤리):", "프롬프트") || "프롬프트";
       const presRes = await fetch(`${API_BASE}/api/upload/presign`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filename: file.name, contentType: file.type, folder: "curriculum" }),
       });
-      const { uploadUrl, fileUrl } = await presRes.json();
-      // 2) S3 업로드
+      const { uploadUrl, fileUrl, key } = await presRes.json();
       await fetch(uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
-      // 3) DB 저장
       await fetch(`${API_BASE}/api/curriculum_files`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: JSON.stringify({ name: file.name, field, url: fileUrl, size: `${(file.size / 1024).toFixed(1)}KB` }) }),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: JSON.stringify({ filename: file.name, s3Key: key, fileUrl, contentType: file.type, size: file.size, field }) }),
       });
       fetchFiles();
     } catch (err) { alert("업로드 실패: " + err); }
@@ -194,10 +193,8 @@ function FileStatusSection() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("이 파일을 삭제하시겠습니까?")) return;
-    try {
-      await fetch(`${API_BASE}/api/curriculum_files/${id}`, { method: "DELETE" });
-      fetchFiles();
-    } catch { /* ignore */ }
+    await fetch(`${API_BASE}/api/curriculum_files/${id}`, { method: "DELETE" }).catch(() => {});
+    fetchFiles();
   };
 
   const byField: Record<string, number> = {};
@@ -205,57 +202,46 @@ function FileStatusSection() {
 
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
-      <div className="px-4 py-2 bg-muted/40 border-b border-border flex items-center gap-2">
-        <File className="h-4 w-4 text-cyan-600" />
-        <span className="text-[0.82rem] font-semibold">파일 현황</span>
-        <span className="rounded-full bg-cyan-100 px-2 py-0.5 text-[0.68rem] font-medium text-cyan-700">{files.length}건</span>
-        <label className="ml-auto flex items-center gap-1 rounded-md border border-border px-2 py-1 text-[0.68rem] font-medium text-muted-foreground cursor-pointer hover:bg-muted transition-colors">
-          <Upload className="h-3 w-3" />
-          {uploading ? "업로드 중…" : "파일 업로드"}
+      <div className="px-3 py-1.5 bg-muted/40 border-b border-border flex items-center gap-2">
+        <File className="h-3.5 w-3.5 text-cyan-600" />
+        <span className="text-[0.78rem] font-semibold">파일 현황</span>
+        <span className="rounded-full bg-cyan-100 px-1.5 py-0 text-[0.64rem] font-medium text-cyan-700">{files.length}</span>
+        {Object.entries(byField).map(([f, cnt]) => (
+          <span key={f} className="rounded bg-muted px-1.5 py-0 text-[0.62rem] font-medium">{f} {cnt}</span>
+        ))}
+        <label className="ml-auto flex items-center gap-1 rounded border border-border px-1.5 py-0.5 text-[0.64rem] font-medium text-muted-foreground cursor-pointer hover:bg-muted">
+          <Upload className="h-2.5 w-2.5" />{uploading ? "업로드중…" : "업로드"}
           <input type="file" className="hidden" onChange={handleUpload} disabled={uploading} />
         </label>
       </div>
-      {/* 분야별 요약 */}
-      {Object.keys(byField).length > 0 && (
-        <div className="px-4 py-2 flex gap-2 border-b border-border/50">
-          {Object.entries(byField).map(([f, cnt]) => (
-            <span key={f} className="rounded bg-muted px-2 py-0.5 text-[0.66rem] font-medium">{f} <span className="font-semibold">{cnt}</span></span>
-          ))}
-        </div>
-      )}
-      {/* 파일 목록 */}
       {files.length === 0 ? (
-        <div className="text-center py-6 text-muted-foreground text-[0.78rem]">업로드된 파일이 없습니다</div>
+        <div className="text-center py-4 text-muted-foreground text-[0.72rem]">파일 없음</div>
       ) : (
         <table className="w-full">
-          <thead>
-            <tr>
-              <th className={`${thCls} w-[30px]`}>No.</th>
-              <th className={thCls}>파일명</th>
-              <th className={`${thCls} w-[70px]`}>분야</th>
-              <th className={`${thCls} w-[60px]`}>크기</th>
-              <th className={`${thCls} w-[80px]`}>날짜</th>
-              <th className={`${thCls} w-[60px]`}></th>
-            </tr>
-          </thead>
+          <thead><tr>
+            <th className={`${thCls} w-[24px]`}>#</th>
+            <th className={thCls}>파일명</th>
+            <th className={`${thCls} w-[56px]`}>분야</th>
+            <th className={`${thCls} w-[44px]`}>급수</th>
+            <th className={`${thCls} w-[44px]`}>크기</th>
+            <th className={`${thCls} w-[48px]`}>작성자</th>
+            <th className={`${thCls} w-[64px]`}>날짜</th>
+            <th className={`${thCls} w-[40px]`}></th>
+          </tr></thead>
           <tbody>
             {files.map((f, i) => (
               <tr key={f.id} className="hover:bg-muted/20">
                 <td className={tdNum}>{i + 1}</td>
-                <td className={tdCls}>{f.name}</td>
-                <td className={tdCls}>{f.field}</td>
-                <td className={`${tdCls} text-[0.68rem] text-muted-foreground`}>{f.size}</td>
-                <td className={`${tdCls} text-[0.68rem] text-muted-foreground`}>{f.created_at?.slice(0, 10)}</td>
+                <td className={`${tdCls} text-[0.68rem] truncate max-w-[180px]`} title={f.filename}>{f.filename}</td>
+                <td className={`${tdCls} text-[0.66rem]`}>{f.field}</td>
+                <td className={`${tdCls} text-[0.66rem] text-muted-foreground`}>{f.level || "—"}</td>
+                <td className={`${tdCls} text-[0.64rem] text-muted-foreground`}>{fmtSize(f.size)}</td>
+                <td className={`${tdCls} text-[0.66rem]`}>{f.uploader || "—"}</td>
+                <td className={`${tdCls} text-[0.64rem] text-muted-foreground`}>{f.created_at?.slice(5, 10)}</td>
                 <td className={`${tdCls} text-center`}>
                   <div className="flex gap-0.5 justify-center">
-                    {f.url && (
-                      <a href={f.url} target="_blank" rel="noreferrer" className="rounded p-0.5 hover:bg-blue-50 hover:text-blue-600 text-muted-foreground">
-                        <Download className="h-3 w-3" />
-                      </a>
-                    )}
-                    <button onClick={() => handleDelete(f.id)} className="rounded p-0.5 hover:bg-red-50 hover:text-red-600 text-muted-foreground">
-                      <Trash2 className="h-3 w-3" />
-                    </button>
+                    {f.fileUrl && <a href={f.fileUrl} target="_blank" rel="noreferrer" className="rounded p-0.5 hover:bg-blue-50 text-muted-foreground"><Download className="h-2.5 w-2.5" /></a>}
+                    <button onClick={() => handleDelete(f.id)} className="rounded p-0.5 hover:bg-red-50 text-muted-foreground"><Trash2 className="h-2.5 w-2.5" /></button>
                   </div>
                 </td>
               </tr>
@@ -442,16 +428,10 @@ export function DashboardOverview({ savedList, onNavigate }: {
         />
       </div>
 
-      {/* A-1b: 분야 × 중분류 매트릭스 (full-width) */}
+      {/* A-1b + A-1c: 교차 현황 + 파일 2단 */}
+      <div className="grid grid-cols-2 gap-2">
+      {/* A-1b: 분야 × 중분류 매트릭스 (전치: 중분류=행, 분야=열) */}
       {(() => {
-        // 중분류 목록 (대분류 그룹 헤더 포함)
-        const mediumCols: { large: string; medium: string }[] = [];
-        largeCats.forEach(large => {
-          Object.keys(CATEGORY_TREE[large]).forEach(med => {
-            mediumCols.push({ large, medium: med });
-          });
-        });
-        // 분야별 중분류 건수 집계
         const crossMedium: Record<string, Record<string, number>> = {};
         savedList.forEach(item => {
           const f = item.instructor_grade.field;
@@ -461,84 +441,64 @@ export function DashboardOverview({ savedList, onNavigate }: {
         });
         return (
           <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="px-4 py-2 bg-muted/40 border-b border-border flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-orange-600" />
-              <span className="text-[0.82rem] font-semibold">분야 × 중분류 매트릭스</span>
-              <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[0.68rem] font-medium text-orange-700">{savedList.length}건</span>
+            <div className="px-3 py-1.5 bg-muted/40 border-b border-border flex items-center gap-2">
+              <BarChart3 className="h-3.5 w-3.5 text-orange-600" />
+              <span className="text-[0.78rem] font-semibold">분야 × 중분류</span>
+              <span className="rounded-full bg-orange-100 px-1.5 py-0 text-[0.64rem] font-medium text-orange-700">{savedList.length}건</span>
               <button onClick={() => setHideZero(!hideZero)}
-                className={`ml-auto flex items-center gap-1 rounded-md border px-2 py-0.5 text-[0.64rem] font-medium transition-all ${hideZero ? "border-primary/30 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"}`}>
-                {hideZero ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                className={`ml-auto flex items-center gap-1 rounded border px-1.5 py-0.5 text-[0.62rem] font-medium ${hideZero ? "border-primary/30 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"}`}>
+                {hideZero ? <Eye className="h-2.5 w-2.5" /> : <EyeOff className="h-2.5 w-2.5" />}
                 {hideZero ? "0건 표시" : "0건 숨기기"}
               </button>
             </div>
-            {savedList.length === 0 ? (
-              <div className="text-center py-6 text-muted-foreground text-[0.78rem]">저장 데이터가 없습니다</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th className={`${thCls} w-[70px]`} rowSpan={2}>분야</th>
-                      {largeCats.map(large => {
-                        const medCount = Object.keys(CATEGORY_TREE[large]).length;
-                        return medCount > 0 ? (
-                          <th key={large} className={`${thCls} text-center`} colSpan={medCount}>{large}</th>
-                        ) : null;
-                      })}
-                      <th className={`${thCls} w-[44px] text-center`} rowSpan={2}>합계</th>
-                    </tr>
-                    <tr>
-                      {mediumCols.map(({ large, medium }) => (
-                        <th key={`${large}›${medium}`} className={`${thCls} text-center text-[0.58rem] max-w-[52px]`}
-                          title={`${large} › ${medium}`}>
-                          {medium.length > 4 ? medium.slice(0, 4) + "…" : medium}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {FIELD_OPTIONS.map(field => {
-                      const fieldTotal = savedByField[field] || 0;
-                      return (
-                        <tr key={field} className="hover:bg-muted/20">
-                          <td className={`${tdCls} font-medium`}>
-                            <span className={`inline-block rounded px-1.5 py-0 text-[0.64rem] text-white ${fieldColors[field] || "bg-gray-400"}`}>{field}</span>
-                          </td>
-                          {mediumCols.map(({ large, medium }) => {
-                            const k = `${large}›${medium}`;
-                            const cnt = crossMedium[field]?.[k] || 0;
-                            if (hideZero && cnt === 0) return <td key={k} className={`${tdNum} text-muted-foreground/30`}>·</td>;
-                            return (
-                              <td key={k} className={`${tdNum} ${cnt === 0 ? "text-muted-foreground/30" : "cursor-pointer hover:bg-blue-50 font-medium"}`}
-                                onClick={() => cnt > 0 && onNavigate?.({ field: [field], catLarge: [large] })}
-                                title={`${field} × ${large} › ${medium}: ${cnt}건`}>
-                                {cnt || "·"}
-                              </td>
-                            );
-                          })}
-                          <td className={`${tdNum} font-semibold`}>{fieldTotal}</td>
-                        </tr>
-                      );
-                    })}
-                    <tr className={grandTotalRow}>
-                      <td className={`${tdCls} text-right`}>합계</td>
-                      {mediumCols.map(({ large, medium }) => {
-                        const k = `${large}›${medium}`;
-                        const total = FIELD_OPTIONS.reduce((s, f) => s + (crossMedium[f]?.[k] || 0), 0);
-                        return <td key={k} className={tdNum}>{total || "·"}</td>;
-                      })}
-                      <td className={tdNum}>{savedList.length}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
+            <table className="w-full">
+              <thead><tr>
+                <th className={`${thCls} w-[60px]`}>대분류</th>
+                <th className={`${thCls} w-[80px]`}>중분류</th>
+                {FIELD_OPTIONS.map(f => (
+                  <th key={f} className={`${thCls} w-[52px] text-center`}>{f.replace("AI ", "")}</th>
+                ))}
+                <th className={`${thCls} w-[36px] text-center`}>계</th>
+              </tr></thead>
+              <tbody>
+                {largeCats.map(large => {
+                  const mediums = Object.keys(CATEGORY_TREE[large]);
+                  if (mediums.length === 0) return null;
+                  const visibleMeds = hideZero
+                    ? mediums.filter(med => FIELD_OPTIONS.some(f => (crossMedium[f]?.[`${large}›${med}`] || 0) > 0))
+                    : mediums;
+                  if (visibleMeds.length === 0) return null;
+                  return visibleMeds.map((med, mi) => {
+                    const rowTotal = FIELD_OPTIONS.reduce((s, f) => s + (crossMedium[f]?.[`${large}›${med}`] || 0), 0);
+                    return (
+                      <tr key={`${large}-${med}`} className="hover:bg-muted/20">
+                        {mi === 0 && <td className={`${tdCls} font-medium align-top text-[0.68rem]`} rowSpan={visibleMeds.length}>{large}</td>}
+                        <td className={`${tdCls} text-[0.68rem]`}>{med}</td>
+                        {FIELD_OPTIONS.map(f => {
+                          const cnt = crossMedium[f]?.[`${large}›${med}`] || 0;
+                          return (
+                            <td key={f} className={`${tdNum} ${cnt === 0 ? "text-muted-foreground/30" : "cursor-pointer hover:bg-blue-50 font-medium"}`}
+                              onClick={() => cnt > 0 && onNavigate?.({ field: [f], catLarge: [large] })}
+                              title={cnt > 0 ? `${f} × ${large}›${med}: ${cnt}건` : ""}>
+                              {cnt || "·"}
+                            </td>
+                          );
+                        })}
+                        <td className={`${tdNum} ${rowTotal > 0 ? "font-medium" : "text-muted-foreground/30"}`}>{rowTotal || "·"}</td>
+                      </tr>
+                    );
+                  });
+                })}
+                <tr className={grandTotalRow}>
+                  <td className={`${tdCls} text-right`} colSpan={2}>합계</td>
+                  {FIELD_OPTIONS.map(f => <td key={f} className={tdNum}>{savedByField[f] || 0}</td>)}
+                  <td className={tdNum}>{savedList.length}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         );
       })()}
-
-      {/* A-1b2 + A-1c: 급수 교차 + 파일 현황 2단 */}
-      <div className="grid grid-cols-2 gap-2.5">
 
       {/* A-1c: 분야 × 급수 교차 매트릭스 */}
       {(() => {
