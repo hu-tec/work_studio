@@ -6,7 +6,7 @@ import { SavedList } from "./components/SavedList";
 import { DashboardOverview } from "./components/DashboardOverview";
 import { CurriculumExpandView } from "./components/CurriculumExpandView";
 import { RegulationView } from "./components/RegulationView";
-import { MODE_LABEL } from "./components/mode";
+import { MODE_LABEL, MODE_SHORT } from "./components/mode";
 import { useState, useEffect } from "react";
 import { RotateCcw, Save, X, GraduationCap, Tag, Award, Hash, BookText, ClipboardList, FolderOpen, BarChart3, Layers, ShieldCheck } from "lucide-react";
 
@@ -55,7 +55,7 @@ export default function App() {
                 }`}
               >
                 <ClipboardList className="h-3.5 w-3.5" />
-                커리큘럼 편집
+                {MODE_LABEL[c.mode]} 편집
               </button>
               <button
                 onClick={() => setActiveTab("expand")}
@@ -66,7 +66,7 @@ export default function App() {
                 }`}
               >
                 <Layers className="h-3.5 w-3.5" />
-                전체 펼치기
+                전체 {MODE_SHORT[c.mode]} 펼치기
               </button>
               <button
                 onClick={() => setActiveTab("regulation")}
@@ -237,6 +237,7 @@ export default function App() {
         ) : activeTab === "saved" ? (
           <div className="p-4">
             <SavedList
+              mode={c.mode}
               savedList={c.savedList}
               editingId={c.editingId}
               onEdit={(item) => { c.handleEdit(item); setActiveTab("editor"); }}
@@ -246,7 +247,7 @@ export default function App() {
           </div>
         ) : (
           <div className="p-4">
-            <DashboardOverview savedList={c.savedList} onNavigate={(filter) => {
+            <DashboardOverview mode={c.mode} savedList={c.savedList} onNavigate={(filter) => {
               setSavedFilter(filter);
               setActiveTab("saved");
             }} />

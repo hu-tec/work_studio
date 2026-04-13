@@ -249,7 +249,7 @@ function CurriculumExpandViewInternal() {
       {/* 헤더 */}
       <div className="flex items-center gap-2">
         <Layers className="h-4 w-4 text-primary" />
-        <span className="text-[0.85rem] font-semibold">전체 커리큘럼 펼치기</span>
+        <span className="text-[0.85rem] font-semibold">전체 커리큘럼 펼치기</span>{/* 이 내부 컴포넌트는 curriculum 모드에서만 호출됨 */}
         <span className="text-[0.7rem] text-muted-foreground">— 모든 분야 × 급수 조합별 키워드·단원 일람</span>
       </div>
 

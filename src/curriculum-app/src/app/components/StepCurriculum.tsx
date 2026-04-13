@@ -204,7 +204,7 @@ export function StepCurriculum({
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-green-100 text-green-600">
             <BookOpen className="h-3.5 w-3.5" />
           </div>
-          <h3 className="text-[0.88rem] font-semibold tracking-tight">Step 3 — 커리큘럼 구성</h3>
+          <h3 className="text-[0.88rem] font-semibold tracking-tight">Step 3 — {MODE_LABEL[mode]} 구성</h3>
         </div>
         <button
           onClick={() => setShowExtra(!showExtra)}

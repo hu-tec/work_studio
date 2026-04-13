@@ -20,7 +20,9 @@ import {
   Download,
   Trash2,
   File,
+  FileWarning,
 } from "lucide-react";
+import { MODE_LABEL, type ContentMode } from "./mode";
 
 const API_BASE = "https://bmidcy9z17.execute-api.ap-northeast-2.amazonaws.com";
 import {
@@ -254,7 +256,41 @@ function FileStatusSection() {
 }
 
 /* ═══════════════════════════════════════════ */
-export function DashboardOverview({ savedList, onNavigate }: {
+export function DashboardOverview({ mode = "curriculum", savedList, onNavigate }: {
+  mode?: ContentMode;
+  savedList: SavedCurriculum[];
+  onNavigate?: (filter: { catLarge?: string[]; field?: string[]; mid?: string[] }) => void;
+}) {
+  if (mode !== "curriculum") return <DashboardEmpty mode={mode} savedCount={savedList.length} />;
+  return <DashboardCurriculum savedList={savedList} onNavigate={onNavigate} />;
+}
+
+function DashboardEmpty({ mode, savedCount }: { mode: ContentMode; savedCount: number }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5">
+        <span className="text-[12px] font-semibold">{MODE_LABEL[mode]} 데이터 현황</span>
+      </div>
+      <div className="rounded border border-dashed border-amber-300 bg-amber-50 p-3 flex items-start gap-2">
+        <FileWarning className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+        <div className="flex-1 space-y-1">
+          <div className="text-[11px] font-semibold text-amber-900">
+            {MODE_LABEL[mode]} 데이터 현황 — 원본 콘텐츠 미제공
+          </div>
+          <div className="text-[10px] text-amber-800 leading-snug">
+            커리큘럼 대시보드와 동일한 구조(분류/급수/키워드/단원 통계 · 카드 · 표 · 차트) 셸이 준비되어 있습니다.
+            실제 {MODE_LABEL[mode]} 원본이 제공되면 literal하게 동일 구조로 집계됩니다.
+          </div>
+          <div className="text-[10px] text-amber-700 pt-1 border-t border-amber-200">
+            현재 저장된 {MODE_LABEL[mode]} 항목: <b>{savedCount}건</b>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DashboardCurriculum({ savedList, onNavigate }: {
   savedList: SavedCurriculum[];
   onNavigate?: (filter: { catLarge?: string[]; field?: string[]; mid?: string[] }) => void;
 }) {

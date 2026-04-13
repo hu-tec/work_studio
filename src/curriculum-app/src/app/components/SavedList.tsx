@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { SavedCurriculum } from "./types";
 import { CATEGORY_TREE, FIELD_OPTIONS, MID_OPTIONS, LEVEL_BY_MID } from "./data";
 import { Pencil, Trash2, Archive, Tag, Calendar, BookText, Wrench, Filter, ChevronDown, ChevronRight, Table2, LayoutGrid } from "lucide-react";
+import { MODE_LABEL, type ContentMode } from "./mode";
 
 /* ── 필터 칩 ── */
 function Chip({ active, onClick, children, color }: {
@@ -149,6 +150,7 @@ function ClassificationFilter({
 
 /* ══════════════════════════════════════ */
 interface Props {
+  mode?: ContentMode;
   savedList: SavedCurriculum[];
   editingId: string | null;
   onEdit: (item: SavedCurriculum) => void;
@@ -156,7 +158,7 @@ interface Props {
   externalFilter?: { catLarge?: string[]; field?: string[]; mid?: string[] };
 }
 
-export function SavedList({ savedList, editingId, onEdit, onDelete, externalFilter }: Props) {
+export function SavedList({ mode = "curriculum", savedList, editingId, onEdit, onDelete, externalFilter }: Props) {
   const largeCats = Object.keys(CATEGORY_TREE);
   const [selCatLarge, setSelCatLarge] = useState<Set<string>>(() => new Set(externalFilter?.catLarge || largeCats));
   const [selFields, setSelFields] = useState<Set<string>>(() => new Set(externalFilter?.field || FIELD_OPTIONS));
@@ -187,7 +189,7 @@ export function SavedList({ savedList, editingId, onEdit, onDelete, externalFilt
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-amber-100 text-amber-600">
             <Archive className="h-3.5 w-3.5" />
           </div>
-          <h3 className="text-[0.88rem] font-semibold tracking-tight">저장 목록</h3>
+          <h3 className="text-[0.88rem] font-semibold tracking-tight">{MODE_LABEL[mode]} 저장 목록</h3>
           <span className="rounded-full bg-muted px-2 py-0.5 text-[0.72rem] font-medium text-muted-foreground">
             {filtered.length}/{savedList.length}건
           </span>
@@ -221,7 +223,7 @@ export function SavedList({ savedList, editingId, onEdit, onDelete, externalFilt
             {savedList.length === 0 ? "저장된 항목 없음" : "필터 결과 없음"}
           </p>
           <p className="text-[0.72rem]">
-            {savedList.length === 0 ? "커리큘럼을 구성하고 저장하세요" : "분류 필터를 조정해 보세요"}
+            {savedList.length === 0 ? `${MODE_LABEL[mode]}을(를) 구성하고 저장하세요` : "분류 필터를 조정해 보세요"}
           </p>
         </div>
       ) : viewMode === "grid" ? (
