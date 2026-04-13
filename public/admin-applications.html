@@ -37,7 +37,8 @@
 
     /* Summary bar */
     .sumbar{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
-    .sum{padding:4px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;font-size:11px}
+    .sum{padding:4px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;cursor:pointer;transition:.1s}
+    .sum:hover{border-color:#1a365d;background:#f8fafc}
     .sum b{color:#1a365d;font-size:13px;margin-right:4px}
 
     /* Table */
@@ -46,6 +47,11 @@
     th{padding:6px 8px;background:#f9fafb;border-bottom:1px solid #e5e7eb;text-align:left;font-weight:700;color:#64748b;font-size:10px;white-space:nowrap}
     td{padding:5px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
     tr.row:hover{background:#f9fafb}
+    th.hsort{cursor:pointer;user-select:none}
+    th.hsort:hover{background:#eef2f6;color:#1a365d}
+    .cell-click{cursor:pointer;transition:.1s}
+    .cell-click:hover{outline:1.5px solid #1a365d;outline-offset:1px}
+    .subj-chip{display:inline-block;padding:1px 5px;background:#f1f5f9;border-radius:3px;margin:1px 1px 0 0;font-size:9px}
 
     .prefix{display:flex;flex-direction:column;gap:2px;min-width:130px}
     .prefix .site{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;color:#fff;width:fit-content}
@@ -97,7 +103,8 @@
 
     /* Dashboard 4단 */
     .dash4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-    .dq{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-height:220px}
+    .dq{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-height:220px;cursor:pointer;transition:.15s}
+    .dq:hover{border-color:#1a365d;box-shadow:0 2px 6px rgba(26,54,93,.15);transform:translateY(-1px)}
     .dq-head{display:flex;align-items:center;gap:6px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;margin-bottom:6px}
     .dq-head .n{margin-left:auto;font-size:14px;font-weight:800;color:#1a365d}
     .dq-stats{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}
@@ -171,6 +178,7 @@ const state = {
     dateFrom: '',
     dateTo: ''
   },
+  sort: { col: 'created_at', dir: 'desc' },   // 기본: 접수일 최신순
   view: 'list',
   dashAxis: 'site',
   expanded: new Set()
@@ -436,17 +444,17 @@ function renderSumBar(filtered) {
     if (g && byGrade[g] != null) byGrade[g]++;
   }
   el.innerHTML = `
-    <div class="sum"><b>${cur}</b>/${total} 건</div>
-    <div class="sum"><b>${byPhase.part1}</b>1부</div>
-    <div class="sum"><b>${byPhase.interview}</b>면접</div>
-    <div class="sum"><b>${byPhase.part2}</b>2부</div>
-    <div class="sum"><b>${byPhase.final}</b>최종</div>
-    <div class="sum"><b>${byRole.student}</b>학생</div>
-    <div class="sum"><b>${byRole.instructor}</b>강사</div>
-    <div class="sum"><b>${byRole.expert}</b>전문가</div>
-    <div class="sum"><b>${byStatus[0]}</b>미확인</div>
-    <div class="sum"><b>${byStatus[4]}</b>완료</div>
-    <div class="sum">A:<b>${byGrade.A}</b>  B:<b>${byGrade.B}</b>  C:<b>${byGrade.C}</b>  D:<b>${byGrade.D}</b></div>
+    <div class="sum" onclick="resetFilters()" title="필터 초기화"><b>${cur}</b>/${total} 건</div>
+    <div class="sum" onclick="filterBy('phase','part1')"><b>${byPhase.part1}</b>1부</div>
+    <div class="sum" onclick="filterBy('phase','interview')"><b>${byPhase.interview}</b>면접</div>
+    <div class="sum" onclick="filterBy('phase','part2')"><b>${byPhase.part2}</b>2부</div>
+    <div class="sum" onclick="filterBy('phase','final')"><b>${byPhase.final}</b>최종</div>
+    <div class="sum" onclick="filterBy('role','student')"><b>${byRole.student}</b>학생</div>
+    <div class="sum" onclick="filterBy('role','instructor')"><b>${byRole.instructor}</b>강사</div>
+    <div class="sum" onclick="filterBy('role','expert')"><b>${byRole.expert}</b>전문가</div>
+    <div class="sum" onclick="filterBy('status',0)"><b>${byStatus[0]}</b>미확인</div>
+    <div class="sum" onclick="filterBy('status',4)"><b>${byStatus[4]}</b>완료</div>
+    <div class="sum" style="cursor:default">A:<b>${byGrade.A}</b>  B:<b>${byGrade.B}</b>  C:<b>${byGrade.C}</b>  D:<b>${byGrade.D}</b></div>
   `;
 }
 
@@ -460,19 +468,22 @@ function renderList(filtered) {
     return;
   }
 
+  // Header (clickable for sort)
+  const H = (col, label, width) => `<th ${width?`style="width:${width}"`:''} class="hsort" onclick="toggleSort('${col}')">${label} ${sortArrow(col)}</th>`;
+
   const head = `
     <tr>
-      <th style="width:160px">출처 / 신청서</th>
-      <th>이름</th>
+      ${H('created_at','접수일','90px')}
+      ${H('site','출처 / 신청서','170px')}
+      ${H('name','이름','')}
       <th>연락처</th>
-      <th style="width:80px">역할</th>
-      <th style="width:66px">단계</th>
-      <th style="width:66px">상태</th>
-      <th style="width:60px">과목</th>
-      <th style="width:50px">등급</th>
-      <th style="width:80px">접수일</th>
+      ${H('role','역할','70px')}
+      ${H('phase','단계','64px')}
+      ${H('status','상태','64px')}
+      <th style="width:70px">과목</th>
+      ${H('grade','등급','50px')}
       <th>메모</th>
-      <th style="width:120px">작업</th>
+      <th style="width:110px">작업</th>
     </tr>`;
 
   const rows = filtered.map(r => {
@@ -485,27 +496,29 @@ function renderList(filtered) {
     const status = Number(d._status || 0);
     const stObj = STATUSES.find(x => x.id === status);
     const phaseObj = PHASES.find(p => p.id === phase);
-    const subj = (getTax(d, 'subject') || []).slice(0, 2).join(', ');
+    const subjects = (getTax(d, 'subject') || []);
+    const subjShort = subjects.slice(0, 2).join(', ');
     const grade = d.final?.final_grade || '-';
-    const date = (r.created_at || '').slice(5, 10);
+    const createdAt = r.created_at || '';
+    const dateLabel = createdAt ? createdAt.slice(5, 16).replace(' ','\n') : '-';
     const exp = state.expanded.has(r.id);
 
     const mainRow = `
       <tr class="row" data-id="${r.id}">
+        <td class="cell-click" onclick="filterBy('dateFrom','${createdAt.slice(0,10)}')" title="이 날짜로 필터" style="font-size:10px;color:#475569;white-space:pre-line">${esc(dateLabel)}</td>
         <td>
           <div class="prefix">
-            <span class="site" style="background:${s.color}">${s.icon||''} ${s.name||d._site}</span>
-            <span class="form">${formLabel}</span>
+            <span class="site cell-click" style="background:${s.color}" onclick="event.stopPropagation();filterBy('site','${d._site}')" title="이 사이트로 필터">${s.icon||''} ${s.name||d._site}</span>
+            <span class="form cell-click" onclick="event.stopPropagation();filterBy('formId','${d._formId||''}')" title="이 신청서로 필터">${esc(formLabel)}</span>
           </div>
         </td>
         <td><b>${esc(getName(d))}</b></td>
         <td>${esc(getPhone(d))}<br><span style="color:#94a3b8;font-size:9px">${esc(getEmail(d))}</span></td>
-        <td><span class="role-bg role-${role}">${ROLES.find(r=>r.id===role)?.label||role}</span></td>
-        <td><span class="phase phase-${phase}">${phaseObj?phaseObj.label:phase}</span></td>
-        <td><span class="status ${stObj?stObj.cls:'st-0'}">${stObj?stObj.label:status}</span></td>
-        <td style="font-size:9px;color:#64748b">${esc(subj)}</td>
-        <td>${grade !== '-' ? `<span class="grade grade-${grade}">${grade}</span>` : '-'}</td>
-        <td style="font-size:10px;color:#64748b">${date}</td>
+        <td><span class="role-bg role-${role} cell-click" onclick="event.stopPropagation();filterBy('role','${role}')" title="이 역할로 필터">${ROLES.find(x=>x.id===role)?.label||role}</span></td>
+        <td><span class="phase phase-${phase} cell-click" onclick="event.stopPropagation();filterBy('phase','${phase}')" title="이 단계로 필터">${phaseObj?phaseObj.label:phase}</span></td>
+        <td><span class="status ${stObj?stObj.cls:'st-0'} cell-click" onclick="event.stopPropagation();filterBy('status',${status})" title="이 상태로 필터">${stObj?stObj.label:status}</span></td>
+        <td style="font-size:9px;color:#64748b">${subjects.map(sj=>`<span class="subj-chip cell-click" onclick="filterBy('subject','${sj.replace(/'/g,"&#39;")}')">${esc(sj)}</span>`).join(' ')}</td>
+        <td>${grade !== '-' ? `<span class="grade grade-${grade} cell-click" onclick="filterBy('grade','${grade}')" title="이 등급으로 필터">${grade}</span>` : '-'}</td>
         <td><div class="memo" contenteditable="true" data-id="${r.id}" onblur="saveMemo(${r.id}, this.textContent)">${esc(d._notes || '')}</div></td>
         <td>
           <button class="btn" onclick="toggleExpand(${r.id})">${exp ? '접기' : '펼치기'}</button>
@@ -816,10 +829,11 @@ function setView(v) {
 
 function rerender() {
   const filtered = applyFilters(state.rows);
+  const sorted = sortRows(filtered);   // 기본 정렬 적용 (접수일 desc)
   renderFilters();
-  renderSumBar(filtered);
-  if (state.view === 'list') renderList(filtered);
-  else renderDashboard(filtered);
+  renderSumBar(sorted);
+  if (state.view === 'list') renderList(sorted);
+  else renderDashboard(sorted);
 }
 
 // ============================================================

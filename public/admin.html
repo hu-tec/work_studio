@@ -356,16 +356,19 @@ const SITES=[
 // ═══ 분류표 데이터 — /api/definitions/ 에서 로드 (단일 소스) ═══
 let FIELDS={},LEVELS={},EXAM_DOMAINS=[],GROUPS={},GRADES=[],DEF_SITES={};
 
+let SITE_ICONS={};
 async function loadDefinitions(){
 try{
-const[fld,lvl,dep,rol]=await Promise.all([
+const[fld,lvl,dep,rol,sit]=await Promise.all([
 f("/api/definitions/fields"),f("/api/definitions/levels"),
-f("/api/definitions/departments"),f("/api/definitions/roles")]);
+f("/api/definitions/departments"),f("/api/definitions/roles"),
+f("/api/definitions/sites").catch(()=>({websites:[]}))]);
 FIELDS=fld.tree||{};
 LEVELS={};(lvl.domains||[]).forEach(d=>{LEVELS[d]={};(lvl.divisions||[]).forEach(div=>{LEVELS[d][div]=lvl.grades[div]||[]})});
 EXAM_DOMAINS=lvl.domains||[];
 GROUPS={'부서':dep.departments||[],'팀':dep.teams||{}};
 GRADES=(rol.roles||[]).map(r=>r.label);
+SITE_ICONS={};(sit.websites||[]).forEach(s=>{SITE_ICONS[s.id]={icon:s.icon||'',color:s.color||'#64748b',name:s.name||s.id}});
 }catch(e){console.error("분류표 로딩 실패, fallback 사용:",e);
 // fallback — 서버 연결 실패 시
 FIELDS={'문서':{'비즈니스':['사업계획서','회사소개','PPT','엑셀','기획서']},'음성':{},'영상/SNS':{},'IT/개발':{},'창의적활동':{},'번역':{},'프롬프트':{},'확장영역':{}};
@@ -1001,26 +1004,51 @@ for(const m of specMods)sb+=`<div class="fe-form-item" style="font-size:10px;col
 
 // Main area
 let main="";
+function renderTplCard(fm){
+const sInfo=SITE_ICONS[fm._site]||{};
+const color=sInfo.color||'#64748b';
+const icon=sInfo.icon||'';
+const siteName=sInfo.name||(WEBSITES.find(w=>w.id===fm._site)||{}).name||fm._site;
+const secs=assembleForm(fm);
+const fCount=secs.reduce((s,sec)=>s+sec.fields.length,0);
+const modChips=(fm.modules||[]).map(mid=>{
+  const mod=getModule(mid);
+  if(!mod)return `<span style="font-size:8px;padding:1px 5px;border-radius:8px;background:#fee2e2;color:#b91c1c">❓ ${mid}</span>`;
+  const isCommon=mod.category==='common';
+  const bg=isCommon?'#ecfdf5':'#f5f3ff';
+  const fg=isCommon?'#059669':'#7c3aed';
+  const emoji=isCommon?'📦':'📋';
+  return `<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:${bg};color:${fg}">${emoji} ${mod.name}</span>`;
+}).join('');
+return `<div style="background:#fff;border:1px solid #e3e5ed;border-top:3px solid ${color};border-radius:6px;padding:8px 10px;cursor:pointer;transition:.15s" onmouseover="this.style.boxShadow='0 2px 8px rgba(26,54,93,.12)'" onmouseout="this.style.boxShadow=''" onclick="ftSite='${fm._site}';ftSelForm('${fm._formId}')">
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+<span style="display:inline-block;padding:1px 7px;border-radius:10px;background:${color};color:#fff;font-size:9px;font-weight:700;white-space:nowrap">${icon} ${siteName}</span>
+</div>
+<div style="font-size:12px;font-weight:700;color:#1a365d;margin-bottom:2px">${fm.shortName||fm.name||fm._formId}</div>
+<div style="font-size:9px;color:#888;margin-bottom:4px">${secs.length}모듈 · ${fCount}필드</div>
+<div style="display:flex;gap:2px;flex-wrap:wrap">${modChips}</div>
+</div>`;
+}
+
 if(ftFormId&&ftData){main=renderFormEditor()}
 else if(ftSite){
 const w=WEBSITES.find(x=>x.id===ftSite);
 const forms=ftTemplates.filter(t=>t._site===ftSite);
-main=`<div class="fe-editor"><h3>${w?w.name:""} 신청서</h3>
-<p style="font-size:11px;color:#888;margin-bottom:12px">${w?w.url:""} — ${forms.length}개 신청서</p>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${forms.map(fm=>{
-const secs=assembleForm(fm);const fCount=secs.reduce((s,sec)=>s+sec.fields.length,0);
-return`<div style="background:#fff;border:1px solid #e3e5ed;border-radius:6px;padding:12px;cursor:pointer" onclick="ftSelForm('${fm._formId}')">
-<div style="font-size:12px;font-weight:700;color:#0088ff;margin-bottom:4px">${fm.name}</div>
-<div style="font-size:10px;color:#888">${secs.length}모듈 · ${fCount}필드</div>
-<div style="margin-top:6px;display:flex;gap:3px;flex-wrap:wrap">${(fm.modules||[]).map(mid=>{const mod=getModule(mid);return mod?`<span style="font-size:8px;padding:1px 5px;border-radius:8px;background:${mod.category==="common"?"#ecfdf5":"#f5f3ff"};color:${mod.category==="common"?"#059669":"#7c3aed"}">${mod.name}</span>`:""}).join("")}</div>
-</div>`}).join("")}</div>
+main=`<div class="fe-editor"><h3>${w?w.name:""} 신청서 (${forms.length}개)</h3>
+<p style="font-size:11px;color:#888;margin-bottom:12px">${w?w.url:""} — 카드 클릭 → 편집</p>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${forms.map(renderTplCard).join("")}</div>
 <div style="margin-top:16px"><h4 style="font-size:12px;color:#888;margin-bottom:8px">API 연동 예시</h4>
-<pre style="background:#0088ff;color:#a0d2db;padding:12px;border-radius:6px;font-size:10px;overflow-x:auto">GET /api/form-config/${ftSite}/{formId}
-→ { site, formId, name, sections: [{moduleId, name, fields: [...]}], submitUrl }
-
-POST /api/applications
-→ { ...formData }</pre></div></div>`}
-else{main=`<div class="fe-empty">좌측에서 홈페이지를 선택하세요</div>`}
+<pre style="background:#0f172a;color:#a0d2db;padding:12px;border-radius:6px;font-size:10px;overflow-x:auto">GET /api/form-config/${ftSite}/{formId}
+POST /api/applications</pre></div></div>`}
+else{
+// 전체 — 모든 홈페이지 × 모든 신청서를 4단 그리드 한 눈에
+const bySite={};
+for(const fm of ftTemplates){if(!bySite[fm._site])bySite[fm._site]=[];bySite[fm._site].push(fm)}
+const sitesList=Object.keys(bySite);
+main=`<div class="fe-editor"><h3>전체 신청서 (${ftTemplates.length}개 템플릿 · ${sitesList.length}개 사이트)</h3>
+<p style="font-size:11px;color:#888;margin-bottom:12px">모든 홈페이지의 신청서 한 눈에. 카드 클릭 → 편집. 📦 공통 모듈 · 📋 역할·세부 모듈</p>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${ftTemplates.map(renderTplCard).join("")}</div>
+</div>`}
 
 ca.innerHTML=`<div class="fe-wrap"><div class="fe-sidebar">${sb}</div><div class="fe-main">${main}</div></div>`}
 
