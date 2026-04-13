@@ -162,7 +162,7 @@ export default function App() {
               <CurriculumExpandView />
             </div>
         ) : activeTab === "regulation" ? (
-            <div className="p-4">
+            <div className="p-1">
               <RegulationView />
             </div>
         ) : activeTab === "editor" ? (
