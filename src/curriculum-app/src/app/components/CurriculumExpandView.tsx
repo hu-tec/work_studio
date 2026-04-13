@@ -9,8 +9,9 @@ import {
 } from "./curriculum-data";
 import type { CurriculumGroup } from "./curriculum-data";
 import {
-  Hash, BookText, Wrench, Award, Users, ChevronRight, Layers, Filter,
+  Hash, BookText, Wrench, Award, Users, ChevronRight, Layers, Filter, FileWarning,
 } from "lucide-react";
+import { MODE_LABEL, type ContentMode } from "./mode";
 
 /* ── 색상 맵 ── */
 const fieldBg: Record<string, string> = {
@@ -197,8 +198,37 @@ function CombinationCard({ field, mid, level, showCommon, showFieldKw, showBasic
   );
 }
 
+/* ── 빈 상태 (non-curriculum 모드) ── */
+function ExpandEmpty({ mode }: { mode: ContentMode }) {
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center gap-1.5">
+        <Layers className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[11px] font-semibold">전체 {MODE_LABEL[mode]} 펼치기</span>
+      </div>
+      <div className="rounded border border-dashed border-amber-300 bg-amber-50 p-3 flex items-start gap-2">
+        <FileWarning className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+        <div className="flex-1 space-y-1">
+          <div className="text-[11px] font-semibold text-amber-900">
+            {MODE_LABEL[mode]} 전체 펼치기 — 원본 데이터 미제공
+          </div>
+          <div className="text-[10px] text-amber-800 leading-snug">
+            커리큘럼의 "전체 펼치기" 뷰와 동일한 필터(분야/급수/그룹) · 레이아웃 셸이 준비되어 있습니다.
+            실제 {MODE_LABEL[mode]} 원본이 제공되면 literal하게 동일 구조로 표시됩니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── 메인 ── */
-export function CurriculumExpandView() {
+export function CurriculumExpandView({ mode = "curriculum" }: { mode?: ContentMode }) {
+  if (mode !== "curriculum") return <ExpandEmpty mode={mode} />;
+  return <CurriculumExpandViewInternal />;
+}
+
+function CurriculumExpandViewInternal() {
   const [selectedFields, setSelectedFields] = useState<Set<string>>(new Set(FIELD_OPTIONS));
   const [selectedMids, setSelectedMids] = useState<Set<string>>(new Set(MID_OPTIONS));
   const [showCommon, setShowCommon] = useState(true);

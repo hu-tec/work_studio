@@ -6,12 +6,17 @@ import { SavedList } from "./components/SavedList";
 import { DashboardOverview } from "./components/DashboardOverview";
 import { CurriculumExpandView } from "./components/CurriculumExpandView";
 import { RegulationView } from "./components/RegulationView";
-import { useState } from "react";
+import { MODE_LABEL } from "./components/mode";
+import { useState, useEffect } from "react";
 import { RotateCcw, Save, X, GraduationCap, Tag, Award, Hash, BookText, ClipboardList, FolderOpen, BarChart3, Layers, ShieldCheck } from "lucide-react";
 
 export default function App() {
   const c = useCurriculum();
   const [activeTab, setActiveTab] = useState<"editor" | "expand" | "regulation" | "saved" | "dashboard">("editor");
+
+  useEffect(() => {
+    document.title = `${MODE_LABEL[c.mode]} 관리`;
+  }, [c.mode]);
   const [savedFilter, setSavedFilter] = useState<{ catLarge?: string[]; field?: string[]; mid?: string[] }>({});
 
   const categoryPath = [c.catLarge, c.catMedium, c.catSmall].filter(Boolean).join(" › ");
@@ -26,7 +31,12 @@ export default function App() {
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="h-4 w-4" />
             </div>
-            <h1 className="text-[0.95rem] font-semibold leading-tight tracking-tight">강사 급수 & 커리큘럼 관리</h1>
+            <h1 className="text-[0.95rem] font-semibold leading-tight tracking-tight">강사 급수 & {MODE_LABEL[c.mode]} 관리</h1>
+            {c.mode !== "curriculum" && (
+              <span className="rounded-md bg-indigo-100 px-2 py-0.5 text-[0.68rem] font-semibold text-indigo-700">
+                {MODE_LABEL[c.mode]} 모드
+              </span>
+            )}
             {c.editingId && (
               <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[0.72rem] font-medium text-amber-700">수정 중</span>
             )}
@@ -159,11 +169,11 @@ export default function App() {
       <div className="flex-1 min-h-0 overflow-y-auto">
         {activeTab === "expand" ? (
             <div className="p-4">
-              <CurriculumExpandView />
+              <CurriculumExpandView mode={c.mode} />
             </div>
         ) : activeTab === "regulation" ? (
             <div className="p-1">
-              <RegulationView />
+              <RegulationView mode={c.mode} />
             </div>
         ) : activeTab === "editor" ? (
           <div className="p-4 space-y-4">
@@ -192,6 +202,7 @@ export default function App() {
 
             {/* Row 2: Step 3 */}
             <StepCurriculum
+              mode={c.mode}
               selectedField={c.selectedField}
               selectedMid={c.selectedMid}
               selectedLevel={c.selectedLevel}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { SavedCurriculum, CurriculumKeywords, UnitExtra, CustomUnit } from "./types";
 import { STORAGE_KEY, DUMMY_DATA, getTargets } from "./data";
+import { detectMode, getStorageKey, type ContentMode } from "./mode";
 
 function generateId(): string {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
@@ -27,25 +28,31 @@ function validateData(data: unknown): data is SavedCurriculum[] {
   );
 }
 
-function loadFromStorage(): SavedCurriculum[] {
+function loadFromStorage(mode: ContentMode): SavedCurriculum[] {
+  const key = getStorageKey(mode);
+  // 커리큘럼 모드만 DUMMY 시드 허용 — 문제/교재는 빈 배열로 시작 (원본 미제공)
+  const fallback: SavedCurriculum[] = mode === "curriculum" ? DUMMY_DATA : [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DUMMY_DATA;
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
     const parsed = JSON.parse(raw);
     if (validateData(parsed)) return parsed;
-    localStorage.removeItem(STORAGE_KEY);
-    return DUMMY_DATA;
+    localStorage.removeItem(key);
+    return fallback;
   } catch {
-    localStorage.removeItem(STORAGE_KEY);
-    return DUMMY_DATA;
+    localStorage.removeItem(key);
+    return fallback;
   }
 }
+// STORAGE_KEY 레거시 참조 유지 (기존 import 깨지지 않도록)
+void STORAGE_KEY;
 
 const emptyKeywords: CurriculumKeywords = { common: [], prompt: [], specialty: [], ethics: [] };
 const emptyExtra: UnitExtra = { remark: "", attachment: "", qna: "", qnaAttachment: "" };
 
 export function useCurriculum() {
-  const [savedList, setSavedList] = useState<SavedCurriculum[]>(() => loadFromStorage());
+  const [mode] = useState<ContentMode>(() => detectMode());
+  const [savedList, setSavedList] = useState<SavedCurriculum[]>(() => loadFromStorage(mode));
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Step 1
@@ -84,10 +91,10 @@ export function useCurriculum() {
     setTimeout(() => setToast(null), 2500);
   }, []);
 
-  // Persist
+  // Persist (모드별 분리)
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedList));
-  }, [savedList]);
+    localStorage.setItem(getStorageKey(mode), JSON.stringify(savedList));
+  }, [savedList, mode]);
 
   // Cascade resets
   const handleCatLargeChange = (val: string) => {
@@ -374,6 +381,7 @@ export function useCurriculum() {
   const availableTargets = selectedMid && selectedLevel ? getTargets(selectedMid, selectedLevel) : [];
 
   return {
+    mode,
     catLarge, catMedium, catSmall,
     handleCatLargeChange, handleCatMediumChange, setCatSmall,
     selectedField, selectedMid, selectedLevel, selectedTargets,

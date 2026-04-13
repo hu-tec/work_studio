@@ -1261,6 +1261,8 @@ ca.innerHTML=h}
 
 // ═══ 콘텐츠 관리 (문제은행 / 커리큘럼 / 교재 / 레벨테스트) ═══
 let ctTab="questions",ctAdding=false,ctDomainF="",ctExpId=null,ltVer="jungeol";
+// 문제은행/교재 뷰 모드 — "frame" 기본(커리큘럼과 동일 5탭 셸) / "old" 구 편집기
+let ctVer={questions:"frame",textbooks:"frame"};
 const CT_LABELS={questions:"문제",curriculum:"과정",textbooks:"교재"};
 const Q_TYPES=["객관식(4지선다)","객관식(5지선다)","OX","주관식(단답)","주관식(서술)","빈칸채우기","듣기","읽기이해"];
 
@@ -1402,6 +1404,22 @@ let h=`<div class="ct-tabs">
 if(ctTab==="curriculum"){
 h+=`<div style="flex:1;display:flex;flex-direction:column"><iframe src="/curriculum/" style="width:100%;flex:1;min-height:calc(100vh - 140px);border:none;border-radius:8px"></iframe></div>`;
 ca.innerHTML=h;return}
+
+// 문제은행/교재 탭: 기본 "신규 프레임"(커리와 동일 5탭 셸), 토글로 구 편집기 전환
+if(ctTab==="questions"||ctTab==="textbooks"){
+const ver=ctVer[ctTab]||"frame";
+const btnOn="padding:3px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid #0088ff;background:#0088ff;color:#fff";
+const btnOff="padding:3px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555";
+h+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+<span style="font-size:10px;color:#888">뷰</span>
+<button onclick="ctVer['${ctTab}']='frame';rContent()" style="${ver==='frame'?btnOn:btnOff}">신규 프레임 (커리와 동일)</button>
+<button onclick="ctVer['${ctTab}']='old';rContent()" style="${ver==='old'?btnOn:btnOff}">구 편집기 (CRUD)</button>
+<span style="font-size:9px;color:#aaa;margin-left:4px">${ver==='frame'?'5탭 셸 · 원본 콘텐츠 미제공 시 빈 상태':'레거시 inline CRUD'}</span>
+</div>`;
+if(ver==="frame"){
+h+=`<div style="flex:1;display:flex;flex-direction:column"><iframe src="/curriculum/?mode=${ctTab}" style="width:100%;flex:1;min-height:calc(100vh - 170px);border:none;border-radius:8px"></iframe></div>`;
+ca.innerHTML=h;return}
+}
 
 // 레벨테스트 탭: v모름 / v준걸 비교
 if(ctTab==="leveltest"){

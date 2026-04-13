@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { COMMON_KEYWORDS, getFieldKeywords } from "./data";
 import type { CurriculumKeywords, UnitExtra, CustomUnit } from "./types";
-import { BookOpen, CheckSquare, Square, BookText, Wrench, Expand, Minimize2 } from "lucide-react";
+import { BookOpen, CheckSquare, Square, BookText, Wrench, Expand, Minimize2, FileWarning } from "lucide-react";
 import { CurriculumUnits } from "./CurriculumUnits";
 import type { CurriculumGroup } from "./curriculum-data";
 import { getGradeBasicCurriculum, getFieldBasicCurriculum, getPracticeCurriculum, getTranslationBasicCurriculum, getTranslationPracticeCurriculum } from "./curriculum-data";
+import { MODE_LABEL, type ContentMode } from "./mode";
 
 interface Props {
+  mode: ContentMode;
   selectedField: string;
   selectedMid: string;
   selectedLevel: string;
@@ -105,6 +107,7 @@ function KeywordPanel({
 }
 
 export function StepCurriculum({
+  mode,
   selectedField,
   selectedMid,
   selectedLevel,
@@ -144,17 +147,53 @@ export function StepCurriculum({
   let basicGroups: CurriculumGroup[] = [];
   let practiceGroups: CurriculumGroup[] = [];
 
-  if (hasGradeSelection) {
-    basicGroups = [...getGradeBasicCurriculum(selectedMid, selectedLevel)];
-  }
-  if (selectedField) {
-    if (isTranslation) {
-      basicGroups = [...basicGroups, ...getTranslationBasicCurriculum()];
-      practiceGroups = getTranslationPracticeCurriculum();
-    } else {
-      basicGroups = [...basicGroups, ...getFieldBasicCurriculum(selectedField)];
-      practiceGroups = getPracticeCurriculum(selectedField);
+  // 커리큘럼 모드에서만 단원 데이터 로드 — 다른 모드는 빈 상태
+  if (mode === "curriculum") {
+    if (hasGradeSelection) {
+      basicGroups = [...getGradeBasicCurriculum(selectedMid, selectedLevel)];
     }
+    if (selectedField) {
+      if (isTranslation) {
+        basicGroups = [...basicGroups, ...getTranslationBasicCurriculum()];
+        practiceGroups = getTranslationPracticeCurriculum();
+      } else {
+        basicGroups = [...basicGroups, ...getFieldBasicCurriculum(selectedField)];
+        practiceGroups = getPracticeCurriculum(selectedField);
+      }
+    }
+  }
+
+  const isOtherMode = mode !== "curriculum";
+  const modeLabel = MODE_LABEL[mode];
+
+  // 커리큘럼 외 모드: 원본 데이터 미제공 → 빈 상태 렌더 (추측 없이 셸만 표시)
+  if (isOtherMode) {
+    return (
+      <div className="space-y-1">
+        <div className="flex items-center gap-1.5">
+          <div className="flex h-5 w-5 items-center justify-center rounded bg-green-100 text-green-600">
+            <BookOpen className="h-3 w-3" />
+          </div>
+          <h3 className="text-[11px] font-semibold tracking-tight">Step 3 — {modeLabel} 구성</h3>
+        </div>
+        <div className="rounded border border-dashed border-amber-300 bg-amber-50 p-3 flex items-start gap-2">
+          <FileWarning className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+          <div className="space-y-1 flex-1">
+            <div className="text-[11px] font-semibold text-amber-900">
+              {modeLabel} 원본 데이터 미제공
+            </div>
+            <div className="text-[10px] text-amber-800 leading-snug">
+              커리큘럼과 동일한 5탭 셸(편집·전체펼치기·규정·저장목록·대시보드) · 필터 · 검색 · 컴팩트 UI는 적용되었습니다.
+              Step3 콘텐츠·전체펼치기·규정 데이터는 원본 자료가 제공되면 literal하게 입력됩니다.
+              임의 생성 금지 원칙으로 현재는 빈 상태입니다.
+            </div>
+            <div className="text-[10px] text-amber-700 leading-snug pt-1 border-t border-amber-200">
+              ✓ 분류(Step1) · 급수(Step2) · 저장/불러오기 · 필터는 지금 바로 사용 가능
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
