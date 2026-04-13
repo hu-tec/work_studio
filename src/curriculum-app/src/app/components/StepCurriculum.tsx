@@ -6,6 +6,7 @@ import { CurriculumUnits } from "./CurriculumUnits";
 import type { CurriculumGroup } from "./curriculum-data";
 import { getGradeBasicCurriculum, getFieldBasicCurriculum, getPracticeCurriculum, getTranslationBasicCurriculum, getTranslationPracticeCurriculum } from "./curriculum-data";
 import { MODE_LABEL, type ContentMode } from "./mode";
+import { QuestionsView } from "./QuestionsView";
 
 interface Props {
   mode: ContentMode;
@@ -166,7 +167,12 @@ export function StepCurriculum({
   const isOtherMode = mode !== "curriculum";
   const modeLabel = MODE_LABEL[mode];
 
-  // 커리큘럼 외 모드: 원본 데이터 미제공 → 빈 상태 렌더 (추측 없이 셸만 표시)
+  // 문제은행 모드: 실제 답안 데이터(question-data.ts)를 QuestionsView로 렌더
+  if (mode === "questions") {
+    return <QuestionsView />;
+  }
+
+  // 교재 모드 등 나머지: 원본 데이터 미제공 → 빈 상태 렌더
   if (isOtherMode) {
     return (
       <div className="space-y-1">

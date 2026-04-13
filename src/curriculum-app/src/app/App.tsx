@@ -6,6 +6,7 @@ import { SavedList } from "./components/SavedList";
 import { DashboardOverview } from "./components/DashboardOverview";
 import { CurriculumExpandView } from "./components/CurriculumExpandView";
 import { RegulationView } from "./components/RegulationView";
+import { QuestionsView } from "./components/QuestionsView";
 import { MODE_LABEL, MODE_SHORT } from "./components/mode";
 import { useState, useEffect } from "react";
 import { RotateCcw, Save, X, GraduationCap, Tag, Award, Hash, BookText, ClipboardList, FolderOpen, BarChart3, Layers, ShieldCheck } from "lucide-react";
@@ -168,8 +169,8 @@ export default function App() {
       {/* Body — 탭에 따라 전환 */}
       <div className="flex-1 min-h-0 overflow-y-auto">
         {activeTab === "expand" ? (
-            <div className="p-4">
-              <CurriculumExpandView mode={c.mode} />
+            <div className="p-1">
+              {c.mode === "questions" ? <QuestionsView /> : <CurriculumExpandView mode={c.mode} />}
             </div>
         ) : activeTab === "regulation" ? (
             <div className="p-1">
