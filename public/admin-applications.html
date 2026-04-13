@@ -310,6 +310,62 @@ function applyFilters(rows) {
 }
 
 // ============================================================
+//  SORT + CLICK-TO-FILTER
+// ============================================================
+
+function sortRows(rows) {
+  const { col, dir } = state.sort;
+  const mul = dir === 'asc' ? 1 : -1;
+  const getVal = (r) => {
+    const d = r.d;
+    switch (col) {
+      case 'created_at': return r.created_at || '';
+      case 'name':       return getName(d);
+      case 'site':       return d._site || '';
+      case 'formId':     return d._formId || '';
+      case 'role':       return d._role || '';
+      case 'phase':      return d._phase || '';
+      case 'status':     return Number(d._status || 0);
+      case 'grade':      return d.final?.final_grade || 'Z';
+      default: return '';
+    }
+  };
+  return rows.slice().sort((a, b) => {
+    const av = getVal(a), bv = getVal(b);
+    if (av < bv) return -1 * mul;
+    if (av > bv) return 1 * mul;
+    return 0;
+  });
+}
+
+function toggleSort(col) {
+  if (state.sort.col === col) {
+    state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.sort.col = col;
+    state.sort.dir = (col === 'created_at') ? 'desc' : 'asc';
+  }
+  rerender();
+}
+
+function sortArrow(col) {
+  if (state.sort.col !== col) return '<span style="opacity:.3">↕</span>';
+  return state.sort.dir === 'asc' ? '▲' : '▼';
+}
+
+// 셀 값 클릭 → 해당 값으로 즉시 필터 (drill-down)
+function filterBy(axis, value) {
+  if (Array.isArray(state.filter[axis])) {
+    const arr = state.filter[axis];
+    const i = arr.indexOf(value);
+    if (i >= 0) arr.splice(i, 1); else arr.push(value);
+  } else {
+    state.filter[axis] = state.filter[axis] === value ? null : value;
+  }
+  rerender();
+}
+
+// ============================================================
 //  RENDER: FILTERS
 // ============================================================
 
