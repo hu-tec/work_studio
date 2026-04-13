@@ -153,6 +153,41 @@ tbody td{padding:6px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 .qd-num{font-size:16px;font-weight:900;color:#0088ff}
 .qd-lbl{font-size:9px;color:#888;font-weight:600}
 .qd-sep{width:1px;height:24px;background:#e3e5ed}
+
+/* ── 홈 (rD) 컴팩트 ── */
+.hm-stats{display:flex;gap:4px;align-items:center;flex-wrap:wrap;padding:5px 8px;background:#fff;border-radius:5px;border:1px solid #e3e5ed;margin-bottom:6px}
+.hm-st{display:flex;flex-direction:column;align-items:center;padding:3px 8px;cursor:pointer;border-radius:3px;transition:.1s;min-width:38px}
+.hm-st:hover{background:#f1f5f9}
+.hm-st b{font-size:14px;font-weight:900;color:#1a365d;line-height:1}
+.hm-st span{font-size:9px;color:#64748b;font-weight:600;margin-top:1px}
+.hm-st.hm-hot b{color:#dc2626}
+.hm-sep{width:1px;height:22px;background:#e3e5ed;margin:0 2px}
+.hm-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
+.hm-card{background:#fff;border:1px solid #e3e5ed;border-radius:5px;padding:6px 10px;cursor:pointer;transition:.15s}
+.hm-card:hover{border-color:#1a365d;box-shadow:0 2px 4px rgba(26,54,93,.08)}
+.hm-lbl{font-size:9px;color:#888;font-weight:700}
+.hm-num{font-size:18px;font-weight:900;line-height:1.1;margin:1px 0}
+.hm-num span{font-size:10px;color:#888;font-weight:400;margin-left:3px}
+.hm-sub{font-size:9px;color:#aaa}
+.hm-q4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.hm-qcard{background:#fff;border:1px solid #e3e5ed;border-radius:5px;padding:6px 8px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;min-height:170px}
+.hm-qcard:hover{border-color:#1a365d;box-shadow:0 2px 6px rgba(26,54,93,.1);transform:translateY(-1px)}
+.hm-qempty-card{cursor:default;color:#cbd5e1;text-align:center;padding-top:60px;font-size:11px}
+.hm-qhead{display:flex;align-items:center;justify-content:space-between;padding-bottom:4px;border-bottom:1px solid #f1f5f9;margin-bottom:4px;font-size:11px}
+.hm-qcnt{font-size:13px;font-weight:900;color:#1a365d}
+.hm-qrows{display:flex;flex-direction:column;gap:1px}
+.hm-qrow{display:grid;grid-template-columns:1fr 32px 22px 32px;gap:3px;align-items:center;padding:2px 4px;font-size:10px;border-bottom:1px dashed #f1f5f9;cursor:pointer}
+.hm-qrow:hover{background:#f8fafc}
+.hm-qnm{font-weight:700;color:#1f2937;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hm-qph{font-size:8px;padding:1px 4px;border-radius:2px;background:#e0e7ff;color:#3730a3;text-align:center;font-weight:700}
+.hm-qst{font-size:9px;font-weight:700;text-align:center;border-radius:2px;padding:1px 0}
+.hm-qst-0{background:#fee2e2;color:#991b1b}
+.hm-qst-1{background:#fef3c7;color:#92400e}
+.hm-qst-2{background:#ddd6fe;color:#5b21b6}
+.hm-qst-3{background:#bfdbfe;color:#1e40af}
+.hm-qst-4{background:#bbf7d0;color:#14532d}
+.hm-qdt{font-size:9px;color:#94a3b8;text-align:right}
+.hm-qempty{padding:14px 0;text-align:center;color:#cbd5e1;font-size:10px}
 /* Stats */
 .st-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
 .st-card{background:#fff;border-radius:8px;border:1px solid #e3e5ed;padding:12px}
@@ -510,91 +545,131 @@ function sT(t){const s=gSite(t);if(s)cSite=s.id;cSubT=t;cT=t;cV="l";bD.className
 function uB(){bc.innerHTML=cT?`Work Studio &rsaquo; <b>${(gSite(cT)||{label:"기타"}).label}</b> &rsaquo; <b>${L[cT]||cT}</b>`:cSite?`Work Studio &rsaquo; <b>${(SITES.find(s=>s.id===cSite)||{label:""}).label}</b>`:"Work Studio"}
 
 // ═══ Quadrant Dashboard — 4단 ═══
-function rD(){uB();const all=aR();
+// ═══ 홈 (컴팩트, 칩 기반, 클릭 → 신청서관리로 점프) ═══
+let appsFilter=null;
+function goApps(axis,value){
+appsFilter=axis?{axis,value}:null;
+ftSubTab='list';
+sv('f');
+}
+
+function rD(){uB();
+ca.style.padding="6px 10px";
+const all=aR();
 const total=all.length;
 const newCnt=all.filter(r=>iT(r.created_at)).length;
-const stCnts=[0,0,0];all.forEach(r=>{try{const s=JSON.parse(r.data)._status||0;stCnts[s]++}catch{}});
 
-// Content type counts
+// Aggregate by new-schema fields when present
+const phaseCnts={part1:0,interview:0,part2:0,final:0};
+const roleCnts={student:0,instructor:0,expert:0};
+const stCnts=[0,0,0,0,0];
+const gradeCnts={A:0,B:0,C:0,D:0};
+const siteCnts={};
+all.forEach(r=>{
+try{
+const p=JSON.parse(r.data);
+const s=Math.min(Number(p._status||0),4);stCnts[s]++;
+if(phaseCnts[p._phase]!=null)phaseCnts[p._phase]++;
+if(roleCnts[p._role]!=null)roleCnts[p._role]++;
+const g=p.final&&p.final.final_grade;if(g&&gradeCnts[g]!=null)gradeCnts[g]++;
+let sid=p._site;
+if(!sid){const ws=SITES.find(s=>s.tables.includes(r._t));sid=ws?ws.id:null}
+if(sid){siteCnts[sid]=(siteCnts[sid]||0)+1}
+}catch{}
+});
+
 const ftCount=ftTemplates.length;
 const qCount=TC["questions"]||0;
 const cCount=TC["curriculum"]||0;
 const tbCount=TC["textbooks"]||0;
 
-let h=`<div class="qd-bar">
-<div class="qd-stat"><span class="qd-num">${total}</span><span class="qd-lbl">접수 전체</span></div>
-<div class="qd-sep"></div>
-${newCnt?`<div class="qd-stat"><span style="font-size:14px;font-weight:900;color:#c53030">+${newCnt}</span><span class="qd-lbl">오늘</span></div><div class="qd-sep"></div>`:""}
-<div class="qd-stat"><span style="font-size:13px;font-weight:800;color:#f59e0b">${stCnts[0]}</span><span class="qd-lbl">신규</span></div>
-<div class="qd-stat"><span style="font-size:13px;font-weight:800;color:#16a34a">${stCnts[1]}</span><span class="qd-lbl">확인</span></div>
-<div class="qd-stat"><span style="font-size:13px;font-weight:800;color:#94a3b8">${stCnts[2]}</span><span class="qd-lbl">완료</span></div>
-<div class="qd-sep"></div>
-<input type="text" placeholder="검색…" oninput="fQD(this.value)" style="padding:3px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px;width:140px"/>
-<select onchange="fQS(this.value)" style="padding:3px 6px;border:1px solid #ddd;border-radius:4px;font-size:10px">
-<option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
+let h=`<div class="hm-stats">
+<div class="hm-st" onclick="goApps()" title="전체 보기"><b>${total}</b><span>전체</span></div>
+${newCnt?`<div class="hm-st hm-hot" onclick="goApps()"><b>+${newCnt}</b><span>오늘</span></div>`:""}
+<div class="hm-sep"></div>
+<div class="hm-st" onclick="goApps('phase','part1')"><b style="color:#3730a3">${phaseCnts.part1}</b><span>1부</span></div>
+<div class="hm-st" onclick="goApps('phase','interview')"><b style="color:#c2410c">${phaseCnts.interview}</b><span>면접</span></div>
+<div class="hm-st" onclick="goApps('phase','part2')"><b style="color:#0e7490">${phaseCnts.part2}</b><span>2부</span></div>
+<div class="hm-st" onclick="goApps('phase','final')"><b style="color:#15803d">${phaseCnts.final}</b><span>최종</span></div>
+<div class="hm-sep"></div>
+<div class="hm-st" onclick="goApps('role','student')"><b style="color:#1d4ed8">${roleCnts.student}</b><span>학생</span></div>
+<div class="hm-st" onclick="goApps('role','instructor')"><b style="color:#b45309">${roleCnts.instructor}</b><span>강사</span></div>
+<div class="hm-st" onclick="goApps('role','expert')"><b style="color:#6d28d9">${roleCnts.expert}</b><span>전문가</span></div>
+<div class="hm-sep"></div>
+<div class="hm-st" onclick="goApps('status',0)"><b style="color:#991b1b">${stCnts[0]}</b><span>미확인</span></div>
+<div class="hm-st" onclick="goApps('status',1)"><b style="color:#92400e">${stCnts[1]}</b><span>확인</span></div>
+<div class="hm-st" onclick="goApps('status',2)"><b style="color:#5b21b6">${stCnts[2]}</b><span>통화</span></div>
+<div class="hm-st" onclick="goApps('status',3)"><b style="color:#1e40af">${stCnts[3]}</b><span>면접</span></div>
+<div class="hm-st" onclick="goApps('status',4)"><b style="color:#14532d">${stCnts[4]}</b><span>완료</span></div>
+<div class="hm-sep"></div>
+<div class="hm-st" onclick="goApps('grade','A')"><b style="color:#16a34a">${gradeCnts.A}</b><span>A</span></div>
+<div class="hm-st" onclick="goApps('grade','B')"><b style="color:#2563eb">${gradeCnts.B}</b><span>B</span></div>
+<div class="hm-st" onclick="goApps('grade','C')"><b style="color:#ea580c">${gradeCnts.C}</b><span>C</span></div>
+<div class="hm-st" onclick="goApps('grade','D')"><b style="color:#64748b">${gradeCnts.D}</b><span>D</span></div>
 </div>`;
 
-// ── 콘텐츠 4카드 요약 ──
-h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-<div style="background:#fff;border-radius:6px;border:1px solid #e3e5ed;padding:10px 14px;cursor:pointer" onclick="sv('f')">
-<div style="font-size:9px;color:#888;font-weight:600">신청서 템플릿</div>
-<div style="font-size:20px;font-weight:900;color:#0088ff">${ftCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">개</span></div>
-<div style="font-size:9px;color:#aaa;margin-top:2px">${WEBSITES.length}개 홈페이지</div>
+// ── 콘텐츠 4카드 (컴팩트) ──
+h+=`<div class="hm-grid4">
+<div class="hm-card" onclick="sv('f')">
+<div class="hm-lbl">신청서 템플릿</div>
+<div class="hm-num" style="color:#0088ff">${ftCount}<span>개</span></div>
+<div class="hm-sub">${WEBSITES.length}개 홈페이지</div>
 </div>
-<div style="background:#fff;border-radius:6px;border:1px solid #e3e5ed;padding:10px 14px;cursor:pointer" onclick="ctTab='questions';sv('q')">
-<div style="font-size:9px;color:#888;font-weight:600">문제은행</div>
-<div style="font-size:20px;font-weight:900;color:#7c3aed">${qCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">문제</span></div>
-<div style="font-size:9px;color:#aaa;margin-top:2px">5종목 × 급수</div>
+<div class="hm-card" onclick="ctTab='questions';sv('q')">
+<div class="hm-lbl">문제은행</div>
+<div class="hm-num" style="color:#7c3aed">${qCount}<span>문제</span></div>
+<div class="hm-sub">5종목 × 급수</div>
 </div>
-<div style="background:#fff;border-radius:6px;border:1px solid #e3e5ed;padding:10px 14px;cursor:pointer" onclick="ctTab='curriculum';sv('q')">
-<div style="font-size:9px;color:#888;font-weight:600">커리큘럼</div>
-<div style="font-size:20px;font-weight:900;color:#059669">${cCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">과정</span></div>
-<div style="font-size:9px;color:#aaa;margin-top:2px">주차별 관리</div>
+<div class="hm-card" onclick="ctTab='curriculum';sv('q')">
+<div class="hm-lbl">커리큘럼</div>
+<div class="hm-num" style="color:#059669">${cCount}<span>과정</span></div>
+<div class="hm-sub">주차별 관리</div>
 </div>
-<div style="background:#fff;border-radius:6px;border:1px solid #e3e5ed;padding:10px 14px;cursor:pointer" onclick="ctTab='textbooks';sv('q')">
-<div style="font-size:9px;color:#888;font-weight:600">교재</div>
-<div style="font-size:20px;font-weight:900;color:#0891b2">${tbCount}<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">건</span></div>
-<div style="font-size:9px;color:#aaa;margin-top:2px">단원별 관리</div>
-</div>
-<div style="background:#fff;border-radius:6px;border:1px solid #e3e5ed;padding:10px 14px;cursor:pointer" onclick="ctTab='leveltest';sv('q')">
-<div style="font-size:9px;color:#888;font-weight:600">레벨테스트</div>
-<div style="font-size:20px;font-weight:900;color:#dc2626">2<span style="font-size:11px;color:#888;font-weight:400;margin-left:3px">버전</span></div>
-<div style="font-size:9px;color:#aaa;margin-top:2px">v모름 / v준걸 비교</div>
+<div class="hm-card" onclick="ctTab='textbooks';sv('q')">
+<div class="hm-lbl">교재</div>
+<div class="hm-num" style="color:#0891b2">${tbCount}<span>건</span></div>
+<div class="hm-sub">단원별 관리</div>
 </div>
 </div>`;
 
-// Show either filtered site or all sites
-const showSites=cSite?SITES.filter(s=>s.id===cSite):SITES;
-h+=`<div class="qd">`;
-for(const site of showSites){
-const rows=[];
-for(const t of site.tables.filter(t=>T.includes(t)))(TD[t]||[]).forEach(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}rows.push({...r,_t:t,p})});
-rows.sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""));
-const typeCnts={};rows.forEach(r=>{const l=(TB[r._t]||{l:"?"}).l;typeCnts[l]=(typeCnts[l]||0)+1});
+// ── 사이트별 최근 접수 4단 사분면 ──
+const siteIds=Object.entries(siteCnts).sort((a,b)=>b[1]-a[1]).map(([id])=>id);
+const top4=siteIds.slice(0,4);
+while(top4.length<4)top4.push(null);
 
-h+=`<div class="qc">
-<div class="qh" style="background:${site.bg}">
-<div class="qh-title"><span class="qh-dot" style="background:${site.color}"></span>${site.label} <span style="font-size:10px;color:${site.color}">${rows.length}건</span></div>
-<div class="qh-counts">${Object.entries(typeCnts).map(([l,c])=>`<span class="qh-cnt">${l} ${c}</span>`).join("")}</div>
-</div>
-<div class="qb">`;
-if(!rows.length){h+=`<div style="padding:16px;text-align:center;color:#ccc;font-size:10px">데이터 없음</div>`}
-else{rows.forEach(r=>{
-const st=r.p._status||0;const nm=r.p.name||r.p.title||r.p.studentName||r.p.orgName||"—";
-const tb_=TB[r._t]||{l:"?",c:"#888"};
-h+=`<div class="qr" data-st="${st}" onclick="sT('${r._t}')">
-<span><span class="bid">${rn(r._t,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</span>
-<span class="qn">${eh(String(nm).slice(0,12))}</span>
-<span class="qt" style="background:${tb_.c}">${tb_.l}</span>
-<span class="bs s${st}" style="font-size:8px">${ST[st]}</span>
-<span style="font-size:9px;color:#999">${(r.created_at||"").slice(5,16)}</span>
-</div>`})}
+h+=`<div class="hm-q4">`;
+for(const sid of top4){
+if(!sid){h+=`<div class="hm-qcard hm-qempty-card">데이터 없음</div>`;continue}
+const rows=all.filter(r=>{try{const p=JSON.parse(r.data);if(p._site)return p._site===sid;const ws=SITES.find(s=>s.tables.includes(r._t));return ws&&ws.id===sid}catch{return false}}).sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""));
+const sInfo=SITE_ICONS[sid]||{};
+const wsInfo=WEBSITES.find(w=>w.id===sid);
+const lblSite=SITES.find(s=>s.id===sid);
+const name=sInfo.name||(wsInfo&&wsInfo.name)||(lblSite&&lblSite.label)||sid;
+const color=sInfo.color||(lblSite&&lblSite.color)||'#64748b';
+const icon=sInfo.icon||'';
+const recent=rows.slice(0,8);
+h+=`<div class="hm-qcard" onclick="goApps('site','${sid}')" style="border-top:3px solid ${color}">
+<div class="hm-qhead"><span style="color:${color};font-weight:800">${icon} ${eh(name)}</span><span class="hm-qcnt">${rows.length}</span></div>
+<div class="hm-qrows">`;
+if(!recent.length)h+=`<div class="hm-qempty">데이터 없음</div>`;
+else recent.forEach(r=>{
+let p;try{p=JSON.parse(r.data)}catch{p={}}
+const nm=(p.part1&&p.part1.name)||p.name||p.title||p.studentName||p.orgName||"—";
+const phase=p._phase||'';
+const status=Math.min(Number(p._status||0),4);
+const date=(r.created_at||"").slice(5,10);
+const phLbl={part1:'1부',interview:'면접',part2:'2부',final:'최종'}[phase]||'';
+const stLbl=['미','확','통','면','✓'][status]||'-';
+h+=`<div class="hm-qrow" onclick="event.stopPropagation();goApps('site','${sid}')">
+<span class="hm-qnm">${eh(String(nm).slice(0,10))}</span>
+${phLbl?`<span class="hm-qph">${phLbl}</span>`:''}
+<span class="hm-qst hm-qst-${status}">${stLbl}</span>
+<span class="hm-qdt">${date}</span>
+</div>`});
 h+=`</div></div>`}
 h+=`</div>`;
-ca.innerHTML=h}
 
-function fQD(q){q=q.toLowerCase();document.querySelectorAll(".qr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?"":"none"})}
-function fQS(v){document.querySelectorAll(".qr").forEach(r=>{r.style.display=(!v||r.dataset.st===v)?"":"none"})}
+ca.innerHTML=h}
 
 // ═══ All List — 전체 통합 리스트 ═══
 function rAL(){uB();const all=aR();
@@ -970,7 +1045,10 @@ nh+=`<span class="chip ${ftSubTab==='templates'?'a':''}" onclick="ftSetSubTab('t
 if(ftSubTab==='list'){
   navBar.innerHTML=nh;
   ca.style.padding="0";
-  ca.innerHTML=`<iframe src="/admin-applications.html?embed=1" style="width:100%;height:calc(100vh - 120px);border:0;display:block;background:#f3f4f6"></iframe>`;
+  // appsFilter 가 있으면 iframe URL 에 filter_<axis> 쿼리로 전달
+  let qs="?embed=1";
+  if(appsFilter){qs+=`&filter_${appsFilter.axis}=${encodeURIComponent(appsFilter.value)}`;appsFilter=null}
+  ca.innerHTML=`<iframe src="/admin-applications.html${qs}" style="width:100%;height:calc(100vh - 120px);border:0;display:block;background:#f3f4f6"></iframe>`;
   return;
 }
 
@@ -993,14 +1071,22 @@ if(ftSite===w.id){for(const fm of forms){
 const secs=assembleForm(fm);const fCount=secs.reduce((s,sec)=>s+sec.fields.length,0);
 sb+=`<div class="fe-form-item ${ftFormId===fm._formId?"a":""}" onclick="ftSelForm('${fm._formId}')">${fm.name} <span style="font-size:9px;color:#aaa">${fCount}필드</span></div>`}
 sb+=`<div class="fe-form-item" onclick="ftAddForm('${w.id}')" style="color:#0088ff;font-style:italic">+ 신청서 추가</div>`}}
-// Module library
-sb+=`<div style="padding:8px 12px;font-size:10px;font-weight:700;color:#059669;background:#ecfdf5;border-top:2px solid #059669;border-bottom:1px solid #eee;margin-top:8px">모듈 라이브러리</div>`;
+// Module library (클릭 → 편집)
+sb+=`<div style="padding:6px 10px;font-size:10px;font-weight:700;color:#059669;background:#ecfdf5;border-top:2px solid #059669;border-bottom:1px solid #eee;margin-top:8px;display:flex;align-items:center;justify-content:space-between">
+<span>모듈 라이브러리 <span style="color:#888;font-weight:400">(${ftModules.length})</span></span>
+<button onclick="event.stopPropagation();ftAddNewModule()" style="background:#16a34a;color:#fff;border:none;padding:2px 7px;border-radius:3px;font-size:9px;font-weight:700;cursor:pointer">+ 새 모듈</button>
+</div>`;
 const commonMods=ftModules.filter(m=>m.category==="common").sort((a,b)=>(a.order||0)-(b.order||0));
-const specMods=ftModules.filter(m=>m.category==="specialty").sort((a,b)=>(a.order||0)-(b.order||0));
-sb+=`<div style="padding:4px 12px;font-size:9px;font-weight:700;color:#888;background:#fafbfc">공통 (자동포함)</div>`;
-for(const m of commonMods)sb+=`<div class="fe-form-item" style="font-size:10px;color:#059669">📦 ${m.name} <span style="color:#aaa">${m.fields.length}</span></div>`;
-sb+=`<div style="padding:4px 12px;font-size:9px;font-weight:700;color:#888;background:#fafbfc">세부 (선택적)</div>`;
-for(const m of specMods)sb+=`<div class="fe-form-item" style="font-size:10px;color:#7c3aed">📋 ${m.name} <span style="color:#aaa">${m.fields.length}</span></div>`;
+const specMods=ftModules.filter(m=>m.category!=="common"&&m.category!=="internal").sort((a,b)=>(a.order||0)-(b.order||0));
+const intMods=ftModules.filter(m=>m.category==="internal").sort((a,b)=>(a.order||0)-(b.order||0));
+sb+=`<div style="padding:3px 10px;font-size:9px;font-weight:700;color:#059669;background:#fafbfc">📦 공통 (모든 신청서)</div>`;
+for(const m of commonMods)sb+=`<div class="fe-form-item" style="font-size:10px;color:#059669;cursor:pointer" onclick="ftEditModule('${m.moduleId}')" title="클릭 → 편집">📦 ${eh(m.name)} <span style="color:#aaa">${m.fields.length}</span></div>`;
+sb+=`<div style="padding:3px 10px;font-size:9px;font-weight:700;color:#7c3aed;background:#fafbfc">📋 세부 (역할·분야)</div>`;
+for(const m of specMods)sb+=`<div class="fe-form-item" style="font-size:10px;color:#7c3aed;cursor:pointer" onclick="ftEditModule('${m.moduleId}')" title="클릭 → 편집">📋 ${eh(m.name)} <span style="color:#aaa">${m.fields.length}</span></div>`;
+if(intMods.length){
+sb+=`<div style="padding:3px 10px;font-size:9px;font-weight:700;color:#dc2626;background:#fafbfc">🔒 내부 전용 (admin)</div>`;
+for(const m of intMods)sb+=`<div class="fe-form-item" style="font-size:10px;color:#dc2626;cursor:pointer" onclick="ftEditModule('${m.moduleId}')" title="클릭 → 편집">🔒 ${eh(m.name)} <span style="color:#aaa">${m.fields.length}</span></div>`;
+}
 
 // Main area
 let main="";
@@ -1093,31 +1179,35 @@ ${mod.name}
 <span onclick="ftRemoveModule(${i})" style="cursor:pointer;margin-left:4px;color:#999;font-size:12px" title="제거">×</span>
 </span>`});
 h+=`</div>`;
-// Add module dropdown
+// Add module — 인라인 칩 (드롭다운 금지)
 const usedIds=new Set(ftData.modules||[]);
-const available=ftModules.filter(m=>!usedIds.has(m.moduleId));
+const available=ftModules.filter(m=>!usedIds.has(m.moduleId)&&m.category!=="internal");
 if(available.length){
-h+=`<div style="margin-top:6px"><select onchange="ftAddModule(this.value);this.value=''" style="padding:3px 8px;border:1px solid #ddd;border-radius:3px;font-size:10px">
-<option value="">+ 모듈 추가...</option>
-${available.map(m=>`<option value="${m.moduleId}">${m.category==="common"?"📦":"📋"} ${m.name} (${m.fields.length}필드)</option>`).join("")}
-</select></div>`}
+h+=`<div style="margin-top:8px;padding-top:6px;border-top:1px dashed #d1d5db"><div style="font-size:9px;color:#888;font-weight:700;margin-bottom:4px">+ 모듈 추가 (클릭)</div><div style="display:flex;gap:3px;flex-wrap:wrap">${available.map(m=>{const isCom=m.category==='common';const bg=isCom?'#ecfdf5':'#f5f3ff';const fg=isCom?'#059669':'#7c3aed';const bd=isCom?'#a7f3d0':'#ddd6fe';return`<span style="display:inline-flex;align-items:center;gap:2px;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:600;background:${bg};color:${fg};border:1px solid ${bd};cursor:pointer" onclick="ftAddModule('${m.moduleId}')" title="${m.fields.length}필드">+ ${isCom?'📦':'📋'} ${eh(m.name)}</span>`}).join('')}</div></div>`}
 h+=`</div>`;
 
-// ── 조립된 섹션별 필드 표시 ──
+// ── 조립된 섹션별 필드 표시 (4단 그리드) ──
+h+=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">`;
 sections.forEach((sec,si)=>{
 const isCom=sec.category==="common";
-h+=`<div class="fe-step"><div class="fe-step-hd" style="background:${isCom?"#ecfdf5":"#f5f3ff"}">
-<span style="color:${isCom?"#059669":"#7c3aed"}">${isCom?"📦 공통":"📋 세부"} ${sec.name} (${sec.fields.length}필드)</span>
-<span><button onclick="ftEditModule('${sec.moduleId}')">모듈 편집</button></span></div>`;
-// Field display (read-only summary)
+const bg=isCom?"#ecfdf5":"#f5f3ff";
+const fg=isCom?"#059669":"#7c3aed";
+const bd=isCom?"#a7f3d0":"#ddd6fe";
+h+=`<div style="background:#fff;border:1px solid ${bd};border-top:3px solid ${fg};border-radius:5px;overflow:hidden">
+<div style="padding:5px 8px;background:${bg};display:flex;align-items:center;justify-content:space-between">
+<span style="font-size:10px;font-weight:700;color:${fg}">${isCom?"📦":"📋"} ${eh(sec.name)}</span>
+<button onclick="ftEditModule('${sec.moduleId}')" style="background:#fff;border:1px solid ${bd};color:${fg};padding:1px 6px;border-radius:3px;font-size:9px;cursor:pointer">편집</button>
+</div>
+<div style="padding:4px 6px;background:#fff">
+<div style="font-size:9px;color:#94a3b8;margin-bottom:2px">${sec.fields.length}필드</div>`;
 sec.fields.forEach(fld=>{
-h+=`<div style="display:grid;grid-template-columns:140px 1fr 80px 50px;gap:6px;padding:4px 10px;border-bottom:1px solid #f5f5f5;font-size:10px;color:#555">
-<span style="font-weight:600">${eh(fld.label)}</span>
-<span style="color:#888">${fld.key}</span>
-<span style="color:#999">${fld.type}${fld.options?" ("+fld.options.length+"옵션)":""}</span>
-<span>${fld.required?'<span style="color:#e53e3e;font-weight:700">필수</span>':""}</span>
+h+=`<div style="padding:2px 4px;border-bottom:1px dashed #f1f5f9;font-size:9px;color:#475569;display:flex;justify-content:space-between;align-items:center;gap:4px">
+<span style="font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${eh(fld.label)}</span>
+<span style="color:#94a3b8;font-size:8px">${fld.type}</span>
+${fld.required?'<span style="color:#e53e3e;font-weight:700;font-size:8px">*</span>':""}
 </div>`});
-h+=`</div>`});
+h+=`</div></div>`});
+h+=`</div>`;
 
 // Extra fields section
 h+=`<div style="margin-top:8px"><div style="font-size:10px;font-weight:600;color:#888;margin-bottom:4px">추가 필드 (이 신청서 전용)</div>`;
@@ -1139,6 +1229,23 @@ h+=`</div>`;return h}
 
 function ftAddModule(modId){if(!modId||!ftData)return;if(!ftData.modules)ftData.modules=[];ftData.modules.push(modId);rForms()}
 function ftRemoveModule(idx){if(!ftData||!ftData.modules)return;ftData.modules.splice(idx,1);rForms()}
+
+// 새 모듈 생성 (라이브러리 + 새 모듈 버튼)
+async function ftAddNewModule(){
+const name=prompt("새 모듈 이름:");if(!name)return;
+const id=prompt("모듈 ID (영문/숫자/대시):","M-NEW-"+Date.now().toString(36).slice(-4).toUpperCase());if(!id)return;
+const category=prompt("카테고리\n  common = 모든 신청서 자동 포함\n  student/instructor/expert = 역할별\n  internal = 내부 전용 (admin)","common");
+if(!category)return;
+const newMod={moduleId:id,name,category,version:1,fields:[]};
+try{
+const res=await fetch("/api/form_modules",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(newMod)});
+const j=await res.json();
+await loadFormTemplates();
+rForms();
+// 생성 직후 편집창 열기
+setTimeout(()=>ftEditModule(id),100);
+}catch(e){alert("생성 실패: "+e.message)}
+}
 
 function ftEditModule(modId){
 const mod=ftModules.find(m=>m.moduleId===modId);if(!mod)return;

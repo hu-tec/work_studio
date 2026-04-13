@@ -992,8 +992,26 @@ function esc(v) {
 //  INIT
 // ============================================================
 
+// URL 의 filter_<axis>=<value> 쿼리를 읽어 state.filter 에 적용
+function applyUrlFilters() {
+  const params = new URLSearchParams(location.search);
+  for (const [k, v] of params) {
+    if (!k.startsWith('filter_')) continue;
+    const axis = k.slice(7);
+    if (!(axis in state.filter)) continue;
+    if (Array.isArray(state.filter[axis])) {
+      if (!state.filter[axis].includes(v)) state.filter[axis].push(v);
+    } else if (axis === 'status') {
+      state.filter[axis] = Number(v);
+    } else {
+      state.filter[axis] = v;
+    }
+  }
+}
+
 (async function init() {
   try {
+    applyUrlFilters();
     await loadAll();
     rerender();
   } catch (e) {
