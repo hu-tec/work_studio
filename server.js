@@ -14,6 +14,22 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+
+// --- 레거시 신청서 경로 → 범용 apply.html 리다이렉트 (static 보다 먼저) ---
+const LEGACY_REDIRECTS = {
+  "/tesol-apply":       "/apply.html?site=tesol&form=expert_part1",
+  "/tesol-apply.html":  "/apply.html?site=tesol&form=expert_part1",
+  "/expert-apply":      "/apply.html?site=hutechc&form=expert_part1",
+  "/expert-apply.html": "/apply.html?site=hutechc&form=expert_part1",
+  "/instructor-apply":       "/apply.html?site=hutechc&form=instructor_part1",
+  "/instructor-apply.html":  "/apply.html?site=hutechc&form=instructor_part1",
+  "/translator-apply":       "/apply.html?site=ai_trans&form=expert_part1",
+  "/translator-apply.html":  "/apply.html?site=ai_trans&form=expert_part1",
+};
+for (const [from, to] of Object.entries(LEGACY_REDIRECTS)) {
+  app.get(from, (req, res) => res.redirect(302, to));
+}
+
 app.use(express.static(path.join(__dirname, "public")));
 
 // --- 테이블 목록 API (admin용) ---
@@ -115,12 +131,25 @@ app.get("/api/form-config/:siteId/:formId", (req, res) => {
     assembledSections.push({ moduleId: "_extra", name: "추가 항목", category: "extra", fields: tplData.extraFields });
   }
 
+  // Resolve site label (icon/color/name) from sites.json
+  let siteInfo = null;
+  try {
+    const sitesJson = require(path.join(dataDefsPath, "sites.json"));
+    siteInfo = (sitesJson.websites || []).find(s => s.id === tplData._site) || null;
+  } catch (e) {}
+
   res.json({
     site: tplData._site,
     formId: tplData._formId,
-    name: tplData.name,
+    role: tplData._role,
+    phase: tplData._phase,                       // part1 | part2
+    displayName: tplData.displayName || tplData.name || tplData._formId,
+    shortName:   tplData.shortName   || tplData.displayName || tplData._formId,
+    steps: tplData.steps || null,                // module id groupings per step
     sections: assembledSections,
+    siteInfo,                                    // { id, name, icon, color, ... } or null
     submitUrl: `/api/applications`,
+    version: tplData.version || 1
   });
 });
 
@@ -130,12 +159,7 @@ app.get("/api/form-modules-list", (req, res) => {
   res.json(modules);
 });
 
-// --- TESOL 신청 페이지 ---
-app.get("/tesol-apply", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "tesol-apply.html"));
-});
-
-// --- 레벨테스트 페이지 (v모름: 기존) ---
+// --- 레벨테스트 페이지 (v모름: 기존, 예외 — 모듈화 제외) ---
 app.get("/level-test", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "level-test.html"));
 });

@@ -1,25 +1,26 @@
 {
-  "_meta": { "name": "C. 홈페이지", "updated": "2026-04-02" },
+  "_meta": { "name": "C. 홈페이지", "updated": "2026-04-13" },
   "categories": [
     { "id": "edu", "label": "교육", "sub": null, "note": "TESOL 등 교육 과정" },
     { "id": "trans", "label": "번역", "sub": "109개 언어", "note": "언어별로 나뉨" },
     { "id": "reading", "label": "통독 문서", "sub": "_useFieldTree", "note": "A소재 분류를 하위로 사용" },
+    { "id": "ethics", "label": "윤리", "sub": null, "note": "AI 윤리" },
     { "id": "exhibit", "label": "전시회", "sub": ["박물관", "전시회", "관광지"], "note": "" },
     { "id": "match", "label": "전문가 매칭", "sub": ["영업전문"], "note": "" },
     { "id": "exam", "label": "시험", "sub": null, "note": "CBT 시험" },
     { "id": "etc", "label": "그외", "sub": null, "note": "" }
   ],
   "websites": [
-    { "id": "tesol", "name": "TESOL", "url": "hu-tec.github.io/TESOL/", "category": "edu", "tables": ["tesol_expert_applications"] },
-    { "id": "ai_trans", "name": "AI 번역", "url": "hu-tec.github.io/translation-hub/", "category": "trans", "tables": ["translation_contacts", "translation_quotes", "translation_translators", "translation_integrated", "translation_experts", "translation_orders"] },
-    { "id": "reading", "name": "통독문서", "url": "hu-tec.github.io/classic-translation/", "category": "reading", "tables": ["classic_inquiries", "classic_specialist_apps"] },
-    { "id": "ai_ethics", "name": "AI 윤리", "url": "hu-tec.github.io/ai-ethics/", "category": "ethics", "tables": ["aiethics_applications"] },
-    { "id": "cbt", "name": "시험사이트", "url": "cbt.hutechc.com", "category": "exam", "tables": ["cbt_results", "level_test_submissions"] },
-    { "id": "hutechc", "name": "휴텍씨", "url": "hu-tec.github.io/company_hutec/", "category": "etc", "tables": [] },
-    { "id": "personal", "name": "대표님", "url": "hu-tec.github.io/personal_page/", "category": "etc", "tables": ["story_posts"] },
-    { "id": "iita", "name": "IITA협회", "url": "iita.or.kr", "category": "etc", "tables": [] },
-    { "id": "semiconductor", "name": "반도체/조선/방산", "url": "semiconductor.hutechc.com", "category": "etc", "tables": [] },
-    { "id": "level_test", "name": "레벨테스트", "url": "leveltest.hutechc.com", "category": "edu", "tables": ["level_test_submissions"] },
-    { "id": "matching", "name": "전문가매칭", "url": "matching.hutechc.com", "category": "match", "tables": [] }
+    { "id": "tesol",         "name": "TESOL",         "icon": "🎓", "color": "#1a365d", "url": "hu-tec.github.io/TESOL/",             "category": "edu",    "tables": ["tesol_expert_applications"] },
+    { "id": "ai_trans",      "name": "AI 번역",       "icon": "🌐", "color": "#2563eb", "url": "hu-tec.github.io/translation-hub/",   "category": "trans",  "tables": ["translation_contacts", "translation_quotes", "translation_translators", "translation_integrated", "translation_experts", "translation_orders"] },
+    { "id": "reading",       "name": "통독문서",      "icon": "📜", "color": "#7c2d12", "url": "hu-tec.github.io/classic-translation/","category": "reading","tables": ["classic_inquiries", "classic_specialist_apps"] },
+    { "id": "ai_ethics",     "name": "AI 윤리",       "icon": "⚖️", "color": "#16a34a", "url": "hu-tec.github.io/ai-ethics/",         "category": "ethics", "tables": ["aiethics_applications"] },
+    { "id": "cbt",           "name": "시험사이트",    "icon": "📋", "color": "#e11d48", "url": "cbt.hutechc.com",                     "category": "exam",   "tables": ["cbt_results", "level_test_submissions"] },
+    { "id": "hutechc",       "name": "휴텍씨",        "icon": "🏢", "color": "#475569", "url": "hu-tec.github.io/company_hutec/",     "category": "etc",    "tables": [] },
+    { "id": "personal",      "name": "대표님",        "icon": "✍️", "color": "#0891b2", "url": "hu-tec.github.io/personal_page/",     "category": "etc",    "tables": ["story_posts"] },
+    { "id": "iita",          "name": "IITA협회",      "icon": "🏛️","color": "#65a30d", "url": "iita.or.kr",                          "category": "etc",    "tables": [] },
+    { "id": "semiconductor", "name": "반도체/조선/방산","icon":"⚙️", "color": "#334155", "url": "semiconductor.hutechc.com",           "category": "etc",    "tables": [] },
+    { "id": "level_test",    "name": "레벨테스트",    "icon": "📝", "color": "#ea580c", "url": "leveltest.hutechc.com",               "category": "edu",    "tables": ["level_test_submissions"] },
+    { "id": "matching",      "name": "전문가매칭",    "icon": "🤝", "color": "#9333ea", "url": "matching.hutechc.com",                "category": "match",  "tables": [] }
   ]
 }

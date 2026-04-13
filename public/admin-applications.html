@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신청서 관리 — Work Studio</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:'Pretendard Variable','Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:#f3f4f6;color:#1f2937;font-size:12px}
+    button{font-family:inherit;cursor:pointer;border:none;background:none}
+    a{color:inherit;text-decoration:none}
+
+    /* Layout */
+    .top{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:20}
+    .top h1{font-size:14px;font-weight:800;color:#1a365d}
+    .top nav{display:flex;gap:4px;margin-left:auto}
+    .top nav button,.top nav a{padding:4px 10px;font-size:11px;font-weight:700;border-radius:4px;border:1px solid #e5e7eb;background:#fff;color:#4b5563}
+    .top nav button.a,.top nav a.a{background:#1a365d;color:#fff;border-color:#1a365d}
+
+    .wrap{padding:10px 12px;max-width:1700px;margin:0 auto}
+
+    /* Filters */
+    .filters{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px;margin-bottom:10px}
+    .filter-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:3px 0;border-bottom:1px dashed #f1f5f9}
+    .filter-row:last-child{border-bottom:none}
+    .filter-row .lbl{font-size:10px;font-weight:700;color:#64748b;min-width:52px}
+    .chip{padding:3px 9px;border:1px solid #d1d5db;border-radius:999px;font-size:10px;font-weight:600;color:#475569;background:#fff;user-select:none;white-space:nowrap}
+    .chip:hover{border-color:#94a3b8}
+    .chip.sel{background:#1a365d;color:#fff;border-color:#1a365d}
+    .chip-sq{border-radius:4px}
+    .chip-site{padding:3px 9px;border-radius:999px;font-weight:700;color:#fff}
+    .srch{padding:4px 8px;font-size:11px;border:1px solid #d1d5db;border-radius:4px;outline:none;min-width:180px}
+    .srch:focus{border-color:#1a365d}
+    .date{padding:3px 6px;font-size:11px;border:1px solid #d1d5db;border-radius:4px;outline:none}
+    .reset{padding:3px 10px;font-size:10px;font-weight:700;color:#dc2626;border:1px solid #fecaca;border-radius:4px;background:#fef2f2}
+
+    /* Summary bar */
+    .sumbar{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+    .sum{padding:4px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;font-size:11px}
+    .sum b{color:#1a365d;font-size:13px;margin-right:4px}
+
+    /* Table */
+    .tbl{width:100%;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
+    table{width:100%;border-collapse:collapse;font-size:11px}
+    th{padding:6px 8px;background:#f9fafb;border-bottom:1px solid #e5e7eb;text-align:left;font-weight:700;color:#64748b;font-size:10px;white-space:nowrap}
+    td{padding:5px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    tr.row:hover{background:#f9fafb}
+
+    .prefix{display:flex;flex-direction:column;gap:2px;min-width:130px}
+    .prefix .site{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;color:#fff;width:fit-content}
+    .prefix .form{font-size:10px;color:#374151;font-weight:600}
+    .role-bg{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700}
+    .role-student{background:#dbeafe;color:#1d4ed8}
+    .role-instructor{background:#fef3c7;color:#b45309}
+    .role-expert{background:#ede9fe;color:#6d28d9}
+
+    .phase{display:inline-block;padding:2px 7px;border-radius:3px;font-size:9px;font-weight:700;background:#e0e7ff;color:#3730a3}
+    .phase-part1{background:#e0e7ff;color:#3730a3}
+    .phase-interview{background:#fed7aa;color:#c2410c}
+    .phase-part2{background:#cffafe;color:#0e7490}
+    .phase-final{background:#dcfce7;color:#15803d}
+
+    .status{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700}
+    .st-0{background:#fee2e2;color:#991b1b}
+    .st-1{background:#fef3c7;color:#92400e}
+    .st-2{background:#ddd6fe;color:#5b21b6}
+    .st-3{background:#bfdbfe;color:#1e40af}
+    .st-4{background:#bbf7d0;color:#14532d}
+
+    .grade{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;min-width:20px;text-align:center}
+    .grade-A{background:#16a34a;color:#fff}
+    .grade-B{background:#2563eb;color:#fff}
+    .grade-C{background:#ea580c;color:#fff}
+    .grade-D{background:#64748b;color:#fff}
+
+    .btn{padding:3px 8px;font-size:10px;font-weight:600;border:1px solid #d1d5db;border-radius:3px;background:#fff;color:#4b5563}
+    .btn:hover{background:#f3f4f6}
+    .btn-primary{background:#1a365d;color:#fff;border-color:#1a365d}
+    .btn-danger{color:#b91c1c;border-color:#fecaca}
+    .btn-success{background:#16a34a;color:#fff;border-color:#16a34a}
+
+    .memo{font-size:10px;color:#6b7280;padding:2px 4px;border:1px dashed #e5e7eb;border-radius:3px;min-height:18px;min-width:120px}
+    .memo:focus{outline:none;border-color:#1a365d;background:#fffbea}
+
+    tr.detail{background:#fafbfe}
+    tr.detail td{padding:8px 14px}
+    .detail-sections{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px}
+    .detail-sec{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px}
+    .detail-sec h4{font-size:10px;font-weight:800;color:#1a365d;padding-bottom:4px;border-bottom:1px solid #e5e7eb;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+    .detail-sec .kv{display:flex;gap:4px;font-size:10px;padding:1px 0}
+    .detail-sec .kv .k{color:#64748b;min-width:80px}
+    .detail-sec .kv .v{color:#1f2937;font-weight:500;flex:1;word-break:break-all}
+    .score-in{width:48px;padding:2px 4px;font-size:10px;border:1px solid #d1d5db;border-radius:3px;text-align:center}
+    .grade-select{padding:2px 6px;font-size:10px;border:1px solid #d1d5db;border-radius:3px}
+    .edit-ta{width:100%;padding:4px 6px;font-size:10px;border:1px solid #d1d5db;border-radius:3px;resize:vertical;min-height:40px;font-family:inherit}
+
+    /* Dashboard 4단 */
+    .dash4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .dq{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-height:220px}
+    .dq-head{display:flex;align-items:center;gap:6px;padding-bottom:6px;border-bottom:2px solid #e5e7eb;margin-bottom:6px}
+    .dq-head .n{margin-left:auto;font-size:14px;font-weight:800;color:#1a365d}
+    .dq-stats{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}
+    .dq-stats span{padding:2px 6px;background:#f3f4f6;border-radius:3px;font-size:9px;color:#475569}
+    .dq-recent{font-size:10px}
+    .dq-recent .r{display:flex;gap:4px;padding:2px 0;border-bottom:1px dashed #f1f5f9}
+    .dq-recent .r:last-child{border-bottom:none}
+    .dq-recent .nm{flex:1;color:#1f2937;font-weight:600}
+    @media(max-width:1200px){.dash4{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:700px){.dash4{grid-template-columns:1fr}}
+
+    .empty{padding:40px;text-align:center;color:#94a3b8;font-size:12px}
+    .loading{padding:20px;text-align:center;color:#6b7280;font-size:11px}
+  </style>
+</head>
+<body>
+
+<header class="top">
+  <h1>🗂 신청서 관리</h1>
+  <nav>
+    <button id="viewList" class="a" onclick="setView('list')">▤ 리스트</button>
+    <button id="viewDash" onclick="setView('dash')">▦ 4단 대시보드</button>
+    <a href="/admin.html">← 전체 admin</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="sumbar" id="sumbar"></div>
+  <div class="filters" id="filters"></div>
+
+  <div id="listView">
+    <div class="tbl"><div class="loading">로딩 중…</div></div>
+  </div>
+
+  <div id="dashView" hidden>
+    <div class="dash4" id="dashGrid"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  GLOBAL STATE
+// ============================================================
+
+const state = {
+  rows: [],           // applications
+  templates: [],      // form_templates (id, data)
+  modules: [],        // form_modules
+  sites: [],          // sites.json websites
+  filter: {
+    site: null,       // single
+    formId: null,     // single
+    role: null,       // single
+    phase: null,      // single
+    status: null,     // single
+    subject: [],      // multi
+    grade: null,      // single
+    function: [],     // multi
+    layer: [],        // multi
+    search: '',
+    dateFrom: '',
+    dateTo: ''
+  },
+  view: 'list',
+  dashAxis: 'site',
+  expanded: new Set()
+};
+
+const SUBJECTS = ['TESOL 영어교육','AI 프롬프트','AI 번역/통역','AI 윤리','ITT 정통 통번역'];
+const GRADES = ['교육','일반(비즈니스)','전문'];
+const FUNCTIONS = ['문서','영상/SNS','음성','IT/개발','창의적 활동','번역 방법론','프롬프트','확장 영역'];
+const LAYERS = ['번역','윤리','보안'];
+const ROLES = [
+  { id:'student', label:'학생' },
+  { id:'instructor', label:'강사' },
+  { id:'expert', label:'전문가' }
+];
+const PHASES = [
+  { id:'part1', label:'1부' },
+  { id:'interview', label:'면접' },
+  { id:'part2', label:'2부' },
+  { id:'final', label:'최종' }
+];
+const STATUSES = [
+  { id:0, label:'미확인', cls:'st-0' },
+  { id:1, label:'확인', cls:'st-1' },
+  { id:2, label:'통화', cls:'st-2' },
+  { id:3, label:'면접', cls:'st-3' },
+  { id:4, label:'완료', cls:'st-4' }
+];
+
+// ============================================================
+//  FETCH
+// ============================================================
+
+async function f(url, opts) {
+  const r = await fetch(url, opts);
+  if (!r.ok) throw new Error(`${url} ${r.status}`);
+  return r.json();
+}
+
+async function loadAll() {
+  const [rows, tpls, mods, sitesDef] = await Promise.all([
+    f('/api/applications').catch(() => []),
+    f('/api/form_templates').catch(() => []),
+    f('/api/form_modules').catch(() => []),
+    f('/api/definitions/sites').catch(() => ({ websites: [] }))
+  ]);
+  state.rows = (rows || []).map(r => { try { return { id:r.id, created_at:r.created_at, d: JSON.parse(r.data||'{}') }; } catch { return { id:r.id, created_at:r.created_at, d:{} }; } });
+  state.templates = (tpls || []).map(r => { try { return { id:r.id, ...JSON.parse(r.data||'{}') }; } catch { return {}; } });
+  state.modules = (mods || []).map(r => { try { return { id:r.id, ...JSON.parse(r.data||'{}') }; } catch { return {}; } });
+  state.sites = sitesDef.websites || [];
+}
+
+// ============================================================
+//  LOOKUPS
+// ============================================================
+
+function siteInfo(siteId) {
+  return state.sites.find(s => s.id === siteId) || { id:siteId, name:siteId, icon:'🏠', color:'#475569' };
+}
+
+function templateInfo(siteId, formId) {
+  return state.templates.find(t => t._site === siteId && t._formId === formId) || null;
+}
+
+function moduleInfo(moduleId) {
+  return state.modules.find(m => m.moduleId === moduleId) || null;
+}
+
+// Row taxonomy extraction
+function getTax(d, key) {
+  // Taxonomy lives under part1.tax_* typically
+  const p1 = d.part1 || {};
+  return p1[`tax_${key}`];
+}
+
+function getField(d, phase, key) {
+  return (d[phase] || {})[key];
+}
+
+function getName(d) {
+  return getField(d, 'part1', 'name') || d.name || '(이름없음)';
+}
+
+function getPhone(d) {
+  return getField(d, 'part1', 'phone') || d.phone || '';
+}
+
+function getEmail(d) {
+  return getField(d, 'part1', 'email') || d.email || '';
+}
+
+// ============================================================
+//  FILTERING
+// ============================================================
+
+function applyFilters(rows) {
+  const fl = state.filter;
+  return rows.filter(r => {
+    const d = r.d;
+    if (fl.site && d._site !== fl.site) return false;
+    if (fl.formId && d._formId !== fl.formId) return false;
+    if (fl.role && d._role !== fl.role) return false;
+    if (fl.phase && d._phase !== fl.phase) return false;
+    if (fl.status != null && Number(d._status || 0) !== fl.status) return false;
+
+    const taxSubject = getTax(d, 'subject') || [];
+    if (fl.subject.length && !fl.subject.some(s => taxSubject.includes(s))) return false;
+    if (fl.grade && getTax(d, 'grade') !== fl.grade) return false;
+
+    const taxFunction = getTax(d, 'function') || [];
+    if (fl.function.length && !fl.function.some(f => taxFunction.includes(f))) return false;
+
+    const taxLayer = getTax(d, 'layer') || [];
+    if (fl.layer.length && !fl.layer.some(l => taxLayer.includes(l))) return false;
+
+    if (fl.search) {
+      const q = fl.search.toLowerCase();
+      const hay = [getName(d), getPhone(d), getEmail(d)].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+
+    if (fl.dateFrom) {
+      if ((r.created_at || '') < fl.dateFrom) return false;
+    }
+    if (fl.dateTo) {
+      if ((r.created_at || '') > fl.dateTo + ' 23:59:59') return false;
+    }
+    return true;
+  });
+}
+
+// ============================================================
+//  RENDER: FILTERS
+// ============================================================
+
+function renderFilters() {
+  const el = document.getElementById('filters');
+  const usedSites = [...new Set(state.rows.map(r => r.d._site).filter(Boolean))];
+  const allSites = [...new Set([...usedSites, ...state.templates.map(t => t._site).filter(Boolean)])];
+
+  const usedForms = [...new Set(state.templates.map(t => t._formId).filter(Boolean))];
+
+  const row = (label, content) => `<div class="filter-row"><span class="lbl">${label}</span>${content}</div>`;
+  const chipMulti = (axis, options, fmt) => options.map(o => {
+    const sel = state.filter[axis].includes(o);
+    return `<span class="chip${sel?' sel':''}" onclick="togMulti('${axis}','${o.replace(/'/g,"\\'")}')">${fmt ? fmt(o) : o}</span>`;
+  }).join('');
+  const chipSingle = (axis, options, fmt) => options.map(o => {
+    const v = typeof o === 'object' ? o.id : o;
+    const lb = typeof o === 'object' ? o.label : (fmt ? fmt(o) : o);
+    const sel = state.filter[axis] === v || (v === null && state.filter[axis] === null);
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('${axis}',${JSON.stringify(v)})">${lb}</span>`;
+  }).join('');
+
+  let html = '';
+
+  // 사이트 (멀티가 아니라 싱글 네모칩. 색깔 적용)
+  const siteChips = allSites.map(sid => {
+    const s = siteInfo(sid);
+    const sel = state.filter.site === sid;
+    const bg = sel ? s.color : '#fff';
+    const fg = sel ? '#fff' : s.color;
+    return `<span class="chip chip-sq" style="background:${bg};color:${fg};border-color:${s.color}" onclick="togSingle('site',${JSON.stringify(sid)})">${s.icon||''} ${s.name||sid}</span>`;
+  }).join('');
+  const anySite = `<span class="chip chip-sq${state.filter.site===null?' sel':''}" onclick="togSingle('site',null)">전체</span>`;
+  html += row('사이트', anySite + siteChips);
+
+  // 신청서 (_formId)
+  const formChips = usedForms.map(f => {
+    const sel = state.filter.formId === f;
+    const label = f.replace('_part1','·1부').replace('_part2','·2부').replace('student','학생').replace('instructor','강사').replace('expert','전문가');
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('formId',${JSON.stringify(f)})">${label}</span>`;
+  }).join('');
+  const anyForm = `<span class="chip chip-sq${state.filter.formId===null?' sel':''}" onclick="togSingle('formId',null)">전체</span>`;
+  html += row('신청서', anyForm + formChips);
+
+  // 역할
+  html += row('역할', `<span class="chip chip-sq${state.filter.role===null?' sel':''}" onclick="togSingle('role',null)">전체</span>` + ROLES.map(r => {
+    const sel = state.filter.role === r.id;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('role',${JSON.stringify(r.id)})">${r.label}</span>`;
+  }).join(''));
+
+  // 단계
+  html += row('단계', `<span class="chip chip-sq${state.filter.phase===null?' sel':''}" onclick="togSingle('phase',null)">전체</span>` + PHASES.map(p => {
+    const sel = state.filter.phase === p.id;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('phase',${JSON.stringify(p.id)})">${p.label}</span>`;
+  }).join(''));
+
+  // 상태
+  html += row('상태', `<span class="chip${state.filter.status===null?' sel':''}" onclick="togSingle('status',null)">전체</span>` + STATUSES.map(s => {
+    const sel = state.filter.status === s.id;
+    return `<span class="chip${sel?' sel':''}" onclick="togSingle('status',${s.id})">${s.label}</span>`;
+  }).join(''));
+
+  // 과목 (멀티 원형)
+  html += row('과목', chipMulti('subject', SUBJECTS));
+  // 급수
+  html += row('급수', `<span class="chip chip-sq${state.filter.grade===null?' sel':''}" onclick="togSingle('grade',null)">전체</span>` + GRADES.map(g => {
+    const sel = state.filter.grade === g;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('grade',${JSON.stringify(g)})">${g}</span>`;
+  }).join(''));
+  // 기능
+  html += row('기능', chipMulti('function', FUNCTIONS));
+  // 레이어
+  html += row('레이어', chipMulti('layer', LAYERS));
+
+  // 검색 + 기간 + reset
+  html += `<div class="filter-row">
+    <span class="lbl">검색</span>
+    <input class="srch" type="text" id="searchBox" placeholder="이름·전화·이메일" value="${state.filter.search||''}" oninput="state.filter.search=this.value;rerender()">
+    <span class="lbl" style="margin-left:12px">기간</span>
+    <input class="date" type="date" value="${state.filter.dateFrom}" onchange="state.filter.dateFrom=this.value;rerender()">
+    ~
+    <input class="date" type="date" value="${state.filter.dateTo}" onchange="state.filter.dateTo=this.value;rerender()">
+    <button class="reset" style="margin-left:auto" onclick="resetFilters()">전체 초기화</button>
+  </div>`;
+
+  el.innerHTML = html;
+}
+
+function togSingle(axis, value) {
+  if (state.filter[axis] === value) {
+    state.filter[axis] = null;
+  } else {
+    state.filter[axis] = value;
+  }
+  rerender();
+}
+
+function togMulti(axis, value) {
+  const arr = state.filter[axis];
+  const i = arr.indexOf(value);
+  if (i >= 0) arr.splice(i, 1); else arr.push(value);
+  rerender();
+}
+
+function resetFilters() {
+  state.filter = {
+    site:null, formId:null, role:null, phase:null, status:null,
+    subject:[], grade:null, function:[], layer:[],
+    search:'', dateFrom:'', dateTo:''
+  };
+  rerender();
+}
+
+// ============================================================
+//  RENDER: SUMMARY BAR
+// ============================================================
+
+function renderSumBar(filtered) {
+  const el = document.getElementById('sumbar');
+  const total = state.rows.length;
+  const cur = filtered.length;
+  const byPhase = { part1:0, interview:0, part2:0, final:0 };
+  const byRole = { student:0, instructor:0, expert:0 };
+  const byStatus = [0,0,0,0,0];
+  const byGrade = { A:0, B:0, C:0, D:0 };
+  for (const r of filtered) {
+    const d = r.d;
+    if (d._phase && byPhase[d._phase] != null) byPhase[d._phase]++;
+    if (d._role && byRole[d._role] != null) byRole[d._role]++;
+    const s = Number(d._status || 0); if (s >= 0 && s <= 4) byStatus[s]++;
+    const g = d.final?.final_grade;
+    if (g && byGrade[g] != null) byGrade[g]++;
+  }
+  el.innerHTML = `
+    <div class="sum"><b>${cur}</b>/${total} 건</div>
+    <div class="sum"><b>${byPhase.part1}</b>1부</div>
+    <div class="sum"><b>${byPhase.interview}</b>면접</div>
+    <div class="sum"><b>${byPhase.part2}</b>2부</div>
+    <div class="sum"><b>${byPhase.final}</b>최종</div>
+    <div class="sum"><b>${byRole.student}</b>학생</div>
+    <div class="sum"><b>${byRole.instructor}</b>강사</div>
+    <div class="sum"><b>${byRole.expert}</b>전문가</div>
+    <div class="sum"><b>${byStatus[0]}</b>미확인</div>
+    <div class="sum"><b>${byStatus[4]}</b>완료</div>
+    <div class="sum">A:<b>${byGrade.A}</b>  B:<b>${byGrade.B}</b>  C:<b>${byGrade.C}</b>  D:<b>${byGrade.D}</b></div>
+  `;
+}
+
+// ============================================================
+//  RENDER: LIST VIEW (T3-2-2)
+// ============================================================
+
+function renderList(filtered) {
+  if (!filtered.length) {
+    document.getElementById('listView').innerHTML = `<div class="tbl"><div class="empty">조건에 맞는 신청서가 없습니다.</div></div>`;
+    return;
+  }
+
+  const head = `
+    <tr>
+      <th style="width:160px">출처 / 신청서</th>
+      <th>이름</th>
+      <th>연락처</th>
+      <th style="width:80px">역할</th>
+      <th style="width:66px">단계</th>
+      <th style="width:66px">상태</th>
+      <th style="width:60px">과목</th>
+      <th style="width:50px">등급</th>
+      <th style="width:80px">접수일</th>
+      <th>메모</th>
+      <th style="width:120px">작업</th>
+    </tr>`;
+
+  const rows = filtered.map(r => {
+    const d = r.d;
+    const s = siteInfo(d._site);
+    const t = templateInfo(d._site, d._formId);
+    const formLabel = t ? t.shortName : (d._formId || '-');
+    const role = d._role || '-';
+    const phase = d._phase || 'part1';
+    const status = Number(d._status || 0);
+    const stObj = STATUSES.find(x => x.id === status);
+    const phaseObj = PHASES.find(p => p.id === phase);
+    const subj = (getTax(d, 'subject') || []).slice(0, 2).join(', ');
+    const grade = d.final?.final_grade || '-';
+    const date = (r.created_at || '').slice(5, 10);
+    const exp = state.expanded.has(r.id);
+
+    const mainRow = `
+      <tr class="row" data-id="${r.id}">
+        <td>
+          <div class="prefix">
+            <span class="site" style="background:${s.color}">${s.icon||''} ${s.name||d._site}</span>
+            <span class="form">${formLabel}</span>
+          </div>
+        </td>
+        <td><b>${esc(getName(d))}</b></td>
+        <td>${esc(getPhone(d))}<br><span style="color:#94a3b8;font-size:9px">${esc(getEmail(d))}</span></td>
+        <td><span class="role-bg role-${role}">${ROLES.find(r=>r.id===role)?.label||role}</span></td>
+        <td><span class="phase phase-${phase}">${phaseObj?phaseObj.label:phase}</span></td>
+        <td><span class="status ${stObj?stObj.cls:'st-0'}">${stObj?stObj.label:status}</span></td>
+        <td style="font-size:9px;color:#64748b">${esc(subj)}</td>
+        <td>${grade !== '-' ? `<span class="grade grade-${grade}">${grade}</span>` : '-'}</td>
+        <td style="font-size:10px;color:#64748b">${date}</td>
+        <td><div class="memo" contenteditable="true" data-id="${r.id}" onblur="saveMemo(${r.id}, this.textContent)">${esc(d._notes || '')}</div></td>
+        <td>
+          <button class="btn" onclick="toggleExpand(${r.id})">${exp ? '접기' : '펼치기'}</button>
+          <button class="btn btn-danger" onclick="delRow(${r.id})">×</button>
+        </td>
+      </tr>`;
+
+    const detailRow = exp ? renderDetail(r) : '';
+    return mainRow + detailRow;
+  }).join('');
+
+  document.getElementById('listView').innerHTML = `
+    <div class="tbl">
+      <table>
+        <thead>${head}</thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ============================================================
+//  RENDER: ROW EXPAND DETAIL (1부/통화/면접/2부/최종)
+// ============================================================
+
+function renderDetail(r) {
+  const d = r.d;
+  const p1 = d.part1 || {};
+  const call = d.call || {};
+  const iv = d.interview || {};
+  const p2 = d.part2 || {};
+  const fn = d.final || {};
+
+  const kv = (k, v) => v != null && v !== '' ? `<div class="kv"><div class="k">${esc(k)}</div><div class="v">${esc(typeof v === 'object' ? JSON.stringify(v) : String(v))}</div></div>` : '';
+
+  const p1Section = `
+    <div class="detail-sec">
+      <h4>📥 1부 — 기본 정보</h4>
+      ${kv('성명', p1.name)}
+      ${kv('영문명', p1.nameEn)}
+      ${kv('생년월일', p1.birthDate)}
+      ${kv('성별', p1.gender)}
+      ${kv('연락처', p1.phone)}
+      ${kv('이메일', p1.email)}
+      ${kv('주소', p1.address)}
+      ${kv('국적', p1.nationality)}
+    </div>`;
+
+  const taxSection = `
+    <div class="detail-sec">
+      <h4>🏷️ 분류 5축</h4>
+      ${kv('과목', (p1.tax_subject || []).join(', '))}
+      ${kv('급수', p1.tax_grade)}
+      ${kv('기능', (p1.tax_function || []).join(', '))}
+      ${kv('산업', p1.tax_industry)}
+      ${kv('영역', p1.tax_domain)}
+      ${kv('레이어', (p1.tax_layer || []).join(', '))}
+      ${kv('개인정보 동의', p1.privacyConsent ? 'O' : 'X')}
+    </div>`;
+
+  // Role-specific Part1 extras
+  const roleKeys = Object.keys(p1).filter(k => !['name','nameEn','birthDate','gender','phone','email','address','nationality','tax_subject','tax_grade','tax_function','tax_industry','tax_domain','tax_layer','privacyConsent','marketingConsent'].includes(k));
+  const roleSec = roleKeys.length ? `
+    <div class="detail-sec">
+      <h4>🎯 역할별 1부</h4>
+      ${roleKeys.map(k => kv(k, p1[k])).join('')}
+    </div>` : '';
+
+  // Call + Interview (editable)
+  const callSection = `
+    <div class="detail-sec">
+      <h4>📞 통화</h4>
+      <div class="kv"><div class="k">일시</div><input class="edit-ta" type="datetime-local" style="min-height:auto;padding:2px 4px" value="${call.at||''}" onchange="saveNested(${r.id},'call','at',this.value)"></div>
+      <div class="kv"><div class="k">담당자</div><input class="edit-ta" type="text" style="min-height:auto;padding:2px 4px" value="${esc(call.by||'')}" onchange="saveNested(${r.id},'call','by',this.value)"></div>
+      <div class="kv"><div class="k">메모</div><textarea class="edit-ta" onblur="saveNested(${r.id},'call','notes',this.value)">${esc(call.notes||'')}</textarea></div>
+      <div class="kv"><div class="k">다음</div>
+        <div class="v">
+          <button class="btn" onclick="setStatus(${r.id}, 2)">통화 완료</button>
+          <button class="btn btn-primary" onclick="setStatus(${r.id}, 3);setPhase(${r.id}, 'interview')">→ 면접</button>
+        </div>
+      </div>
+    </div>`;
+
+  const ivScore = iv.score || {};
+  const total = (Number(ivScore.communication||0)+Number(ivScore.expertise||0)+Number(ivScore.attitude||0)+Number(ivScore.availability||0));
+  const interviewSection = `
+    <div class="detail-sec">
+      <h4>🗣️ 면접 점수 (M-INT-SCORE)</h4>
+      <div class="kv"><div class="k">커뮤니케이션</div><input class="score-in" type="number" min="1" max="5" value="${ivScore.communication||''}" onchange="saveScore(${r.id},'communication',this.value)"></div>
+      <div class="kv"><div class="k">전문성</div><input class="score-in" type="number" min="1" max="5" value="${ivScore.expertise||''}" onchange="saveScore(${r.id},'expertise',this.value)"></div>
+      <div class="kv"><div class="k">태도</div><input class="score-in" type="number" min="1" max="5" value="${ivScore.attitude||''}" onchange="saveScore(${r.id},'attitude',this.value)"></div>
+      <div class="kv"><div class="k">가용성</div><input class="score-in" type="number" min="1" max="5" value="${ivScore.availability||''}" onchange="saveScore(${r.id},'availability',this.value)"></div>
+      <div class="kv"><div class="k">총점</div><div class="v"><b>${total || '-'} / 20</b></div></div>
+      <div class="kv"><div class="k">메모</div><textarea class="edit-ta" onblur="saveNested(${r.id},'interview','memo',this.value)">${esc(iv.memo||'')}</textarea></div>
+    </div>`;
+
+  const p2Keys = Object.keys(p2);
+  const p2Section = p2Keys.length ? `
+    <div class="detail-sec">
+      <h4>📝 2부 — 상세</h4>
+      ${p2Keys.map(k => kv(k, p2[k])).join('')}
+    </div>` : `<div class="detail-sec"><h4>📝 2부</h4><div style="font-size:10px;color:#94a3b8">미제출 — <a href="#" onclick="sendPart2Link(${r.id});return false">Part 2 링크 생성</a></div></div>`;
+
+  const finalSection = `
+    <div class="detail-sec">
+      <h4>🏆 최종 등급 (M-FINAL)</h4>
+      <div class="kv"><div class="k">자동 점수</div><input class="score-in" type="number" style="width:70px" value="${fn.final_autoScore||''}" onchange="saveNested(${r.id},'final','final_autoScore',Number(this.value))"></div>
+      <div class="kv"><div class="k">수동 점수</div><input class="score-in" type="number" style="width:70px" value="${fn.final_manualScore||''}" onchange="saveNested(${r.id},'final','final_manualScore',Number(this.value))"></div>
+      <div class="kv"><div class="k">등급</div>
+        <select class="grade-select" onchange="saveNested(${r.id},'final','final_grade',this.value);setStatus(${r.id},4);setPhase(${r.id},'final')">
+          <option value="">-</option>
+          <option ${fn.final_grade==='A'?'selected':''}>A</option>
+          <option ${fn.final_grade==='B'?'selected':''}>B</option>
+          <option ${fn.final_grade==='C'?'selected':''}>C</option>
+          <option ${fn.final_grade==='D'?'selected':''}>D</option>
+        </select>
+      </div>
+      <div class="kv"><div class="k">사유</div><textarea class="edit-ta" onblur="saveNested(${r.id},'final','final_reason',this.value)">${esc(fn.final_reason||'')}</textarea></div>
+    </div>`;
+
+  return `
+    <tr class="detail">
+      <td colspan="11">
+        <div class="detail-sections">
+          ${p1Section}
+          ${taxSection}
+          ${roleSec}
+          ${callSection}
+          ${interviewSection}
+          ${p2Section}
+          ${finalSection}
+        </div>
+      </td>
+    </tr>`;
+}
+
+// ============================================================
+//  RENDER: DASHBOARD 4단 (T3-2-3)
+// ============================================================
+
+function renderDashboard(filtered) {
+  const grid = document.getElementById('dashGrid');
+  // Group by site (primary axis for Sprint)
+  const groups = {};
+  for (const r of filtered) {
+    const key = r.d._site || 'etc';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
+  }
+  // Pick top 4 sites by count
+  const top4 = Object.entries(groups).sort((a,b) => b[1].length - a[1].length).slice(0, 4);
+  while (top4.length < 4) top4.push(['(빈)', []]);
+
+  grid.innerHTML = top4.map(([sid, rows]) => {
+    const s = siteInfo(sid);
+    const byRole = { student:0, instructor:0, expert:0 };
+    const byPhase = { part1:0, interview:0, part2:0, final:0 };
+    const byGrade = { A:0,B:0,C:0,D:0 };
+    for (const r of rows) {
+      if (byRole[r.d._role] != null) byRole[r.d._role]++;
+      if (byPhase[r.d._phase] != null) byPhase[r.d._phase]++;
+      const g = r.d.final?.final_grade;
+      if (byGrade[g] != null) byGrade[g]++;
+    }
+    const recent = rows.slice(0, 5).map(r => {
+      const d = r.d;
+      const t = templateInfo(d._site, d._formId);
+      return `<div class="r">
+        <span class="nm">${esc(getName(d))}</span>
+        <span style="color:#64748b">${t?t.shortName:''}</span>
+        <span class="status ${STATUSES.find(x=>x.id===Number(d._status||0))?.cls||'st-0'}">${STATUSES.find(x=>x.id===Number(d._status||0))?.label||'-'}</span>
+      </div>`;
+    }).join('');
+
+    return `
+      <div class="dq" onclick="focusSite('${sid}')" style="border-top:4px solid ${s.color||'#64748b'}">
+        <div class="dq-head">
+          <span style="color:${s.color}">${s.icon||''}</span>
+          <span style="font-weight:800">${s.name||sid}</span>
+          <span class="n">${rows.length}</span>
+        </div>
+        <div class="dq-stats">
+          <span>학생 ${byRole.student}</span>
+          <span>강사 ${byRole.instructor}</span>
+          <span>전문가 ${byRole.expert}</span>
+        </div>
+        <div class="dq-stats">
+          <span>1부 ${byPhase.part1}</span>
+          <span>면접 ${byPhase.interview}</span>
+          <span>2부 ${byPhase.part2}</span>
+          <span>최종 ${byPhase.final}</span>
+        </div>
+        <div class="dq-stats">
+          <span>A:${byGrade.A}</span>
+          <span>B:${byGrade.B}</span>
+          <span>C:${byGrade.C}</span>
+          <span>D:${byGrade.D}</span>
+        </div>
+        <div class="dq-recent">${recent || '<div class="r" style="color:#94a3b8">아직 제출 없음</div>'}</div>
+      </div>`;
+  }).join('');
+}
+
+function focusSite(sid) {
+  state.filter.site = sid;
+  setView('list');
+}
+
+// ============================================================
+//  ACTIONS
+// ============================================================
+
+function toggleExpand(id) {
+  if (state.expanded.has(id)) state.expanded.delete(id);
+  else state.expanded.add(id);
+  rerender();
+}
+
+async function delRow(id) {
+  if (!confirm('삭제하시겠습니까? 되돌릴 수 없습니다.')) return;
+  await fetch('/api/applications/' + id, { method:'DELETE' });
+  state.rows = state.rows.filter(r => r.id !== id);
+  rerender();
+}
+
+async function saveMemo(id, text) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  row.d._notes = text;
+  await fetch('/api/applications/' + id, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(row.d)
+  });
+}
+
+async function saveNested(id, section, key, value) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  if (!row.d[section]) row.d[section] = {};
+  row.d[section][key] = value;
+  await fetch('/api/applications/' + id, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(row.d)
+  });
+}
+
+async function saveScore(id, key, value) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  if (!row.d.interview) row.d.interview = {};
+  if (!row.d.interview.score) row.d.interview.score = {};
+  row.d.interview.score[key] = Number(value);
+  const sc = row.d.interview.score;
+  row.d.interview.total = (Number(sc.communication||0)+Number(sc.expertise||0)+Number(sc.attitude||0)+Number(sc.availability||0));
+  await fetch('/api/applications/' + id, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(row.d)
+  });
+  rerender();
+}
+
+async function setStatus(id, status) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  row.d._status = status;
+  await fetch('/api/applications/' + id, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(row.d)
+  });
+  rerender();
+}
+
+async function setPhase(id, phase) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  row.d._phase = phase;
+  await fetch('/api/applications/' + id, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(row.d)
+  });
+  rerender();
+}
+
+function sendPart2Link(id) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  const formId = (row.d._formId || '').replace('_part1', '_part2');
+  const link = `${location.origin}/apply.html?site=${row.d._site}&form=${formId}&id=${id}`;
+  prompt('이 URL을 지원자에게 발송하세요:', link);
+}
+
+// ============================================================
+//  VIEW CONTROL + RERENDER
+// ============================================================
+
+function setView(v) {
+  state.view = v;
+  document.getElementById('viewList').classList.toggle('a', v === 'list');
+  document.getElementById('viewDash').classList.toggle('a', v === 'dash');
+  document.getElementById('listView').hidden = (v !== 'list');
+  document.getElementById('dashView').hidden = (v !== 'dash');
+  rerender();
+}
+
+function rerender() {
+  const filtered = applyFilters(state.rows);
+  renderFilters();
+  renderSumBar(filtered);
+  if (state.view === 'list') renderList(filtered);
+  else renderDashboard(filtered);
+}
+
+// ============================================================
+//  UTIL
+// ============================================================
+
+function esc(v) {
+  if (v == null) return '';
+  return String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+
+(async function init() {
+  try {
+    await loadAll();
+    rerender();
+  } catch (e) {
+    console.error(e);
+    document.getElementById('listView').innerHTML = `<div class="tbl"><div class="empty">데이터 로드 실패: ${esc(e.message)}</div></div>`;
+  }
+})();
+</script>
+</body>
+</html>

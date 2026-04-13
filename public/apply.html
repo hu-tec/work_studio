@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신청서 | HutechC</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" rel="stylesheet">
+  <style>
+    html,body{margin:0;padding:0;background:#f3f4f6;font-family:'Pretendard Variable','Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:#1f2937}
+    .page{min-height:100vh;padding:16px 12px 40px;display:flex;flex-direction:column;align-items:center}
+    .card{width:100%;max-width:760px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px 16px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+    #application-form{width:100%}
+    .loading{padding:40px;text-align:center;color:#6b7280;font-size:13px}
+    .miss{padding:16px;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;border-radius:6px;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div id="application-form"><div class="loading">신청서 불러오는 중…</div></div>
+    </div>
+  </div>
+  <script src="/form-engine/engine.js"></script>
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      const site   = p.get('site');
+      const formId = p.get('form') || p.get('formId');
+      const id     = p.get('id');
+      const token  = p.get('t');
+
+      if (!site || !formId) {
+        document.getElementById('application-form').innerHTML =
+          '<div class="miss">URL에 <code>?site=</code> 와 <code>?form=</code> 파라미터가 필요합니다.</div>';
+        return;
+      }
+
+      FormEngine.init({
+        site: site,
+        formId: formId,
+        container: '#application-form',
+        apiUrl: location.origin,
+        recordId: id || null,
+        token: token || null
+      });
+    })();
+  </script>
+</body>
+</html>
