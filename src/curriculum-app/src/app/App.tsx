@@ -5,12 +5,13 @@ import { StepCurriculum } from "./components/StepCurriculum";
 import { SavedList } from "./components/SavedList";
 import { DashboardOverview } from "./components/DashboardOverview";
 import { CurriculumExpandView } from "./components/CurriculumExpandView";
+import { RegulationView } from "./components/RegulationView";
 import { useState } from "react";
-import { RotateCcw, Save, X, GraduationCap, Tag, Award, Hash, BookText, ClipboardList, FolderOpen, BarChart3, Layers } from "lucide-react";
+import { RotateCcw, Save, X, GraduationCap, Tag, Award, Hash, BookText, ClipboardList, FolderOpen, BarChart3, Layers, ShieldCheck } from "lucide-react";
 
 export default function App() {
   const c = useCurriculum();
-  const [activeTab, setActiveTab] = useState<"editor" | "expand" | "saved" | "dashboard">("editor");
+  const [activeTab, setActiveTab] = useState<"editor" | "expand" | "regulation" | "saved" | "dashboard">("editor");
   const [savedFilter, setSavedFilter] = useState<{ catLarge?: string[]; field?: string[]; mid?: string[] }>({});
 
   const categoryPath = [c.catLarge, c.catMedium, c.catSmall].filter(Boolean).join(" › ");
@@ -56,6 +57,17 @@ export default function App() {
               >
                 <Layers className="h-3.5 w-3.5" />
                 전체 펼치기
+              </button>
+              <button
+                onClick={() => setActiveTab("regulation")}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[0.76rem] font-medium transition-all ${
+                  activeTab === "regulation"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <ShieldCheck className="h-3.5 w-3.5" />
+                규정
               </button>
               <button
                 onClick={() => setActiveTab("saved")}
@@ -148,6 +160,10 @@ export default function App() {
         {activeTab === "expand" ? (
             <div className="p-4">
               <CurriculumExpandView />
+            </div>
+        ) : activeTab === "regulation" ? (
+            <div className="p-4">
+              <RegulationView />
             </div>
         ) : activeTab === "editor" ? (
           <div className="p-4 space-y-4">
