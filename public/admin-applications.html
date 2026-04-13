@@ -111,7 +111,17 @@
 
     .empty{padding:40px;text-align:center;color:#94a3b8;font-size:12px}
     .loading{padding:20px;text-align:center;color:#6b7280;font-size:11px}
+
+    /* Embed mode — hide top header when inside admin.html iframe */
+    body.embed .top{display:none}
+    body.embed .wrap{padding:8px 10px}
   </style>
+  <script>
+    if (new URLSearchParams(location.search).get('embed') === '1') {
+      document.documentElement.classList.add('embed-html');
+      document.addEventListener('DOMContentLoaded', () => document.body.classList.add('embed'));
+    }
+  </script>
 </head>
 <body>
 

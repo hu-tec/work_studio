@@ -301,6 +301,7 @@ function buildTemplates() {
           _formId: `${role}_${phase}`,
           _role: role,
           _phase: phase,
+          name:        `${ROLE_NAMES[role]} · ${phaseLabel}`,       // legacy admin.html fm.name
           displayName: `${ROLE_NAMES[role]} 신청서 · ${phaseLabel}`,
           shortName:   `${ROLE_NAMES[role]} · ${phaseLabel}`,
           modules: mods,
