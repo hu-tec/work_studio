@@ -365,6 +365,15 @@ function filterBy(axis, value) {
   rerender();
 }
 
+// HTML onclick 속성 안에 안전하게 JS 리터럴을 넣기 위한 헬퍼.
+// JSON.stringify는 " 를 쓰는데 이게 onclick="..." 속성 안에서 조기 종료를 유발 →
+// 필터 칩 onclick 전체가 깨져서 아무 반응 없던 원인.
+function js(v) {
+  if (v === null || v === undefined) return 'null';
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+  return "'" + String(v).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "'";
+}
+
 // ============================================================
 //  RENDER: FILTERS
 // ============================================================
@@ -385,7 +394,7 @@ function renderFilters() {
     const v = typeof o === 'object' ? o.id : o;
     const lb = typeof o === 'object' ? o.label : (fmt ? fmt(o) : o);
     const sel = state.filter[axis] === v || (v === null && state.filter[axis] === null);
-    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('${axis}',${JSON.stringify(v)})">${lb}</span>`;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('${axis}',${js(v)})">${lb}</span>`;
   }).join('');
 
   let html = '';
@@ -396,7 +405,7 @@ function renderFilters() {
     const sel = state.filter.site === sid;
     const bg = sel ? s.color : '#fff';
     const fg = sel ? '#fff' : s.color;
-    return `<span class="chip chip-sq" style="background:${bg};color:${fg};border-color:${s.color}" onclick="togSingle('site',${JSON.stringify(sid)})">${s.icon||''} ${s.name||sid}</span>`;
+    return `<span class="chip chip-sq" style="background:${bg};color:${fg};border-color:${s.color}" onclick="togSingle('site',${js(sid)})">${s.icon||''} ${s.name||sid}</span>`;
   }).join('');
   const anySite = `<span class="chip chip-sq${state.filter.site===null?' sel':''}" onclick="togSingle('site',null)">전체</span>`;
   html += row('사이트', anySite + siteChips);
@@ -405,7 +414,7 @@ function renderFilters() {
   const formChips = usedForms.map(f => {
     const sel = state.filter.formId === f;
     const label = f.replace('_part1','·1부').replace('_part2','·2부').replace('student','학생').replace('instructor','강사').replace('expert','전문가');
-    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('formId',${JSON.stringify(f)})">${label}</span>`;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('formId',${js(f)})">${label}</span>`;
   }).join('');
   const anyForm = `<span class="chip chip-sq${state.filter.formId===null?' sel':''}" onclick="togSingle('formId',null)">전체</span>`;
   html += row('신청서', anyForm + formChips);
@@ -413,13 +422,13 @@ function renderFilters() {
   // 역할
   html += row('역할', `<span class="chip chip-sq${state.filter.role===null?' sel':''}" onclick="togSingle('role',null)">전체</span>` + ROLES.map(r => {
     const sel = state.filter.role === r.id;
-    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('role',${JSON.stringify(r.id)})">${r.label}</span>`;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('role',${js(r.id)})">${r.label}</span>`;
   }).join(''));
 
   // 단계
   html += row('단계', `<span class="chip chip-sq${state.filter.phase===null?' sel':''}" onclick="togSingle('phase',null)">전체</span>` + PHASES.map(p => {
     const sel = state.filter.phase === p.id;
-    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('phase',${JSON.stringify(p.id)})">${p.label}</span>`;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('phase',${js(p.id)})">${p.label}</span>`;
   }).join(''));
 
   // 상태
@@ -433,7 +442,7 @@ function renderFilters() {
   // 급수
   html += row('급수', `<span class="chip chip-sq${state.filter.grade===null?' sel':''}" onclick="togSingle('grade',null)">전체</span>` + GRADES.map(g => {
     const sel = state.filter.grade === g;
-    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('grade',${JSON.stringify(g)})">${g}</span>`;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('grade',${js(g)})">${g}</span>`;
   }).join(''));
   // 기능
   html += row('기능', chipMulti('function', FUNCTIONS));
