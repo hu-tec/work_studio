@@ -9,7 +9,6 @@
 body{font:12px/1.4 'Pretendard',-apple-system,sans-serif;background:#f0f2f5;color:#0f172a;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 a{color:inherit;text-decoration:none}
 
-/* ─── Header ─── */
 header{background:#1a365d;color:#fff;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 header h1{font-size:13px;font-weight:700}
 header h1 .sub{font-weight:400;font-size:11px;opacity:.7;margin-left:6px}
@@ -17,33 +16,29 @@ header .hr{display:flex;align-items:center;gap:8px;font-size:11px}
 header .hr .ui{color:rgba(255,255,255,.6)}
 header .hr button{padding:2px 10px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:3px;font-size:10px;cursor:pointer}
 header .hr button:hover{background:rgba(255,255,255,.25)}
+.dirty-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-left:4px}
 
-/* ─── Shortcut bar ─── */
 .short-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:5px 12px;display:flex;align-items:center;gap:5px;flex-shrink:0;flex-wrap:wrap}
 .short-bar .s-lbl{font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-right:2px}
 .short-bar .s-sep{width:1px;height:14px;background:#e2e8f0;margin:0 4px}
-.s-btn{padding:3px 8px;border:1px solid #e2e8f0;background:#fff;border-radius:3px;font-size:10px;cursor:pointer;color:#475569;transition:.1s;font-weight:500}
+.s-btn{padding:3px 8px;border:1px solid #e2e8f0;background:#fff;border-radius:3px;font-size:10px;cursor:pointer;color:#475569;font-weight:500;font-family:inherit}
 .s-btn:hover{background:#f1f5f9;border-color:#cbd5e1}
 .s-btn.a{background:#1a365d;color:#fff;border-color:#1a365d}
 
-/* ─── Steps progress bar ─── */
 .steps{background:#fff;border-bottom:1px solid #e2e8f0;padding:6px 14px;display:flex;align-items:center;gap:4px;flex-shrink:0}
 .step-node{display:flex;align-items:center;gap:5px;cursor:pointer;padding:2px 4px;border-radius:4px;transition:.1s}
 .step-node:hover{background:#f8fafc}
 .step-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:#e2e8f0;color:#94a3b8;transition:.15s}
 .step-node.done .step-dot{background:#059669;color:#fff}
-.step-node.cur .step-dot{background:#1a365d;color:#fff;box-shadow:0 0 0 3px rgba(26,54,93,.15)}
 .step-lbl{font-size:10px;color:#64748b;font-weight:500}
-.step-node.done .step-lbl,.step-node.cur .step-lbl{color:#0f172a;font-weight:700}
-.step-bar{flex:0 0 32px;height:2px;background:#e2e8f0;border-radius:1px}
+.step-node.done .step-lbl{color:#0f172a;font-weight:700}
+.step-bar{flex:0 0 30px;height:2px;background:#e2e8f0;border-radius:1px}
 .step-bar.done{background:#059669}
 .steps .prog-summary{margin-left:auto;font-size:10px;color:#64748b}
 .steps .prog-summary b{color:#0f172a}
 
-/* ─── Layout ─── */
 .layout{display:flex;flex:1;overflow:hidden;min-height:0}
 
-/* ─── Left panel: list ─── */
 .lp{width:230px;min-width:230px;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
 .lp-hd{padding:6px 8px;border-bottom:1px solid #e2e8f0;display:flex;gap:4px}
 .lp-hd input{flex:1;height:24px;padding:0 8px;border:1px solid #e2e8f0;border-radius:3px;font-size:11px;outline:none}
@@ -52,7 +47,6 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
 .lp-hd button:hover{background:#2d4a7c}
 .lp-tools{padding:4px 8px;border-bottom:1px solid #f1f5f9;display:flex;gap:4px;align-items:center}
 .lp-tools button{padding:2px 6px;border:1px solid #e2e8f0;background:#fff;border-radius:3px;font-size:9px;cursor:pointer;color:#475569}
-.lp-tools button:hover{background:#f1f5f9}
 .lp-tools .cnt{margin-left:auto;font-size:9px;color:#64748b}
 .lp-tools .cnt b{color:#0f172a}
 .lp-list{flex:1;overflow-y:auto}
@@ -61,12 +55,12 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
 .hp-row:hover{background:#f8fafc}
 .hp-row.a{background:#eef2ff;border-left:2px solid #1a365d;padding-left:6px}
 .hp-row .hp-top{display:flex;align-items:center;gap:4px;margin-bottom:2px}
-.hp-row .hp-name{font-size:11px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#0f172a}
+.hp-row .hp-name{font-size:11px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hp-row .hp-st{font-size:8px;padding:1px 5px;border-radius:8px;font-weight:700;text-transform:uppercase}
 .st-draft{background:#fef3c7;color:#d97706}
 .st-published{background:#d1fae5;color:#059669}
 .st-archived{background:#f3f4f6;color:#64748b}
-.hp-row .hp-meta{font-size:9px;color:#94a3b8;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.hp-row .hp-meta{font-size:9px;color:#94a3b8;display:flex;gap:5px}
 .hp-prog{display:flex;gap:2px;margin-top:3px}
 .hp-prog-dot{flex:1;height:4px;border-radius:2px;background:#e2e8f0}
 .hp-prog-dot.on{background:#059669}
@@ -75,93 +69,144 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
 .hp-det{display:none;padding:5px 0 0;border-top:1px dashed #e2e8f0;margin-top:4px;font-size:9px;color:#64748b;line-height:1.5}
 .hp-row.exp .hp-det{display:block}
 
-/* ─── Center panel: edit ─── */
 .cp{flex:1;overflow-y:auto;padding:12px 14px;min-width:0;background:#f0f2f5}
 .cp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#94a3b8;gap:10px;font-size:12px;text-align:center}
 .cp-empty .big-ic{font-size:44px}
 .cp-empty button{padding:8px 18px;background:#1a365d;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
-.cp-empty button:hover{background:#2d4a7c}
+
 .step-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
 .step-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed #e2e8f0}
 .step-hd .step-n{width:24px;height:24px;border-radius:50%;background:#1a365d;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .step-hd h3{font-size:13px;font-weight:700;flex:1;color:#0f172a}
+.step-hd h3 .meta{font-size:10px;color:#64748b;font-weight:500;margin-left:6px}
 .step-hd .step-sts{font-size:9px;padding:2px 8px;border-radius:10px;background:#f1f5f9;color:#64748b;font-weight:700}
 .step-hd .step-sts.done{background:#d1fae5;color:#059669}
 .step-body{padding:2px}
-.step-body .hint{font-size:10px;color:#94a3b8;margin-bottom:6px;padding-left:2px}
+.hint{font-size:10px;color:#94a3b8;margin-bottom:6px;padding-left:2px;line-height:1.5}
 
 .fld{margin-bottom:6px}
 .fld label{display:block;font-size:9px;color:#64748b;font-weight:700;margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px}
-.fld input[type=text],.fld input[type=url],.fld textarea{width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:11px;outline:none;font-family:inherit;color:#0f172a}
+.fld input[type=text],.fld input[type=url],.fld input[type=email],.fld input[type=number],.fld textarea{width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:11px;outline:none;font-family:inherit;color:#0f172a}
 .fld input:focus,.fld textarea:focus{border-color:#1a365d;background:#f8fafc}
-.fld textarea{resize:vertical;min-height:50px}
+.fld textarea{resize:vertical;min-height:48px}
 .fld-row{display:flex;gap:6px}
 .fld-row .fld{flex:1}
 
-/* ─── Chips ─── */
 .chips{display:flex;flex-wrap:wrap;gap:4px}
-.chip{padding:3px 9px;border:1px solid #e2e8f0;background:#fff;font-size:10px;cursor:pointer;color:#475569;transition:.1s;display:inline-flex;align-items:center;gap:3px;font-weight:500;font-family:inherit}
+.chip{padding:3px 9px;border:1px solid #e2e8f0;background:#fff;font-size:10px;cursor:pointer;color:#475569;display:inline-flex;align-items:center;gap:3px;font-weight:500;font-family:inherit}
 .chip.sq{border-radius:4px}
 .chip.rd{border-radius:999px}
 .chip:hover{background:#f1f5f9;border-color:#cbd5e1}
 .chip.a{background:#1a365d;color:#fff;border-color:#1a365d}
 .chip.a.rd{background:#2563eb;border-color:#2563eb}
 
-/* ─── Common module grid ─── */
-.mod-cat{font-size:9px;color:#94a3b8;margin:8px 0 4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.mod-cat:first-child{margin-top:0}
-.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px}
-.mod-card{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;font-size:10px;background:#fff;transition:.1s}
-.mod-card:hover{background:#f8fafc;border-color:#cbd5e1}
-.mod-card.a{background:#eef2ff;border-color:#1a365d}
-.mod-card input{accent-color:#1a365d;cursor:pointer}
-.mod-card .mc-nm{font-weight:600;color:#0f172a;flex:1}
-.mod-card .mc-desc{font-size:8px;color:#94a3b8;display:block;margin-top:1px}
-.mod-card-inner{flex:1;min-width:0}
+/* GitHub verify result */
+.gh-result{margin-top:8px;padding:8px 10px;border-radius:6px;font-size:11px;border:1px solid #e2e8f0}
+.gh-result.ok{background:#ecfdf5;border-color:#059669}
+.gh-result.err{background:#fef2f2;border-color:#dc2626}
+.gh-result .gh-title{font-weight:700;color:#0f172a;margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.gh-result .gh-meta{font-size:10px;color:#64748b;line-height:1.6}
+.gh-result .gh-meta code{background:#f1f5f9;padding:1px 4px;border-radius:2px;font-family:monospace;font-size:9px}
 
-/* ─── Form template list ─── */
-.ft-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:5px;margin-top:6px}
-.ft-card{padding:6px 8px;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;font-size:10px;position:relative;background:#fff;transition:.1s}
-.ft-card:hover{background:#f8fafc;border-color:#cbd5e1}
-.ft-card.a{background:#eef2ff;border-color:#1a365d}
-.ft-card .ft-nm{font-weight:600;color:#0f172a;margin-bottom:2px;padding-right:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ft-card .ft-meta{font-size:9px;color:#94a3b8}
-.ft-card .ft-chk{position:absolute;right:5px;top:5px;font-size:11px;color:#059669;font-weight:700}
-.ft-empty{padding:16px;text-align:center;color:#94a3b8;font-size:10px;line-height:1.6;border:1px dashed #e2e8f0;border-radius:6px;margin-top:6px}
+/* Common module card */
+.cm-card{border:1px solid #e2e8f0;border-radius:6px;margin-bottom:5px;overflow:hidden;background:#fff}
+.cm-card.disabled{opacity:.5}
+.cm-hd{display:flex;align-items:center;gap:6px;padding:7px 10px;cursor:pointer;background:#f8fafc;transition:.1s}
+.cm-hd:hover{background:#f1f5f9}
+.cm-card.exp .cm-hd{background:#eef2ff;border-bottom:1px solid #e2e8f0}
+.cm-hd .cm-chev{width:12px;text-align:center;color:#64748b;font-size:10px;transition:.15s}
+.cm-card.exp .cm-hd .cm-chev{transform:rotate(90deg)}
+.cm-hd .cm-ic{font-size:14px}
+.cm-hd .cm-nm{flex:1;font-size:11px;font-weight:700;color:#0f172a}
+.cm-hd .cm-cat{font-size:9px;color:#94a3b8;padding:1px 6px;background:#f1f5f9;border-radius:3px;font-weight:600}
+.cm-hd .cm-cnt{font-size:9px;color:#64748b;margin:0 4px}
+.cm-tog{width:30px;height:16px;border-radius:8px;border:none;cursor:pointer;position:relative;transition:.15s;flex-shrink:0}
+.cm-tog.on{background:#059669}
+.cm-tog.off{background:#cbd5e1}
+.cm-tog::after{content:'';position:absolute;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:.15s}
+.cm-tog.on::after{left:16px}
+.cm-tog.off::after{left:2px}
+.cm-body{display:none;padding:10px;border-top:1px solid #f1f5f9}
+.cm-card.exp .cm-body{display:block}
 
-/* ─── Preset cards ─── */
-.preset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px;margin-bottom:8px}
-.preset-card{padding:10px;border:1px solid #e2e8f0;border-radius:8px;transition:.1s;background:linear-gradient(135deg,#fff,#f8fafc);display:flex;flex-direction:column}
-.preset-card:hover{border-color:#1a365d;background:linear-gradient(135deg,#fff,#eef2ff)}
-.preset-card.a{border-color:#059669;background:linear-gradient(135deg,#ecfdf5,#fff)}
-.preset-card h4{font-size:12px;font-weight:700;color:#0f172a;margin-bottom:3px}
-.preset-card .pr-desc{font-size:10px;color:#64748b;margin-bottom:4px;line-height:1.4}
-.preset-card .pr-src{font-size:9px;color:#94a3b8;font-family:monospace;margin-bottom:5px}
-.preset-card .pr-feat{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}
-.preset-card .pr-feat span{font-size:9px;padding:1px 5px;background:#e2e8f0;color:#475569;border-radius:3px}
-.preset-card .pr-steps{font-size:9px;color:#64748b;margin-bottom:6px;padding:4px 6px;background:#f8fafc;border-radius:4px;line-height:1.6}
-.preset-card .pr-btn{margin-top:auto;width:100%;padding:5px;background:#1a365d;color:#fff;border:none;border-radius:4px;font-size:10px;cursor:pointer;font-weight:600}
-.preset-card .pr-btn:hover{background:#2d4a7c}
-.preset-card.a .pr-btn{background:#059669}
-.preset-card.a .pr-btn:hover{background:#047857}
-.preset-card.custom{background:linear-gradient(135deg,#fff,#fef9c3);border-style:dashed;cursor:pointer}
-.preset-card.custom:hover{background:linear-gradient(135deg,#fef9c3,#fef3c7)}
+/* List editor (notice/faq/sections etc) */
+.list-ed{display:flex;flex-direction:column;gap:4px}
+.list-ed-item{display:flex;gap:4px;align-items:flex-start;padding:5px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px}
+.list-ed-item .idx{width:18px;height:18px;border-radius:50%;background:#1a365d;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;margin-top:2px}
+.list-ed-item .fields{flex:1;display:flex;flex-direction:column;gap:3px}
+.list-ed-item .fields input,.list-ed-item .fields textarea{padding:3px 6px;border:1px solid #e2e8f0;border-radius:3px;font-size:10px;font-family:inherit}
+.list-ed-item .rm{padding:0 6px;background:#fee2e2;color:#dc2626;border:none;border-radius:3px;font-size:10px;cursor:pointer;font-weight:700;align-self:flex-start}
+.list-ed-add{padding:5px 10px;border:1px dashed #cbd5e1;background:#fff;border-radius:4px;font-size:10px;cursor:pointer;color:#1a365d;font-weight:600}
+.list-ed-add:hover{background:#eef2ff}
 
-/* ─── Applied modules list ─── */
-.applied-list{margin-top:8px;padding-top:8px;border-top:1px dashed #e2e8f0}
-.applied-list .al-hd{font-size:10px;color:#64748b;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.applied-list .al-hd b{color:#0f172a}
-.applied-item{display:flex;align-items:center;gap:6px;padding:5px 8px;background:#f8fafc;border-radius:4px;margin-bottom:3px;font-size:10px;border:1px solid #f1f5f9}
-.applied-item .ai-n{width:18px;height:18px;border-radius:50%;background:#1a365d;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.applied-item .ai-nm{flex:1;color:#0f172a;font-weight:500}
-.applied-item .ai-src{font-size:9px;color:#94a3b8;font-family:monospace}
-.applied-item button{padding:1px 6px;border:none;background:#fee2e2;color:#dc2626;border-radius:3px;font-size:9px;cursor:pointer;font-weight:600}
-.applied-item button:hover{background:#fecaca}
+/* Step 3: filter rows */
+.filter-bar{display:flex;flex-direction:column;gap:5px;padding:6px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;margin-bottom:8px}
+.filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-row .fr-lbl{font-size:9px;color:#94a3b8;font-weight:700;min-width:44px;text-transform:uppercase}
 
-/* ─── Deploy log ─── */
-.dp-log{margin-top:8px;background:#0f172a;color:#10b981;padding:8px 10px;border-radius:4px;font-family:'Menlo','Consolas',monospace;font-size:10px;max-height:160px;overflow-y:auto;white-space:pre-wrap;line-height:1.5}
+/* Template cards */
+.ft-list{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.ft-card{padding:8px 10px;border:1px solid #e2e8f0;border-radius:6px;background:#fff}
+.ft-card.sel{border-color:#1a365d;background:#eef2ff}
+.ft-card .ft-top{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.ft-card .ft-nm{font-weight:700;color:#0f172a;font-size:11px;flex:1}
+.ft-card .ft-badge{font-size:9px;padding:1px 6px;border-radius:3px;font-weight:700}
+.ft-card .ft-badge.site{background:#1a365d;color:#fff}
+.ft-card .ft-badge.role{background:#7c3aed;color:#fff}
+.ft-card .ft-phases{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.ft-card .ph-block{padding:5px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;display:flex;flex-direction:column;gap:3px}
+.ft-card .ph-block.on{background:#ecfdf5;border-color:#059669}
+.ft-card .ph-hd{display:flex;align-items:center;gap:5px}
+.ft-card .ph-hd input{accent-color:#059669;cursor:pointer}
+.ft-card .ph-name{font-weight:700;font-size:10px;color:#0f172a;flex:1}
+.ft-card .ph-cnt{font-size:9px;color:#64748b;background:#fff;padding:1px 6px;border-radius:3px}
+.ft-card .ph-mods{display:flex;flex-wrap:wrap;gap:2px;padding-left:18px}
+.ft-card .ph-mod{font-size:8px;padding:1px 5px;background:#fff;border:1px solid #e2e8f0;border-radius:3px;color:#64748b;font-family:monospace}
+.ft-empty{padding:16px;text-align:center;color:#94a3b8;font-size:10px;border:1px dashed #e2e8f0;border-radius:6px;line-height:1.6}
 
-/* ─── Right panel ─── */
+/* Step 4: blocks */
+.block-lib-hd{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin:8px 0 4px}
+.block-lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;margin-bottom:8px}
+.block-lib .blk-lib-card{padding:6px 8px;border:1px solid #e2e8f0;border-radius:5px;background:#fff;cursor:pointer;font-size:10px;transition:.1s}
+.block-lib .blk-lib-card:hover{background:#eef2ff;border-color:#1a365d}
+.block-lib .blk-lib-card .bl-nm{font-weight:700;color:#0f172a;margin-bottom:1px}
+.block-lib .blk-lib-card .bl-desc{font-size:9px;color:#94a3b8;line-height:1.3}
+.stack-btns{display:flex;gap:4px;margin-bottom:4px}
+.stack-btn{flex:1;padding:6px 10px;border:1px dashed #1a365d;background:#eef2ff;color:#1a365d;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer}
+.stack-btn:hover{background:#c7d2fe}
+
+.applied-hd{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin:10px 0 4px;display:flex;align-items:center;gap:6px}
+.applied-hd b{color:#0f172a}
+.applied-list{display:flex;flex-direction:column;gap:5px}
+.app-blk{border:1px solid #e2e8f0;border-radius:6px;background:#fff;overflow:hidden}
+.app-blk.exp .ab-body{display:block}
+.app-blk-hd{display:flex;align-items:center;gap:5px;padding:6px 10px;background:#f8fafc;cursor:pointer}
+.app-blk-hd:hover{background:#f1f5f9}
+.app-blk-hd .ab-n{width:18px;height:18px;border-radius:50%;background:#1a365d;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.app-blk-hd .ab-nm{flex:1;font-size:11px;font-weight:700;color:#0f172a}
+.app-blk-hd .ab-type{font-size:9px;color:#94a3b8;font-family:monospace;background:#fff;padding:1px 5px;border-radius:2px}
+.app-blk-hd .ab-ctrls{display:flex;gap:2px}
+.app-blk-hd .ab-ctrls button{width:20px;height:20px;border:none;background:#fff;border-radius:3px;font-size:10px;cursor:pointer;color:#64748b}
+.app-blk-hd .ab-ctrls button:hover{background:#eef2ff;color:#1a365d}
+.app-blk-hd .ab-ctrls .rm{color:#dc2626}
+.app-blk-hd .ab-ctrls .rm:hover{background:#fee2e2}
+.ab-body{display:none;padding:8px 10px;border-top:1px solid #e2e8f0;background:#fff}
+
+/* Step 5 routing */
+.rt-table{width:100%;border-collapse:collapse;font-size:10px;margin-top:6px}
+.rt-table th{background:#f8fafc;padding:5px 8px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:9px;text-transform:uppercase;letter-spacing:.3px}
+.rt-table td{padding:5px 8px;border-bottom:1px solid #f1f5f9;color:#475569}
+.rt-table td.tgt{font-family:monospace;color:#1a365d;font-weight:600}
+.preview-box{background:#0f172a;color:#10b981;padding:8px 12px;border-radius:5px;font-family:'Menlo','Consolas',monospace;font-size:11px;display:flex;flex-direction:column;gap:4px}
+.preview-box .pv-url{display:flex;align-items:center;gap:6px}
+.preview-box .pv-url a{color:#67e8f9;text-decoration:underline}
+.preview-box .pv-url .label{color:#64748b}
+.publish-btn{padding:10px 16px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;margin-top:6px}
+.publish-btn:hover{background:#047857}
+.publish-btn:disabled{opacity:.4;cursor:not-allowed}
+.warn-box{padding:6px 10px;background:#fef3c7;border:1px solid #f59e0b;border-radius:5px;font-size:10px;color:#92400e;margin-top:6px}
+
+/* Right panel */
 .rp{width:300px;min-width:300px;background:#fff;border-left:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
 .rp-body{flex:1;overflow-y:auto;padding:10px 12px}
 .rp-empty{padding:40px 16px;text-align:center;color:#94a3b8;font-size:10px;line-height:1.6}
@@ -173,39 +218,25 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
 .rp-fld input:focus,.rp-fld textarea:focus{border-color:#1a365d}
 .rp-fld textarea{resize:vertical;min-height:44px}
 .rp-prog{display:flex;flex-direction:column;gap:3px}
-.rp-pr{display:flex;align-items:center;gap:6px;font-size:10px;padding:4px 6px;border-radius:4px;background:#f8fafc;cursor:pointer;transition:.1s}
+.rp-pr{display:flex;align-items:center;gap:6px;font-size:10px;padding:4px 6px;border-radius:4px;background:#f8fafc;cursor:pointer}
 .rp-pr:hover{background:#eef2ff}
 .rp-pr .pr-ck{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
 .rp-pr.done .pr-ck{background:#059669;color:#fff}
 .rp-pr.wait .pr-ck{background:#e2e8f0;color:#94a3b8}
 .rp-pr .pr-nm{flex:1}
 .rp-pr.done .pr-nm{color:#0f172a;font-weight:600}
-.rp-pr.wait .pr-nm{color:#94a3b8}
-.rp-db-item{padding:3px 6px;background:#f8fafc;border-radius:3px;font-size:9px;margin-bottom:2px;font-family:monospace;color:#475569}
 .rp-acts{padding:10px 12px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;gap:6px;flex-shrink:0}
-.rp-acts button{flex:1;padding:7px;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:700;transition:.1s}
+.rp-acts button{flex:1;padding:7px;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:700}
 .rp-save{background:#1a365d;color:#fff}
 .rp-save:hover:not(:disabled){background:#2d4a7c}
-.rp-deploy{background:#059669;color:#fff}
-.rp-deploy:hover:not(:disabled){background:#047857}
+.rp-preview{background:#059669;color:#fff}
+.rp-preview:hover:not(:disabled){background:#047857}
 .rp-acts button:disabled{opacity:.35;cursor:not-allowed}
 
-/* ─── Notes ─── */
-.notes-area{display:flex;flex-direction:column;gap:4px}
-.notes-files{display:flex;flex-wrap:wrap;gap:3px;min-height:16px}
-.note-file{font-size:9px;background:#eef2ff;color:#1a365d;padding:2px 5px;border-radius:3px;display:inline-flex;align-items:center;gap:3px}
-.note-file button{border:none;background:none;cursor:pointer;color:#dc2626;font-size:11px;padding:0;margin-left:2px;font-weight:700}
-.notes-add{font-size:9px;background:#f1f5f9;color:#475569;padding:3px 6px;border:1px dashed #cbd5e1;border-radius:3px;cursor:pointer}
-.notes-add:hover{background:#e2e8f0}
-
-/* ─── Toast ─── */
 .toast{position:fixed;bottom:16px;right:16px;background:#0f172a;color:#fff;padding:8px 14px;border-radius:6px;font-size:11px;z-index:100;opacity:0;transition:.2s;pointer-events:none;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.15)}
 .toast.v{opacity:1}
 .toast.err{background:#dc2626}
 .toast.ok{background:#059669}
-
-/* ─── Dirty dot ─── */
-.dirty-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-left:4px}
 </style>
 </head>
 <body>
@@ -215,11 +246,9 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
   <div class="hr">
     <span class="ui">관리자</span>
     <button onclick="location.href='admin.html'">관리자 홈</button>
-    <button onclick="location.href='landing-mgmt.html'">랜딩 관리</button>
   </div>
 </header>
 
-<!-- ─── Shortcut bar ─── -->
 <div class="short-bar">
   <span class="s-lbl">빠른이동</span>
   <button class="s-btn" onclick="scrollToStep(1)">1.랜딩</button>
@@ -227,23 +256,10 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
   <button class="s-btn" onclick="scrollToStep(3)">3.신청서</button>
   <button class="s-btn" onclick="scrollToStep(4)">4.선택</button>
   <button class="s-btn" onclick="scrollToStep(5)">5.배포</button>
-  <span class="s-sep"></span>
-  <span class="s-lbl">공통카테</span>
-  <button class="s-btn" onclick="quickToggle('banner')">배너</button>
-  <button class="s-btn" onclick="quickToggle('community_notice')">공지</button>
-  <button class="s-btn" onclick="quickToggle('community_faq')">FAQ</button>
-  <button class="s-btn" onclick="quickToggle('community_qna')">QNA</button>
-  <button class="s-btn" onclick="quickToggle('community_review')">후기</button>
-  <button class="s-btn" onclick="quickToggle('inquiry')">문의</button>
-  <span class="s-sep"></span>
-  <span class="s-lbl">준공통</span>
-  <button class="s-btn" onclick="scrollToStep(3)">신청서</button>
 </div>
 
-<!-- ─── Steps bar ─── -->
 <div class="steps" id="stepsBar"></div>
 
-<!-- ─── Main layout ─── -->
 <div class="layout">
   <div class="lp">
     <div class="lp-hd">
@@ -271,7 +287,7 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
     </div>
     <div class="rp-acts">
       <button class="rp-save" id="btnSave" onclick="saveHomepage()" disabled>💾 저장</button>
-      <button class="rp-deploy" id="btnDeploy" onclick="deployHomepage()" disabled>🚀 배포</button>
+      <button class="rp-preview" id="btnPreview" onclick="openPreview()" disabled>👁️ 프리뷰</button>
     </div>
   </div>
 </div>
@@ -279,7 +295,10 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
 <div class="toast" id="toast"></div>
 
 <script>
-/* ═══ Constants ═══ */
+/* ═══════════════════════════════════════════════════════════ */
+/*   상수                                                        */
+/* ═══════════════════════════════════════════════════════════ */
+
 const STEPS = [
   { n:1, key:'landing',  label:'랜딩' },
   { n:2, key:'common',   label:'공통' },
@@ -289,31 +308,17 @@ const STEPS = [
 ];
 
 const WEBSITES = [
-  { id:'tesol',         name:'TESOL',           url:'timestesol.com' },
-  { id:'ai_trans',      name:'AI 번역',         url:'aitranslation.co.kr' },
-  { id:'reading',       name:'통독문서',        url:'reading.hutechc.com' },
-  { id:'ai_ethics',     name:'AI 윤리',         url:'aiethics.hutechc.com' },
-  { id:'exhibit',       name:'전시/행사',       url:'exhibit.hutechc.com' },
-  { id:'cbt',           name:'시험',            url:'cbt.hutechc.com' },
-  { id:'matching',      name:'전문가매칭',      url:'matching.hutechc.com' },
-  { id:'level_test',    name:'레벨테스트',      url:'leveltest.hutechc.com' },
-  { id:'hutechc',       name:'휴텍씨',          url:'hutechc.com' },
-  { id:'iita',          name:'IITA협회',        url:'iita.or.kr' },
-  { id:'semiconductor', name:'반도체/조선/방산', url:'semiconductor.hutechc.com' },
-];
-
-const COMMON_MODULES = [
-  { id:'banner',           cat:'레이아웃', name:'히어로 배너',       desc:'메인 상단 배너' },
-  { id:'nav_section',      cat:'레이아웃', name:'섹션 이동 네비',    desc:'스크롤 이동 버튼' },
-  { id:'footer',           cat:'레이아웃', name:'푸터',              desc:'하단 회사/법적 정보' },
-  { id:'community_notice', cat:'커뮤니티', name:'공지사항',          desc:'공지 게시판' },
-  { id:'community_faq',    cat:'커뮤니티', name:'FAQ',               desc:'자주 묻는 질문' },
-  { id:'community_qna',    cat:'커뮤니티', name:'Q&A',               desc:'사용자 질문답변' },
-  { id:'community_review', cat:'커뮤니티', name:'후기',              desc:'사용 후기 게시판' },
-  { id:'inquiry',          cat:'지원',     name:'1:1 문의',          desc:'문의 폼' },
-  { id:'blog',             cat:'지원',     name:'블로그',            desc:'콘텐츠 발행' },
-  { id:'terms',            cat:'법적',     name:'이용약관',          desc:'필수 약관' },
-  { id:'privacy',          cat:'법적',     name:'개인정보처리방침',  desc:'개인정보 약관' },
+  { id:'tesol',         name:'TESOL',           color:'#be185d' },
+  { id:'ai_trans',      name:'AI 번역',         color:'#2563eb' },
+  { id:'reading',       name:'통독문서',        color:'#059669' },
+  { id:'ai_ethics',     name:'AI 윤리',         color:'#dc2626' },
+  { id:'exhibit',       name:'전시/행사',       color:'#0891b2' },
+  { id:'cbt',           name:'시험',            color:'#d97706' },
+  { id:'matching',      name:'전문가매칭',      color:'#9333ea' },
+  { id:'level_test',    name:'레벨테스트',      color:'#7c3aed' },
+  { id:'hutechc',       name:'휴텍씨',          color:'#1a365d' },
+  { id:'iita',          name:'IITA협회',        color:'#334155' },
+  { id:'semiconductor', name:'반도체/조선/방산', color:'#64748b' },
 ];
 
 const APPLY_ROLES = [
@@ -325,55 +330,108 @@ const APPLY_ROLES = [
   { id:'admin',   label:'관리자' },
 ];
 
-const OPTIONAL_PRESETS = {
-  reading: {
-    id:'reading_preset',
-    name:'📖 통독 프리셋',
-    desc:'AI 문서 통독 서비스 워크플로. 양식 생성 → 내용 작성 → 검수의 6단계 세로 카드 레이아웃.',
-    source:'AI STUDIO.V3 / 창작작업실 > 문서만들기',
-    features:['6단계 세로카드','대중소 다중 카테고리','AI 4모델','편집에디터','휴먼 감수/검증','프롬 규정'],
-    modules:[
-      { n:1, name:'카테고리 선택',     type:'cat_multi',   desc:'대→중→소 다중선택' },
-      { n:2, name:'파일 업로드',       type:'file_drop',   desc:'PDF/DOCX/XLSX 드래그드롭' },
-      { n:3, name:'AI 모델 선택',      type:'ai_radio4',   desc:'GPT-4o·Claude·Gemini·Multi' },
-      { n:4, name:'편집에디터',        type:'editor_bool', desc:'사용 / 미사용' },
-      { n:5, name:'휴먼 작업 요청',    type:'human_3sel',  desc:'유형·등급·긴급도' },
-      { n:6, name:'추가 옵션',         type:'opts_toggle', desc:'프롬규정 + 전문가검증' },
-    ]
-  },
-  translation: {
-    id:'translation_preset',
-    name:'🈂️ 번역 프리셋',
-    desc:'원페이지 번역 서비스. 좌 설정 패널 + 우 sticky 품질 대시보드 2단 레이아웃.',
-    source:'원페이지 / 번역 서비스',
-    features:['2단 레이아웃','sticky 대시보드','언어쌍','긴급도','비용 합산','전문가 매칭'],
-    modules:[
-      { n:1, name:'분야 카테고리',     type:'cat_multi',     desc:'번역 분야 선택' },
-      { n:2, name:'원문 업로드',       type:'file_drop',     desc:'원본 파일 드롭' },
-      { n:3, name:'언어쌍 선택',       type:'lang_pair',     desc:'원문 → 번역 언어' },
-      { n:4, name:'번역 엔진',         type:'ai_radio4',     desc:'AI 번역 모델' },
-      { n:5, name:'휴먼 검수',         type:'human_3sel',    desc:'감수자 등급 / 긴급도' },
-      { n:6, name:'품질 대시보드',     type:'quality_panel', desc:'sticky 요약 + 비용' },
-    ]
-  }
-};
-
-const DEPLOY_TARGETS = [
-  { id:'github_pages', label:'GitHub Pages',   cmd:'npx gh-pages -d dist' },
-  { id:'ec2_static',   label:'EC2 정적',       cmd:'rsync -avz dist/ ec2-user@54.116.15.136:~/work_studio/public/' },
-  { id:'vite_build',   label:'Vite + deploy.sh', cmd:'npm run build && ssh ec2 "deploy.sh work_studio"' },
+const PHASE_FILTERS = [
+  { id:'all',   label:'전체' },
+  { id:'part1', label:'1부만' },
+  { id:'part2', label:'2부만' },
 ];
 
-/* ═══ State ═══ */
+/* ─── 공통 모듈 정의 (스키마 + 기본값) ─── */
+const COMMON_MODULES = [
+  { id:'banner',           cat:'레이아웃', ic:'🎯', name:'히어로 배너', defaultEnabled:true,
+    defaultData:{ title:'', subtitle:'', image:'', ctaLabel:'신청하기', ctaUrl:'#' },
+    editor:'banner' },
+  { id:'nav_section',      cat:'레이아웃', ic:'🧭', name:'섹션 이동 네비', defaultEnabled:true,
+    defaultData:{ sections:[] },
+    editor:'nav_section' },
+  { id:'footer',           cat:'레이아웃', ic:'⬇️',  name:'푸터', defaultEnabled:true,
+    defaultData:{ company:'', address:'', contact:'', copyright:'' },
+    editor:'footer' },
+  { id:'community_notice', cat:'커뮤니티', ic:'📢', name:'공지사항', defaultEnabled:true,
+    defaultData:{ items:[] },
+    editor:'notice' },
+  { id:'community_faq',    cat:'커뮤니티', ic:'❓',  name:'FAQ', defaultEnabled:true,
+    defaultData:{ items:[] },
+    editor:'faq' },
+  { id:'community_qna',    cat:'커뮤니티', ic:'💬', name:'Q&A', defaultEnabled:true,
+    defaultData:{ policy:'auto', categories:['일반','기술','결제'] },
+    editor:'qna' },
+  { id:'community_review', cat:'커뮤니티', ic:'⭐',  name:'후기', defaultEnabled:true,
+    defaultData:{ limit:10, sort:'latest' },
+    editor:'review' },
+  { id:'inquiry',          cat:'지원',     ic:'📧', name:'1:1 문의', defaultEnabled:true,
+    defaultData:{ fields:['name','email','phone','title','content'] },
+    editor:'inquiry' },
+  { id:'blog',             cat:'지원',     ic:'📝', name:'블로그', defaultEnabled:false,
+    defaultData:{ categories:[] },
+    editor:'blog' },
+  { id:'terms',            cat:'법적',     ic:'📜', name:'이용약관', defaultEnabled:true,
+    defaultData:{ text:'' },
+    editor:'longtext' },
+  { id:'privacy',          cat:'법적',     ic:'🔐', name:'개인정보처리방침', defaultEnabled:true,
+    defaultData:{ text:'' },
+    editor:'longtext' },
+];
+
+/* ─── 블록 라이브러리 (파일2/파일3 분해) ─── */
+const BLOCK_LIBRARY = [
+  { type:'cat_multi',     name:'카테고리 선택',   desc:'대→중→소 다중선택', src:'파일2/3',
+    defaultConfig:{ axes:3, multi:true, selected:[] } },
+  { type:'file_drop',     name:'파일 업로드',     desc:'드래그드롭 + 목록', src:'파일2/3',
+    defaultConfig:{ accept:['pdf','docx','xlsx'], maxMb:50, multi:true } },
+  { type:'ai_radio4',     name:'AI 모델 선택',    desc:'4모델 라디오 그리드', src:'파일2/3',
+    defaultConfig:{ models:['GPT-4o','Claude 3.5','Gemini 1.5','Multi-Model'], defaultIdx:3 } },
+  { type:'editor_bool',   name:'편집에디터',      desc:'사용/미사용 토글', src:'파일3',
+    defaultConfig:{ defaultMode:'use' } },
+  { type:'human_3sel',    name:'휴먼 작업 요청',  desc:'유형/등급/긴급도', src:'파일3',
+    defaultConfig:{ types:['감수요청','검증요청'], grades:['일반전문가','고급전문가'], urgencies:[{label:'일반',surcharge:0},{label:'긴급1',surcharge:50},{label:'긴급2',surcharge:100}] } },
+  { type:'opts_toggle',   name:'추가 옵션',       desc:'토글 확장식 옵션', src:'파일3',
+    defaultConfig:{ options:[{id:'regulation',label:'프롬 규정',enabled:false},{id:'expert_verify',label:'전문가 검증',enabled:false}] } },
+  { type:'lang_pair',     name:'언어쌍',          desc:'원문→번역 언어', src:'번역',
+    defaultConfig:{ sources:['한국어','영어','중국어'], targets:['영어','한국어','일본어'] } },
+  { type:'quality_panel', name:'품질 대시보드',   desc:'sticky 요약 + 비용', src:'파일3',
+    defaultConfig:{ metrics:['files','categories','model','cost'] } },
+  { type:'regulation',    name:'프롬 규정',       desc:'카테고리별 규칙', src:'파일3',
+    defaultConfig:{ ruleSet:'default' } },
+  { type:'textarea_big',  name:'텍스트 입력',     desc:'큰 입력 영역', src:'파일2',
+    defaultConfig:{ placeholder:'입력하세요', minH:260 } },
+];
+
+const STACK_PRESETS = {
+  reading: {
+    label:'📖 통독 6단 일괄 추가',
+    source:'AI STUDIO V3 / 원페이지',
+    blocks:['cat_multi','file_drop','ai_radio4','editor_bool','human_3sel','opts_toggle'],
+  },
+  translation: {
+    label:'🈂️ 번역 6단 일괄 추가',
+    source:'원페이지',
+    blocks:['cat_multi','file_drop','lang_pair','ai_radio4','human_3sel','quality_panel'],
+  },
+};
+
+/* ═══════════════════════════════════════════════════════════ */
+/*   State                                                       */
+/* ═══════════════════════════════════════════════════════════ */
+
 let homepages = [];
 let formTemplates = [];
 let currentHpId = null;
 let searchQuery = '';
-let roleFilter = 'all';
 let dirty = false;
 let expandedIds = new Set();
 
-/* ═══ Init ═══ */
+/* Local UI state (not persisted) */
+let filterSite = 'all';
+let filterRole = 'all';
+let filterPhase = 'all';
+let expandedCommon = new Set();
+let expandedBlocks = new Set();
+
+/* ═══════════════════════════════════════════════════════════ */
+/*   Init                                                        */
+/* ═══════════════════════════════════════════════════════════ */
+
 async function init(){
   renderStepsBar();
   try {
@@ -391,7 +449,7 @@ async function loadHomepages(){
     homepages = (rows || []).map(row => {
       try {
         const d = JSON.parse(row.data);
-        return Object.assign({}, d, { id: row.id, _created: row.created_at });
+        return migrateHp(Object.assign({}, d, { id: row.id, _created: row.created_at }));
       } catch { return null; }
     }).filter(Boolean);
   } catch(e) { homepages = []; }
@@ -414,23 +472,78 @@ function getCurrent(){
   return homepages.find(h => h.id === currentHpId);
 }
 
+function defaultCommonState(){
+  const cs = {};
+  COMMON_MODULES.forEach(m => {
+    cs[m.id] = { enabled: m.defaultEnabled, data: JSON.parse(JSON.stringify(m.defaultData)) };
+  });
+  return cs;
+}
+
 function defaultHp(name){
   return {
     name: name || '새 홈페이지',
     slug: '',
     linkedSite: '',
     status: 'draft',
-    landing: { repoUrl:'', branch:'main', deployPath:'/', lastSync:'' },
-    commonModules: [],
-    applyTemplateIds: [],
-    optionalModules: [],
-    deploy: { target:'', buildCmd:'npm run build', deployCmd:'', lastDeployed:'', logs:[] },
+    landing: { repoUrl:'', branch:'main', deployPath:'/', lastSync:'', verified:null },
+    commonState: defaultCommonState(),
+    applyTemplates: [],
+    blocks: [],
+    deploy: { lastPublished:'' },
     _notes: '',
     _notesFiles: [],
   };
 }
 
-/* ═══ Steps bar ═══ */
+/* v1 → v2 마이그레이션 (기존 데이터 호환) */
+function migrateHp(hp){
+  if (!hp.commonState) {
+    hp.commonState = defaultCommonState();
+    if (Array.isArray(hp.commonModules)) {
+      Object.keys(hp.commonState).forEach(k => { hp.commonState[k].enabled = hp.commonModules.indexOf(k) >= 0; });
+    }
+    delete hp.commonModules;
+  }
+  if (!hp.applyTemplates) {
+    hp.applyTemplates = (hp.applyTemplateIds || []).map(id => ({ templateId: id, phases: ['part1','part2'] }));
+    delete hp.applyTemplateIds;
+  }
+  if (!hp.blocks) {
+    hp.blocks = (hp.optionalModules || []).map(m => ({
+      type: m.type || 'legacy',
+      name: m.name || '이전 모듈',
+      desc: m.source || '',
+      config: {},
+    }));
+    delete hp.optionalModules;
+  }
+  if (!hp.landing) hp.landing = { repoUrl:'', branch:'main', deployPath:'/', lastSync:'', verified:null };
+  if (!hp.deploy) hp.deploy = { lastPublished:'' };
+  return hp;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*   Step completion                                             */
+/* ═══════════════════════════════════════════════════════════ */
+
+function isStepDone(hp, key){
+  if (!hp) return false;
+  if (key === 'landing')  return !!(hp.landing && hp.landing.verified);
+  if (key === 'common') {
+    const cs = hp.commonState || {};
+    return Object.keys(cs).some(k => cs[k].enabled);
+  }
+  if (key === 'apply')    return (hp.applyTemplates || []).length > 0;
+  if (key === 'optional') return (hp.blocks || []).length > 0;
+  if (key === 'deploy')   return hp.status === 'published';
+  return false;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*   Steps bar                                                   */
+/* ═══════════════════════════════════════════════════════════ */
+
 function renderStepsBar(){
   const hp = getCurrent();
   let doneCnt = 0;
@@ -447,27 +560,15 @@ function renderStepsBar(){
   document.getElementById('stepsBar').innerHTML = h;
 }
 
-function isStepDone(hp, key){
-  if (!hp) return false;
-  if (key === 'landing')  return !!(hp.landing && hp.landing.repoUrl);
-  if (key === 'common')   return (hp.commonModules || []).length > 0;
-  if (key === 'apply')    return (hp.applyTemplateIds || []).length > 0;
-  if (key === 'optional') return (hp.optionalModules || []).length > 0;
-  if (key === 'deploy')   return !!(hp.deploy && hp.deploy.target);
-  return false;
-}
-
 function scrollToStep(n){
   const el = document.getElementById('step-' + n);
-  if (el) {
-    el.scrollIntoView({ behavior:'smooth', block:'start' });
-    el.style.transition = 'box-shadow .3s';
-    el.style.boxShadow = '0 0 0 2px #1a365d';
-    setTimeout(() => { el.style.boxShadow = '0 1px 3px rgba(0,0,0,.03)'; }, 800);
-  }
+  if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
-/* ═══ List panel ═══ */
+/* ═══════════════════════════════════════════════════════════ */
+/*   Left list                                                   */
+/* ═══════════════════════════════════════════════════════════ */
+
 function renderList(){
   const filtered = homepages.filter(h => !searchQuery ||
     (h.name || '').toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0 ||
@@ -476,7 +577,7 @@ function renderList(){
 
   const box = document.getElementById('hpList');
   if (!filtered.length) {
-    box.innerHTML = '<div class="lp-empty">생성된 홈페이지가<br>없습니다.<br><br>[+ 새] 버튼을 눌러<br>시작하세요.</div>';
+    box.innerHTML = '<div class="lp-empty">생성된 홈페이지가<br>없습니다.<br><br>[+ 새]로 시작</div>';
     return;
   }
 
@@ -490,24 +591,20 @@ function renderList(){
     h += '<div class="hp-row ' + active + ' ' + exp + '" onclick="selectHp(' + hp.id + ')">' +
       '<div class="hp-top"><div class="hp-name">' + escapeHtml(hp.name || '(이름 없음)') + '</div>' +
       '<span class="hp-st st-' + sts + '">' + sts + '</span></div>' +
-      '<div class="hp-meta"><span>' + escapeHtml(siteName) + '</span><span>·</span><span>' + doneCnt + '/5 완료</span>' +
+      '<div class="hp-meta"><span>' + escapeHtml(siteName) + '</span><span>·</span><span>' + doneCnt + '/5</span>' +
       '<button class="hp-del" onclick="event.stopPropagation();deleteHp(' + hp.id + ')" title="삭제">×</button></div>' +
       '<div class="hp-prog">' +
       STEPS.map(s => '<div class="hp-prog-dot ' + (isStepDone(hp, s.key)?'on':'') + '"></div>').join('') +
       '</div>' +
       '<div class="hp-det">' +
-      '<div>ID: ' + hp.id + ' · 생성: ' + (hp._created || '').slice(0, 10) + '</div>' +
-      '<div>레포: ' + escapeHtml((hp.landing && hp.landing.repoUrl) || '—') + '</div>' +
-      '<div>공통 ' + (hp.commonModules||[]).length + '개 · 신청서 ' + (hp.applyTemplateIds||[]).length + '개 · 선택 ' + (hp.optionalModules||[]).length + '개</div>' +
+      '<div>ID ' + hp.id + ' · ' + (hp._created || '').slice(0, 10) + '</div>' +
+      '<div>' + (hp.slug ? 'slug: ' + hp.slug : '슬러그 미지정') + '</div>' +
       '</div></div>';
   });
   box.innerHTML = h;
 }
 
-function onSearch(v){
-  searchQuery = v;
-  renderList();
-}
+function onSearch(v){ searchQuery = v; renderList(); }
 
 function toggleExpandAll(){
   if (expandedIds.size === homepages.length && homepages.length > 0) {
@@ -520,15 +617,17 @@ function toggleExpandAll(){
   renderList();
 }
 
-/* ═══ CRUD ═══ */
+/* ═══════════════════════════════════════════════════════════ */
+/*   CRUD                                                        */
+/* ═══════════════════════════════════════════════════════════ */
+
 async function createNew(){
   const name = prompt('홈페이지 이름 입력:', '새 홈페이지');
   if (!name) return;
   const data = defaultHp(name);
   try {
     const r = await fetch('/api/homepages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(data)
     });
     const j = await r.json();
@@ -537,9 +636,7 @@ async function createNew(){
     dirty = false;
     renderAll();
     toast('홈페이지 생성 완료', 'ok');
-  } catch(e) {
-    toast('생성 실패: ' + e.message, 'err');
-  }
+  } catch(e) { toast('생성 실패: ' + e.message, 'err'); }
 }
 
 async function deleteHp(id){
@@ -550,13 +647,11 @@ async function deleteHp(id){
     await loadHomepages();
     renderAll();
     toast('삭제 완료', 'ok');
-  } catch(e) {
-    toast('삭제 실패: ' + e.message, 'err');
-  }
+  } catch(e) { toast('삭제 실패: ' + e.message, 'err'); }
 }
 
 function selectHp(id){
-  if (dirty && !confirm('변경사항이 있습니다. 저장 없이 이동하시겠습니까?')) return;
+  if (dirty && !confirm('변경사항이 있습니다. 저장 없이 이동?')) return;
   currentHpId = id;
   dirty = false;
   renderAll();
@@ -567,11 +662,9 @@ async function saveHomepage(){
   if (!hp) return;
   try {
     const data = Object.assign({}, hp);
-    delete data.id;
-    delete data._created;
+    delete data.id; delete data._created;
     await fetch('/api/homepages/' + hp.id, {
-      method:'PUT',
-      headers:{'Content-Type':'application/json'},
+      method:'PUT', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(data)
     });
     dirty = false;
@@ -579,66 +672,46 @@ async function saveHomepage(){
     updateActions();
     updateDirtyInd();
     toast('저장 완료', 'ok');
-  } catch(e) {
-    toast('저장 실패: ' + e.message, 'err');
-  }
+  } catch(e) { toast('저장 실패: ' + e.message, 'err'); }
 }
 
-async function deployHomepage(){
+async function publishHomepage(){
   const hp = getCurrent();
   if (!hp) return;
-  if (!hp.deploy || !hp.deploy.target) {
-    toast('배포 대상을 먼저 선택하세요', 'err');
-    scrollToStep(5);
-    return;
-  }
-  if (!confirm('배포를 시작하시겠습니까?\n(' + hp.deploy.target + ')')) return;
+  if (!hp.slug) { toast('슬러그(slug)가 필요합니다 (우측 패널)', 'err'); return; }
+  if (!/^[a-z0-9-]+$/.test(hp.slug)) { toast('슬러그는 영소문자/숫자/- 만 가능', 'err'); return; }
+  if (!confirm('발행하시겠습니까? 외부 접근 가능해집니다.\n\n미리보기 URL: /hp/' + hp.slug)) return;
 
-  if (dirty) await saveHomepage();
-
-  const logEl = document.getElementById('deployLog');
-  const target = DEPLOY_TARGETS.find(t => t.id === hp.deploy.target);
-  const lines = [
-    '$ ' + (hp.deploy.buildCmd || 'npm run build'),
-    '[build] 의존성 확인...',
-    '[build] vite 컴파일 시작',
-    '[build] ✓ 번들 생성 완료',
-    '[build] dist/ 1.2 MB',
-    '',
-    '$ ' + (hp.deploy.deployCmd || (target && target.cmd) || 'deploy'),
-    '[deploy] 원격 서버 연결 중...',
-    '[deploy] ✓ 54.116.15.136 접속 성공',
-    '[deploy] 파일 업로드 (1.2 MB)...',
-    '[deploy] ✓ 업로드 완료',
-    '[deploy] pm2 reload work_studio (graceful)',
-    '[deploy] ✓ 배포 완료',
-    '',
-    '🎉 ' + hp.name + ' 배포 성공',
-  ];
-  if (logEl) {
-    logEl.textContent = '';
-    for (let i = 0; i < lines.length; i++) {
-      await new Promise(r => setTimeout(r, 120));
-      logEl.textContent += lines[i] + '\n';
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-  }
-
-  hp.deploy.lastDeployed = new Date().toISOString().slice(0, 16).replace('T', ' ');
   hp.status = 'published';
+  hp.deploy.lastPublished = new Date().toISOString().slice(0,16).replace('T',' ');
   dirty = true;
   await saveHomepage();
   renderAll();
-  toast('배포 완료 🎉', 'ok');
+  toast('발행 완료 🎉', 'ok');
+  setTimeout(() => openPreview(), 400);
 }
 
-/* ═══ Edit area ═══ */
+function openPreview(){
+  const hp = getCurrent();
+  if (!hp) return;
+  if (!hp.slug) { toast('슬러그를 먼저 지정하세요', 'err'); return; }
+  if (dirty) {
+    if (!confirm('저장되지 않은 변경이 있습니다. 지금 저장 후 프리뷰?')) return;
+    saveHomepage().then(() => window.open('/hp/' + hp.slug, '_blank'));
+  } else {
+    window.open('/hp/' + hp.slug, '_blank');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*   Edit area                                                   */
+/* ═══════════════════════════════════════════════════════════ */
+
 function renderEditArea(){
   const hp = getCurrent();
   if (!hp) {
     document.getElementById('editArea').innerHTML =
-      '<div class="cp-empty">' +
-      '<div class="big-ic">🏠</div>' +
+      '<div class="cp-empty"><div class="big-ic">🏠</div>' +
       '<div>홈페이지를 선택하거나<br>새로 만드세요</div>' +
       '<button onclick="createNew()">+ 새 홈페이지 만들기</button></div>';
     return;
@@ -647,166 +720,562 @@ function renderEditArea(){
     renderStep1(hp) + renderStep2(hp) + renderStep3(hp) + renderStep4(hp) + renderStep5(hp);
 }
 
-function stepHeader(n, title, hp, key, extra){
+function stepHeader(n, title, hp, key, meta){
   const done = isStepDone(hp, key);
-  return '<div class="step-hd">' +
-    '<div class="step-n">' + n + '</div>' +
-    '<h3>' + title + (extra ? ' <span style="font-size:10px;color:#64748b;font-weight:500">' + extra + '</span>' : '') + '</h3>' +
+  return '<div class="step-hd"><div class="step-n">' + n + '</div>' +
+    '<h3>' + title + (meta ? '<span class="meta">' + meta + '</span>' : '') + '</h3>' +
     '<div class="step-sts ' + (done?'done':'') + '">' + (done?'완료':'대기') + '</div></div>';
 }
 
+/* ─── Step 1: Landing + real GitHub verify ─── */
 function renderStep1(hp){
   const l = hp.landing || {};
+  const v = l.verified;
+  let verifyBox = '';
+  if (v) {
+    verifyBox = '<div class="gh-result ok"><div class="gh-title">✓ ' + escapeHtml(v.fullName) + '</div>' +
+      '<div class="gh-meta">' +
+      (v.description ? escapeHtml(v.description) + '<br>' : '') +
+      '⭐ ' + v.stars + ' · 🍴 ' + v.forks + ' · 기본 브랜치 <code>' + escapeHtml(v.defaultBranch) + '</code><br>' +
+      '최근 푸시: ' + escapeHtml((v.pushedAt || '').slice(0,10)) +
+      (v.hasPages ? ' · 🌐 GitHub Pages 활성' : ' · GitHub Pages 비활성') +
+      '</div></div>';
+  } else if (v === false) {
+    verifyBox = '<div class="gh-result err"><div class="gh-title">✗ 연결 실패</div>' +
+      '<div class="gh-meta">유효하지 않은 URL이거나 private/404 레포입니다.</div></div>';
+  }
+
   return '<section class="step-card" id="step-1">' +
     stepHeader(1, '랜딩 페이지 — GitHub 연결', hp, 'landing') +
     '<div class="step-body">' +
-    '<div class="hint">Figma → GitHub 레포에 업로드한 랜딩페이지를 연결합니다.</div>' +
+    '<div class="hint">Figma → GitHub 레포에 업로드한 랜딩 페이지를 연결합니다. [연결 테스트]로 GitHub API를 통해 실제 존재 여부를 확인합니다.</div>' +
     '<div class="fld"><label>GitHub Repository URL</label>' +
-    '<input type="url" value="' + escapeAttr(l.repoUrl) + '" placeholder="https://github.com/user/repo"' +
-    ' onblur="setField(\'landing.repoUrl\', this.value)"></div>' +
+    '<input type="url" value="' + escapeAttr(l.repoUrl) + '" placeholder="https://github.com/user/repo 또는 user/repo"' +
+    ' onblur="setField(\'landing.repoUrl\', this.value); setField(\'landing.verified\', null); renderEditArea()"></div>' +
     '<div class="fld-row">' +
     '<div class="fld"><label>브랜치</label>' +
     '<input type="text" value="' + escapeAttr(l.branch || 'main') + '"' +
     ' onblur="setField(\'landing.branch\', this.value)"></div>' +
     '<div class="fld"><label>배포 경로</label>' +
-    '<input type="text" value="' + escapeAttr(l.deployPath || '/') + '" placeholder="/landing/"' +
+    '<input type="text" value="' + escapeAttr(l.deployPath || '/') + '"' +
     ' onblur="setField(\'landing.deployPath\', this.value)"></div>' +
     '</div>' +
-    '<div style="display:flex;gap:6px;align-items:center;margin-top:6px">' +
-    '<button class="chip sq a" onclick="testLanding()">🔗 연결 테스트</button>' +
-    (l.lastSync ? '<span style="font-size:9px;color:#94a3b8">마지막 동기화: ' + l.lastSync + '</span>' : '') +
-    '</div></div></section>';
+    '<button class="chip sq a" onclick="verifyLanding()">🔗 GitHub API 연결 테스트</button>' +
+    verifyBox +
+    '</div></section>';
 }
 
+async function verifyLanding(){
+  const hp = getCurrent();
+  if (!hp || !hp.landing || !hp.landing.repoUrl) {
+    toast('URL을 먼저 입력하세요', 'err');
+    return;
+  }
+  const parsed = parseGitHubUrl(hp.landing.repoUrl);
+  if (!parsed) {
+    hp.landing.verified = false;
+    dirty = true;
+    renderAll();
+    toast('유효하지 않은 GitHub URL', 'err');
+    return;
+  }
+  toast('GitHub API 확인 중...', 'ok');
+  try {
+    const r = await fetch('https://api.github.com/repos/' + parsed.owner + '/' + parsed.repo);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    hp.landing.verified = {
+      owner: j.owner && j.owner.login,
+      repo: j.name,
+      fullName: j.full_name,
+      description: j.description || '',
+      stars: j.stargazers_count || 0,
+      forks: j.forks_count || 0,
+      defaultBranch: j.default_branch || 'main',
+      pushedAt: j.pushed_at || '',
+      hasPages: !!j.has_pages,
+      url: j.html_url,
+    };
+    hp.landing.lastSync = new Date().toISOString().slice(0,16).replace('T',' ');
+    dirty = true;
+    renderAll();
+    toast('✓ ' + j.full_name + ' 확인 완료', 'ok');
+  } catch(e) {
+    hp.landing.verified = false;
+    dirty = true;
+    renderAll();
+    toast('연결 실패: ' + e.message, 'err');
+  }
+}
+
+function parseGitHubUrl(url){
+  if (!url) return null;
+  url = url.trim().replace(/\.git$/, '').replace(/\/$/, '');
+  let m = url.match(/github\.com[/:]+([^/]+)\/([^/]+)/);
+  if (m) return { owner: m[1], repo: m[2] };
+  m = url.match(/^([^/\s]+)\/([^/\s]+)$/);
+  if (m) return { owner: m[1], repo: m[2] };
+  return null;
+}
+
+/* ─── Step 2: Common modules with inline editors ─── */
 function renderStep2(hp){
-  const sel = new Set(hp.commonModules || []);
+  const cs = hp.commonState || {};
+  const enabledCnt = Object.keys(cs).filter(k => cs[k].enabled).length;
   const byCat = {};
   COMMON_MODULES.forEach(m => { (byCat[m.cat] = byCat[m.cat] || []).push(m); });
-  let body = '<div class="hint">메뉴/커뮤니티/문의/법적 페이지 등 모든 홈페이지 공통 요소입니다. 체크박스로 포함/제외.</div>';
+
+  let body = '<div class="hint">각 모듈은 기본적으로 <b>활성 상태</b>이며, 토글로 끄거나 펼쳐서 상세 편집합니다. ' + enabledCnt + '/' + COMMON_MODULES.length + '개 활성.</div>';
+
   Object.keys(byCat).forEach(cat => {
-    body += '<div class="mod-cat">' + cat + '</div><div class="mod-grid">';
+    body += '<div style="font-size:9px;color:#94a3b8;font-weight:700;margin:8px 0 4px;text-transform:uppercase;letter-spacing:.3px">' + cat + '</div>';
     byCat[cat].forEach(m => {
-      const on = sel.has(m.id) ? 'a' : '';
-      body += '<label class="mod-card ' + on + '">' +
-        '<input type="checkbox" ' + (sel.has(m.id)?'checked':'') + ' onchange="toggleCommon(\'' + m.id + '\')">' +
-        '<div class="mod-card-inner"><span class="mc-nm">' + m.name + '</span>' +
-        '<span class="mc-desc">' + m.desc + '</span></div></label>';
+      const st = cs[m.id] || { enabled: false, data: {} };
+      const exp = expandedCommon.has(m.id);
+      const summary = getCommonSummary(m, st);
+      body += '<div class="cm-card ' + (exp?'exp':'') + ' ' + (st.enabled?'':'disabled') + '">' +
+        '<div class="cm-hd" onclick="toggleCommonExpand(\'' + m.id + '\')">' +
+        '<span class="cm-chev">▶</span>' +
+        '<span class="cm-ic">' + m.ic + '</span>' +
+        '<span class="cm-nm">' + m.name + '</span>' +
+        '<span class="cm-cat">' + m.cat + '</span>' +
+        '<span class="cm-cnt">' + summary + '</span>' +
+        '<button class="cm-tog ' + (st.enabled?'on':'off') + '" onclick="event.stopPropagation();toggleCommonEnabled(\'' + m.id + '\')" title="활성/비활성"></button>' +
+        '</div>' +
+        '<div class="cm-body">' + renderCommonEditor(m, st) + '</div>' +
+        '</div>';
     });
-    body += '</div>';
   });
+
   return '<section class="step-card" id="step-2">' +
-    stepHeader(2, '공통 모듈', hp, 'common', sel.size + '개 선택') +
+    stepHeader(2, '공통 모듈', hp, 'common', enabledCnt + '/' + COMMON_MODULES.length + ' 활성') +
     '<div class="step-body">' + body + '</div></section>';
 }
 
+function getCommonSummary(m, st){
+  if (!st.enabled) return '비활성';
+  const d = st.data || {};
+  switch(m.editor){
+    case 'banner': return d.title ? '"' + d.title.slice(0,20) + '"' : '미설정';
+    case 'nav_section': return (d.sections||[]).length + '개 섹션';
+    case 'footer': return d.company || '미설정';
+    case 'notice': return (d.items||[]).length + '개 항목';
+    case 'faq': return (d.items||[]).length + '개 항목';
+    case 'qna': return (d.categories||[]).length + '개 분류';
+    case 'review': return '최근 ' + (d.limit||10) + '개';
+    case 'inquiry': return (d.fields||[]).length + '개 필드';
+    case 'blog': return (d.categories||[]).length + '개 카테고리';
+    case 'longtext': return (d.text||'').length + '자';
+  }
+  return '';
+}
+
+function renderCommonEditor(m, st){
+  const d = st.data || {};
+  const p = 'commonState.' + m.id + '.data';
+  switch(m.editor){
+    case 'banner':
+      return '<div class="fld"><label>제목</label><input type="text" value="' + escapeAttr(d.title) + '" onblur="setField(\'' + p + '.title\',this.value);renderEditArea()"></div>' +
+        '<div class="fld"><label>부제목</label><input type="text" value="' + escapeAttr(d.subtitle) + '" onblur="setField(\'' + p + '.subtitle\',this.value)"></div>' +
+        '<div class="fld"><label>이미지 URL</label><input type="url" value="' + escapeAttr(d.image) + '" onblur="setField(\'' + p + '.image\',this.value)"></div>' +
+        '<div class="fld-row"><div class="fld"><label>CTA 라벨</label><input type="text" value="' + escapeAttr(d.ctaLabel) + '" onblur="setField(\'' + p + '.ctaLabel\',this.value)"></div>' +
+        '<div class="fld"><label>CTA 링크</label><input type="text" value="' + escapeAttr(d.ctaUrl) + '" onblur="setField(\'' + p + '.ctaUrl\',this.value)"></div></div>';
+
+    case 'nav_section':
+      const secs = d.sections || [];
+      let navHtml = '<div class="list-ed">';
+      secs.forEach((s, i) => {
+        navHtml += '<div class="list-ed-item"><div class="idx">' + (i+1) + '</div>' +
+          '<div class="fields">' +
+          '<input type="text" placeholder="섹션 ID" value="' + escapeAttr(s.id) + '" onblur="setListItem(\'' + p + '.sections\',' + i + ',\'id\',this.value)">' +
+          '<input type="text" placeholder="라벨" value="' + escapeAttr(s.label) + '" onblur="setListItem(\'' + p + '.sections\',' + i + ',\'label\',this.value)">' +
+          '</div><button class="rm" onclick="removeListItem(\'' + p + '.sections\',' + i + ')">×</button></div>';
+      });
+      navHtml += '</div><button class="list-ed-add" onclick="addListItem(\'' + p + '.sections\',{id:\'\',label:\'\'})">+ 섹션 추가</button>';
+      return navHtml;
+
+    case 'footer':
+      return '<div class="fld"><label>회사명</label><input type="text" value="' + escapeAttr(d.company) + '" onblur="setField(\'' + p + '.company\',this.value)"></div>' +
+        '<div class="fld"><label>주소</label><input type="text" value="' + escapeAttr(d.address) + '" onblur="setField(\'' + p + '.address\',this.value)"></div>' +
+        '<div class="fld"><label>연락처</label><input type="text" value="' + escapeAttr(d.contact) + '" onblur="setField(\'' + p + '.contact\',this.value)"></div>' +
+        '<div class="fld"><label>저작권 문구</label><input type="text" value="' + escapeAttr(d.copyright) + '" onblur="setField(\'' + p + '.copyright\',this.value)"></div>';
+
+    case 'notice': {
+      const items = d.items || [];
+      let h = '<div class="list-ed">';
+      items.forEach((it, i) => {
+        h += '<div class="list-ed-item"><div class="idx">' + (i+1) + '</div>' +
+          '<div class="fields">' +
+          '<div class="fld-row"><input type="date" value="' + escapeAttr(it.date) + '" onblur="setListItem(\'' + p + '.items\',' + i + ',\'date\',this.value)" style="flex:0 0 110px;padding:3px 6px;font-size:10px">' +
+          '<input type="text" placeholder="제목" value="' + escapeAttr(it.title) + '" onblur="setListItem(\'' + p + '.items\',' + i + ',\'title\',this.value)"></div>' +
+          '<textarea placeholder="내용" onblur="setListItem(\'' + p + '.items\',' + i + ',\'content\',this.value)">' + escapeHtml(it.content) + '</textarea>' +
+          '</div><button class="rm" onclick="removeListItem(\'' + p + '.items\',' + i + ')">×</button></div>';
+      });
+      h += '</div><button class="list-ed-add" onclick="addListItem(\'' + p + '.items\',{date:\'\',title:\'\',content:\'\'});renderEditArea()">+ 공지 추가</button>';
+      return h;
+    }
+
+    case 'faq': {
+      const items = d.items || [];
+      let h = '<div class="list-ed">';
+      items.forEach((it, i) => {
+        h += '<div class="list-ed-item"><div class="idx">' + (i+1) + '</div>' +
+          '<div class="fields">' +
+          '<input type="text" placeholder="질문 Q" value="' + escapeAttr(it.q) + '" onblur="setListItem(\'' + p + '.items\',' + i + ',\'q\',this.value)">' +
+          '<textarea placeholder="답변 A" onblur="setListItem(\'' + p + '.items\',' + i + ',\'a\',this.value)">' + escapeHtml(it.a) + '</textarea>' +
+          '</div><button class="rm" onclick="removeListItem(\'' + p + '.items\',' + i + ')">×</button></div>';
+      });
+      h += '</div><button class="list-ed-add" onclick="addListItem(\'' + p + '.items\',{q:\'\',a:\'\'});renderEditArea()">+ FAQ 추가</button>';
+      return h;
+    }
+
+    case 'qna': {
+      const polChips = ['auto','manual'].map(x =>
+        '<button class="chip sq ' + (d.policy===x?'a':'') + '" onclick="setField(\'' + p + '.policy\',\'' + x + '\');renderEditArea()">' + (x==='auto'?'자동공개':'관리자승인') + '</button>'
+      ).join('');
+      const cats = (d.categories || []).map((c, i) =>
+        '<span class="chip sq a">' + escapeHtml(c) + ' <button style="background:none;border:none;color:#fff;cursor:pointer;font-size:10px;font-weight:700" onclick="removeArrItem(\'' + p + '.categories\',' + i + ')">×</button></span>'
+      ).join('');
+      return '<div class="fld"><label>게시 정책</label><div class="chips">' + polChips + '</div></div>' +
+        '<div class="fld"><label>분류 (' + (d.categories||[]).length + ')</label><div class="chips">' + cats +
+        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.categories\',\'분류 이름:\')">+ 추가</button></div></div>';
+    }
+
+    case 'review':
+      return '<div class="fld-row"><div class="fld"><label>표시 수</label><input type="number" value="' + (d.limit||10) + '" onblur="setField(\'' + p + '.limit\',parseInt(this.value)||10)"></div>' +
+        '<div class="fld"><label>정렬</label><div class="chips">' +
+        ['latest','rating','popular'].map(x => '<button class="chip sq ' + (d.sort===x?'a':'') + '" onclick="setField(\'' + p + '.sort\',\'' + x + '\');renderEditArea()">' + x + '</button>').join('') +
+        '</div></div></div>';
+
+    case 'inquiry': {
+      const allFields = [
+        { id:'name', label:'이름' }, { id:'email', label:'이메일' }, { id:'phone', label:'전화' },
+        { id:'company', label:'회사' }, { id:'title', label:'제목' }, { id:'content', label:'내용' },
+        { id:'file', label:'파일첨부' }, { id:'budget', label:'예산' }, { id:'deadline', label:'희망일' },
+      ];
+      const selected = new Set(d.fields || []);
+      return '<div class="fld"><label>포함 필드</label><div class="chips">' +
+        allFields.map(f => '<button class="chip sq ' + (selected.has(f.id)?'a':'') + '" onclick="toggleArrValue(\'' + p + '.fields\',\'' + f.id + '\');renderEditArea()">' + f.label + '</button>').join('') +
+        '</div></div>';
+    }
+
+    case 'blog': {
+      const cats = (d.categories || []).map((c, i) =>
+        '<span class="chip sq a">' + escapeHtml(c) + ' <button style="background:none;border:none;color:#fff;cursor:pointer;font-size:10px;font-weight:700" onclick="removeArrItem(\'' + p + '.categories\',' + i + ')">×</button></span>'
+      ).join('');
+      return '<div class="fld"><label>카테고리</label><div class="chips">' + cats +
+        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.categories\',\'카테고리 이름:\')">+ 추가</button></div></div>';
+    }
+
+    case 'longtext':
+      return '<div class="fld"><label>본문 (' + (d.text||'').length + '자)</label>' +
+        '<textarea rows="8" placeholder="약관/정책 본문을 입력하세요" onblur="setField(\'' + p + '.text\',this.value);renderEditArea()">' + escapeHtml(d.text || '') + '</textarea></div>';
+  }
+  return '<div class="hint">편집기 미구현</div>';
+}
+
+/* ─── Step 3: Multi-axis apply templates ─── */
 function renderStep3(hp){
-  const sel = new Set(hp.applyTemplateIds || []);
-  let tpls = formTemplates;
-  if (roleFilter !== 'all') {
-    tpls = formTemplates.filter(t => {
-      const s = JSON.stringify(t).toLowerCase();
-      return s.indexOf(roleFilter) >= 0;
+  const applyMap = {};
+  (hp.applyTemplates || []).forEach(at => { applyMap[at.templateId] = new Set(at.phases || []); });
+
+  let tpls = formTemplates.slice();
+  if (filterSite !== 'all')  tpls = tpls.filter(t => t._site === filterSite);
+  if (filterRole !== 'all') {
+    tpls = tpls.filter(t => {
+      const s = (JSON.stringify(t) || '').toLowerCase();
+      return s.indexOf(filterRole) >= 0;
     });
   }
 
-  const roleChips = APPLY_ROLES.map(r =>
-    '<button class="chip sq ' + (roleFilter===r.id?'a':'') + '" onclick="setRoleFilter(\'' + r.id + '\')">' + r.label + '</button>'
-  ).join('');
+  const selectedCount = Object.keys(applyMap).reduce((n, k) => n + applyMap[k].size, 0);
+
+  const siteChips = '<button class="chip sq ' + (filterSite==='all'?'a':'') + '" onclick="filterSite=\'all\';renderEditArea()">전체</button>' +
+    WEBSITES.map(w => '<button class="chip sq ' + (filterSite===w.id?'a':'') + '" onclick="filterSite=\'' + w.id + '\';renderEditArea()">' + w.name + '</button>').join('');
+  const roleChips = APPLY_ROLES.map(r => '<button class="chip sq ' + (filterRole===r.id?'a':'') + '" onclick="filterRole=\'' + r.id + '\';renderEditArea()">' + r.label + '</button>').join('');
+  const phaseChips = PHASE_FILTERS.map(p => '<button class="chip sq ' + (filterPhase===p.id?'a':'') + '" onclick="filterPhase=\'' + p.id + '\';renderEditArea()">' + p.label + '</button>').join('');
 
   let tplHtml = '';
   if (!tpls.length) {
-    tplHtml = '<div class="ft-empty">등록된 신청서 템플릿이 없습니다.<br>[관리자 홈 → 신청서] 메뉴에서 먼저 생성하세요.</div>';
+    tplHtml = '<div class="ft-empty">필터 조건에 맞는 템플릿이 없습니다.<br>관리자 홈 → 신청서에서 먼저 템플릿을 만드세요.</div>';
   } else {
     tplHtml = '<div class="ft-list">' + tpls.map(t => {
-      const on = sel.has(t.id) ? 'a' : '';
-      const site = t._site || '—';
-      const phases = t.phases ? Object.keys(t.phases).length + '단계' : '—';
-      return '<div class="ft-card ' + on + '" onclick="toggleApplyTpl(' + t.id + ')">' +
-        (sel.has(t.id) ? '<div class="ft-chk">✓</div>' : '') +
-        '<div class="ft-nm">' + escapeHtml(t.name || '(이름 없음)') + '</div>' +
-        '<div class="ft-meta">' + escapeHtml(site) + ' · ' + phases + '</div></div>';
+      const sel = applyMap[t.id] || new Set();
+      const isSel = sel.size > 0;
+      const phases = t.phases || { part1:[], part2:[] };
+      const site = WEBSITES.find(w => w.id === t._site);
+      const siteColor = site ? site.color : '#64748b';
+      let phasesHtml = '';
+      ['part1','part2'].forEach(ph => {
+        if (filterPhase !== 'all' && filterPhase !== ph) return;
+        const mods = phases[ph] || [];
+        if (!mods.length && ph === 'part2') return;
+        const phSel = sel.has(ph);
+        phasesHtml += '<div class="ph-block ' + (phSel?'on':'') + '">' +
+          '<div class="ph-hd">' +
+          '<input type="checkbox" ' + (phSel?'checked':'') + ' onchange="toggleApplyPhase(' + t.id + ',\'' + ph + '\')">' +
+          '<span class="ph-name">' + (ph==='part1'?'1부':'2부') + '</span>' +
+          '<span class="ph-cnt">' + mods.length + '개 모듈</span></div>' +
+          (mods.length ? '<div class="ph-mods">' + mods.map(m => '<span class="ph-mod">' + escapeHtml(m) + '</span>').join('') + '</div>' : '') +
+          '</div>';
+      });
+      return '<div class="ft-card ' + (isSel?'sel':'') + '">' +
+        '<div class="ft-top">' +
+        '<span class="ft-badge site" style="background:' + siteColor + '">' + escapeHtml(t._site || '—') + '</span>' +
+        '<span class="ft-nm">' + escapeHtml(t.name || '(이름 없음)') + '</span>' +
+        '<span class="ft-badge role">' + escapeHtml(t._role || t._formId || '—') + '</span>' +
+        '</div>' +
+        (phasesHtml ? '<div class="ft-phases">' + phasesHtml + '</div>' : '<div class="hint">단계 정보 없음</div>') +
+        '</div>';
     }).join('') + '</div>';
   }
 
   return '<section class="step-card" id="step-3">' +
-    stepHeader(3, '준공통 — 신청서', hp, 'apply', sel.size + '개 선택') +
+    stepHeader(3, '준공통 — 신청서', hp, 'apply', selectedCount + '개 phase 선택') +
     '<div class="step-body">' +
-    '<div class="hint">역할별 필터로 좁히고 사용할 신청서 템플릿을 선택하세요. AI Studio DB/API의 분류표와 직결됩니다.</div>' +
-    '<div class="chips" style="margin-bottom:6px">' + roleChips + '</div>' +
+    '<div class="hint">사이트 × 역할 × 단계(1부/2부) 3축으로 필터. 각 템플릿의 1부/2부를 <b>개별 선택</b>할 수 있습니다 (한쪽만 포함도 가능).</div>' +
+    '<div class="filter-bar">' +
+    '<div class="filter-row"><span class="fr-lbl">사이트</span><div class="chips">' + siteChips + '</div></div>' +
+    '<div class="filter-row"><span class="fr-lbl">역할</span><div class="chips">' + roleChips + '</div></div>' +
+    '<div class="filter-row"><span class="fr-lbl">단계</span><div class="chips">' + phaseChips + '</div></div>' +
+    '</div>' +
     tplHtml + '</div></section>';
 }
 
-function renderStep4(hp){
-  const applied = hp.optionalModules || [];
-  const appliedIds = new Set(applied.map(m => m.id));
+function toggleApplyPhase(tplId, phase){
+  const hp = getCurrent();
+  if (!hp) return;
+  hp.applyTemplates = hp.applyTemplates || [];
+  let entry = hp.applyTemplates.find(at => at.templateId === tplId);
+  if (!entry) {
+    entry = { templateId: tplId, phases: [] };
+    hp.applyTemplates.push(entry);
+  }
+  const i = entry.phases.indexOf(phase);
+  if (i >= 0) entry.phases.splice(i, 1);
+  else entry.phases.push(phase);
+  if (!entry.phases.length) {
+    hp.applyTemplates = hp.applyTemplates.filter(at => at.templateId !== tplId);
+  }
+  dirty = true;
+  renderAll();
+}
 
-  let cards = '';
-  Object.values(OPTIONAL_PRESETS).forEach(p => {
-    const on = appliedIds.has(p.id) ? 'a' : '';
-    const steps = p.modules.map(m => m.n + '.' + m.name).join(' → ');
-    cards += '<div class="preset-card ' + on + '">' +
-      '<h4>' + p.name + '</h4>' +
-      '<div class="pr-desc">' + p.desc + '</div>' +
-      '<div class="pr-src">📂 ' + p.source + '</div>' +
-      '<div class="pr-steps">' + steps + '</div>' +
-      '<div class="pr-feat">' + p.features.map(f => '<span>' + f + '</span>').join('') + '</div>' +
-      '<button class="pr-btn" onclick="togglePreset(\'' + p.id + '\')">' +
-      (appliedIds.has(p.id) ? '✓ 적용됨 (클릭 시 해제)' : '+ 프리셋 적용') +
-      '</button></div>';
+/* ─── Step 4: Block library + applied blocks with inline config ─── */
+function renderStep4(hp){
+  const blocks = hp.blocks || [];
+
+  let libHtml = '<div class="stack-btns">';
+  Object.keys(STACK_PRESETS).forEach(k => {
+    const p = STACK_PRESETS[k];
+    libHtml += '<button class="stack-btn" onclick="addStack(\'' + k + '\')">' + p.label + '<br><span style="font-size:8px;color:#64748b;font-weight:500">' + p.source + '</span></button>';
   });
-  cards += '<div class="preset-card custom" onclick="addCustomModule()">' +
-    '<h4>➕ 커스텀 모듈</h4>' +
-    '<div class="pr-desc">파일1/2/3에 없는 모듈을 직접 정의합니다.</div>' +
-    '<div class="pr-feat"><span>수동 정의</span><span>이름만 지정</span></div>' +
-    '<button class="pr-btn">+ 추가</button></div>';
+  libHtml += '</div>';
+  libHtml += '<div class="block-lib">' + BLOCK_LIBRARY.map(b =>
+    '<div class="blk-lib-card" onclick="addBlock(\'' + b.type + '\')">' +
+    '<div class="bl-nm">' + b.name + '</div>' +
+    '<div class="bl-desc">' + b.desc + ' · <code style="font-size:8px">' + b.src + '</code></div>' +
+    '</div>'
+  ).join('') + '</div>';
 
   let appliedHtml = '';
-  if (applied.length) {
-    appliedHtml = '<div class="applied-list">' +
-      '<div class="al-hd">적용된 모듈 <b>' + applied.length + '</b>개</div>' +
-      applied.map((m, i) =>
-        '<div class="applied-item">' +
-        '<div class="ai-n">' + (i+1) + '</div>' +
-        '<div class="ai-nm">' + escapeHtml(m.name || m.id) + '</div>' +
-        '<div class="ai-src">' + escapeHtml(m.source || '') + '</div>' +
-        '<button onclick="removeOptional(\'' + m.id + '\')">제거</button></div>'
-      ).join('') + '</div>';
+  if (!blocks.length) {
+    appliedHtml = '<div class="ft-empty">아직 추가된 블록이 없습니다.<br>위 라이브러리에서 클릭하거나 일괄 추가 버튼을 사용하세요.</div>';
+  } else {
+    appliedHtml = '<div class="applied-list">' + blocks.map((b, i) => {
+      const exp = expandedBlocks.has(i);
+      return '<div class="app-blk ' + (exp?'exp':'') + '">' +
+        '<div class="app-blk-hd" onclick="toggleBlockExpand(' + i + ')">' +
+        '<div class="ab-n">' + (i+1) + '</div>' +
+        '<div class="ab-nm">' + escapeHtml(b.name) + '</div>' +
+        '<div class="ab-type">' + b.type + '</div>' +
+        '<div class="ab-ctrls">' +
+        '<button onclick="event.stopPropagation();moveBlock(' + i + ',-1)" title="위로">▲</button>' +
+        '<button onclick="event.stopPropagation();moveBlock(' + i + ',1)" title="아래로">▼</button>' +
+        '<button class="rm" onclick="event.stopPropagation();removeBlock(' + i + ')" title="삭제">×</button>' +
+        '</div></div>' +
+        '<div class="ab-body">' + renderBlockConfig(i, b) + '</div>' +
+        '</div>';
+    }).join('') + '</div>';
   }
 
   return '<section class="step-card" id="step-4">' +
-    stepHeader(4, '선택 모듈 — 사이트 성격별', hp, 'optional', applied.length + '개 적용') +
+    stepHeader(4, '선택 모듈 — 블록 라이브러리', hp, 'optional', blocks.length + '개 블록') +
     '<div class="step-body">' +
-    '<div class="hint">사이트 성격(통독/번역 등)에 따라 프리셋을 선택합니다. 파일1·파일2(통독), 파일3(번역) 참조.</div>' +
-    '<div class="preset-grid">' + cards + '</div>' +
-    appliedHtml + '</div></section>';
-}
-
-function renderStep5(hp){
-  const d = hp.deploy || {};
-  const targets = DEPLOY_TARGETS.map(t =>
-    '<button class="chip sq ' + (d.target===t.id?'a':'') + '" onclick="setField(\'deploy.target\',\'' + t.id + '\');renderAll()">' + t.label + '</button>'
-  ).join('');
-
-  return '<section class="step-card" id="step-5">' +
-    stepHeader(5, '배포', hp, 'deploy') +
-    '<div class="step-body">' +
-    '<div class="hint">GitHub Pages / EC2 / Vite 빌드 중 선택 → 빌드 명령 확인 → 배포 실행.</div>' +
-    '<div class="fld"><label>배포 대상</label><div class="chips">' + targets + '</div></div>' +
-    '<div class="fld"><label>빌드 명령</label>' +
-    '<input type="text" value="' + escapeAttr(d.buildCmd || 'npm run build') + '"' +
-    ' onblur="setField(\'deploy.buildCmd\', this.value)"></div>' +
-    '<div class="fld"><label>배포 명령 (선택)</label>' +
-    '<input type="text" value="' + escapeAttr(d.deployCmd) + '" placeholder="(미입력 시 자동 추론)"' +
-    ' onblur="setField(\'deploy.deployCmd\', this.value)"></div>' +
-    '<div style="display:flex;gap:6px;align-items:center;margin-top:6px">' +
-    '<button class="chip sq a" onclick="deployHomepage()">🚀 배포 실행</button>' +
-    (d.lastDeployed ? '<span style="font-size:9px;color:#94a3b8">마지막 배포: ' + d.lastDeployed + '</span>' : '') +
-    '</div>' +
-    '<div class="dp-log" id="deployLog">[배포 로그 대기 중]</div>' +
+    '<div class="hint">파일2(AI STUDIO)·파일3(원페이지)에서 분해한 실제 블록들. 카드 클릭 → 추가, 펼치기 → 설정, ▲▼ 순서 변경, × 제거.</div>' +
+    '<div class="block-lib-hd">📚 라이브러리</div>' +
+    libHtml +
+    '<div class="applied-hd">🧱 적용된 블록 <b>' + blocks.length + '</b>개</div>' +
+    appliedHtml +
     '</div></section>';
 }
 
-/* ═══ Right panel ═══ */
+function renderBlockConfig(idx, b){
+  const cfg = b.config || {};
+  const p = 'blocks.' + idx + '.config';
+  switch(b.type){
+    case 'cat_multi':
+      return '<div class="fld"><label>선택된 카테고리 (' + (cfg.selected||[]).length + ')</label><div class="chips">' +
+        (cfg.selected||[]).map((c,i) => '<span class="chip sq a">' + escapeHtml(c) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.selected\',' + i + ')">×</button></span>').join('') +
+        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.selected\',\'카테고리 (예: 문서/비즈니스/사업계획서):\')">+ 추가</button>' +
+        '</div></div>' +
+        '<div class="fld"><label>축 수</label><div class="chips">' +
+        [2,3].map(n => '<button class="chip sq ' + (cfg.axes===n?'a':'') + '" onclick="setField(\'' + p + '.axes\',' + n + ');renderEditArea()">' + n + '단 (대' + (n===3?'중소':'중') + ')</button>').join('') +
+        '</div></div>';
+
+    case 'file_drop':
+      const accepts = ['pdf','docx','xlsx','pptx','txt','zip','jpg','png','mp3','mp4'];
+      const selAcc = new Set(cfg.accept || []);
+      return '<div class="fld"><label>허용 확장자</label><div class="chips">' +
+        accepts.map(a => '<button class="chip sq ' + (selAcc.has(a)?'a':'') + '" onclick="toggleArrValue(\'' + p + '.accept\',\'' + a + '\');renderEditArea()">' + a + '</button>').join('') +
+        '</div></div>' +
+        '<div class="fld-row"><div class="fld"><label>최대 MB</label><input type="number" value="' + (cfg.maxMb||50) + '" onblur="setField(\'' + p + '.maxMb\',parseInt(this.value)||50)"></div>' +
+        '<div class="fld"><label>다중업로드</label><div class="chips">' +
+        '<button class="chip sq ' + (cfg.multi?'a':'') + '" onclick="setField(\'' + p + '.multi\',true);renderEditArea()">허용</button>' +
+        '<button class="chip sq ' + (!cfg.multi?'a':'') + '" onclick="setField(\'' + p + '.multi\',false);renderEditArea()">단일</button>' +
+        '</div></div></div>';
+
+    case 'ai_radio4':
+      return '<div class="fld"><label>모델 목록 (' + (cfg.models||[]).length + ')</label><div class="chips">' +
+        (cfg.models || []).map((m,i) => '<span class="chip sq a">' + escapeHtml(m) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.models\',' + i + ')">×</button></span>').join('') +
+        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.models\',\'모델명:\')">+ 추가</button>' +
+        '</div></div>' +
+        '<div class="fld"><label>기본 선택</label><div class="chips">' +
+        (cfg.models || []).map((m, i) => '<button class="chip sq ' + (cfg.defaultIdx===i?'a':'') + '" onclick="setField(\'' + p + '.defaultIdx\',' + i + ');renderEditArea()">' + escapeHtml(m) + '</button>').join('') +
+        '</div></div>';
+
+    case 'editor_bool':
+      return '<div class="fld"><label>기본 모드</label><div class="chips">' +
+        '<button class="chip sq ' + (cfg.defaultMode==='use'?'a':'') + '" onclick="setField(\'' + p + '.defaultMode\',\'use\');renderEditArea()">에디터 사용</button>' +
+        '<button class="chip sq ' + (cfg.defaultMode==='nouse'?'a':'') + '" onclick="setField(\'' + p + '.defaultMode\',\'nouse\');renderEditArea()">에디터 미사용</button>' +
+        '</div></div>';
+
+    case 'human_3sel':
+      return '<div class="fld"><label>작업 유형 (' + (cfg.types||[]).length + ')</label><div class="chips">' +
+        (cfg.types || []).map((t,i) => '<span class="chip sq a">' + escapeHtml(t) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.types\',' + i + ')">×</button></span>').join('') +
+        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.types\',\'작업 유형:\')">+</button>' +
+        '</div></div>' +
+        '<div class="fld"><label>전문가 등급</label><div class="chips">' +
+        (cfg.grades || []).map((g,i) => '<span class="chip sq a">' + escapeHtml(g) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.grades\',' + i + ')">×</button></span>').join('') +
+        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.grades\',\'등급명:\')">+</button>' +
+        '</div></div>' +
+        '<div class="fld"><label>긴급도 (label+surcharge%)</label><div style="font-size:9px;color:#64748b">' +
+        (cfg.urgencies || []).map(u => u.label + ' (+' + u.surcharge + '%)').join(' · ') +
+        '</div></div>';
+
+    case 'opts_toggle':
+      return '<div class="fld"><label>옵션</label>' +
+        '<div class="list-ed">' +
+        (cfg.options || []).map((o, i) =>
+          '<div class="list-ed-item"><div class="idx">' + (i+1) + '</div>' +
+          '<div class="fields"><input type="text" value="' + escapeAttr(o.label) + '" onblur="setField(\'' + p + '.options.' + i + '.label\',this.value)"></div>' +
+          '<button class="rm" onclick="removeListItem(\'' + p + '.options\',' + i + ')">×</button></div>'
+        ).join('') +
+        '</div><button class="list-ed-add" onclick="addListItem(\'' + p + '.options\',{id:\'opt\'+Date.now(),label:\'새 옵션\',enabled:false});renderEditArea()">+ 옵션 추가</button>' +
+        '</div>';
+
+    case 'lang_pair':
+      return '<div class="fld"><label>원문 언어</label><div class="chips">' +
+        (cfg.sources || []).map((l,i) => '<span class="chip sq a">' + escapeHtml(l) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.sources\',' + i + ')">×</button></span>').join('') +
+        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.sources\',\'원문 언어:\')">+</button>' +
+        '</div></div>' +
+        '<div class="fld"><label>번역 언어</label><div class="chips">' +
+        (cfg.targets || []).map((l,i) => '<span class="chip sq a">' + escapeHtml(l) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.targets\',' + i + ')">×</button></span>').join('') +
+        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.targets\',\'번역 언어:\')">+</button>' +
+        '</div></div>';
+
+    case 'quality_panel':
+      return '<div class="fld"><label>표시 메트릭</label><div class="chips">' +
+        ['files','categories','model','editor','human','cost','time','regulation'].map(m => {
+          const on = (cfg.metrics || []).indexOf(m) >= 0;
+          return '<button class="chip sq ' + (on?'a':'') + '" onclick="toggleArrValue(\'' + p + '.metrics\',\'' + m + '\');renderEditArea()">' + m + '</button>';
+        }).join('') +
+        '</div></div>';
+
+    case 'regulation':
+      return '<div class="fld"><label>규정 세트 ID</label><input type="text" value="' + escapeAttr(cfg.ruleSet) + '" onblur="setField(\'' + p + '.ruleSet\',this.value)"></div>';
+
+    case 'textarea_big':
+      return '<div class="fld"><label>Placeholder</label><input type="text" value="' + escapeAttr(cfg.placeholder) + '" onblur="setField(\'' + p + '.placeholder\',this.value)"></div>' +
+        '<div class="fld"><label>최소 높이 (px)</label><input type="number" value="' + (cfg.minH||260) + '" onblur="setField(\'' + p + '.minH\',parseInt(this.value)||260)"></div>';
+  }
+  return '<div class="fld"><label>JSON 설정</label><textarea rows="3" onblur="try{setField(\'' + p + '\',JSON.parse(this.value));renderEditArea()}catch(e){toast(\'JSON 파싱 실패\',\'err\')}">' + escapeHtml(JSON.stringify(cfg, null, 2)) + '</textarea></div>';
+}
+
+/* ─── Step 5: Deploy / Publish (real) ─── */
+function renderStep5(hp){
+  const slug = hp.slug || '';
+  const canPublish = !!slug && /^[a-z0-9-]+$/.test(slug);
+
+  let routingRows = '';
+  const at = hp.applyTemplates || [];
+  if (!at.length) {
+    routingRows = '<tr><td colspan="3" style="text-align:center;color:#94a3b8">신청서 미지정</td></tr>';
+  } else {
+    at.forEach(e => {
+      const t = formTemplates.find(x => x.id === e.templateId);
+      if (!t) return;
+      e.phases.forEach(ph => {
+        routingRows += '<tr>' +
+          '<td>' + escapeHtml(t.name || '') + ' <span style="color:#94a3b8">· ' + ph + '</span></td>' +
+          '<td>' + escapeHtml(t._site || '') + '</td>' +
+          '<td class="tgt">POST /api/applications</td></tr>';
+      });
+    });
+  }
+
+  // Add common module routing
+  const cs = hp.commonState || {};
+  if (cs.community_notice && cs.community_notice.enabled) {
+    routingRows += '<tr><td>공지사항 (표시)</td><td>' + (cs.community_notice.data.items || []).length + '개</td><td class="tgt">인라인 렌더</td></tr>';
+  }
+  if (cs.community_faq && cs.community_faq.enabled) {
+    routingRows += '<tr><td>FAQ (표시)</td><td>' + (cs.community_faq.data.items || []).length + '개</td><td class="tgt">인라인 렌더</td></tr>';
+  }
+  if (cs.community_qna && cs.community_qna.enabled) {
+    routingRows += '<tr><td>Q&A</td><td>제출</td><td class="tgt">POST /api/story_posts</td></tr>';
+  }
+  if (cs.community_review && cs.community_review.enabled) {
+    routingRows += '<tr><td>후기</td><td>제출</td><td class="tgt">POST /api/story_posts</td></tr>';
+  }
+  if (cs.inquiry && cs.inquiry.enabled) {
+    routingRows += '<tr><td>1:1 문의</td><td>' + (cs.inquiry.data.fields || []).length + '개 필드</td><td class="tgt">POST /api/applications</td></tr>';
+  }
+
+  const previewUrl = slug ? '/hp/' + slug : '(슬러그 필요)';
+  const configUrl = slug ? '/api/hp-config/' + slug : '(슬러그 필요)';
+
+  return '<section class="step-card" id="step-5">' +
+    stepHeader(5, '배포 — 발행 & 라우팅', hp, 'deploy', hp.status === 'published' ? '발행됨' : '초안') +
+    '<div class="step-body">' +
+    '<div class="hint">이 빌더는 홈페이지를 <b>빌드/배포</b>하는 게 아니라 <b>설정을 저장하고 서버 렌더링으로 노출</b>합니다. 실제 페이지는 Express 라우트 <code>/hp/:slug</code>에서 이 설정을 읽어 즉시 렌더링합니다.</div>' +
+
+    '<div class="fld"><label>슬러그 (발행 URL)</label>' +
+    '<input type="text" value="' + escapeAttr(hp.slug) + '" placeholder="my-homepage (영소문자/숫자/-)" onblur="setField(\'slug\',this.value);renderEditArea();renderList()"></div>' +
+
+    (canPublish ? '<div class="preview-box">' +
+      '<div class="pv-url"><span class="label">RENDER</span> <a href="' + previewUrl + '" target="_blank">' + previewUrl + '</a></div>' +
+      '<div class="pv-url"><span class="label">CONFIG</span> <a href="' + configUrl + '" target="_blank">' + configUrl + '</a></div>' +
+      '</div>' :
+      '<div class="warn-box">⚠️ 슬러그를 먼저 지정해야 발행할 수 있습니다 (영소문자/숫자/-)</div>') +
+
+    '<div style="display:flex;gap:6px;margin-top:8px">' +
+    '<button class="chip sq a" onclick="openPreview()" ' + (canPublish?'':'disabled') + '>👁️ 프리뷰 열기</button>' +
+    '<button class="publish-btn" onclick="publishHomepage()" ' + (canPublish?'':'disabled') + '>' + (hp.status === 'published' ? '✓ 재발행' : '🚀 발행하기') + '</button>' +
+    (hp.deploy && hp.deploy.lastPublished ? '<span style="font-size:9px;color:#94a3b8;align-self:center">마지막 발행: ' + hp.deploy.lastPublished + '</span>' : '') +
+    '</div>' +
+
+    '<div style="font-size:10px;color:#64748b;font-weight:700;margin:12px 0 4px;text-transform:uppercase">📍 접수 & 표시 라우팅</div>' +
+    '<table class="rt-table"><thead><tr><th>요소</th><th>메타</th><th>엔드포인트</th></tr></thead><tbody>' + routingRows + '</tbody></table>' +
+    '<div class="hint" style="margin-top:6px">🔌 외부 사이트가 이 홈페이지 설정을 가져오려면 <code>GET /api/hp-config/' + (slug || '{slug}') + '</code> 호출. form-engine/engine.js에서 동일한 구조로 렌더 가능.</div>' +
+
+    '</div></section>';
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*   Right panel                                                 */
+/* ═══════════════════════════════════════════════════════════ */
+
 function renderRight(){
   const hp = getCurrent();
   const box = document.getElementById('rpBody');
@@ -832,41 +1301,31 @@ function renderRight(){
     '<button class="chip sq ' + (hp.status===s?'a':'') + '" onclick="setField(\'status\',\'' + s + '\');renderAll()">' + s + '</button>'
   ).join('');
 
-  const site = WEBSITES.find(w => w.id === hp.linkedSite);
-  let dbItems = '<div class="rp-db-item" style="color:#94a3b8">사이트 미지정</div>';
-  if (site) {
-    dbItems = '<div class="rp-db-item">' + site.url + '</div>';
-  }
-
   const notesFiles = (hp._notesFiles || []).map((f, i) =>
-    '<span class="note-file">📎 ' + escapeHtml(f.name) + '<button onclick="removeNoteFile(' + i + ')">×</button></span>'
+    '<span class="chip sq a">📎 ' + escapeHtml(f.name) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeNoteFile(' + i + ')">×</button></span>'
   ).join('');
 
   box.innerHTML =
     '<div class="rp-sec"><h4>📊 진행 현황</h4><div class="rp-prog">' + progHtml + '</div></div>' +
-    '<div class="rp-sec"><h4>🏷️ 메타 정보</h4>' +
-    '<div class="rp-fld"><label>이름</label>' +
-    '<input type="text" value="' + escapeAttr(hp.name) + '" onblur="setField(\'name\',this.value);renderList()"></div>' +
-    '<div class="rp-fld"><label>슬러그 (URL)</label>' +
-    '<input type="text" value="' + escapeAttr(hp.slug) + '" placeholder="my-homepage" onblur="setField(\'slug\',this.value)"></div>' +
+    '<div class="rp-sec"><h4>🏷️ 메타</h4>' +
+    '<div class="rp-fld"><label>이름</label><input type="text" value="' + escapeAttr(hp.name) + '" onblur="setField(\'name\',this.value);renderList()"></div>' +
+    '<div class="rp-fld"><label>슬러그</label><input type="text" value="' + escapeAttr(hp.slug) + '" placeholder="영소문자/숫자/-" onblur="setField(\'slug\',this.value);renderList();renderEditArea()"></div>' +
     '<div class="rp-fld"><label>연결 사이트</label><div class="chips">' + siteChips + '</div></div>' +
     '<div class="rp-fld"><label>상태</label><div class="chips">' + statusChips + '</div></div>' +
     '</div>' +
-    '<div class="rp-sec"><h4>📦 DB 연결</h4>' + dbItems + '</div>' +
-    '<div class="rp-sec"><h4>📝 비고</h4><div class="notes-area">' +
+    '<div class="rp-sec"><h4>📝 비고</h4>' +
     '<textarea rows="3" onblur="setField(\'_notes\',this.value)">' + escapeHtml(hp._notes || '') + '</textarea>' +
-    '<div class="notes-files">' + notesFiles +
-    '<button class="notes-add" onclick="addNoteFile()">📎 파일 추가</button></div>' +
-    '</div></div>';
+    '<div class="chips" style="margin-top:4px">' + notesFiles +
+    '<button class="chip sq" onclick="addNoteFile()">📎 +</button></div></div>';
   updateActions();
 }
 
 function updateActions(){
   const hp = getCurrent();
   const save = document.getElementById('btnSave');
-  const dep = document.getElementById('btnDeploy');
+  const prev = document.getElementById('btnPreview');
   save.disabled = !hp || !dirty;
-  dep.disabled = !hp;
+  prev.disabled = !hp || !hp.slug;
   save.textContent = dirty ? '💾 저장 *' : '💾 저장';
 }
 
@@ -874,120 +1333,170 @@ function updateDirtyInd(){
   document.getElementById('dirtyInd').innerHTML = dirty ? '<span class="dirty-dot"></span>' : '';
 }
 
-/* ═══ Field setters ═══ */
+/* ═══════════════════════════════════════════════════════════ */
+/*   Field setters                                               */
+/* ═══════════════════════════════════════════════════════════ */
+
 function setField(path, value){
   const hp = getCurrent();
   if (!hp) return;
   const parts = path.split('.');
   let obj = hp;
   for (let i = 0; i < parts.length - 1; i++) {
-    obj[parts[i]] = obj[parts[i]] || {};
-    obj = obj[parts[i]];
+    const k = isNaN(+parts[i]) ? parts[i] : +parts[i];
+    if (obj[k] == null) obj[k] = isNaN(+parts[i+1]) ? {} : [];
+    obj = obj[k];
   }
-  obj[parts[parts.length - 1]] = value;
+  const last = parts[parts.length - 1];
+  obj[isNaN(+last) ? last : +last] = value;
   dirty = true;
   renderStepsBar();
   updateActions();
   updateDirtyInd();
 }
 
-function toggleCommon(id){
-  let hp = getCurrent();
-  if (!hp) {
-    toast('먼저 홈페이지를 생성하거나 선택하세요', 'err');
-    return;
-  }
-  hp.commonModules = hp.commonModules || [];
-  const i = hp.commonModules.indexOf(id);
-  if (i >= 0) hp.commonModules.splice(i, 1);
-  else hp.commonModules.push(id);
+function setListItem(path, idx, key, value){
+  const hp = getCurrent();
+  if (!hp) return;
+  const arr = resolvePath(hp, path);
+  if (!arr || !arr[idx]) return;
+  arr[idx][key] = value;
+  dirty = true;
+  renderStepsBar();
+  updateActions();
+  updateDirtyInd();
+}
+
+function addListItem(path, item){
+  const hp = getCurrent();
+  if (!hp) return;
+  const arr = resolvePath(hp, path);
+  if (!Array.isArray(arr)) return;
+  arr.push(item);
   dirty = true;
   renderAll();
 }
 
-function quickToggle(id){
-  toggleCommon(id);
+function removeListItem(path, idx){
+  const hp = getCurrent();
+  if (!hp) return;
+  const arr = resolvePath(hp, path);
+  if (!Array.isArray(arr)) return;
+  arr.splice(idx, 1);
+  dirty = true;
+  renderAll();
 }
 
-function setRoleFilter(r){
-  roleFilter = r;
+function promptArrItem(path, label){
+  const v = prompt(label);
+  if (!v) return;
+  addListItem(path, v);
+}
+
+function removeArrItem(path, idx){
+  removeListItem(path, idx);
+}
+
+function toggleArrValue(path, value){
+  const hp = getCurrent();
+  if (!hp) return;
+  let arr = resolvePath(hp, path);
+  if (!Array.isArray(arr)) {
+    setField(path, [value]);
+    return;
+  }
+  const i = arr.indexOf(value);
+  if (i >= 0) arr.splice(i, 1);
+  else arr.push(value);
+  dirty = true;
+  renderStepsBar();
+  updateActions();
+  updateDirtyInd();
+}
+
+function resolvePath(root, path){
+  const parts = path.split('.');
+  let obj = root;
+  for (const p of parts) {
+    if (obj == null) return null;
+    obj = obj[isNaN(+p) ? p : +p];
+  }
+  return obj;
+}
+
+/* Common module toggles */
+function toggleCommonEnabled(moduleId){
+  const hp = getCurrent();
+  if (!hp || !hp.commonState || !hp.commonState[moduleId]) return;
+  hp.commonState[moduleId].enabled = !hp.commonState[moduleId].enabled;
+  dirty = true;
+  renderAll();
+}
+function toggleCommonExpand(moduleId){
+  if (expandedCommon.has(moduleId)) expandedCommon.delete(moduleId);
+  else expandedCommon.add(moduleId);
   renderEditArea();
 }
 
-function toggleApplyTpl(id){
+/* Block operations */
+function addBlock(type){
   const hp = getCurrent();
-  if (!hp) return;
-  hp.applyTemplateIds = hp.applyTemplateIds || [];
-  const i = hp.applyTemplateIds.indexOf(id);
-  if (i >= 0) hp.applyTemplateIds.splice(i, 1);
-  else hp.applyTemplateIds.push(id);
-  dirty = true;
-  renderAll();
-}
-
-function togglePreset(presetId){
-  const hp = getCurrent();
-  if (!hp) return;
-  hp.optionalModules = hp.optionalModules || [];
-  const idx = hp.optionalModules.findIndex(m => m.id === presetId);
-  if (idx >= 0) {
-    hp.optionalModules.splice(idx, 1);
-  } else {
-    const preset = Object.values(OPTIONAL_PRESETS).find(p => p.id === presetId);
-    if (preset) {
-      hp.optionalModules.push({
-        id: preset.id,
-        name: preset.name,
-        source: preset.source,
-        modules: preset.modules,
-      });
-    }
-  }
-  dirty = true;
-  renderAll();
-}
-
-function removeOptional(id){
-  const hp = getCurrent();
-  if (!hp) return;
-  hp.optionalModules = (hp.optionalModules || []).filter(m => m.id !== id);
-  dirty = true;
-  renderAll();
-}
-
-function addCustomModule(){
-  const name = prompt('커스텀 모듈 이름:');
-  if (!name) return;
-  const hp = getCurrent();
-  if (!hp) return;
-  hp.optionalModules = hp.optionalModules || [];
-  hp.optionalModules.push({
-    id: 'custom_' + Date.now(),
-    name: name,
-    source: '사용자 정의',
-    modules: [],
+  if (!hp) { toast('먼저 홈페이지를 선택하세요', 'err'); return; }
+  const def = BLOCK_LIBRARY.find(b => b.type === type);
+  if (!def) return;
+  hp.blocks = hp.blocks || [];
+  hp.blocks.push({
+    type: def.type,
+    name: def.name,
+    desc: def.desc,
+    config: JSON.parse(JSON.stringify(def.defaultConfig)),
   });
+  expandedBlocks.add(hp.blocks.length - 1);
   dirty = true;
   renderAll();
 }
 
-function testLanding(){
+function addStack(presetId){
   const hp = getCurrent();
-  if (!hp || !hp.landing || !hp.landing.repoUrl) {
-    toast('레포 URL을 먼저 입력하세요', 'err');
-    return;
-  }
-  toast('연결 테스트 중...', 'ok');
-  setTimeout(() => {
-    hp.landing.lastSync = new Date().toISOString().slice(0, 16).replace('T', ' ');
-    dirty = true;
-    renderAll();
-    toast('연결 성공 ✓', 'ok');
-  }, 700);
+  if (!hp) { toast('먼저 홈페이지를 선택하세요', 'err'); return; }
+  const stack = STACK_PRESETS[presetId];
+  if (!stack) return;
+  if (!confirm(stack.label + ' — ' + stack.blocks.length + '개 블록을 추가하시겠습니까?')) return;
+  stack.blocks.forEach(t => addBlock(t));
+  toast(stack.blocks.length + '개 블록 추가 완료', 'ok');
 }
 
+function removeBlock(idx){
+  const hp = getCurrent();
+  if (!hp || !hp.blocks) return;
+  if (!confirm('블록 #' + (idx+1) + ' 삭제?')) return;
+  hp.blocks.splice(idx, 1);
+  expandedBlocks = new Set();
+  dirty = true;
+  renderAll();
+}
+
+function moveBlock(idx, dir){
+  const hp = getCurrent();
+  if (!hp || !hp.blocks) return;
+  const next = idx + dir;
+  if (next < 0 || next >= hp.blocks.length) return;
+  const tmp = hp.blocks[idx];
+  hp.blocks[idx] = hp.blocks[next];
+  hp.blocks[next] = tmp;
+  dirty = true;
+  renderAll();
+}
+
+function toggleBlockExpand(idx){
+  if (expandedBlocks.has(idx)) expandedBlocks.delete(idx);
+  else expandedBlocks.add(idx);
+  renderEditArea();
+}
+
+/* Notes */
 function addNoteFile(){
-  const name = prompt('파일명 입력 (실제 업로드는 후속 구현):');
+  const name = prompt('파일명 (실 업로드는 후속):');
   if (!name) return;
   const hp = getCurrent();
   if (!hp) return;
@@ -995,7 +1504,6 @@ function addNoteFile(){
   hp._notesFiles.push({ name: name, url: '' });
   dirty = true;
   renderRight();
-  updateActions();
 }
 
 function removeNoteFile(i){
@@ -1007,7 +1515,10 @@ function removeNoteFile(i){
   renderRight();
 }
 
-/* ═══ Render all ═══ */
+/* ═══════════════════════════════════════════════════════════ */
+/*   Render all                                                  */
+/* ═══════════════════════════════════════════════════════════ */
+
 function renderAll(){
   renderStepsBar();
   renderList();
@@ -1016,7 +1527,7 @@ function renderAll(){
   updateDirtyInd();
 }
 
-/* ═══ Helpers ═══ */
+/* Helpers */
 function escapeHtml(s){
   if (s == null) return '';
   const d = document.createElement('div');

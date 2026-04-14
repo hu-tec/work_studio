@@ -277,6 +277,242 @@ app.get("/curriculum/*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "curriculum", "index.html"));
 });
 
+// --- 홈페이지 생성 — 설정 JSON (외부 embed/form-engine용) ---
+app.get("/api/hp-config/:slug", (req, res) => {
+  const { slug } = req.params;
+  const rows = getAll("homepages");
+  const hp = rows.map(r => { try { return Object.assign({}, JSON.parse(r.data), { id: r.id, _created: r.created_at }); } catch { return null; } }).find(h => h && h.slug === slug);
+  if (!hp) return res.status(404).json({ error: "Not found" });
+  const templates = getAll("form_templates");
+  const resolvedTemplates = (hp.applyTemplates || []).map(at => {
+    const row = templates.find(r => r.id === at.templateId);
+    if (!row) return null;
+    try { return Object.assign({}, JSON.parse(row.data), { id: row.id, _selectedPhases: at.phases || ['part1', 'part2'] }); }
+    catch { return null; }
+  }).filter(Boolean);
+  res.json({
+    homepage: hp,
+    resolvedTemplates,
+    renderUrl: `/hp/${slug}`,
+    configUrl: `/api/hp-config/${slug}`,
+  });
+});
+
+// --- 홈페이지 생성 — 서버 렌더링 프리뷰 ---
+app.get("/hp/:slug", (req, res) => {
+  const { slug } = req.params;
+  const rows = getAll("homepages");
+  const hp = rows.map(r => { try { return Object.assign({}, JSON.parse(r.data), { id: r.id }); } catch { return null; } }).find(h => h && h.slug === slug);
+  if (!hp) return res.status(404).send(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>404</title></head><body style="font-family:sans-serif;text-align:center;padding:60px"><h1>404</h1><p>홈페이지 슬러그 <code>${slug}</code>을(를) 찾을 수 없습니다.</p><a href="/homepage-builder.html">← 빌더로 돌아가기</a></body></html>`);
+
+  const templates = getAll("form_templates");
+  const resolvedTemplates = (hp.applyTemplates || []).map(at => {
+    const row = templates.find(r => r.id === at.templateId);
+    if (!row) return null;
+    try { return Object.assign({}, JSON.parse(row.data), { id: row.id, _selectedPhases: at.phases || ['part1', 'part2'] }); }
+    catch { return null; }
+  }).filter(Boolean);
+
+  const cs = hp.commonState || {};
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  const enabled = (k) => cs[k] && cs[k].enabled !== false;
+  const data = (k) => (cs[k] && cs[k].data) || {};
+
+  // Section-nav items from sections
+  const sections = [];
+  if (enabled('banner')) sections.push({ id: 'banner', label: '홈' });
+  resolvedTemplates.forEach((t, i) => sections.push({ id: 'apply-' + i, label: esc(t.name || 'Apply ' + (i+1)) }));
+  if ((hp.blocks || []).length) sections.push({ id: 'blocks', label: '선택 모듈' });
+  if (enabled('community_notice')) sections.push({ id: 'notice', label: '공지' });
+  if (enabled('community_faq')) sections.push({ id: 'faq', label: 'FAQ' });
+  if (enabled('community_qna')) sections.push({ id: 'qna', label: 'Q&A' });
+  if (enabled('community_review')) sections.push({ id: 'review', label: '후기' });
+  if (enabled('inquiry')) sections.push({ id: 'inquiry', label: '문의' });
+
+  let html = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${esc(hp.name || slug)}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',-apple-system,sans-serif;color:#0f172a;line-height:1.5;background:#fff}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+nav.top{position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:1px solid #e2e8f0;z-index:50}
+nav.top .nav-inner{display:flex;align-items:center;gap:20px;height:56px}
+nav.top .brand{font-weight:800;font-size:16px;color:#1a365d}
+nav.top .nav-links{display:flex;gap:20px;font-size:13px;color:#475569;flex-wrap:wrap}
+nav.top .nav-links a:hover{color:#1a365d}
+nav.top .build-badge{margin-left:auto;font-size:10px;color:#94a3b8}
+.banner{background:linear-gradient(135deg,#1a365d,#2d4a7c);color:#fff;text-align:center;padding:60px 20px}
+.banner h1{font-size:32px;margin-bottom:10px}
+.banner p{font-size:16px;opacity:.9;max-width:600px;margin:0 auto 20px}
+.banner .cta{display:inline-block;background:#fff;color:#1a365d;padding:12px 28px;border-radius:8px;font-weight:600}
+section{padding:40px 0;border-bottom:1px solid #f1f5f9}
+section h2{font-size:22px;margin-bottom:16px;color:#0f172a;font-weight:700}
+.apply-block{background:#f8fafc;padding:20px;border-radius:8px;border:1px solid #e2e8f0}
+.apply-block .site-badge{display:inline-block;background:#1a365d;color:#fff;padding:2px 10px;border-radius:999px;font-size:11px;margin-right:6px}
+.apply-block .phase-block{margin-top:10px;padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:6px}
+.apply-block .phase-hd{font-weight:700;color:#1a365d;font-size:13px;margin-bottom:6px}
+.apply-block .mod-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;font-size:12px;color:#475569}
+.apply-block .mod-list div{padding:4px 8px;background:#f1f5f9;border-radius:4px}
+.apply-block .submit-btn{display:inline-block;margin-top:10px;background:#1a365d;color:#fff;padding:10px 20px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;border:none}
+.notice-list,.faq-list,.review-list{display:flex;flex-direction:column;gap:8px}
+.notice-item,.faq-item,.review-item{padding:12px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px}
+.notice-item .date{font-size:11px;color:#94a3b8}
+.notice-item .title{font-weight:600;font-size:14px}
+.notice-item .content{color:#64748b;font-size:12px;margin-top:4px}
+.faq-item .q{font-weight:700;color:#1a365d;font-size:14px}
+.faq-item .a{color:#64748b;font-size:13px;margin-top:4px}
+.inquiry-form{display:flex;flex-direction:column;gap:8px;max-width:480px}
+.inquiry-form input,.inquiry-form textarea{padding:8px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:13px;font-family:inherit}
+.inquiry-form button{padding:10px;background:#1a365d;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer}
+.blocks-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.block-card{padding:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px}
+.block-card h3{font-size:14px;margin-bottom:4px;color:#1a365d}
+.block-card .desc{font-size:11px;color:#64748b;margin-bottom:8px}
+.block-card .cfg{font-size:10px;color:#94a3b8;font-family:monospace;padding:4px 6px;background:#fff;border-radius:3px}
+footer{background:#0f172a;color:#94a3b8;padding:30px 0;text-align:center;font-size:12px}
+footer .brand{color:#fff;font-weight:700;margin-bottom:6px}
+.landing-iframe{width:100%;height:520px;border:1px solid #e2e8f0;border-radius:8px}
+.status-pill{display:inline-block;background:#d1fae5;color:#059669;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700;margin-left:6px}
+.status-draft{background:#fef3c7;color:#d97706}
+.routing-note{font-size:10px;color:#94a3b8;margin-top:6px;font-family:monospace}
+</style>
+</head>
+<body>
+<nav class="top"><div class="wrap nav-inner">
+  <div class="brand">${esc(hp.name || slug)}<span class="status-pill ${hp.status==='draft'?'status-draft':''}">${esc(hp.status || 'draft')}</span></div>
+  <div class="nav-links">${sections.map(s => `<a href="#${s.id}">${s.label}</a>`).join('')}</div>
+  <div class="build-badge">slug: ${esc(slug)} · 빌더: <a href="/homepage-builder.html">편집</a></div>
+</div></nav>`;
+
+  // Banner
+  if (enabled('banner')) {
+    const b = data('banner');
+    html += `<section class="banner" id="banner">
+      <h1>${esc(b.title || hp.name || '제목 미설정')}</h1>
+      <p>${esc(b.subtitle || '부제목을 입력하세요')}</p>
+      ${b.ctaLabel ? `<a href="${esc(b.ctaUrl || '#')}" class="cta">${esc(b.ctaLabel)}</a>` : ''}
+    </section>`;
+  }
+
+  // Landing iframe if configured
+  if (hp.landing && hp.landing.repoUrl && hp.landing.verified) {
+    const v = hp.landing.verified;
+    const ghPages = `https://${esc(v.owner)}.github.io/${esc(v.repo)}${hp.landing.deployPath || '/'}`;
+    html += `<section class="wrap" id="landing"><h2>🎨 랜딩 페이지 (${esc(v.owner)}/${esc(v.repo)})</h2>
+      <iframe class="landing-iframe" src="${ghPages}" loading="lazy" title="landing"></iframe>
+      <div class="routing-note">원본: ${esc(hp.landing.repoUrl)} / 브랜치 ${esc(hp.landing.branch || 'main')}</div>
+    </section>`;
+  }
+
+  // Apply forms
+  resolvedTemplates.forEach((t, i) => {
+    const phases = t._selectedPhases || ['part1','part2'];
+    html += `<section class="wrap" id="apply-${i}"><h2>📝 ${esc(t.name || 'Apply ' + (i+1))}</h2>
+      <div class="apply-block">
+        <span class="site-badge">${esc(t._site || 'site')}</span>
+        <span style="font-size:11px;color:#64748b">${esc(t._formId || '')}</span>`;
+    phases.forEach(ph => {
+      const mods = (t.phases && t.phases[ph]) || [];
+      if (!mods.length) return;
+      html += `<div class="phase-block"><div class="phase-hd">${ph === 'part1' ? '1부' : '2부'} (${mods.length}개 모듈)</div>
+        <div class="mod-list">${mods.map(m => `<div>${esc(m)}</div>`).join('')}</div></div>`;
+    });
+    const formAction = `/apply.html?site=${encodeURIComponent(t._site || '')}&form=${encodeURIComponent(t._formId || '')}`;
+    html += `<a href="${formAction}" class="submit-btn">▶ 신청 폼 열기</a>
+      <div class="routing-note">제출 → /api/applications (템플릿 #${t.id})</div>
+      </div></section>`;
+  });
+
+  // Optional blocks
+  if ((hp.blocks || []).length) {
+    html += `<section class="wrap" id="blocks"><h2>📦 선택 모듈 (${hp.blocks.length}개)</h2><div class="blocks-list">`;
+    hp.blocks.forEach((b, i) => {
+      html += `<div class="block-card"><h3>${i+1}. ${esc(b.name || b.type)}</h3>
+        <div class="desc">${esc(b.desc || b.type)}</div>
+        <div class="cfg">${esc(JSON.stringify(b.config || {}))}</div></div>`;
+    });
+    html += `</div></section>`;
+  }
+
+  // Notice
+  if (enabled('community_notice')) {
+    const items = data('community_notice').items || [];
+    html += `<section class="wrap" id="notice"><h2>📢 공지사항 (${items.length})</h2><div class="notice-list">`;
+    if (!items.length) html += `<div class="notice-item"><div class="content">등록된 공지가 없습니다.</div></div>`;
+    items.forEach(it => {
+      html += `<div class="notice-item"><div class="date">${esc(it.date || '')}</div><div class="title">${esc(it.title || '')}</div><div class="content">${esc(it.content || '')}</div></div>`;
+    });
+    html += `</div></section>`;
+  }
+
+  // FAQ
+  if (enabled('community_faq')) {
+    const items = data('community_faq').items || [];
+    html += `<section class="wrap" id="faq"><h2>❓ FAQ (${items.length})</h2><div class="faq-list">`;
+    if (!items.length) html += `<div class="faq-item"><div class="q">자주 묻는 질문이 없습니다.</div></div>`;
+    items.forEach(it => {
+      html += `<div class="faq-item"><div class="q">Q. ${esc(it.q || '')}</div><div class="a">A. ${esc(it.a || '')}</div></div>`;
+    });
+    html += `</div></section>`;
+  }
+
+  // QNA
+  if (enabled('community_qna')) {
+    const d = data('community_qna');
+    html += `<section class="wrap" id="qna"><h2>💬 Q&amp;A</h2>
+      <div class="routing-note">정책: ${esc(d.policy || 'auto')} · 분류: ${esc((d.categories || []).join(', ') || '기본')}</div>
+      <div class="routing-note">제출 → /api/story_posts (카테고리: qna)</div>
+    </section>`;
+  }
+
+  // Review
+  if (enabled('community_review')) {
+    html += `<section class="wrap" id="review"><h2>⭐ 후기</h2>
+      <div class="routing-note">제출 → /api/story_posts (카테고리: review)</div>
+    </section>`;
+  }
+
+  // Inquiry
+  if (enabled('inquiry')) {
+    const d = data('inquiry');
+    const fields = d.fields || ['name','email','phone','title','content'];
+    html += `<section class="wrap" id="inquiry"><h2>📧 1:1 문의</h2>
+      <form class="inquiry-form" method="POST" action="/api/applications">`;
+    const fldLabel = { name:'이름', email:'이메일', phone:'전화', title:'제목', content:'내용', file:'파일' };
+    fields.forEach(f => {
+      if (f === 'content') html += `<textarea name="${f}" placeholder="${fldLabel[f]||f}" rows="4" required></textarea>`;
+      else if (f === 'file') html += `<input type="file" name="${f}">`;
+      else html += `<input type="${f==='email'?'email':f==='phone'?'tel':'text'}" name="${f}" placeholder="${fldLabel[f]||f}" required>`;
+    });
+    html += `<button type="submit">문의 제출</button></form>
+      <div class="routing-note">제출 → /api/applications (_type: inquiry)</div>
+    </section>`;
+  }
+
+  // Footer
+  if (enabled('footer')) {
+    const f = data('footer');
+    html += `<footer>
+      <div class="wrap">
+        <div class="brand">${esc(f.company || hp.name || 'HuTechC')}</div>
+        <div>${esc(f.address || '')}</div>
+        <div>${esc(f.contact || '')}</div>
+        <div style="margin-top:10px">${esc(f.copyright || '© ' + new Date().getFullYear() + ' ' + (f.company || 'HuTechC'))}</div>
+      </div>
+    </footer>`;
+  } else {
+    html += `<footer><div class="wrap"><div>Generated by Work Studio Homepage Builder · <a href="/homepage-builder.html" style="color:#94a3b8">편집</a></div></div></footer>`;
+  }
+
+  html += `</body></html>`;
+  res.send(html);
+});
+
 // --- SPA fallback ---
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
