@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { MODE_LABEL, MODE_SHORT, type ContentMode } from "./mode";
 import { ANSWER_BANK, ANSWER_BANK_SUMMARY, type QualityGrade, type Difficulty } from "./question-data";
+import { ALL_TEXTBOOKS } from "./textbook-data";
 
 const API_BASE = "https://bmidcy9z17.execute-api.ap-northeast-2.amazonaws.com";
 import {
@@ -266,12 +267,71 @@ export function DashboardOverview({ mode = "curriculum", savedList, onNavigate }
   return <DashboardMain mode={mode} savedList={savedList} onNavigate={onNavigate} />;
 }
 
-function DashboardMain({ mode, savedList, onNavigate }: {
+// ANSWER_BANK 카테고리 → CATEGORY_TREE 대분류 매핑
+const Q_CAT_TO_LARGE: Record<string, string> = {
+  "문서": "문서",
+  "개발": "IT/개발",
+  "통역": "번역",
+  "창의적 활동": "창의적활동",
+  "영상": "영상/SNS",
+};
+
+// 교재 subject → 분야 매핑
+const TB_SUBJECT_TO_FIELD: Record<string, string> = {
+  "prompt": "프롬프트",
+  "ethics": "AI 윤리",
+  "translation": "번역",
+};
+
+// 교재 이름에서 급수 추정 (예: "초등 프롬프트 활용 1급" → "1급")
+function guessLevelFromName(name: string): { mid: string; level: string } | null {
+  const m = name.match(/(\d급)/);
+  if (!m) return null;
+  // 가연 자료 기준 — 모두 "교육" mid로 분류 (대상이 학생/실무자)
+  return { mid: "교육", level: m[1] };
+}
+
+// 시드 데이터 → 가상 SavedCurriculum 변환 (모드별)
+function buildSeedEntries(mode: ContentMode): SavedCurriculum[] {
+  if (mode === "questions") {
+    return ANSWER_BANK.map((a) => ({
+      id: `__seed_q_${a.id}`,
+      created_at: "",
+      category: { large: Q_CAT_TO_LARGE[a.category] || "", medium: a.subcategory || "", small: "" },
+      instructor_grade: { field: "", mid: "", level: "" },
+      targets: [],
+      keywords: { common: [], prompt: [], specialty: [], ethics: [] },
+      titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
+    }));
+  }
+  if (mode === "textbooks") {
+    return ALL_TEXTBOOKS.map((b, i) => {
+      const lvl = guessLevelFromName(b.name);
+      return {
+        id: `__seed_tb_${i}`,
+        created_at: "",
+        category: { large: "", medium: "", small: "" },
+        instructor_grade: { field: TB_SUBJECT_TO_FIELD[b.subject] || "", mid: lvl?.mid || "", level: lvl?.level || "" },
+        targets: [],
+        keywords: { common: [], prompt: [], specialty: [], ethics: [] },
+        titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
+      };
+    });
+  }
+  return [];
+}
+
+function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
   mode: ContentMode;
   savedList: SavedCurriculum[];
   onNavigate?: (filter: { catLarge?: string[]; field?: string[]; mid?: string[] }) => void;
 }) {
   const [hideZero, setHideZero] = useState(false);
+  const [includeSeed, setIncludeSeed] = useState(true);
+  // 시드 데이터 합산 (모드별)
+  const seedEntries = includeSeed ? buildSeedEntries(mode) : [];
+  const savedList = [...rawSavedList, ...seedEntries];
+  const seedCount = seedEntries.length;
   // ── 마스터 데이터 통계 ──
   const largeCats = Object.keys(CATEGORY_TREE);
   const totalMedium = largeCats.reduce((s, l) => s + Object.keys(CATEGORY_TREE[l]).length, 0);
@@ -394,11 +454,20 @@ function DashboardMain({ mode, savedList, onNavigate }: {
         <span className="text-[0.9rem] font-semibold">{MODE_LABEL[mode]} 데이터 현황</span>
         {mode !== "curriculum" && (
           <span className="rounded-md bg-indigo-100 px-2 py-0.5 text-[0.66rem] font-semibold text-indigo-700">
-            {MODE_LABEL[mode]} 모드 · 마스터 프레임 공유
+            {MODE_LABEL[mode]} 모드 · 모범 셸 공유
           </span>
         )}
+        {seedCount > 0 && (
+          <button
+            onClick={() => setIncludeSeed(!includeSeed)}
+            className={`rounded-md border px-1.5 py-0.5 text-[0.62rem] font-medium ${includeSeed ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-border text-muted-foreground hover:bg-muted"}`}
+            title={`가연 시드 ${seedCount}건 포함/제외 토글`}
+          >
+            시드 {includeSeed ? "포함" : "제외"} ({seedCount})
+          </button>
+        )}
         <span className="ml-auto text-[0.62rem] text-muted-foreground">
-          저장 {savedList.length}건 · 마스터 분류/급수/키워드 = 3모드 공통
+          사용자 저장 {rawSavedList.length}건 {seedCount > 0 && `+ 시드 ${includeSeed ? seedCount : 0}건`} = 매트릭스 합계 {savedList.length}건
         </span>
       </div>
 
@@ -620,12 +689,10 @@ function DashboardMain({ mode, savedList, onNavigate }: {
       })()}
       </div>{/* /grid-cols-2 중분류+급수 */}
 
-      {/* A-1d: 파일 현황 (좌측 절반) — 커리큘럼 전용 */}
-      {mode === "curriculum" && (
-        <div className="grid grid-cols-2 gap-2">
-          <FileStatusSection />
-        </div>
-      )}
+      {/* A-1d: 파일 현황 (좌측 절반) — 모든 모드에서 렌더 (모범 샘플 보존) */}
+      <div className="grid grid-cols-2 gap-2">
+        <FileStatusSection />
+      </div>
 
       {/* A-2: 분포 분석 — 분류체계 3단 */}
       <div className="grid grid-cols-3 gap-2.5">
@@ -800,23 +867,9 @@ function DashboardMain({ mode, savedList, onNavigate }: {
 
       {/* A-3: 저장 목록으로 이동됨 → 저장 목록 탭 참조 */}
 
-      {/* 커리큘럼 마스터 섹션(ZONE B/C/D) — 커리큘럼 모드에서만 렌더
-          (분류체계·급수체계는 3모드 공통이지만 키워드 풀·커리 단원은 커리 전용이라
-           전체를 커리에만 노출하고, 문제/교재 모드에는 ZONE A 숫자표 + 상단 감사표만 표시) */}
-      {mode !== "curriculum" && (
-        <div className="rounded-lg border border-dashed border-indigo-300 bg-indigo-50 p-2 flex items-start gap-2">
-          <Layers className="h-3.5 w-3.5 text-indigo-700 shrink-0 mt-0.5" />
-          <div className="text-[0.68rem] text-indigo-900 leading-snug">
-            <b>마스터 데이터 총괄 · 분류체계/급수/키워드/단원 상세</b>는 커리큘럼 전용 섹션이라 {MODE_LABEL[mode]} 모드에서는 숨김.
-            {MODE_LABEL[mode]} 원본이 제공되면 {MODE_LABEL[mode]} 전용 마스터 섹션이 이 자리에 표시됩니다.
-          </div>
-        </div>
-      )}
-
-      {mode === "curriculum" && <>
-
       {/* ════════════════════════════════════════
           ZONE B · 마스터 데이터 총괄 (2단 컬럼)
+          — 모든 모드에서 동일하게 렌더 (모범 샘플 보존)
          ════════════════════════════════════════ */}
       <div className="grid grid-cols-2 gap-2.5">
         {/* 좌: 총괄 요약 */}
@@ -1312,7 +1365,6 @@ function DashboardMain({ mode, savedList, onNavigate }: {
           </tbody>
         </table>
       </Section>
-      </>}
     </div>
   );
 }
