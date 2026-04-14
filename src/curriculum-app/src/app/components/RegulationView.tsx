@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   COMMON_REGULATION,
   SUBJECT_REGULATIONS,
@@ -22,14 +22,15 @@ import {
   Search,
   Eye,
   EyeOff,
+  X,
 } from "lucide-react";
 import { MODE_LABEL, type ContentMode } from "./mode";
 
-/* ── 등급 스타일 ── */
+/* ── 등급 스타일 — 배경 tint 제거, dot+border만 ── */
 const tierStyle: Record<Tier, { bg: string; bd: string; tx: string; dot: string }> = {
-  fixed:    { bg: "bg-rose-50",  bd: "border-rose-200",  tx: "text-rose-700",  dot: "bg-rose-500" },
-  semi:     { bg: "bg-amber-50", bd: "border-amber-200", tx: "text-amber-700", dot: "bg-amber-500" },
-  optional: { bg: "bg-sky-50",   bd: "border-sky-200",   tx: "text-sky-700",   dot: "bg-sky-500" },
+  fixed:    { bg: "bg-transparent", bd: "border-rose-200",  tx: "text-rose-700",  dot: "bg-rose-500" },
+  semi:     { bg: "bg-transparent", bd: "border-amber-200", tx: "text-amber-700", dot: "bg-amber-500" },
+  optional: { bg: "bg-transparent", bd: "border-sky-200",   tx: "text-sky-700",   dot: "bg-sky-500" },
 };
 const tierIcon: Record<Tier, React.ReactNode> = {
   fixed: <Pin className="h-2.5 w-2.5" />,
@@ -59,54 +60,140 @@ function filterBlock(block: RegulationBlock, tiers: Set<Tier>, search: string): 
   };
 }
 
-/* ── 한 칸 아이템 ── */
-function ItemRow({ it, tier }: { it: RegulationItem; tier: Tier }) {
+/* ── 한 칸 아이템 (편집·삭제 가능, 배경색 없음) ── */
+function ItemRow({
+  it, tier, onEdit, onDelete, onTierChange,
+}: {
+  it: RegulationItem & { tier?: Tier };
+  tier: Tier;
+  onEdit: (newText: string) => void;
+  onDelete: () => void;
+  onTierChange: (newTier: Tier) => void;
+}) {
   const s = tierStyle[tier];
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(it.text);
+  const commit = () => { onEdit(draft); setEditing(false); };
   return (
-    <div className="flex gap-1 rounded bg-white border border-border/50 px-1.5 py-0.5">
+    <div className={`group flex gap-1 rounded border ${s.bd} px-1.5 py-0.5 items-start`}>
       <span className={`shrink-0 inline-flex h-3.5 min-w-3.5 items-center justify-center rounded-full ${s.dot} text-[9px] font-bold text-white px-1`}>
         {it.no}
       </span>
-      <span className="text-[11px] leading-tight text-foreground/90">{it.text}</span>
+      {editing ? (
+        <input
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") commit();
+            if (e.key === "Escape") { setDraft(it.text); setEditing(false); }
+          }}
+          className="flex-1 text-[11px] leading-tight bg-transparent border-b border-primary focus:outline-none"
+        />
+      ) : (
+        <span
+          className="flex-1 text-[11px] leading-tight text-foreground/90 cursor-text"
+          onClick={() => setEditing(true)}
+          title="클릭하여 편집"
+        >
+          {it.text}
+        </span>
+      )}
+      <div className="flex gap-0.5 opacity-30 group-hover:opacity-100 transition-opacity shrink-0">
+        {(["fixed", "semi", "optional"] as Tier[]).map((t) => (
+          t !== tier ? (
+            <button
+              key={t}
+              onClick={onTierChange.bind(null, t)}
+              className={`h-3 w-3 rounded-full ${tierStyle[t].dot} border border-white hover:scale-125 transition-transform`}
+              title={`${TIER_LABEL[t]}로 이동`}
+            />
+          ) : null
+        ))}
+        <button
+          onClick={onDelete}
+          className="h-3 w-3 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white flex items-center justify-center"
+          title="삭제"
+        >
+          <X className="h-2 w-2" />
+        </button>
+      </div>
     </div>
   );
 }
 
-/* ── 한 등급 컬럼 ── */
-function TierCol({ tier, items, hidden }: { tier: Tier; items: RegulationItem[]; hidden: boolean }) {
-  if (hidden) return null;
-  const s = tierStyle[tier];
-  return (
-    <div className={`rounded border ${s.bd} ${s.bg} overflow-hidden`}>
-      <div className={`flex items-center gap-1 px-1.5 py-0.5 border-b ${s.bd} ${s.tx}`}>
-        {tierIcon[tier]}
-        <span className="text-[10px] font-semibold">{TIER_LABEL[tier]}</span>
-        <span className="text-[9px] opacity-70 ml-auto">{items.length}</span>
-      </div>
-      <div className="p-1 space-y-0.5">
-        {items.length === 0 ? (
-          <div className="px-1 py-1 text-center text-[9px] text-muted-foreground italic">—</div>
-        ) : (
-          items.map((it, i) => <ItemRow key={i} it={it} tier={tier} />)
-        )}
-      </div>
-    </div>
-  );
-}
+/* ── 규정 4단 그리드 (tier 혼합 평탄, 편집/추가/삭제 가능) ── */
+function BlockGrid({
+  block, tiers, onMutate,
+}: {
+  block: RegulationBlock;
+  tiers: Set<Tier>;
+  onMutate: (updater: (b: RegulationBlock) => RegulationBlock) => void;
+}) {
+  // tier별 필터 후 평탄화 — 각 item에 tier를 태그
+  const flat: { it: RegulationItem; tier: Tier; idx: number }[] = [];
+  (["fixed", "semi", "optional"] as Tier[]).forEach((t) => {
+    if (!tiers.has(t)) return;
+    block[t].forEach((it, idx) => flat.push({ it, tier: t, idx }));
+  });
 
-/* ── 규정 3열 블록 ── */
-function BlockGrid({ block, tiers }: { block: RegulationBlock; tiers: Set<Tier> }) {
-  const cols = [
-    tiers.has("fixed") ? 1 : 0,
-    tiers.has("semi") ? 1 : 0,
-    tiers.has("optional") ? 1 : 0,
-  ].reduce((a, b) => a + b, 0);
-  const gridCls = cols === 3 ? "grid-cols-3" : cols === 2 ? "grid-cols-2" : "grid-cols-1";
+  const editItem = (tier: Tier, idx: number, newText: string) =>
+    onMutate((b) => ({ ...b, [tier]: b[tier].map((x, i) => (i === idx ? { ...x, text: newText } : x)) }));
+
+  const deleteItem = (tier: Tier, idx: number) =>
+    onMutate((b) => ({ ...b, [tier]: b[tier].filter((_, i) => i !== idx) }));
+
+  const moveTier = (tier: Tier, idx: number, newTier: Tier) =>
+    onMutate((b) => {
+      const it = b[tier][idx];
+      return {
+        ...b,
+        [tier]: b[tier].filter((_, i) => i !== idx),
+        [newTier]: [...b[newTier], it],
+      } as RegulationBlock;
+    });
+
+  const addItem = (tier: Tier) =>
+    onMutate((b) => {
+      const nextNo = b[tier].length + 1;
+      return {
+        ...b,
+        [tier]: [...b[tier], { no: String(nextNo), text: "새 항목" }],
+      };
+    });
+
   return (
-    <div className={`grid ${gridCls} gap-1`}>
-      <TierCol tier="fixed" items={block.fixed} hidden={!tiers.has("fixed")} />
-      <TierCol tier="semi" items={block.semi} hidden={!tiers.has("semi")} />
-      <TierCol tier="optional" items={block.optional} hidden={!tiers.has("optional")} />
+    <div className="space-y-1">
+      <div className="grid grid-cols-4 gap-1">
+        {flat.map(({ it, tier, idx }) => (
+          <ItemRow
+            key={`${tier}-${idx}`}
+            it={it}
+            tier={tier}
+            onEdit={(t) => editItem(tier, idx, t)}
+            onDelete={() => deleteItem(tier, idx)}
+            onTierChange={(nt) => moveTier(tier, idx, nt)}
+          />
+        ))}
+      </div>
+      <div className="flex gap-1 flex-wrap">
+        {(["fixed", "semi", "optional"] as Tier[])
+          .filter((t) => tiers.has(t))
+          .map((t) => {
+            const s = tierStyle[t];
+            return (
+              <button
+                key={t}
+                onClick={() => addItem(t)}
+                className={`inline-flex items-center gap-1 rounded border border-dashed ${s.bd} ${s.tx} px-1.5 py-0.5 text-[10px] hover:bg-muted/30`}
+              >
+                <Plus className="h-2.5 w-2.5" />
+                {TIER_LABEL[t]} 추가
+              </button>
+            );
+          })}
+      </div>
     </div>
   );
 }
@@ -223,6 +310,18 @@ export function RegulationView({ mode = "curriculum" }: { mode?: ContentMode }) 
   return <RegulationViewInternal />;
 }
 
+// localStorage 키
+const LS_KEY = "regulation-edits-v1";
+function loadEdits(): { common: RegulationBlock; subjects: Record<string, RegulationBlock> } | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+function saveEdits(edits: { common: RegulationBlock; subjects: Record<string, RegulationBlock> }) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(edits)); } catch {}
+}
+
 function RegulationViewInternal() {
   const [search, setSearch] = useState("");
   const [tiers, setTiers] = useState<Set<Tier>>(new Set(["fixed", "semi", "optional"]));
@@ -233,6 +332,24 @@ function RegulationViewInternal() {
   const [open, setOpen] = useState<Set<string>>(
     new Set(["common", "unlabeled-A", "translation", "ethics", "notes", "missing"])
   );
+
+  // 편집 상태 — 초기값은 data constants, 이후 localStorage 로드
+  const [commonBlock, setCommonBlock] = useState<RegulationBlock>(() => {
+    const edits = loadEdits();
+    return edits?.common || COMMON_REGULATION.block;
+  });
+  const [subjectBlocks, setSubjectBlocks] = useState<Record<string, RegulationBlock>>(() => {
+    const edits = loadEdits();
+    if (edits?.subjects) return edits.subjects;
+    const init: Record<string, RegulationBlock> = {};
+    SUBJECT_REGULATIONS.forEach((s) => { init[s.id] = s.block; });
+    return init;
+  });
+
+  // 변경 시 localStorage에 저장
+  useEffect(() => {
+    saveEdits({ common: commonBlock, subjects: subjectBlocks });
+  }, [commonBlock, subjectBlocks]);
 
   const toggleSet = <T,>(set: Set<T>, v: T, setter: (s: Set<T>) => void) => {
     const n = new Set(set);
@@ -245,15 +362,15 @@ function RegulationViewInternal() {
   const expandAll = () => setOpen(new Set(["common", "unlabeled-A", "translation", "ethics", "notes", "missing"]));
   const collapseAll = () => setOpen(new Set());
 
-  // 필터 결과
+  // 필터 결과 (편집 가능한 state 기준)
   const filtered = useMemo(() => {
-    const common = blocks.has("common") ? filterBlock(COMMON_REGULATION.block, tiers, search) : null;
+    const common = blocks.has("common") ? filterBlock(commonBlock, tiers, search) : null;
     const subjects = SUBJECT_REGULATIONS.filter((s) => blocks.has(s.id as BlockId)).map((s) => ({
       ...s,
-      block: filterBlock(s.block, tiers, search),
+      block: filterBlock(subjectBlocks[s.id] || s.block, tiers, search),
     }));
     return { common, subjects };
-  }, [blocks, tiers, search]);
+  }, [blocks, tiers, search, commonBlock, subjectBlocks]);
 
   // 카운트
   const count = (b: RegulationBlock) => b.fixed.length + b.semi.length + b.optional.length;
@@ -262,8 +379,8 @@ function RegulationViewInternal() {
     filtered.subjects.reduce((s, x) => s + count(x.block), 0);
 
   const totalRaw =
-    count(COMMON_REGULATION.block) +
-    SUBJECT_REGULATIONS.reduce((s, x) => s + count(x.block), 0);
+    count(commonBlock) +
+    Object.values(subjectBlocks).reduce((s, b) => s + count(b), 0);
 
   const totalGaps = SUBJECT_REGULATIONS.reduce((s, r) => s + r.gaps.length, 0);
   const totalAnomalies = COMMON_REGULATION.anomalies.length;
@@ -394,7 +511,7 @@ function RegulationViewInternal() {
           open={open.has("common")}
           onToggle={toggleSection}
         >
-          <BlockGrid block={filtered.common} tiers={tiers} />
+          <BlockGrid block={commonBlock} tiers={tiers} onMutate={(u) => setCommonBlock(u(commonBlock))} />
           {COMMON_REGULATION.extras.map((t, i) => (
             <WarnLine key={`e${i}`} text={`[부가] ${t}`} tone="info" />
           ))}
@@ -424,7 +541,16 @@ function RegulationViewInternal() {
                 open={open.has(sub.id)}
                 onToggle={toggleSection}
               >
-                <BlockGrid block={sub.block} tiers={tiers} />
+                <BlockGrid
+                  block={subjectBlocks[sub.id] || sub.block}
+                  tiers={tiers}
+                  onMutate={(u) =>
+                    setSubjectBlocks({
+                      ...subjectBlocks,
+                      [sub.id]: u(subjectBlocks[sub.id] || sub.block),
+                    })
+                  }
+                />
                 {sub.gaps.map((t, i) => (
                   <WarnLine key={i} text={`[빈칸] ${t}`} tone="error" />
                 ))}

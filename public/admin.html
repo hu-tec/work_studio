@@ -997,81 +997,56 @@ const FIELD_TYPES=[
 {id:"section",label:"섹션"},
 ];
 // ═══ Default Modules — 공통/세부 모듈 시드 ═══
+// 공통 옵션 (C2/C3/C4 병합 — 지혜 지원서 v2 기준)
+const OPT_AVAIL_TIME=["월~금 오전(09-12)","월~금 오후(13-18)","월~금 저녁(19-22)","월~금 심야(22-)","토요일 오전","토요일 오후","토요일 저녁","일요일 오전","일요일 오후","일요일 저녁","공휴일 가능","상시 가능","긴급 건 가능"];
+const OPT_EXP=["1년 미만","1~3년","3~5년","5~10년","10년 이상"];
+const OPT_EDU=["고졸","전문대졸","대졸","석사","박사","기타"];
+const OPT_CALL=["가능","불가능","협의 후 결정"];
+// C1 이사-강사채점 — factor 헬퍼
+function factorField(key,label,desc,ded,sol,bon){return{key,label,type:"section",required:false,children:[
+{key:"score",label:"점수 (0~5)",type:"select",required:true,options:["0","1","2","3","4","5"],scoreMax:5,evaluable:true},
+{key:"deductionTags",label:"감점 요인",type:"multiselect",required:false,options:ded},
+{key:"deductionOpinion",label:"감점 근거",type:"textarea",required:false,placeholder:"감점 근거..."},
+{key:"solutionTags",label:"해결안",type:"multiselect",required:false,options:sol},
+{key:"solutionOpinion",label:"개선 제안",type:"textarea",required:false,placeholder:"개선 제안..."},
+{key:"bonusTags",label:"가점 요인",type:"multiselect",required:false,options:bon},
+{key:"bonusOpinion",label:"가점 근거",type:"textarea",required:false,placeholder:"가점 근거..."},
+{key:"opinion",label:"전문가 종합 의견",type:"textarea",required:false,placeholder:"수정 제안 및 총평..."},
+]}}
 const DEFAULT_MODULES=[
-// ── 공통 모듈 ──
-{moduleId:"common_identity",name:"기본 인적사항",roleGroup:"common",role:"common",category:"common",order:1,fields:[
-{key:"name",label:"성명",type:"text",required:true,placeholder:"홍길동"},
-{key:"phone",label:"연락처",type:"tel",required:true,placeholder:"010-1234-5678"},
-{key:"email",label:"이메일",type:"email",required:true,placeholder:"example@email.com"},
+// ─────────── 공통 (모든 신청서) ───────────
+{moduleId:"common_identity",name:"기본 인적사항",roleGroup:"common",role:"common",category:"common",order:1,_rev:2,fields:[
+{key:"name",label:"성명",type:"text",required:true,placeholder:"성함 입력"},
+{key:"phone",label:"연락처",type:"tel",required:true,placeholder:"010-0000-0000"},
+{key:"email",label:"이메일",type:"email",required:true,placeholder:"example@domain.com"},
 ]},
-{moduleId:"common_client",name:"의뢰자 기본정보",roleGroup:"user",role:"client",category:"specialty",order:3,fields:[
+{moduleId:"common_qualification",name:"기본 자격사항 (공통)",roleGroup:"common",role:"common",category:"common",order:2,_rev:2,fields:[
+{key:"availableTime",label:"활동 가능 시간",type:"multiselect",required:false,options:OPT_AVAIL_TIME},
+{key:"experience",label:"실무/강의 경력",type:"multiselect",required:false,options:OPT_EXP},
+{key:"education",label:"최종 학력",type:"multiselect",required:false,options:OPT_EDU},
+{key:"callAvailable",label:"통화 가능 여부",type:"multiselect",required:false,options:OPT_CALL},
+]},
+{moduleId:"common_narrative",name:"자기소개 / 비고 / 동의",roleGroup:"common",role:"common",category:"common",order:99,_rev:2,fields:[
+{key:"introduction",label:"자기소개 및 핵심 역량",type:"textarea",required:false,placeholder:"핵심 경력을 간단히 작성해 주세요."},
+{key:"remarks",label:"비고 (포트폴리오/강의영상 링크 등)",type:"textarea",required:false,placeholder:"추가 전달 사항을 입력해 주세요."},
+{key:"privacyConsent",label:"위 기재사항은 사실과 다름없음을 확인합니다 (개인정보 수집·이용 동의)",type:"checkbox",required:true},
+]},
+// ─────────── 사용자 ───────────
+{moduleId:"common_client",name:"의뢰자 기본정보",roleGroup:"user",role:"client",category:"specialty",order:3,_rev:2,fields:[
 {key:"clientType",label:"의뢰자 유형",type:"select",required:true,options:["개인","기업","공공기관","단체","기타"]},
 {key:"orgName",label:"기관/회사명",type:"text",required:false,placeholder:"(개인은 미기재)"},
 {key:"purpose",label:"의뢰 목적",type:"textarea",required:false,placeholder:"간단히 적어주세요"},
 {key:"budget",label:"예산 범위",type:"select",required:false,options:["50만원미만","50-100만원","100-300만원","300-500만원","500만원이상","협의"]},
 {key:"contactPref",label:"연락 선호",type:"multiselect",required:false,options:["전화","이메일","문자","카톡","대면"]},
 ]},
-{moduleId:"common_qualification",name:"기본 자격사항",roleGroup:"common",role:"common",category:"common",order:2,fields:[
-{key:"availableTime",label:"활동 가능 시간",type:"multiselect",required:false,options:["평일오전","평일오후","평일저녁","주말오전","주말오후","주말저녁","월","화","수","목","금","토","일"]},
-{key:"experience",label:"경력",type:"select",required:false,options:["1년미만","1-3년","3-5년","5-10년","10년이상"]},
-{key:"education",label:"최종 학력",type:"select",required:false,options:["고졸","전문대졸","대졸","석사","박사","기타"]},
-{key:"callAvailable",label:"통화 가능 여부",type:"select",required:false,options:["가능","불가능","협의후결정"]},
-{key:"occupation",label:"현재 직업",type:"select",required:false,options:["학생","대학생","직장인","교사","프리랜서","기타"]},
-{key:"workGoal",label:"지원 목적",type:"multiselect",required:false,options:["전문활동","경력개발","지식공유","추가부수입","자기계발"]},
-]},
-{moduleId:"common_additional",name:"추가 정보",roleGroup:"common",role:"common",category:"common",order:99,fields:[
-{key:"introduction",label:"자기소개 및 핵심 역량",type:"textarea",required:false,placeholder:"간단히 적어주세요"},
-{key:"remarks",label:"비고 (포트폴리오/링크 등)",type:"textarea",required:false},
-{key:"privacyConsent",label:"개인정보 수집 및 이용에 동의합니다",type:"checkbox",required:true},
-]},
-// ── 지예 placeholder (추후 제공) ──
-{moduleId:"zi_c1_insert",name:"[지예] C1 넣어놓기",roleGroup:"common",role:"common",category:"common",order:90,_placeholder:true,fields:[
-{key:"zi_c1_note",label:"지예 C1 (추후 제공 예정)",type:"textarea",required:false,placeholder:"내용 전달 후 채움"},
-]},
-{moduleId:"zi_c234_merge",name:"[지예] C2/3/4 합쳐놓기",roleGroup:"common",role:"common",category:"common",order:91,_placeholder:true,fields:[
-{key:"zi_c234_note",label:"지예 C2/3/4 (추후 제공 예정)",type:"textarea",required:false,placeholder:"내용 전달 후 채움"},
-]},
-// ── 세부 모듈: 강사 ──
-{moduleId:"spec_teacher_class",name:"강의 분류 (대중소 급수)",roleGroup:"expert",role:"instructor",category:"specialty",order:10,fields:[
-{key:"majorCategory",label:"강의 분야 대분류",type:"multiselect",required:true,options:["TESOL","프롬프트","번역","윤리"]},
-{key:"midCategory",label:"강의 대상 중분류",type:"multiselect",required:false,options:["교육용","일반","전문"]},
-{key:"gradeEdu",label:"교육용 급수",type:"multiselect",required:false,options:["1급","2급","3급","4급","5급","6급","7급","8급"]},
-{key:"gradeGeneral",label:"일반 급수",type:"multiselect",required:false,options:["1급","2급","3급"]},
-{key:"gradePro",label:"전문 급수",type:"multiselect",required:false,options:["1급","2급"]},
-]},
-{moduleId:"spec_teacher_expertise",name:"강의 전문성",roleGroup:"expert",role:"instructor",category:"specialty",order:11,fields:[
-{key:"lectureField",label:"주요 강의 분야",type:"multiselect",required:false,options:["기초이론","심화실습","자격증대비","기업출강","공공기관","초중고교육","대학강의","온라인클래스"]},
-{key:"lectureTool",label:"비대면 강의 도구",type:"multiselect",required:false,options:["Zoom","GoogleMeet","Teams","Webex","유튜브라이브","OBS Studio"]},
-]},
-{moduleId:"spec_teacher_skills",name:"강사 스킬셋",roleGroup:"expert",role:"instructor",category:"specialty",order:12,fields:[
-{key:"aiTeachingTools",label:"AI 교육 도구",type:"multiselect",required:false,options:["ChatGPT","Claude","Gemini","Copilot","Midjourney","DALL-E","기타"]},
-{key:"promptEngineering",label:"프롬프트 엔지니어링",type:"multiselect",required:false,options:["프롬프트 설계","페르소나 설정","체인오브쏘트","Few-shot","RAG","기타"]},
-{key:"contentCreation",label:"콘텐츠 제작",type:"multiselect",required:false,options:["교안설계","영상제작","PPT","퀴즈/평가","e러닝","기타"]},
-{key:"teachingCompetency",label:"교수 역량",type:"multiselect",required:false,options:["커리큘럼설계","학습평가","피드백","멘토링","클래스관리","기타"]},
-]},
-// ── 세부 모듈: 번역/전문가 ──
-{moduleId:"spec_translation",name:"번역 전문성",roleGroup:"expert",role:"translator",category:"specialty",order:20,fields:[
-{key:"languages",label:"가능 언어",type:"multiselect",required:true,options:["영어","일본어","중국어","한국어","스페인어","프랑스어","독일어","러시아어","포르투갈어","아랍어","기타"]},
-{key:"translationField",label:"전문 번역 분야",type:"multiselect",required:false,options:["IT/기술","법률/계약","의료/제약","금융/경제","문학/출판","게임/엔터","마케팅","특허","교육","건축","예술","환경","기타"]},
-{key:"catTools",label:"CAT 도구",type:"multiselect",required:false,options:["Trados","MemoQ","Wordfast","OmegaT","GTT","DeepL","경험없음"]},
-{key:"mtExperience",label:"기계번역 경험",type:"multiselect",required:false,options:["GoogleTranslate","DeepL","Papago","ChatGPT","Claude","경험없음"]},
-]},
-{moduleId:"spec_expert_skills",name:"전문가/번역가 스킬셋",roleGroup:"expert",role:"specialist",category:"specialty",order:21,fields:[
-{key:"aiVibeCoding",label:"AI Vibe Coding",type:"multiselect",required:false,options:["Cursor","Windsurf","Replit","기타","경험없음"]},
-{key:"promptUsage",label:"프롬프트 활용",type:"multiselect",required:false,options:["ChatGPT","Claude","Gemini","Copilot","기타"]},
-{key:"designTools",label:"디자인 도구",type:"multiselect",required:false,options:["Figma","Photoshop","Illustrator","Canva","기타","경험없음"]},
-{key:"docWriting",label:"문서 작성",type:"multiselect",required:false,options:["한글","Word","Excel","PPT","Notion","기타"]},
-]},
-// ── 세부 모듈: 과정 선택 (TESOL 등) ──
-{moduleId:"spec_course_select",name:"과정/수업 선택",roleGroup:"user",role:"student",category:"specialty",order:30,fields:[
+{moduleId:"spec_student_course",name:"학생 — 과정/수업 선택",roleGroup:"user",role:"student",category:"specialty",order:31,_rev:2,fields:[
 {key:"course",label:"지원 과정 (5대 종목)",type:"select",required:true,options:["TESOL","AI번역","AI프롬프트","AI윤리","ITT정통번역"]},
 {key:"appType",label:"신청 유형",type:"select",required:true,options:["수업신청","레벨테스트","설명회신청","테스트 TIP","1:1문의"]},
 {key:"region",label:"지역",type:"select",required:false,options:["서울 강남","부산 서면","대구","광주","경기도","충남","강원도","제주도"]},
 {key:"scheduleDate",label:"희망 일자",type:"date",required:false},
 {key:"scheduleTime",label:"희망 시간",type:"select",required:false,options:["09:00","09:30","10:00","10:30","11:00","14:00","14:30","15:00","15:30","16:00"]},
 ]},
-// ── 세부 모듈: 견적/의뢰 ──
-{moduleId:"spec_quote",name:"견적/의뢰 정보",roleGroup:"user",role:"client",category:"specialty",order:40,fields:[
+{moduleId:"spec_client_quote",name:"의뢰자 — 견적/의뢰 정보",roleGroup:"user",role:"client",category:"specialty",order:40,_rev:2,fields:[
 {key:"sourceLang",label:"출발어",type:"select",required:true,options:["한국어","영어","일본어","중국어","기타"]},
 {key:"targetLang",label:"도착어",type:"select",required:true,options:["한국어","영어","일본어","중국어","기타"]},
 {key:"docType",label:"문서 유형",type:"select",required:true,options:["일반","법률","의료","기술","문학","특허"]},
@@ -1079,17 +1054,132 @@ const DEFAULT_MODULES=[
 {key:"deadline",label:"납기일",type:"date",required:false},
 {key:"note",label:"요청사항",type:"textarea",required:false},
 ]},
+// ─────────── 전문가 / 강사 (C2) ───────────
+{moduleId:"spec_instructor_classification",name:"강사 — 강의 분류 (대/중/소)",roleGroup:"expert",role:"instructor",category:"specialty",order:10,_rev:2,fields:[
+{key:"majorCategory",label:"강의 분야 (대분류)",type:"multiselect",required:true,options:["TESOL","프롬프트","번역","윤리"]},
+{key:"middleCategory",label:"강의 대상 (중분류)",type:"multiselect",required:false,options:["교육용","일반","전문"]},
+{key:"subEdu",label:"교육용 급수 (소분류)",type:"multiselect",required:false,options:["1급","2급","3급","4급","5급","6급","7급","8급"]},
+{key:"subGen",label:"일반 급수",type:"multiselect",required:false,options:["1급","2급","3급"]},
+{key:"subPro",label:"전문 급수",type:"multiselect",required:false,options:["1급","2급"]},
+]},
+{moduleId:"spec_instructor_context",name:"강사 — 직업/목적",roleGroup:"expert",role:"instructor",category:"specialty",order:11,_rev:2,fields:[
+{key:"occupation",label:"현재 직업",type:"multiselect",required:false,options:["강사(전임)","강사(프리랜서)","교수","현업 전문가","대학원생","기타"]},
+{key:"workGoal",label:"지원 목적",type:"multiselect",required:false,options:["전문 강사 활동","경력 개발","지식 공유","추가 부수입","자기계발"]},
+]},
+{moduleId:"spec_instructor_expertise",name:"강사 — 강의 전문성",roleGroup:"expert",role:"instructor",category:"specialty",order:12,_rev:2,fields:[
+{key:"lectureField",label:"주요 강의 분야",type:"multiselect",required:false,options:["기초 이론","심화 실습","자격증 대비","기업 출강","공공기관","초/중/고 교육","대학 강의","온라인 클래스"]},
+{key:"lectureTool",label:"비대면 강의 도구",type:"multiselect",required:false,options:["Zoom","Google Meet","Teams","Webex","유튜브 라이브","OBS Studio"]},
+]},
+{moduleId:"spec_instructor_skillsets",name:"강사 — 스킬셋 (9그룹)",roleGroup:"expert",role:"instructor",category:"specialty",order:13,_rev:2,fields:[
+{key:"aiTeaching",label:"AI 교육 도구",type:"multiselect",required:false,options:["ChatGPT","Claude","Gemini","Perplexity","Gamma AI","Canva Magic"]},
+{key:"promptEng",label:"프롬프트 엔지니어링",type:"multiselect",required:false,options:["역할 정의","데이터 정제","출력 형식 지정","Chain of Thought","멀티모달","프롬프트 보안"]},
+{key:"contentMake",label:"교안/콘텐츠 제작",type:"multiselect",required:false,options:["PPT 디자인","캔바(Canva)","망고보드","미리캔버스","포토샵","영상 편집"]},
+{key:"lms",label:"학습 관리 시스템",type:"multiselect",required:false,options:["구글 클래스룸","노션(Notion)","슬랙","디스코드","카카오톡 채널","LMS 관리"]},
+{key:"interaction",label:"상호작용 도구",type:"multiselect",required:false,options:["패들렛","슬라이도","멘티미터","카훗","줌 화이트보드","미로(Miro)"]},
+{key:"teachingSkill",label:"교강사 역량",type:"multiselect",required:false,options:["스피치 스킬","커리큘럼 설계","학습자 분석","문제 해결 능력","시간 관리","평가 도구 제작"]},
+{key:"itBasic",label:"기타 IT 역량",type:"multiselect",required:false,options:["MS Office","한컴오피스","구글 워크스페이스","클라우드 스토리지","웹호스팅","코딩 기초"]},
+{key:"adminWork",label:"행정 업무",type:"multiselect",required:false,options:["출석 관리","보고서 작성","예산 관리","교재 편집","협업 툴 활용","데이터 정리"]},
+{key:"certifications",label:"보유 자격",type:"multiselect",required:false,options:["정교사 자격","TESOL 수료","민간 자격증","국가 기술 자격","어학 성적","기타 인증서"]},
+]},
+// ─────────── 전문가 / 번역사 + 전문가 (C3+C4 병합) ───────────
+{moduleId:"spec_translator_translation",name:"번역사/전문가 — 번역 전문성",roleGroup:"expert",role:"translator",category:"specialty",order:20,_rev:2,fields:[
+{key:"languages",label:"가능 언어",type:"multiselect",required:true,options:["영어","일본어","중국어","한국어","스페인어","프랑스어","독일어","러시아어","포르투갈어","아랍어","기타"]},
+{key:"translationField",label:"전문 번역 분야",type:"multiselect",required:false,options:["IT/기술","법률/계약","의료/제약","금융/경제","문학/출판","게임/엔터","마케팅","특허","교육","건축","예술","환경","기타"]},
+{key:"catTools",label:"CAT 도구",type:"multiselect",required:false,options:["Trados","MemoQ","Wordfast","OmegaT","GTT","DeepL","경험 없음"]},
+{key:"mtExperience",label:"기계번역 경험",type:"multiselect",required:false,options:["Google Translate","DeepL","Papago","ChatGPT","Claude","경험 없음"]},
+]},
+{moduleId:"spec_translator_context",name:"번역사/전문가 — 직업/목적",roleGroup:"expert",role:"translator",category:"specialty",order:21,_rev:2,fields:[
+{key:"occupation",label:"현재 직업",type:"multiselect",required:false,options:["학생","취준생","전문번역사","번역프리랜서","직장인","교수/강사","기타"]},
+{key:"workGoal",label:"지원 목적",type:"multiselect",required:false,options:["전문번역 프리랜서","어학 공부","추가 부수입","경력 개발","취미/자기계발"]},
+]},
+{moduleId:"spec_translator_techskills",name:"번역사/전문가 — 기술 스킬셋 (9그룹)",roleGroup:"expert",role:"translator",category:"specialty",order:22,_rev:2,fields:[
+{key:"aiVibeCoding",label:"AI 바이브코딩",type:"multiselect",required:false,options:["피그마 AI","커서","와프","엔티","Replit","볼트"]},
+{key:"promptUse",label:"프롬프트 활용",type:"multiselect",required:false,options:["제미나이","GPT","클로드","라마인덱스","오토GPT","퍼플렉시티"]},
+{key:"designTools",label:"디자인 툴",type:"multiselect",required:false,options:["감마","미드저니","캔바","일러스트","포토샵"]},
+{key:"otherProg",label:"기타 프로그램",type:"multiselect",required:false,options:["MCP","노트북 LM","노션","트렐로","먼데이닷컴"]},
+{key:"otherSkill",label:"기타 역량",type:"multiselect",required:false,options:["깃허브","슬랙","서버","카페 24","워드프레스","웹호스팅"]},
+{key:"docWriting",label:"문서 작성",type:"multiselect",required:false,options:["글쓰기","글정리","맥락파악","교정교열","요약기술"]},
+{key:"transSys",label:"번역 시스템",type:"multiselect",required:false,options:["SDL","멤소스","Smartcat","Phrase","Memsource Desktop"]},
+{key:"usageExp",label:"사용 경력",type:"multiselect",required:false,options:["미리 캔버스","한컴오피스","MS오피스","구글워크스페이스","드롭박스"]},
+{key:"workExp",label:"업무 경력",type:"multiselect",required:false,options:["사무","상담","문서정리","데이터정리","조직관리","일정관리"]},
+]},
+// ─────────── 관리자 / 채점 — C1 이사-강사채점 v4 (그대로 이식) ───────────
+{moduleId:"eval_a_profile",name:"면접평가 — A. 인적사항 (고정)",roleGroup:"admin",role:"admin",category:"internal",order:50,_rev:2,fields:[
+{key:"applicantName",label:"지원자명",type:"text",required:true},
+{key:"applicantType",label:"지원 분류",type:"select",required:true,options:["강사","직원"]},
+{key:"interviewDate",label:"면접일",type:"date",required:false},
+{key:"categoryLarge",label:"지원 분야 (대분류)",type:"select",required:false,options:["어학","IT","자격증","취미/교양","관리","영업","기술","지원"]},
+{key:"categoryMedium",label:"중분류",type:"text",required:false,placeholder:"예: 영어 / 프로그래밍 / 국가자격"},
+{key:"categorySmall",label:"소분류",type:"text",required:false,placeholder:"예: 회화 / 웹개발 / 기사"},
+{key:"career",label:"경력 사항",type:"select",required:false,options:["신입","경력"]},
+{key:"careerYears",label:"경력 년수",type:"number",required:false},
+{key:"education",label:"최종 학력",type:"select",required:false,options:["고졸","전문대졸","대졸(학사)","석사","박사"]},
+{key:"certificates",label:"보유 자격증",type:"multiselect",required:false,options:["TESOL","TOEIC 900+","JLPT N1","JLPT N2","HSK 5급+","정보처리기사","정보처리산업기사","컴퓨터활용능력 1급","컴퓨터활용능력 2급","GTQ 1급","웹디자인기능사","사무자동화산업기사","공인회계사(CPA)","세무사","SHRM-CP","AWS 자격증","TOPIK"]},
+{key:"availableAI",label:"활용 가능 AI",type:"text",required:false,placeholder:"ChatGPT, Claude 등"},
+{key:"mbti",label:"MBTI",type:"text",required:false},
+]},
+{moduleId:"eval_b_personality",name:"면접평가 — B. PART 1 인성/태도 (4개 요인)",roleGroup:"admin",role:"admin",category:"internal",order:51,_rev:2,fields:[
+factorField("judgment","1. 판단력","논리적 상황 대처, 가치관 일관성, 최적의 문제 해결 능력",["논리결여","감정적대응","기준모호"],["팩트체크","대안제시","의사결정"],["신속한판단","합리적근거","통찰력"]),
+factorField("sincerity","2. 성실성/태도","답변의 진실성, 면접 예절 및 경청, 목표 완수 의지와 책임감",["지각/불성실","답변번복","태도불량"],["예절교육","태도개선","마인드셋"],["정직한답변","강한책임감","신뢰감"]),
+factorField("sense","3. 센스/소통","대화 맥락 파악, 유연한 임기응변, 상대의 의도 파악 및 대응",["맥락오해","경직된사고","소통단절"],["경청훈련","화법교정","유연성"],["빠른상황파악","높은공감도","전달력"]),
+factorField("retention","4. 장기근무","이직 사유 타당성, 커리어 목표 구체성, 조직 문화 적응 의지",["퇴사우려","목표불분명","적응미흡"],["비전제시","복지상담","적응지원"],["장기성장성","협업마인드","애사심"]),
+]},
+{moduleId:"eval_b_career",name:"면접평가 — B. PART 2 경력/전문성 (4개 요인)",roleGroup:"admin",role:"admin",category:"internal",order:52,_rev:2,fields:[
+factorField("experience","5. 업무경력","핵심 프로젝트 기여도, 실무 프로세스 이해도, 성과 창출 사례",["경력부족","성과미비","기술낙후"],["실무교육","OJT","직무재배치"],["성과입증","풍부한경험","트렌드파악"]),
+factorField("academic","6. 학벌 및 조직관리","학위 적합성, 조직 관리 경험, 리더십 및 팀워크 역량",["학위부족","관리경험무","리더십결여"],["관리교육","역량강화","멘토링"],["우수학벌","검증된리더십","인사이트"]),
+factorField("teaching","7. 강의경력","교육 전달력, 커리큘럼 구성, 청중 피드백 및 강의 성과",["전달력부족","자료부실","피드백저조"],["스피치교육","교안개선","시강훈련"],["강의평가우수","명쾌한전달","실무위주"]),
+factorField("expertCert","8. 자격증/전문성","보유 자격의 실무 적용성, 지식의 깊이, 지속적 역량 개발 노력",["자격미보유","전문성부족","응용불가"],["자격취득권고","기술연수","심화학습"],["핵심자격보유","기술적깊이","실무활용"]),
+]},
+{moduleId:"eval_c_skills",name:"면접평가 — C. 보유 스킬 체크리스트 (17그룹)",roleGroup:"admin",role:"admin",category:"internal",order:53,_rev:2,fields:[
+{key:"aiVibeCoding",label:"AI 바이브코딩",type:"multiselect",required:false,options:["피그마 AI","커서","와프","엔티"]},
+{key:"prompt",label:"프롬프트 활용",type:"multiselect",required:false,options:["제미나이","GPT","클로드"]},
+{key:"design",label:"디자인 툴",type:"multiselect",required:false,options:["감마","미드저니"]},
+{key:"program",label:"기타 프로그램",type:"multiselect",required:false,options:["MCP","노트북 LM","노션"]},
+{key:"etc",label:"기타 역량",type:"multiselect",required:false,options:["깃허브","슬랙","서버(아마존등)","까페 24","워드프레스"]},
+{key:"documentWriting",label:"문서 작성",type:"multiselect",required:false,options:["글쓰기","글정리","맥락파악"]},
+{key:"translationSystem",label:"번역 시스템",type:"multiselect",required:false,options:["SDL","멘소스"]},
+{key:"usageExperience",label:"사용 경력",type:"multiselect",required:false,options:["미리 캔퍼스"]},
+{key:"workExperience",label:"업무 경력",type:"multiselect",required:false,options:["사무","상담","문서정리관리","데이터 정리","관리-조직학생"]},
+{key:"videoEditing",label:"영상 편집",type:"multiselect",required:false,options:["캡컷","프리미어 프로","파이널 컷","DaVinci Resolve"]},
+{key:"onlinePlatform",label:"온라인 강의",type:"multiselect",required:false,options:["Zoom","MS Teams","Google Meet","Webex"]},
+{key:"whiteboard",label:"화이트보드",type:"multiselect",required:false,options:["Miro","Jamboard","Padlet","Mural"]},
+{key:"quizAssessment",label:"퀴즈/평가",type:"multiselect",required:false,options:["Kahoot","Quizizz","Mentimeter","Slido"]},
+{key:"screenRecording",label:"화면 녹화",type:"multiselect",required:false,options:["OBS","Loom","Bandicam","Camtasia"]},
+{key:"presentationTool",label:"발표 도구",type:"multiselect",required:false,options:["Prezi","Canva 프레젠테이션","PowerPoint","Keynote"]},
+{key:"contentCreation",label:"콘텐츠 제작",type:"multiselect",required:false,options:["Canva","Adobe Express","블로그","유튜브"]},
+{key:"survey",label:"설문조사",type:"multiselect",required:false,options:["Google Forms","Typeform","SurveyMonkey","네이버 폼"]},
+]},
 ];
+// 구 moduleId → 신 moduleId 매핑 (템플릿 참조 자동 교체)
+const MODULE_ID_ALIASES={
+"common_additional":"common_narrative",
+"spec_teacher_class":"spec_instructor_classification",
+"spec_teacher_expertise":"spec_instructor_expertise",
+"spec_teacher_skills":"spec_instructor_skillsets",
+"spec_translation":"spec_translator_translation",
+"spec_expert_skills":"spec_translator_techskills",
+"spec_course_select":"spec_student_course",
+"spec_quote":"spec_client_quote",
+"zi_c1_insert":"eval_a_profile",
+"zi_c234_merge":"common_qualification",
+};
 
-// ═══ Default Form Templates — 1부/2부 phase 분할 ═══
+// ═══ Default Form Templates — C2/3/4 병합 + C1 면접평가 이식 ═══
 const DEFAULT_TEMPLATES=[
-{_site:"tesol",_formId:"orientation",name:"TESOL 수업신청",phases:{part1:["common_identity","spec_course_select"],part2:["common_qualification","common_additional"]}},
-{_site:"tesol",_formId:"level-test",name:"레벨테스트",phases:{part1:["common_identity","spec_course_select"],part2:["common_additional"]}},
-{_site:"tesol",_formId:"teacher_apply",name:"강사 지원서",phases:{part1:["common_identity","spec_teacher_class"],part2:["common_qualification","spec_teacher_expertise","spec_teacher_skills","common_additional"]}},
-{_site:"ai_trans",_formId:"quote",name:"견적 의뢰",phases:{part1:["common_identity","common_client","spec_quote"],part2:["common_additional"]}},
-{_site:"ai_trans",_formId:"translator",name:"번역사 신청",phases:{part1:["common_identity","common_qualification"],part2:["spec_translation","spec_expert_skills","common_additional"]}},
-{_site:"ai_ethics",_formId:"expert",name:"전문가 모집",phases:{part1:["common_identity","common_qualification"],part2:["spec_translation","common_additional"]}},
-{_site:"cbt",_formId:"exam_apply",name:"시험 신청",phases:{part1:["common_identity","spec_course_select"],part2:["common_additional"]}},
+// 학생 신청
+{_site:"tesol",_formId:"orientation",name:"TESOL 수업신청",_rev:2,phases:{part1:["common_identity","spec_student_course"],part2:["common_qualification","common_narrative"]}},
+{_site:"tesol",_formId:"level-test",name:"레벨테스트",_rev:2,phases:{part1:["common_identity","spec_student_course"],part2:["common_narrative"]}},
+{_site:"cbt",_formId:"exam_apply",name:"시험 신청",_rev:2,phases:{part1:["common_identity","spec_student_course"],part2:["common_narrative"]}},
+// 강사 지원 (C2 그대로)
+{_site:"tesol",_formId:"instructor_apply",name:"강사 지원서 (C2)",_rev:2,phases:{part1:["common_identity","common_qualification","spec_instructor_context","spec_instructor_classification"],part2:["spec_instructor_expertise","spec_instructor_skillsets","common_narrative"]}},
+// 번역사 지원 (C4 그대로)
+{_site:"ai_trans",_formId:"translator_apply",name:"번역가 지원서 (C4)",_rev:2,phases:{part1:["common_identity","common_qualification","spec_translator_context","spec_translator_translation"],part2:["spec_translator_techskills","common_narrative"]}},
+// 전문가 지원 (C3) — translator 모듈 재사용
+{_site:"ai_ethics",_formId:"expert_apply",name:"전문가 지원서 (C3)",_rev:2,phases:{part1:["common_identity","common_qualification","spec_translator_context","spec_translator_translation"],part2:["spec_translator_techskills","common_narrative"]}},
+// 의뢰자 견적
+{_site:"ai_trans",_formId:"quote",name:"견적 의뢰",_rev:2,phases:{part1:["common_identity","common_client","spec_client_quote"],part2:["common_narrative"]}},
+// 관리자 면접 평가 (C1 그대로)
+{_site:"hutechc",_formId:"interview_eval",name:"면접 평가 기록지 (C1)",_rev:2,phases:{part1:["eval_a_profile"],part2:["eval_b_personality","eval_b_career","eval_c_skills"]}},
 ];
 
 // ═══ Form Template State ═══
@@ -1133,16 +1223,20 @@ if(!ftModules.length){
 for(const mod of DEFAULT_MODULES)await fetch("/api/form_modules",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(mod)});
 mRows=await f("/api/form_modules");ftModules=mRows.map(r=>migrateModule({id:r.id,...JSON.parse(r.data)}));
 }
-// Upsert any missing default modules (e.g. common_client, 지예 placeholders)
-const existingIds=new Set(ftModules.map(m=>m.moduleId));
-let added=false;
+// Rev-based upsert: 신규 모듈은 POST, 기존 모듈은 _rev가 낮으면 PUT로 교체
+let dirty=false;
 for(const mod of DEFAULT_MODULES){
-if(!existingIds.has(mod.moduleId)){
+const existing=ftModules.find(m=>m.moduleId===mod.moduleId);
+if(!existing){
 await fetch("/api/form_modules",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(mod)});
-added=true;
+dirty=true;
+}else if((existing._rev||0)<(mod._rev||0)){
+const{id,...data}=mod;
+await fetch(`/api/form_modules/${existing.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+dirty=true;
 }
 }
-if(added){mRows=await f("/api/form_modules");ftModules=mRows.map(r=>migrateModule({id:r.id,...JSON.parse(r.data)}))}
+if(dirty){mRows=await f("/api/form_modules");ftModules=mRows.map(r=>migrateModule({id:r.id,...JSON.parse(r.data)}))}
 // Load templates
 let tRows=await f("/api/form_templates");
 ftTemplates=tRows.map(r=>migrateTemplate({id:r.id,...JSON.parse(r.data)}));
@@ -1150,7 +1244,40 @@ ftTemplates=tRows.map(r=>migrateTemplate({id:r.id,...JSON.parse(r.data)}));
 if(!ftTemplates.length){
 for(const tpl of DEFAULT_TEMPLATES)await fetch("/api/form_templates",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(tpl)});
 tRows=await f("/api/form_templates");ftTemplates=tRows.map(r=>migrateTemplate({id:r.id,...JSON.parse(r.data)}));
-}}
+}
+// 템플릿 rev-upsert + moduleId alias 자동 교체 (레거시 참조 치유)
+dirty=false;
+function rewriteIds(mids){
+let changed=false;
+const out=(mids||[]).map(mid=>{if(MODULE_ID_ALIASES[mid]){changed=true;return MODULE_ID_ALIASES[mid]}return mid});
+return {out,changed};
+}
+for(const tpl of DEFAULT_TEMPLATES){
+const existing=ftTemplates.find(t=>t._site===tpl._site&&t._formId===tpl._formId);
+if(!existing){
+await fetch("/api/form_templates",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(tpl)});
+dirty=true;
+}else if((existing._rev||0)<(tpl._rev||0)){
+await fetch(`/api/form_templates/${existing.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(tpl)});
+dirty=true;
+}
+}
+// 모든 템플릿(기본 + 사용자 생성)의 moduleId 레거시 참조 치환
+for(const t of ftTemplates){
+if(!t.phases){t.phases={part1:[],part2:[]};dirty=true}
+const r1=rewriteIds(t.phases.part1);
+const r2=rewriteIds(t.phases.part2);
+if(r1.changed||r2.changed){
+t.phases.part1=r1.out;
+t.phases.part2=r2.out;
+const{id,..._rest}=t;
+const body={_site:t._site,_formId:t._formId,name:t.name,_rev:t._rev||1,phases:t.phases,extraFields:t.extraFields||[]};
+await fetch(`/api/form_templates/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+dirty=true;
+}
+}
+if(dirty){tRows=await f("/api/form_templates");ftTemplates=tRows.map(r=>migrateTemplate({id:r.id,...JSON.parse(r.data)}))}
+}
 
 function getModule(modId){return ftModules.find(m=>m.moduleId===modId)}
 function assembleForm(tpl,phase){
