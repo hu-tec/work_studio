@@ -93,6 +93,7 @@
       this._cfg = {
         site: cfg.site || null,
         formId: cfg.formId || null,
+        phase: cfg.phase || null,   // 'part1' | 'part2' | null(전체)
         apiUrl: (cfg.apiUrl || '').replace(/\/$/, ''),
         container: cfg.container || '#application-form',
         recordId: cfg.recordId || null,
@@ -131,7 +132,10 @@
       if (!this._cfg.site || !this._cfg.formId) {
         throw new Error('site/formId 필수');
       }
-      const url = `${this._cfg.apiUrl}/api/form-config/${encodeURIComponent(this._cfg.site)}/${encodeURIComponent(this._cfg.formId)}`;
+      let url = `${this._cfg.apiUrl}/api/form-config/${encodeURIComponent(this._cfg.site)}/${encodeURIComponent(this._cfg.formId)}`;
+      if (this._cfg.phase === 'part1' || this._cfg.phase === 'part2') {
+        url += `?phase=${this._cfg.phase}`;
+      }
       const res = await fetch(url);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));

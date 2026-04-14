@@ -242,7 +242,8 @@ app.get("/api/form-config/:siteId/:formId", (req, res) => {
     site: tplData._site,
     formId: tplData._formId,
     role: tplData._role,
-    phase: phaseFilter || null,
+    // phaseFilter가 있으면 그 값, 없으면 legacy 템플릿의 _phase, 둘 다 없으면 null
+    phase: phaseFilter || tplData._phase || null,
     phases: { part1: phases.part1 || [], part2: phases.part2 || [] },
     displayName: tplData.displayName || tplData.name || tplData._formId,
     shortName:   tplData.shortName   || tplData.displayName || tplData._formId,

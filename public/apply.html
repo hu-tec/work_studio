@@ -26,6 +26,7 @@
       const p = new URLSearchParams(location.search);
       const site   = p.get('site');
       const formId = p.get('form') || p.get('formId');
+      const phase  = p.get('phase');   // 선택 — part1|part2 (새 C1-C4 통합 템플릿용)
       const id     = p.get('id');
       const token  = p.get('t');
 
@@ -38,6 +39,7 @@
       FormEngine.init({
         site: site,
         formId: formId,
+        phase: phase || null,
         container: '#application-form',
         apiUrl: location.origin,
         recordId: id || null,

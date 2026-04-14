@@ -1183,9 +1183,12 @@ const DEFAULT_TEMPLATES=[
 ];
 
 // ═══ Form Template State ═══
-let ftSite=null,ftFormId=null,ftData=null,ftTemplates=[],ftModules=[],ftSubTab='list',ftPhase='part1';
+let ftSite=null,ftFormId=null,ftData=null,ftTemplates=[],ftModules=[],ftSubTab='list',ftPhase='part1',ftShowLegacy=false;
 function ftSetSubTab(t){ftSubTab=t;rForms()}
 function ftSetPhase(p){ftPhase=p;rForms()}
+function ftToggleLegacy(){ftShowLegacy=!ftShowLegacy;rForms()}
+// 레거시 템플릿 여부 판정 — *_part1 / *_part2 / teacher_apply / translator / expert (C1-C4 이전 이름)
+function isLegacyTpl(t){return /(_part[12]|^teacher_apply$|^translator$|^expert$)/.test(t._formId||'')}
 
 // 레거시 category → roleGroup/role 변환 (메모리 상 마이그레이션)
 function migrateModule(m){
@@ -1342,6 +1345,9 @@ if(ftSubTab==='list'){
 nh+=`<span class="nav-sep"></span><span class="nav-lbl">홈페이지</span><span class="nav-sep"></span>`;
 nh+=`<span class="chip ${!ftSite?"a":""}" onclick="ftSelSite(null)">전체</span>`;
 for(const w of WEBSITES)nh+=`<span class="chip ${ftSite===w.id?"a":""}" onclick="ftSelSite('${w.id}')">${w.name}</span>`;
+// 레거시 템플릿 토글 (기본 숨김 — *_part1/*_part2/legacy named ones)
+const legacyCount=ftTemplates.filter(isLegacyTpl).length;
+nh+=`<span class="nav-sep"></span><span class="chip chip-sq ${ftShowLegacy?"a":""}" onclick="ftToggleLegacy()" title="외부 embed용 레거시 템플릿 포함">🗂 레거시 ${legacyCount}${ftShowLegacy?' ✓':''}</span>`;
 navBar.innerHTML=nh;
 ca.style.padding="16px 20px";
 
@@ -1349,9 +1355,11 @@ if(!ftTemplates.length&&!ftModules.length){loadFormTemplates().then(()=>rForms()
 
 // Sidebar: site→forms + module library
 const sites=ftSite?WEBSITES.filter(w=>w.id===ftSite):WEBSITES;
-let sb=`<div style="padding:8px 12px;font-size:10px;font-weight:700;color:#0088ff;background:#fafbfc;border-bottom:1px solid #eee">신청서 목록</div>`;
+// 레거시 필터: showLegacy=false면 *_part1/*_part2 등 기존 템플릿 숨김
+const visibleTemplates=ftShowLegacy?ftTemplates:ftTemplates.filter(t=>!isLegacyTpl(t));
+let sb=`<div style="padding:8px 12px;font-size:10px;font-weight:700;color:#0088ff;background:#fafbfc;border-bottom:1px solid #eee">신청서 목록 <span style="color:#888;font-weight:400">${visibleTemplates.length}/${ftTemplates.length}</span></div>`;
 for(const w of sites){
-const forms=ftTemplates.filter(t=>t._site===w.id);
+const forms=visibleTemplates.filter(t=>t._site===w.id);
 sb+=`<div class="fe-site ${ftSite===w.id&&!ftFormId?"a":""}" onclick="ftSelSite('${w.id}')"><span>${w.name}</span><span class="fe-url">${forms.length}개</span></div>`;
 if(ftSite===w.id){for(const fm of forms){
 const p1=assembleForm(fm,'part1'),p2=assembleForm(fm,'part2');
@@ -1413,21 +1421,21 @@ return `<div style="background:#fff;border:1px solid #e3e5ed;border-top:3px soli
 if(ftFormId&&ftData){main=renderFormEditor()}
 else if(ftSite){
 const w=WEBSITES.find(x=>x.id===ftSite);
-const forms=ftTemplates.filter(t=>t._site===ftSite);
-main=`<div class="fe-editor"><h3>${w?w.name:""} 신청서 (${forms.length}개)</h3>
+const forms=visibleTemplates.filter(t=>t._site===ftSite);
+main=`<div class="fe-editor"><h3>${w?w.name:""} 신청서 (${forms.length}개${ftShowLegacy?"":" · 레거시 숨김"})</h3>
 <p style="font-size:11px;color:#888;margin-bottom:12px">${w?w.url:""} — 카드 클릭 → 편집</p>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${forms.map(renderTplCard).join("")}</div>
 <div style="margin-top:16px"><h4 style="font-size:12px;color:#888;margin-bottom:8px">API 연동 예시</h4>
-<pre style="background:#0f172a;color:#a0d2db;padding:12px;border-radius:6px;font-size:10px;overflow-x:auto">GET /api/form-config/${ftSite}/{formId}
+<pre style="background:#0f172a;color:#a0d2db;padding:12px;border-radius:6px;font-size:10px;overflow-x:auto">GET /api/form-config/${ftSite}/{formId}?phase=part1|part2
 POST /api/applications</pre></div></div>`}
 else{
 // 전체 — 모든 홈페이지 × 모든 신청서를 4단 그리드 한 눈에
 const bySite={};
-for(const fm of ftTemplates){if(!bySite[fm._site])bySite[fm._site]=[];bySite[fm._site].push(fm)}
+for(const fm of visibleTemplates){if(!bySite[fm._site])bySite[fm._site]=[];bySite[fm._site].push(fm)}
 const sitesList=Object.keys(bySite);
-main=`<div class="fe-editor"><h3>전체 신청서 (${ftTemplates.length}개 템플릿 · ${sitesList.length}개 사이트)</h3>
+main=`<div class="fe-editor"><h3>전체 신청서 (${visibleTemplates.length}/${ftTemplates.length} 템플릿 · ${sitesList.length}개 사이트${ftShowLegacy?"":" · 레거시 숨김"})</h3>
 <p style="font-size:11px;color:#888;margin-bottom:12px">모든 홈페이지의 신청서 한 눈에. 카드 클릭 → 편집. 📦 공통 모듈 · 📋 역할·세부 모듈</p>
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${ftTemplates.map(renderTplCard).join("")}</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${visibleTemplates.map(renderTplCard).join("")}</div>
 </div>`}
 
 ca.innerHTML=`<div class="fe-wrap"><div class="fe-sidebar">${sb}</div><div class="fe-main">${main}</div></div>`}
@@ -1997,9 +2005,9 @@ EXAM_DOMAINS.forEach(d=>{nh+=`<span class="chip ${ctDomainF===d?"a":""}" onclick
 navBar.innerHTML=nh;subNav.classList.remove("v");
 
 let h=`<div class="ct-tabs">
-<div class="ct-tab ${ctTab==="questions"?"a":""}" onclick="ctTab='questions';ctAdding=false;ctExpId=null;rContent()">문제은행 <span style="opacity:.6">${TC.questions||0}</span></div>
-<div class="ct-tab ${ctTab==="curriculum"?"a":""}" onclick="ctTab='curriculum';ctAdding=false;ctExpId=null;rContent()">커리큘럼 <span style="opacity:.6">${TC.curriculum||0}</span></div>
-<div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';ctAdding=false;ctExpId=null;rContent()">교재 <span style="opacity:.6">${TC.textbooks||0}</span></div>
+<div class="ct-tab ${ctTab==="questions"?"a":""}" onclick="ctTab='questions';ctAdding=false;ctExpId=null;rContent()" title="DB 저장 건수">문제은행${TC.questions?` <span style="opacity:.6">(${TC.questions}건)</span>`:""}</div>
+<div class="ct-tab ${ctTab==="curriculum"?"a":""}" onclick="ctTab='curriculum';ctAdding=false;ctExpId=null;rContent()" title="DB 저장 건수">커리큘럼${TC.curriculum?` <span style="opacity:.6">(${TC.curriculum}건)</span>`:""}</div>
+<div class="ct-tab ${ctTab==="textbooks"?"a":""}" onclick="ctTab='textbooks';ctAdding=false;ctExpId=null;rContent()" title="DB 저장 건수">교재${TC.textbooks?` <span style="opacity:.6">(${TC.textbooks}건)</span>`:""}</div>
 <div class="ct-tab ${ctTab==="leveltest"?"a":""}" onclick="ctTab='leveltest';ctAdding=false;ctExpId=null;rContent()">레벨테스트</div></div>`;
 
 // 커리큘럼 탭: React 앱 iframe
