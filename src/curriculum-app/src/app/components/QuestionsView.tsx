@@ -8,6 +8,15 @@ import {
   type Difficulty,
 } from "./question-data";
 import {
+  STRUCTURED_QUESTIONS,
+  STRUCTURED_CATEGORIES,
+  CATEGORY_BANK,
+  BANK_GUIDELINE,
+  QUESTION_STAGE_LABELS,
+  type StructuredQuestion,
+  type CategoryBankItem,
+} from "./exam-question-data";
+import {
   ShieldCheck,
   Search,
   ChevronDown,
@@ -268,7 +277,7 @@ export function QuestionsView() {
             key={c}
             active={cats.has(c)}
             onClick={() => toggleSet(cats, c, setCats)}
-            color={cats.has(c) ? `${(CAT_BG[c] || "").replace("bg-", "bg-").replace("border-", "border-")} ${cats.has(c) ? "" : ""}` : undefined}
+            color={cats.has(c) ? CAT_BG[c] : undefined}
           >
             {c}
           </Chip>
@@ -355,6 +364,9 @@ export function QuestionsView() {
         </div>
       </div>
 
+      {/* ── 가연 엑셀 원문 문제 뱅크 (1~4차 프롬프트 차수별) ── */}
+      <StructuredQuestionsPanel />
+
       {/* ── 분야별 그룹 — 2단 (CurriculumExpandView와 동일) ── */}
       <div className="grid grid-cols-2 gap-3">
         {activeCategoriesList.map((c) => (
@@ -368,10 +380,271 @@ export function QuestionsView() {
         ))}
       </div>
 
+      {/* ── 가연 엑셀 원문 문제은행 시트 (라벨 × 본문 literal) ── */}
+      <CategoryBankPanel />
+
       {filtered.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
           <Filter className="h-8 w-8 mx-auto mb-2 opacity-30" />
           <p className="text-[0.82rem]">필터 결과 없음</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════
+   가연 엑셀 원문 문제 뱅크 — 구조화된 1~4차 프롬프트
+   ════════════════════════════════════════════════ */
+
+function StructuredQuestionCard({
+  q,
+  isOpen,
+  onToggle,
+}: {
+  q: StructuredQuestion;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  const stages: { key: keyof typeof QUESTION_STAGE_LABELS; color: string }[] = [
+    { key: "problem", color: "border-slate-300 bg-slate-50" },
+    { key: "prompt1", color: "border-blue-300 bg-blue-50" },
+    { key: "prompt2", color: "border-emerald-300 bg-emerald-50" },
+    { key: "prompt3", color: "border-amber-300 bg-amber-50" },
+    { key: "prompt4", color: "border-rose-300 bg-rose-50" },
+  ];
+  const filled = stages.filter((s) => q[s.key as keyof StructuredQuestion] as string);
+
+  return (
+    <div className="rounded-md border border-border/60 bg-white overflow-hidden">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center gap-1.5 px-2 py-1 hover:bg-muted/30 transition-colors text-left"
+      >
+        {isOpen ? (
+          <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
+        ) : (
+          <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0" />
+        )}
+        <span className="rounded bg-indigo-100 px-1 py-0 text-[0.6rem] font-mono text-indigo-700">
+          #{q.seq}
+        </span>
+        <span className="rounded bg-slate-100 px-1 py-0 text-[0.6rem] font-semibold text-slate-700">
+          {q.category || "미분류"}
+        </span>
+        <span className="text-[0.66rem] text-foreground/80 truncate flex-1">
+          {q.problem.slice(0, 60)}
+        </span>
+        <span className="text-[0.58rem] text-muted-foreground shrink-0">
+          {filled.length}/5 단계
+        </span>
+      </button>
+      {isOpen && (
+        <div className="p-1.5 grid grid-cols-1 gap-1 border-t border-border/40">
+          {stages.map((s) => {
+            const text = q[s.key as keyof StructuredQuestion] as string;
+            if (!text) return null;
+            return (
+              <div key={s.key} className={`rounded border ${s.color} px-2 py-1`}>
+                <div className="text-[0.6rem] font-semibold text-muted-foreground mb-0.5">
+                  {QUESTION_STAGE_LABELS[s.key]}
+                </div>
+                <div className="text-[0.66rem] leading-snug whitespace-pre-wrap text-foreground/90">
+                  {text}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StructuredQuestionsPanel() {
+  const [open, setOpen] = useState(true);
+  const [openMap, setOpenMap] = useState<Record<number, boolean>>({});
+  const [search, setSearch] = useState("");
+  const [catFilter, setCatFilter] = useState<Set<string>>(new Set(STRUCTURED_CATEGORIES));
+
+  const items = useMemo(() => {
+    return STRUCTURED_QUESTIONS.filter((q) => {
+      if (!catFilter.has(q.category)) return false;
+      if (search) {
+        const blob = `${q.category} ${q.problem} ${q.prompt1} ${q.prompt2} ${q.prompt3} ${q.prompt4}`.toLowerCase();
+        if (!blob.includes(search.toLowerCase())) return false;
+      }
+      return true;
+    });
+  }, [search, catFilter]);
+
+  const toggleCat = (c: string) => {
+    const n = new Set(catFilter);
+    if (n.has(c)) n.delete(c);
+    else n.add(c);
+    setCatFilter(n);
+  };
+
+  return (
+    <div className="rounded-lg border border-indigo-300 bg-indigo-50/40 overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-1.5 px-2 py-1 hover:bg-indigo-100/40"
+      >
+        {open ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        <BookOpen className="h-3 w-3 text-indigo-700" />
+        <span className="text-[0.72rem] font-semibold text-indigo-800">
+          가연 원문 문제 뱅크 · 1~4차 프롬프트
+        </span>
+        <span className="text-[0.6rem] text-indigo-700">
+          ({STRUCTURED_QUESTIONS.length}건)
+        </span>
+      </button>
+      {open && (
+        <div className="p-2 space-y-1 border-t border-indigo-200">
+          <div className="flex items-center gap-1 flex-wrap">
+            <div className="flex items-center gap-1 rounded-md border border-border bg-white px-2 py-0.5 flex-1 min-w-40">
+              <Search className="h-3 w-3 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="원문·프롬 검색"
+                className="flex-1 bg-transparent text-[0.68rem] outline-none"
+              />
+            </div>
+            {STRUCTURED_CATEGORIES.map((c) => (
+              <Chip
+                key={c}
+                active={catFilter.has(c)}
+                onClick={() => toggleCat(c)}
+              >
+                {c}
+              </Chip>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-1">
+            {items.map((q) => (
+              <StructuredQuestionCard
+                key={q.seq}
+                q={q}
+                isOpen={!!openMap[q.seq]}
+                onToggle={() => setOpenMap((m) => ({ ...m, [q.seq]: !m[q.seq] }))}
+              />
+            ))}
+          </div>
+          {items.length === 0 && (
+            <div className="text-center text-[0.68rem] text-muted-foreground py-4">
+              조건에 맞는 문제 없음
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── 문제은행 시트 (원본 label × content literal) ── */
+function CategoryBankPanel() {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [openMap, setOpenMap] = useState<Record<number, boolean>>({});
+
+  const items = useMemo(() => {
+    if (!search) return CATEGORY_BANK;
+    const q = search.toLowerCase();
+    return CATEGORY_BANK.filter(
+      (it) => it.label.toLowerCase().includes(q) || it.content.toLowerCase().includes(q)
+    );
+  }, [search]);
+
+  return (
+    <div className="rounded-lg border border-slate-300 bg-slate-50/40 overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-1.5 px-2 py-1 hover:bg-slate-100/40"
+      >
+        {open ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        <BookOpen className="h-3 w-3 text-slate-700" />
+        <span className="text-[0.72rem] font-semibold text-slate-800">
+          가연 문제은행 원본 시트 · 분류별 난이도 (대/중/소)
+        </span>
+        <span className="text-[0.6rem] text-slate-700">({CATEGORY_BANK.length}건)</span>
+      </button>
+      {open && (
+        <div className="p-2 space-y-1 border-t border-slate-200">
+          <div className="rounded bg-white border border-slate-200 px-2 py-1 text-[0.62rem] text-slate-700 leading-snug">
+            <div className="font-semibold mb-0.5">{BANK_GUIDELINE.source}</div>
+            <div>
+              <b>대:</b> {BANK_GUIDELINE.large}
+            </div>
+            <div>
+              <b>중:</b> {BANK_GUIDELINE.medium}
+            </div>
+            <div>
+              <b>소:</b> {BANK_GUIDELINE.small}
+            </div>
+            <div className="text-muted-foreground mt-0.5">{BANK_GUIDELINE.instructions}</div>
+          </div>
+          <div className="flex items-center gap-1 rounded-md border border-border bg-white px-2 py-0.5">
+            <Search className="h-3 w-3 text-muted-foreground" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="라벨·본문 검색"
+              className="flex-1 bg-transparent text-[0.68rem] outline-none"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-1">
+            {items.map((it) => (
+              <CategoryBankCard
+                key={it.seq}
+                item={it}
+                isOpen={!!openMap[it.seq]}
+                onToggle={() => setOpenMap((m) => ({ ...m, [it.seq]: !m[it.seq] }))}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CategoryBankCard({
+  item,
+  isOpen,
+  onToggle,
+}: {
+  item: CategoryBankItem;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="rounded-md border border-border/60 bg-white overflow-hidden">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center gap-1.5 px-2 py-1 hover:bg-muted/30 text-left"
+      >
+        {isOpen ? (
+          <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
+        ) : (
+          <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0" />
+        )}
+        <span className="rounded bg-slate-100 px-1 py-0 text-[0.6rem] font-mono text-slate-600">
+          #{item.seq}
+        </span>
+        <span className="rounded bg-violet-100 px-1 py-0 text-[0.6rem] font-semibold text-violet-700">
+          {item.label || "미분류"}
+        </span>
+        <span className="text-[0.64rem] text-foreground/70 truncate flex-1">
+          {item.content.slice(0, 50)}
+        </span>
+      </button>
+      {isOpen && (
+        <div className="p-1.5 border-t border-border/40">
+          <pre className="text-[0.62rem] leading-snug whitespace-pre-wrap text-foreground/80 font-sans">
+            {item.content}
+          </pre>
         </div>
       )}
     </div>

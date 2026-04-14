@@ -185,3 +185,49 @@ export const STRUCTURE_NOTES: { text: string; status: "literal" | "unresolved" }
     status: "unresolved",
   },
 ];
+
+// ════════════════════════════════════════════
+// 가연 엑셀 확장 규정 (1.시험규정.xlsx)
+// ════════════════════════════════════════════
+import regsRaw from "./gayeon-data/regulations-ext.json";
+
+export interface RegulationSection {
+  title: string;
+  block: RegulationBlock;
+}
+
+export interface DomainSpec {
+  large: string;
+  mid: string;
+  small: string;
+  aFixed: string;
+  bSemi: string;
+  b1Fixed: string;
+  b2Semi: string;
+  b3Optional: string;
+  cOptional: string;
+  c1Fixed: string;
+  c2Semi: string;
+  c3Optional: string;
+  placeholder: boolean;
+}
+
+interface RawExtendedRegs {
+  curriculumRegs: RegulationSection[];
+  textbookRegs: RegulationSection[];
+  gradeRegs: RegulationSection[];
+  domainSpecs?: DomainSpec[];
+}
+const extData = regsRaw as unknown as RawExtendedRegs;
+
+export const CURRICULUM_REGULATIONS_EXT: RegulationSection[] = extData.curriculumRegs;
+export const TEXTBOOK_REGULATIONS_EXT: RegulationSection[] = extData.textbookRegs;
+export const GRADE_REGULATIONS_EXT: RegulationSection[] = extData.gradeRegs;
+export const DOMAIN_SPECS: DomainSpec[] = extData.domainSpecs || [];
+
+export type RegulationDomain = "curriculum" | "textbook" | "grade";
+export const REGULATION_DOMAIN_LABEL: Record<RegulationDomain, string> = {
+  curriculum: "커리큘럼",
+  textbook: "교재",
+  grade: "급수",
+};

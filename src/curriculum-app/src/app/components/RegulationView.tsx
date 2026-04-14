@@ -5,9 +5,15 @@ import {
   MISSING_SUBJECTS,
   STRUCTURE_NOTES,
   TIER_LABEL,
+  CURRICULUM_REGULATIONS_EXT,
+  TEXTBOOK_REGULATIONS_EXT,
+  GRADE_REGULATIONS_EXT,
+  DOMAIN_SPECS,
   type Tier,
   type RegulationBlock,
   type RegulationItem,
+  type RegulationSection,
+  type DomainSpec,
 } from "./regulation-data";
 import {
   ShieldCheck,
@@ -273,37 +279,93 @@ function Chip({
   );
 }
 
-/* ── 빈 상태 (non-curriculum 모드) — 커리 규정은 재표시하지 않는다 ── */
-function RegulationEmpty({ mode }: { mode: ContentMode }) {
+/* ── 모드별 확장 규정 컨테이너 (questions/textbooks 모드에서도 규정 노출) ── */
+function ModeRegulationPanel({ mode }: { mode: ContentMode }) {
+  const sections = mode === "textbooks" ? TEXTBOOK_REGULATIONS_EXT : mode === "questions" ? GRADE_REGULATIONS_EXT : CURRICULUM_REGULATIONS_EXT;
+  const title = mode === "textbooks" ? "교재 규정 (2-1 ~ 2-4)" : mode === "questions" ? "급수 규정 (3-1 ~ 3-4 · 4-1 ~ 4-3)" : "커리큘럼 규정";
+  const [open, setOpen] = useState<Set<string>>(new Set(sections.map((_, i) => `mode-${i}`)));
+  const [search, setSearch] = useState("");
+  const [tiers, setTiers] = useState<Set<Tier>>(new Set(["fixed", "semi", "optional"]));
+  const toggle = (id: string) => {
+    const n = new Set(open);
+    if (n.has(id)) n.delete(id);
+    else n.add(id);
+    setOpen(n);
+  };
+
   return (
     <div className="space-y-1">
-      <div className="rounded border border-border bg-card px-1.5 py-1 flex items-center gap-1.5">
+      <div className="rounded border border-border bg-card px-1.5 py-1 flex flex-wrap items-center gap-1">
         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
         <span className="text-[12px] font-semibold">{MODE_LABEL[mode]} 규정</span>
-        <span className="text-[9px] text-muted-foreground italic ml-auto">원본 규정 문서 미제공</span>
-      </div>
-      <div className="rounded border border-dashed border-amber-300 bg-amber-50 p-3 flex items-start gap-2">
-        <FileWarning className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
-        <div className="flex-1 space-y-1">
-          <div className="text-[11px] font-semibold text-amber-900">
-            {MODE_LABEL[mode]} 규정 — 원본 문서 미제공
-          </div>
-          <div className="text-[10px] text-amber-800 leading-snug">
-            필터(등급/블록) · 검색 · 전체 펼치기 · 컴팩트 UI 셸은 준비되었습니다.
-            {MODE_LABEL[mode]} 고유 규정(고정/준고정/선택)이 제공되면 literal하게 입력됩니다.
-          </div>
-          <div className="text-[10px] text-amber-700 pt-1 border-t border-amber-200">
-            ⚠ 임의 생성 금지 — 커리 규정을 {MODE_LABEL[mode]}로 재표시하지 않습니다.
-          </div>
+        <span className="text-[9px] text-indigo-700 italic ml-1">
+          가연 엑셀 literal · 읽기전용
+        </span>
+        <div className="relative flex-1 min-w-[120px] max-w-[200px] ml-auto">
+          <Search className="absolute left-1 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="검색..."
+            className="w-full rounded border border-border bg-background pl-5 pr-1 py-0 text-[11px] h-5 focus:outline-none focus:border-primary"
+          />
+        </div>
+        <div className="flex items-center gap-0.5">
+          {(["fixed", "semi", "optional"] as Tier[]).map((t) => (
+            <button
+              key={t}
+              onClick={() => {
+                const n = new Set(tiers);
+                if (n.has(t)) n.delete(t);
+                else n.add(t);
+                setTiers(n);
+              }}
+              className={`rounded-full border px-1.5 py-0 text-[10px] font-medium ${
+                tiers.has(t)
+                  ? `${tierStyle[t].bd} ${tierStyle[t].bg} ${tierStyle[t].tx}`
+                  : "border-border text-muted-foreground"
+              }`}
+            >
+              {TIER_LABEL[t]}
+            </button>
+          ))}
         </div>
       </div>
+      <div className="rounded border border-indigo-200 bg-indigo-50/60 px-2 py-1 flex items-center gap-1">
+        <Pin className="h-3 w-3 text-indigo-600" />
+        <span className="text-[11px] font-semibold text-indigo-800">{title}</span>
+      </div>
+      {sections.map((sec, i) => {
+        const secKey = `mode-${i}`;
+        const secOpen = open.has(secKey);
+        return (
+          <div key={i} className="rounded border border-border bg-card overflow-hidden">
+            <button
+              onClick={() => toggle(secKey)}
+              className="w-full flex items-center gap-1 px-1.5 py-0.5 hover:bg-muted/40"
+            >
+              {secOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+              <span className="text-[11px] font-semibold">{sec.title}</span>
+              <span className="text-[9px] text-muted-foreground ml-1">
+                고정 {sec.block.fixed.length} · 준고정 {sec.block.semi.length} · 선택 {sec.block.optional.length}
+              </span>
+            </button>
+            {secOpen && (
+              <div className="border-t border-border p-1">
+                <ReadOnlyBlockGrid block={sec.block} tiers={tiers} search={search} />
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
 /* ── 메인 ── */
 export function RegulationView({ mode = "curriculum" }: { mode?: ContentMode }) {
-  if (mode !== "curriculum") return <RegulationEmpty mode={mode} />;
+  if (mode !== "curriculum") return <ModeRegulationPanel mode={mode} />;
   return <RegulationViewInternal />;
 }
 
@@ -813,6 +875,254 @@ function RegulationViewInternal() {
           필터 조건에 맞는 규정이 없습니다. 검색어를 지우거나 필터를 조정하세요.
         </div>
       )}
+
+      {/* ── 가연 확장 규정: 커리/교재/급수 (read-only) ── */}
+      {!gapsOnly && (
+        <ExtendedRegulationSection open={open} onToggle={toggleSection} search={search} tiers={tiers} />
+      )}
+
+      {/* ── 가연 대분류별 규정 spec (규정 sheet) ── */}
+      {!gapsOnly && DOMAIN_SPECS.length > 0 && (
+        <DomainSpecPanel open={open} onToggle={toggleSection} search={search} />
+      )}
+    </div>
+  );
+}
+
+function DomainSpecPanel({ open, onToggle, search }: { open: Set<string>; onToggle: (id: string) => void; search: string }) {
+  const sectionId = "domain-spec";
+  const isOpen = open.has(sectionId);
+  const matches = (s: DomainSpec) => {
+    if (!search) return true;
+    const blob = `${s.large} ${s.mid} ${s.small} ${s.aFixed} ${s.bSemi} ${s.b1Fixed} ${s.b2Semi} ${s.b3Optional} ${s.cOptional} ${s.c1Fixed} ${s.c2Semi} ${s.c3Optional}`.toLowerCase();
+    return blob.includes(search.toLowerCase());
+  };
+  const visible = DOMAIN_SPECS.filter(matches);
+  return (
+    <div className="rounded border border-emerald-200 bg-emerald-50/40 overflow-hidden">
+      <button
+        onClick={() => onToggle(sectionId)}
+        className="w-full flex items-center gap-1 px-1.5 py-0.5 hover:bg-emerald-100/40"
+      >
+        {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        <ShieldCheck className="h-3 w-3 text-emerald-700" />
+        <span className="text-[11px] font-semibold text-emerald-800">대분류별 규정 spec (A 고정 / B 준고정 + B1·B2·B3 / C 선택 + C1·C2·C3)</span>
+        <span className="text-[9px] text-emerald-700 ml-1">{visible.length}개 대분류</span>
+      </button>
+      {isOpen && (
+        <div className="border-t border-emerald-200 p-1 grid grid-cols-2 gap-1">
+          {visible.map((d) => (
+            <DomainSpecCard key={d.large} spec={d} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DomainSpecCard({ spec }: { spec: DomainSpec }) {
+  const [open, setOpen] = useState(false);
+  if (spec.placeholder) {
+    return (
+      <div className="rounded border border-dashed border-amber-300 bg-amber-50/60 px-1.5 py-1 text-[10px] text-amber-800">
+        <span className="font-semibold">{spec.large}</span>{" "}
+        <span className="opacity-70">— 원본 시트 미작성</span>
+      </div>
+    );
+  }
+  const fields: { label: string; value: string; tier: Tier }[] = [
+    { label: "A 고정", value: spec.aFixed, tier: "fixed" },
+    { label: "B 준고정 (대표)", value: spec.bSemi, tier: "semi" },
+    { label: "B1 고정 (조절 범위)", value: spec.b1Fixed, tier: "fixed" },
+    { label: "B2 준고정", value: spec.b2Semi, tier: "semi" },
+    { label: "B3 선택", value: spec.b3Optional, tier: "optional" },
+    { label: "C 선택 (대표)", value: spec.cOptional, tier: "optional" },
+    { label: "C1 고정 (선택 ON 시)", value: spec.c1Fixed, tier: "fixed" },
+    { label: "C2 준고정", value: spec.c2Semi, tier: "semi" },
+    { label: "C3 선택", value: spec.c3Optional, tier: "optional" },
+  ].filter((f) => f.value);
+  return (
+    <div className="rounded border border-emerald-200 bg-card overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-1 px-1.5 py-0.5 hover:bg-emerald-100/30"
+      >
+        {open ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        <span className="text-[11px] font-semibold text-emerald-800">{spec.large}</span>
+        <span className="text-[9px] text-muted-foreground ml-1">{fields.length}개 항목</span>
+      </button>
+      {open && (
+        <div className="border-t border-emerald-200/60 p-1 space-y-0.5">
+          {fields.map((f, i) => {
+            const s = tierStyle[f.tier];
+            return (
+              <div key={i} className={`rounded border ${s.bd} px-1 py-0.5`}>
+                <div className={`text-[9px] font-semibold ${s.tx}`}>{f.label}</div>
+                <pre className="text-[10px] leading-snug whitespace-pre-wrap text-foreground/85 font-sans">
+                  {f.value}
+                </pre>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════
+   가연 확장 규정 (read-only) — 커리 1-1~1-4 / 교재 2-1~2-4 / 급수 3-1~3-4 + 4-x
+   ════════════════════════════════════════════════ */
+
+function ReadOnlyBlockGrid({ block, tiers, search }: { block: RegulationBlock; tiers: Set<Tier>; search: string }) {
+  const flat: { it: RegulationItem; tier: Tier }[] = [];
+  (["fixed", "semi", "optional"] as Tier[]).forEach((t) => {
+    if (!tiers.has(t)) return;
+    block[t].forEach((it) => {
+      if (!search || it.text.toLowerCase().includes(search.toLowerCase())) {
+        flat.push({ it, tier: t });
+      }
+    });
+  });
+  return (
+    <div className="grid grid-cols-4 gap-1">
+      {flat.map(({ it, tier }, i) => {
+        const s = tierStyle[tier];
+        return (
+          <div
+            key={`${tier}-${i}`}
+            className={`group flex gap-1 rounded border ${s.bd} px-1.5 py-0.5 items-start`}
+          >
+            <span className={`shrink-0 inline-flex h-3.5 min-w-3.5 items-center justify-center rounded-full ${s.dot} text-[9px] font-bold text-white px-1`}>
+              {it.no}
+            </span>
+            <span className="flex-1 text-[11px] leading-tight text-foreground/90">{it.text}</span>
+          </div>
+        );
+      })}
+      {flat.length === 0 && (
+        <div className="col-span-4 text-center text-[10px] text-muted-foreground py-1">
+          조건에 맞는 항목 없음
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ExtendedDomainPanel({
+  id,
+  title,
+  sections,
+  open,
+  onToggle,
+  search,
+  tiers,
+  color,
+}: {
+  id: string;
+  title: string;
+  sections: RegulationSection[];
+  open: Set<string>;
+  onToggle: (id: string) => void;
+  search: string;
+  tiers: Set<Tier>;
+  color: string;
+}) {
+  const domainOpen = open.has(id);
+  return (
+    <div className="rounded border border-border bg-card overflow-hidden">
+      <button
+        onClick={() => onToggle(id)}
+        className={`w-full flex items-center gap-1 px-1.5 py-0.5 ${color} hover:brightness-95 transition-all`}
+      >
+        {domainOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        <ShieldCheck className="h-3 w-3" />
+        <span className="text-[11px] font-semibold">{title}</span>
+        <span className="text-[9px] text-muted-foreground ml-1">{sections.length} 블록 · 읽기전용</span>
+      </button>
+      {domainOpen && (
+        <div className="border-t border-border p-1 space-y-1">
+          {sections.map((sec, i) => {
+            const secKey = `${id}-${i}`;
+            const secOpen = open.has(secKey);
+            return (
+              <div key={i} className="rounded border border-border/60 bg-card/60 overflow-hidden">
+                <button
+                  onClick={() => onToggle(secKey)}
+                  className="w-full flex items-center gap-1 px-1.5 py-0.5 hover:bg-muted/30"
+                >
+                  {secOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                  <span className="text-[11px] font-semibold">{sec.title}</span>
+                  <span className="text-[9px] text-muted-foreground ml-1">
+                    고정 {sec.block.fixed.length} · 준고정 {sec.block.semi.length} · 선택 {sec.block.optional.length}
+                  </span>
+                </button>
+                {secOpen && (
+                  <div className="border-t border-border/40 p-1">
+                    <ReadOnlyBlockGrid block={sec.block} tiers={tiers} search={search} />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ExtendedRegulationSection({
+  open,
+  onToggle,
+  search,
+  tiers,
+}: {
+  open: Set<string>;
+  onToggle: (id: string) => void;
+  search: string;
+  tiers: Set<Tier>;
+}) {
+  return (
+    <div className="space-y-1">
+      <div className="rounded border border-indigo-200 bg-indigo-50/60 px-2 py-1 flex items-center gap-1">
+        <Pin className="h-3 w-3 text-indigo-600" />
+        <span className="text-[11px] font-semibold text-indigo-800">
+          가연 엑셀 확장 규정
+        </span>
+        <span className="text-[9px] text-indigo-700 italic ml-1">
+          원본 literal · 읽기전용 (수정은 위쪽 공통/과목 블록에서)
+        </span>
+      </div>
+      <ExtendedDomainPanel
+        id="ext-curr"
+        title="커리 규정 (1-1 ~ 1-4)"
+        sections={CURRICULUM_REGULATIONS_EXT}
+        open={open}
+        onToggle={onToggle}
+        search={search}
+        tiers={tiers}
+        color="bg-blue-50"
+      />
+      <ExtendedDomainPanel
+        id="ext-text"
+        title="교재 규정 (2-1 ~ 2-4)"
+        sections={TEXTBOOK_REGULATIONS_EXT}
+        open={open}
+        onToggle={onToggle}
+        search={search}
+        tiers={tiers}
+        color="bg-emerald-50"
+      />
+      <ExtendedDomainPanel
+        id="ext-grade"
+        title="급수 규정 (3-1 ~ 3-4 · 4-1 ~ 4-3)"
+        sections={GRADE_REGULATIONS_EXT}
+        open={open}
+        onToggle={onToggle}
+        search={search}
+        tiers={tiers}
+        color="bg-amber-50"
+      />
     </div>
   );
 }

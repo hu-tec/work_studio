@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import type { SavedCurriculum, CurriculumKeywords, UnitExtra, CustomUnit } from "./types";
+import type { SavedCurriculum, CurriculumKeywords, UnitExtra, CustomUnit, TextbookData, TextbookChapter } from "./types";
+import { EMPTY_TEXTBOOK } from "./types";
 import { STORAGE_KEY, DUMMY_DATA, getTargets } from "./data";
 import { detectMode, getStorageKey, type ContentMode } from "./mode";
 
@@ -24,7 +25,7 @@ function validateData(data: unknown): data is SavedCurriculum[] {
       typeof item === "object" &&
       item.category?.large &&
       item.instructor_grade?.field &&
-      item.keywords
+      (item.keywords || item.textbookData)
   );
 }
 
@@ -82,6 +83,9 @@ export function useCurriculum() {
   // Step 3 - Custom units (user-added rows)
   const [basicCustomUnits, setBasicCustomUnits] = useState<CustomUnit[]>([]);
   const [practiceCustomUnits, setPracticeCustomUnits] = useState<CustomUnit[]>([]);
+
+  // Step 3 - 교재 모드 전용 데이터
+  const [textbookData, setTextbookData] = useState<TextbookData>({ ...EMPTY_TEXTBOOK });
 
   // Toast
   const [toast, setToast] = useState<{ message: string; type: "success" | "info" | "error" } | null>(null);
@@ -278,21 +282,48 @@ export function useCurriculum() {
 
   const totalUnitCount = basicUnits.length + practiceUnits.length;
 
-  const canSave =
+  // 모드별 캔세이브 — 커리는 키워드 필수, 교재는 제목 필수, 문제는 (현재) 저장 막음
+  const baseSelectionsValid =
     catLarge !== "" &&
     catMedium !== "" &&
     selectedField !== "" &&
     selectedMid !== "" &&
-    selectedLevel !== "" &&
-    totalKeywordCount > 0;
+    selectedLevel !== "";
+
+  const canSaveCurriculum = baseSelectionsValid && totalKeywordCount > 0;
+  const canSaveTextbook = baseSelectionsValid && textbookData.title.trim() !== "";
+
+  const canSave =
+    mode === "textbooks" ? canSaveTextbook
+    : mode === "curriculum" ? canSaveCurriculum
+    : false;
 
   const canSaveSpecial =
+    mode === "curriculum" &&
     catLarge !== "" &&
     (catLarge === "프롬프트추가" || catMedium !== "") &&
     selectedField !== "" &&
     selectedMid !== "" &&
     selectedLevel !== "" &&
     totalKeywordCount > 0;
+
+  // 교재 챕터 CRUD
+  const addChapter = () => {
+    const newCh: TextbookChapter = { id: `ch-${generateId()}`, title: "", pages: "" };
+    setTextbookData((prev) => ({ ...prev, chapters: [...prev.chapters, newCh] }));
+  };
+  const updateChapter = (id: string, field: keyof TextbookChapter, value: string) => {
+    setTextbookData((prev) => ({
+      ...prev,
+      chapters: prev.chapters.map((c) => (c.id === id ? { ...c, [field]: value } : c)),
+    }));
+  };
+  const deleteChapter = (id: string) => {
+    setTextbookData((prev) => ({ ...prev, chapters: prev.chapters.filter((c) => c.id !== id) }));
+  };
+  const updateTextbookField = (field: keyof TextbookData, value: string) => {
+    setTextbookData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const resetForm = () => {
     setCatLarge("");
@@ -311,6 +342,7 @@ export function useCurriculum() {
     setPracticeUnitExtras({});
     setBasicCustomUnits([]);
     setPracticeCustomUnits([]);
+    setTextbookData({ ...EMPTY_TEXTBOOK });
     setEditingId(null);
   };
 
@@ -335,6 +367,13 @@ export function useCurriculum() {
         practiceCustomUnits: [...practiceCustomUnits],
       },
     };
+
+    if (mode === "textbooks") {
+      curriculum.textbookData = {
+        ...textbookData,
+        chapters: textbookData.chapters.map((c) => ({ ...c })),
+      };
+    }
 
     if (editingId) {
       setSavedList((prev) => prev.map((item) => (item.id === editingId ? curriculum : item)));
@@ -364,6 +403,7 @@ export function useCurriculum() {
     setPracticeUnitExtras(item.titles.practiceUnitExtras || {});
     setBasicCustomUnits(item.titles.basicCustomUnits || []);
     setPracticeCustomUnits(item.titles.practiceCustomUnits || []);
+    setTextbookData(item.textbookData ? { ...EMPTY_TEXTBOOK, ...item.textbookData, chapters: [...(item.textbookData.chapters || [])] } : { ...EMPTY_TEXTBOOK });
     showToast("수정 모드", "info");
   };
 
@@ -398,6 +438,7 @@ export function useCurriculum() {
     addBasicCustomUnit, addPracticeCustomUnit,
     updateBasicCustomUnit, updatePracticeCustomUnit,
     deleteBasicCustomUnit, deletePracticeCustomUnit,
+    textbookData, updateTextbookField, addChapter, updateChapter, deleteChapter,
     totalKeywordCount, totalUnitCount,
     canSave: canSave || canSaveSpecial,
     editingId, handleSave, handleEdit, handleCancelEdit, handleDelete, resetForm,

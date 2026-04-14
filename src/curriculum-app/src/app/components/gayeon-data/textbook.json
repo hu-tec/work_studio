@@ -1,0 +1,1126 @@
+{
+  "prompt": [
+    {
+      "name": "프롬프트 활용 교재(초등)",
+      "subject": "prompt",
+      "units": [
+        {
+          "no": "1장",
+          "title": "프롬프트란 무엇인가",
+          "objective": "프롬프트의 정의/역할/기본 개념을 이해한다",
+          "theoryPractice": "이론+가벼운 실습",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "2장",
+          "title": "프롬프트의 기본 구조와 지시어",
+          "objective": "프롬프트 구성요소(목표/대상/조건/형식/톤)와 지시어를 익힌다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "3장",
+          "title": "분야별 프롬프트 예시 (글쓰기, 기획, 디자인, 데이터 등)",
+          "objective": "분야별(문서/기획/디자인/데이터) 요구사항 차이를 이해한다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "4장",
+          "title": "모델별 차이점 (ChatGPT, Claude, Bard, Gemini 등)",
+          "objective": "모델 특성과 강점/약점을 비교하고 목적에 맞게 선택한다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "5장",
+          "title": "실전 문제 해결 프롬프트 작성 실습",
+          "objective": "실제 업무/시험 상황에서 문제를 프롬프트로 해결한다",
+          "theoryPractice": "실습 중심",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "6장",
+          "title": "AI 오류 분석과 수정 전략",
+          "objective": "환각/누락/편향/출처 문제를 점검하고 수정한다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "7장",
+          "title": "자기 프롬프트 진단 및 평가",
+          "objective": "프롬프트 품질을 기준으로 평가하고 개선한다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "8장",
+          "title": "미래형 프롬프트 설계 및 창의적 확장",
+          "objective": "고급 설계(시나리오/역할/멀티스텝)로 확장한다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        }
+      ]
+    },
+    {
+      "name": "프롬프트 활용 교재(중등)",
+      "subject": "prompt",
+      "units": [
+        {
+          "no": "1",
+          "title": "프롬프트 개요(목적/대상)",
+          "objective": "목적과 대상을 분리해 프롬프트를 설계할 수 있다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "2",
+          "title": "구조화(역할/목적/조건/형식)",
+          "objective": "역할·목적·조건·형식을 포함한 구조 프롬프트를 만들 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "3",
+          "title": "분야별 예시(문서/이미지/영상)",
+          "objective": "분야별로 요구조건을 다르게 설계할 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "4",
+          "title": "모델별 차이(비교 실험)",
+          "objective": "같은 과업에서 모델 선택 기준(장단점)을 말할 수 있다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "5",
+          "title": "실전 실습(문제 풀이)",
+          "objective": "요구조건을 빠짐없이 넣어 결과를 얻을 수 있다.",
+          "theoryPractice": "이론20/실습80",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "6",
+          "title": "응답 분석/수정(오류 찾기)",
+          "objective": "AI 답에서 빠진 조건/오류를 찾아 수정 요청을 할 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "7",
+          "title": "진단/평가(루브릭 기초)",
+          "objective": "좋은 프롬프트 기준(명확성/조건충족/형식)을 점수화할 수 있다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "8",
+          "title": "미래형 설계(확장)",
+          "objective": "하나의 프롬프트를 템플릿으로 만들어 재사용할 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        }
+      ]
+    },
+    {
+      "name": "프롬프트 활용 교재(고등)",
+      "subject": "prompt",
+      "units": [
+        {
+          "no": "1",
+          "title": "프롬프트 개요(문제정의)",
+          "objective": "문제를 정의하고 요구조건을 변수처럼 정리할 수 있다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "2",
+          "title": "역할지시/멀티스텝",
+          "objective": "역할지시+단계지시로 복합 작업을 설계할 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "3",
+          "title": "분야별(문서/데이터/영상)",
+          "objective": "출력 형식(표/JSON/목차 등)을 강제할 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "4",
+          "title": "모델/도구 선택(Copilot 등)",
+          "objective": "도구별 강점에 맞게 워크플로우를 구성할 수 있다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "5",
+          "title": "실전 실습(응용 문서)",
+          "objective": "역할/제약/형식을 지켜 결과물을 완성할 수 있다.",
+          "theoryPractice": "이론20/실습80",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "6",
+          "title": "응답 분석/수정(후편집)",
+          "objective": "환각/오류/누락을 찾아 재지시+후편집할 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "7",
+          "title": "진단/평가(루브릭 심화)",
+          "objective": "채점 기준표로 결과를 평가하고 개선안을 낼 수 있다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "8",
+          "title": "미래형 설계(에이전트 기초)",
+          "objective": "반복업무 템플릿/매크로형 프롬프트를 설계할 수 있다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        }
+      ]
+    },
+    {
+      "name": "프롬프트 활용 교재(실무)",
+      "subject": "prompt",
+      "units": [
+        {
+          "no": "1",
+          "title": "프롬프트 개요(업무 맥락)",
+          "objective": "업무 맥락을 포함해 요구사항을 정의할 수 있다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "2",
+          "title": "구조화(목적/범위/제약/형식)",
+          "objective": "실무 프롬프트를 템플릿으로 구조화할 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "3",
+          "title": "분야별 예시(문서/기획/데이터)",
+          "objective": "분야별 산출물 형태에 맞춰 프롬프트를 바꿀 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "4",
+          "title": "모델/툴 선택(업무별)",
+          "objective": "업무별로 도구 선택 기준(속도/정확/형식/비용)을 세울 수 있다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "5",
+          "title": "실전 실습(자동화)",
+          "objective": "반복업무를 프롬프트 워크플로우로 자동화할 수 있다.",
+          "theoryPractice": "이론20/실습80",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "6",
+          "title": "응답 분석/수정(품질관리)",
+          "objective": "품질 이슈(누락/환각/톤)를 진단하고 수정 지시할 수 있다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "7",
+          "title": "진단/평가(루브릭 운영)",
+          "objective": "조직에서 통용될 루브릭/체크리스트를 만들 수 있다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "8",
+          "title": "미래형 설계(재사용/버전)",
+          "objective": "템플릿/버전관리/로그 개념으로 운영할 수 있다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        }
+      ]
+    },
+    {
+      "name": "프롬프트 활용 교재(상위전문)",
+      "subject": "prompt",
+      "units": [
+        {
+          "no": "1",
+          "title": "프롬프트 개요(도메인)",
+          "objective": "도메인 리스크를 포함해 요구사항을 정의할 수 있다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "2",
+          "title": "구조화(근거/출처/범위)",
+          "objective": "근거 요구, 범위 제한, 책임 고지를 포함해 설계한다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "3",
+          "title": "분야별(전문문서/데이터/정책)",
+          "objective": "전문 산출물 형식(표/요약/리스크)을 강제한다.",
+          "theoryPractice": "이론30/실습70",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "4",
+          "title": "모델/도구 선택(검증)",
+          "objective": "검색/근거/검증을 포함한 도구 조합을 설계한다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "5",
+          "title": "실전 실습(복합 시나리오)",
+          "objective": "복합 조건을 만족하는 고급 프롬프트를 작성한다.",
+          "theoryPractice": "이론20/실습80",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "6",
+          "title": "응답 분석/수정(감사관점)",
+          "objective": "결과의 오류/편향/누락을 감사 관점으로 잡아낸다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "7",
+          "title": "진단/평가(채점/감사)",
+          "objective": "루브릭을 “채점/감사 기준”으로 운영한다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "8",
+          "title": "미래형 설계(거버넌스)",
+          "objective": "승인/로그/책임체계를 포함한 운영 설계를 한다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        }
+      ]
+    },
+    {
+      "name": "프롬프트 활용 교재(전문1급)",
+      "subject": "prompt",
+      "units": [
+        {
+          "no": "1",
+          "title": "프롬프트 개요(전문직 리스크)",
+          "objective": "법/의/정책 등 고위험 영역에서 안전한 범위 정의를 한다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "2",
+          "title": "구조화(면책/근거/제한)",
+          "objective": "면책·근거·범위제한을 포함한 프롬프트를 설계한다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "3",
+          "title": "전문 산출물 형식(표준화)",
+          "objective": "표준 형식(쟁점/근거/결론/리스크)으로 출력하게 한다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "4",
+          "title": "모델/도구 선택(증거)",
+          "objective": "검색/문서기반 근거를 다루는 절차를 설계한다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "5",
+          "title": "실전 실습(케이스 기반)",
+          "objective": "케이스에서 “추정 금지”로 안전한 답을 만들게 한다.",
+          "theoryPractice": "이론20/실습80",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "6",
+          "title": "응답 분석/수정(리스크 제거)",
+          "objective": "환각·오해·책임소지를 제거하는 수정 지시를 한다.",
+          "theoryPractice": "이론40/실습60",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "7",
+          "title": "진단/평가(감사/컴플라이언스)",
+          "objective": "컴플라이언스 체크리스트로 합/불을 결정한다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        },
+        {
+          "no": "8",
+          "title": "미래형 설계(내부통제)",
+          "objective": "내부통제(승인/로그/책임자) 체계를 제안한다.",
+          "theoryPractice": "이론50/실습50",
+          "pageRange": "",
+          "example": "",
+          "content": "",
+          "tools": "",
+          "emphasis": ""
+        }
+      ]
+    }
+  ],
+  "ethics": [
+    {
+      "name": "윤리 교재 (1차)",
+      "subject": "ethics",
+      "units": [
+        {
+          "no": "1장",
+          "title": "AI 윤리 개요와 기본 원칙",
+          "objective": "AI 윤리의 핵심 원칙을 이해하고 왜 필요한지 설명할 수 있다",
+          "theoryPractice": "이론",
+          "pageRange": "(추후 입력)",
+          "example": "“왜 AI 윤리가 필요해?”",
+          "content": "**윤리 기본 원칙(공정/책임/투명/안전/프라이버시)**을 쉬운 말로 정리하고 기본 용어 통일",
+          "tools": "윤리 체크리스트, 내부 가이드",
+          "emphasis": "★필수(입문 고정)"
+        },
+        {
+          "no": "2장",
+          "title": "생성형 AI의 편향과 문제 사례",
+          "objective": "편향/차별/허위정보 등 대표 리스크 사례를 이해한다",
+          "theoryPractice": "이론+사례",
+          "pageRange": "(추후 입력)",
+          "example": "편향된 추천/차별적 문장",
+          "content": "생성형 AI가 왜 편향될 수 있는지, 실무에서 어떤 문제로 터지는지(차별/혐오/왜곡) 사례로 학습",
+          "tools": "사례 카드, 리스크 분류표",
+          "emphasis": "★필수(리스크 인지)"
+        },
+        {
+          "no": "3장",
+          "title": "프롬프트 설계 시 주의할 윤리 요소",
+          "objective": "프롬프트 작성 단계에서 윤리 리스크를 사전에 막는다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "(추후 입력)",
+          "example": "개인정보 포함 프롬프트 수정",
+          "content": "금지요청/민감정보/차별유도/허위조장을 프롬프트에서 걸러내는 규칙 습득",
+          "tools": "프롬프트 점검표",
+          "emphasis": "★운영 핵심(실무 적용)"
+        },
+        {
+          "no": "4장",
+          "title": "분야별 윤리 사례 분석 (의료/법률/교육/미디어)",
+          "objective": "분야별로 윤리·규제·위험 포인트가 어떻게 다른지 이해한다",
+          "theoryPractice": "이론+사례",
+          "pageRange": "(추후 입력)",
+          "example": "의료 조언 생성, 법률 문서 초안",
+          "content": "분야별로 하면 안 되는 것 / 반드시 고지할 것 / 검증해야 할 것을 구분",
+          "tools": "분야별 가이드, 책임 고지 템플릿",
+          "emphasis": "★필수(확장 파트)"
+        },
+        {
+          "no": "5장",
+          "title": "실습 및 퀴즈: OX, 단답, 사례 기반 질문",
+          "objective": "윤리 규칙을 문제 형태로 판단하고 적용한다",
+          "theoryPractice": "실습",
+          "pageRange": "(추후 입력)",
+          "example": "OX: “개인정보 가려도 공유 가능?”",
+          "content": "OX/단답으로 빠르게 기준 암기, 사례형으로 판단 근거 말하기 훈련",
+          "tools": "퀴즈 뱅크, 루브릭",
+          "emphasis": "★필수(평가 대비)"
+        },
+        {
+          "no": "6장",
+          "title": "자기성찰 질문 및 토론 활동",
+          "objective": "사용자의 책임, 영향, 이해관계 등을 스스로 점검하고 토론한다",
+          "theoryPractice": "실습(토론)",
+          "pageRange": "(추후 입력)",
+          "example": "“내가 만든 결과물의 책임은?”",
+          "content": "“내가 왜 이 결과를 만들었나” “누가 피해볼 수 있나” 같은 자기 점검 질문으로 사고 확장",
+          "tools": "토론 질문지, 역할극 시트",
+          "emphasis": "선택(수업형 운영용)"
+        },
+        {
+          "no": "7장",
+          "title": "윤리 서약서 및 체크리스트",
+          "objective": "교육/시험 운영에 필요한 서약·체크 체계를 구축한다",
+          "theoryPractice": "이론+운영 실습",
+          "pageRange": "(추후 입력)",
+          "example": "서약서 작성, 제출 체크",
+          "content": "서약서(책임/보안/저작권/개인정보) + 체크리스트로 운영 프로세스에 고정",
+          "tools": "서약서 양식, 체크리스트",
+          "emphasis": "★운영 핵심(관리자용)"
+        },
+        {
+          "no": "8장",
+          "title": "보고서 및 최신 이슈 요약",
+          "objective": "최신 이슈를 요약하고 조직/업무에 적용 포인트를 뽑는다",
+          "theoryPractice": "이론+정리",
+          "pageRange": "(추후 입력)",
+          "example": "“이번 달 주요 AI 이슈 5개”",
+          "content": "최신 이슈를 짧게 요약→우리 서비스에 영향→대응 룰로 정리하는 습관",
+          "tools": "이슈 요약 템플릿",
+          "emphasis": "선택(업데이트용)"
+        }
+      ]
+    }
+  ],
+  "translation": [
+    {
+      "name": "번역 교재 (1차)",
+      "subject": "translation",
+      "units": [
+        {
+          "no": "1단원",
+          "title": "도입",
+          "objective": "자격증/과정 목적을 이해하고 AI 번역의 활용 분야를 큰 그림으로 파악한다",
+          "theoryPractice": "이론",
+          "pageRange": "해당없음",
+          "example": "“이 자격증은 무엇을 검증하나?”",
+          "content": "AI 번역이 어디에 쓰이고, 과정에서 무엇을 할 수 있게 되는지 안내(기대 결과/평가 방식)",
+          "tools": "안내자료, 샘플 문제",
+          "emphasis": ""
+        },
+        {
+          "no": "2단원",
+          "title": "AI 번역 이론",
+          "objective": "NMT/LLM 개념과 번역 품질 지표(MQM, BLEU 등)를 이해하고 문체별 전략을 설명한다",
+          "theoryPractice": "이론+미니 실습",
+          "pageRange": "해당없음",
+          "example": "같은 문장 NMT vs LLM 비교",
+          "content": "NMT/LLM 차이, 품질지표가 왜 필요한지, 문체(뉴스/안내문/대화)별 주의점",
+          "tools": "ChatGPT, DeepL/Google, MQM 체크리스트",
+          "emphasis": ""
+        },
+        {
+          "no": "3단원",
+          "title": "언어 비교 이론",
+          "objective": "주요 언어(영/중/일 등)의 문장 구조·어순 차이를 이해하고 번역 시 함정을 피한다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "해당없음",
+          "example": "영어 수식어 위치 → 한국어 재배치",
+          "content": "언어별로 어순/수식/주어 생략/경어/한자어 등 “틀어지기 쉬운 포인트”를 체크",
+          "tools": "예문 세트, 대조표, ChatGPT",
+          "emphasis": ""
+        },
+        {
+          "no": "4단원",
+          "title": "번역 윤리",
+          "objective": "저작권/개인정보/공정이용 등 번역 실무에서의 윤리 기준을 적용한다",
+          "theoryPractice": "이론+사례",
+          "pageRange": "해당없음",
+          "example": "개인정보 포함 문장 마스킹",
+          "content": "번역 결과물은 저작권·보안·개인정보 이슈가 생길 수 있음 / 제출물·데이터 다룰 때 금지/주의 규칙",
+          "tools": "윤리 체크리스트, 서약서, 가이드",
+          "emphasis": ""
+        },
+        {
+          "no": "5단원",
+          "title": "실전 연습",
+          "objective": "언어별 번역·후편집을 수행하고 도메인별 실습으로 실전 대응력을 만든다",
+          "theoryPractice": "실습 중심",
+          "pageRange": "해당없음",
+          "example": "뉴스/기술/법률/영상 번역 후 수정",
+          "content": "“번역→오류 잡기→후편집→최종 검수” 루틴을 반복 / 도메인별로 정확성·용어·톤 기준이 달라짐",
+          "tools": "ChatGPT, 번역기, 용어집(Glossary), QA 체크리스트",
+          "emphasis": ""
+        }
+      ]
+    },
+    {
+      "name": "번역 교재 (2차)",
+      "subject": "translation",
+      "units": [
+        {
+          "no": "1장",
+          "title": "AI 번역 이해와 품질 평가 기준",
+          "objective": "AI 번역의 품질을 “어떻게 평가할지” 기준(지표/프레임)을 이해한다",
+          "theoryPractice": "이론+미니 실습",
+          "pageRange": "(추후 입력)",
+          "example": "동일 번역문을 기준표로 채점",
+          "content": "RIFI/COMET/MQM이 뭔지 한 번에 정리하고, “좋은 번역/나쁜 번역”을 기준으로 말할 수 있게 만든다",
+          "tools": "MQM 체크리스트, 평가표(루브릭), (보조) ChatGPT",
+          "emphasis": ""
+        },
+        {
+          "no": "2장",
+          "title": "정보성 문서 유형별",
+          "objective": "실용 정보문을 유형별로 나누고, 유형에 맞는 번역 기준을 적용한다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "(추후 입력)",
+          "example": "제품설명 vs 안내문 톤 비교",
+          "content": "뉴스/기사/블로그/제품설명/안내문 각각의 톤·형식·주의점(과장 금지, 정보 정확성 등) 체크",
+          "tools": "DeepL/Google/ChatGPT, 용어집(Glossary)",
+          "emphasis": ""
+        },
+        {
+          "no": "3장",
+          "title": "문장 구조와 오류 수정 전략",
+          "objective": "문장 구조 문제를 진단하고 자연스럽게 “감수/수정”할 수 있다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "(추후 입력)",
+          "example": "복문을 2문장으로 분해",
+          "content": "복문/수동태/병렬구조/접속사 오류 같은 “자주 터지는” 문장 오류를 빠르게 고치기(분해·재조합·논리 연결)",
+          "tools": "ChatGPT(수정안 비교), Grammarly(영문 시), 문장 체크리스트",
+          "emphasis": ""
+        },
+        {
+          "no": "4장",
+          "title": "문체와 어휘 통일",
+          "objective": "문서 전체의 톤·용어·표기 규칙을 통일해 품질을 올린다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "(추후 입력)",
+          "example": "‘고객님/당신’ 통일",
+          "content": "동어 반복 줄이기, 용어 선택 일관성, 스타일 가이드(존댓말/표기/단위/숫자/대문자) 적용",
+          "tools": "스타일가이드, 용어집, QA 리스트",
+          "emphasis": ""
+        },
+        {
+          "no": "5장",
+          "title": "실전 연습",
+          "objective": "실제 결과물을 평가→오류 해설→재수정까지 완주한다",
+          "theoryPractice": "실습 중심",
+          "pageRange": "(추후 입력)",
+          "example": "AI 번역 결과 채점 후 재번역",
+          "content": "뉴스 기사 번역 결과를 품질 평가하고, AI 번역 오류를 유형별로 해설한 뒤 평가기준 체크리스트로 재검수",
+          "tools": "MQM 체크리스트, 채점표, (보조) ChatGPT",
+          "emphasis": ""
+        }
+      ]
+    },
+    {
+      "name": "번역 교재 (3차)",
+      "subject": "translation",
+      "units": [
+        {
+          "no": "1장",
+          "title": "AI 번역의 원리 이해",
+          "objective": "AI 번역이 돌아가는 원리(기계번역→NMT→LLM)를 큰 흐름으로 이해한다",
+          "theoryPractice": "이론 중심",
+          "pageRange": "(추후 입력)",
+          "example": "같은 문장을 번역기/LLM로 돌려 비교",
+          "content": "기계번역 개념, NMT 작동 방식, LLM 기반 번역 개요를 “왜 결과가 이렇게 나오나” 관점으로 쉽게 설명",
+          "tools": "ChatGPT, DeepL/Google Translate",
+          "emphasis": ""
+        },
+        {
+          "no": "2장",
+          "title": "일상생활 번역 감수",
+          "objective": "생활/대화 기반 문장을 자연스럽고 상황 맞게 감수한다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "(추후 입력)",
+          "example": "대화문 톤 조정, SNS 말투",
+          "content": "**대화문·메신저(대화/일기/SNS 포스트)**에서 어색한 표현 고치기(말투/뉘앙스/상황성)",
+          "tools": "ChatGPT, Papago/Google",
+          "emphasis": ""
+        },
+        {
+          "no": "3장",
+          "title": "자주 나오는 오류 유형",
+          "objective": "초급 번역에서 자주 발생하는 오류를 유형으로 구분해 잡아낸다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "(추후 입력)",
+          "example": "단어 선택 오류, 어순 오류",
+          "content": "조사/단어 선택/번역 어순/존댓말 표현 같은 “대표 실수”를 유형으로 외우고 바로 수정",
+          "tools": "오류 유형 체크리스트",
+          "emphasis": ""
+        },
+        {
+          "no": "4장",
+          "title": "번역 결과 평가법",
+          "objective": "번역을 ‘맞다/틀리다’가 아니라 기준으로 평가하는 법을 익힌다",
+          "theoryPractice": "이론+실습",
+          "pageRange": "(추후 입력)",
+          "example": "원문-번역문 의미 일치 체크",
+          "content": "직역 vs 의역, 원문의 의미 일치, 유창성 확인 3가지로 빠르게 평가하는 루틴",
+          "tools": "간단 루브릭(3항목), ChatGPT(대안 비교)",
+          "emphasis": ""
+        },
+        {
+          "no": "5장",
+          "title": "실전 연습",
+          "objective": "실제 문장을 번역/감수하고 해설까지 포함해 실전 감각을 만든다",
+          "theoryPractice": "실습 중심",
+          "pageRange": "(추후 입력)",
+          "example": "일상문 번역문 + 해설",
+          "content": "일상문 번역문을 감수하고, 해설을 붙여서 “왜 이렇게 고쳤는지” 설명할 수 있게 훈련 / AI 번역 vs 사람 번역 비교",
+          "tools": "ChatGPT, 번역기, 해설 템플릿",
+          "emphasis": ""
+        }
+      ]
+    }
+  ],
+  "targets": {
+    "prompt": [
+      {
+        "track": "일반",
+        "level": "일반 1,2급",
+        "target": "일반 성인, 비전공 대학생, 프롬프트 입문자"
+      },
+      {
+        "track": "",
+        "level": "일반 3급 과정",
+        "target": "기업 실무자, 팀 리더, 정책기획자, 콘텐츠 기획자"
+      },
+      {
+        "track": "전문",
+        "level": "전문 1급·2급 과정",
+        "target": "변호사, 노무사, 의사, 회계사 등 고도화된 도메인 실무자"
+      },
+      {
+        "track": "교육",
+        "level": "교육 1~2급",
+        "target": "초등 고학년"
+      },
+      {
+        "track": "",
+        "level": "교육 3~4급",
+        "target": "중학교"
+      },
+      {
+        "track": "",
+        "level": "교육 5~6급",
+        "target": "고1~고2"
+      },
+      {
+        "track": "",
+        "level": "교육 7~8급",
+        "target": "고3"
+      }
+    ],
+    "ethics": [
+      {
+        "track": "교육급수 1~2급",
+        "level": "1~2급",
+        "age": "초등학생"
+      },
+      {
+        "track": "교육급수 3~4급",
+        "level": "3~4급",
+        "age": "중학생"
+      },
+      {
+        "track": "교육급수 5~6급",
+        "level": "5~6급",
+        "age": "고등학생"
+      },
+      {
+        "track": "교육급수 7~8급",
+        "level": "7~8급",
+        "age": "고3~대학초년"
+      },
+      {
+        "track": "일반통합급수",
+        "level": "일반 2급 + 3급",
+        "age": "대학생~초급 실무자"
+      },
+      {
+        "track": "상위전문급수",
+        "level": "일반 1급 + 전문 2급",
+        "age": "실무 5년 이상 및 전문가 후보"
+      },
+      {
+        "track": "전문 1급",
+        "level": "자격증 보유 전문가",
+        "age": "각 분야 전문가"
+      }
+    ],
+    "translation": [
+      {
+        "track": "교육급수",
+        "level": "1~8등급",
+        "target": "초중고, 대학생"
+      },
+      {
+        "track": "일반급수",
+        "level": "1~3등급",
+        "target": "일반인, 취업준비생"
+      },
+      {
+        "track": "전문급수",
+        "level": "1~2급",
+        "target": "번역가, 전문직"
+      }
+    ]
+  },
+  "promptMeta": [
+    {
+      "name": "교육급수 1~2급",
+      "target": "초등학생",
+      "goal": "질문 만들기, 관찰력 키우기",
+      "tools": "챗봇, TTS, 그림 생성 도구"
+    },
+    {
+      "name": "교육급수 3~4급",
+      "target": "중학생",
+      "goal": "프롬프트 구조화, 비교 실습",
+      "tools": "문서 생성, 이미지 생성"
+    },
+    {
+      "name": "교육급수 5~6급",
+      "target": "고등학생",
+      "goal": "역할지시 프롬프트, 응용 문서 생성",
+      "tools": "GPT, Bing, Copilot"
+    },
+    {
+      "name": "일반통합급수",
+      "target": "대학~직장 초급",
+      "goal": "실무 프롬프트 설계, 업무 자동화",
+      "tools": "ChatGPT, Claude, Bard"
+    },
+    {
+      "name": "상위전문급수",
+      "target": "전문가 후보",
+      "goal": "도메인 특화 응용, 평가 프롬프트 작성",
+      "tools": "API 연결, 도큐먼트 기반 설계"
+    },
+    {
+      "name": "전문 1급",
+      "target": "변호사, 의사 등",
+      "goal": "법률, 의학, 정책 설계용 고급 프롬프트",
+      "tools": "커스텀 GPT, 검색 연결 GPT 등"
+    }
+  ],
+  "promptToc": [
+    "1장. 프롬프트란 무엇인가",
+    "2장. 프롬프트의 기본 구조와 지시어",
+    "3장. 분야별 프롬프트 예시 (글쓰기, 기획, 디자인, 데이터 등)",
+    "4장. 모델별 차이점 (ChatGPT, Claude, Bard, Gemini 등)",
+    "5장. 실전 문제 해결 프롬프트 작성 실습",
+    "6장. AI 응답 분석과 수정 전략",
+    "7장. 자기 프롬프트 진단 및 평가",
+    "8장. 미래형 프롬프트 설계 및 창의력 확장"
+  ],
+  "sampleChapters": {
+    "ethics": [
+      "📗 윤리 교재 제1장 샘플 원고: AI 윤리 개요와 기본 원칙",
+      "1.1 AI와 윤리란 무엇인가인공지능(AI)은 인간의 사고를 모방하여 학습하고 판단하는 기술입니다. 그러나 AI가 제공하는 정보나 판단이 항상 옳은 것은 아닙니다. 잘못된 데이터로 훈련된 AI는 편향되거나 차별적인 결과를 낼 수 있습니다.",
+      "1.2 생성형 AI의 윤리 문제예를 들어, 생성형 AI가 ‘여성은 운전을 잘 못 한다’는 문장을 생성했다면, 이는 사회적 편견을 강화하는 잘못된 정보입니다. 이를 예방하기 위해 프롬프트를 설계할 때 공정성, 진실성, 책임성을 고려해야 합니다.",
+      "1.3 AI 윤리의 5대 원칙 (공통)① 투명성(Transparency)② 책임성(Accountability)③ 공정성(Fairness)④ 진실성(Truthfulness)⑤ 안전성(Safety)"
+    ],
+    "prompt": [
+      "📘 프롬프트 활용 교재 제1장 샘플 원고: 프롬프트란 무엇인가",
+      "1.1 프롬프트의 정의프롬프트(Prompt)란 인공지능 모델에게 특정한 응답을 유도하기 위해 입력하는 지시문 또는 질문입니다. 예를 들어 “아침을 먹지 않았을 때 신체에 미치는 영향에 대해 300자 이내로 설명해줘”는 하나의 프롬프트입니다.",
+      "1.2 프롬프트의 구성요소",
+      "목적: 어떤 정보를 얻고자 하는가?",
+      "형식: 글/표/목록/요약 등 어떤 형식으로 받을 것인가?",
+      "조건: 단어 수, 문체, 역할 등 제한 조건은 무엇인가?",
+      "1.3 좋은 프롬프트의 예💡 나쁜 예: “정보 줘”✅ 좋은 예: “하루 평균 물 섭취량을 WHO 기준에 따라 요약해줘 (표 형태로)”",
+      "이처럼 명확하고 구체적인 프롬프트일수록 AI는 더 정확하고 유용한 결과를 제공합니다."
+    ]
+  },
+  "ethicsLevels": [
+    {
+      "name": "교육급수 1~2급",
+      "merged": "1~2급",
+      "audience": "초등학생",
+      "content": "안전한 AI 사용, 허위 정보 구별, 시각적 콘텐츠 중심"
+    },
+    {
+      "name": "교육급수 3~4급",
+      "merged": "3~4급",
+      "audience": "중학생",
+      "content": "편향, 표현 책임, 만화형 예시와 토론"
+    },
+    {
+      "name": "교육급수 5~6급",
+      "merged": "5~6급",
+      "audience": "고등학생",
+      "content": "사회적 영향, 개인정보 보호, 뉴스 사례 기반"
+    },
+    {
+      "name": "교육급수 7~8급",
+      "merged": "7~8급",
+      "audience": "고3~대학초년",
+      "content": "생성형 AI의 한계, 플랫폼 책임 논의"
+    },
+    {
+      "name": "일반통합급수",
+      "merged": "일반 2급 + 3급",
+      "audience": "대학생~초급 실무자",
+      "content": "실무적 윤리 이슈, 기업 내부사례 기반 훈련"
+    },
+    {
+      "name": "상위전문급수",
+      "merged": "일반 1급 + 전문 2급",
+      "audience": "실무 5년 이상 및 전문가 후보",
+      "content": "고위 윤리 판단, 법/교육/의료 현장 적용 중심"
+    },
+    {
+      "name": "전문 1급",
+      "merged": "자격증 보유 전문가",
+      "audience": "각 분야 전문가",
+      "content": "정책 대응, 윤리 자문 및 자격자 관리 역량 강화"
+    }
+  ],
+  "ethicsToc": [
+    "1장. AI 윤리 개요와 기본 원칙",
+    "2장. 생성형 AI의 편향과 문제 사례",
+    "3장. 프롬프트 설계 시 주의할 윤리 요소",
+    "4장. 분야별 윤리 사례 분석: 의료 / 법률 / 교육 / 미디어",
+    "5장. 실습 및 퀴즈: OX, 단답, 사례 기반 질문",
+    "6장. 자기성찰 질문 및 토론 활동",
+    "7장. 윤리 서약서 및 체크리스트",
+    "8장. 보수교육 및 최신 이슈 요약"
+  ],
+  "ethicsGradeDiff": [
+    {
+      "grade": "3급 (입문)",
+      "objective": "AI 윤리 기본 개념 이해 (편향, 프라이버시, 저작권)",
+      "translationExam": "단순 번역 시 저작권 침해 유무 판별",
+      "promptExam": "금지어, 혐오표현 포함 여부 식별"
+    },
+    {
+      "grade": "2급 (중급)",
+      "objective": "실제 사례 분석과 판단력 강화",
+      "translationExam": "기계번역으로 인한 문화적 충돌 사례 분석",
+      "promptExam": "민감 이슈에 대한 프롬프트 설계 윤리 문제 해결"
+    },
+    {
+      "grade": "1급 (고급)",
+      "objective": "AI 활용 전반에 대한 윤리적 통찰과 응용력",
+      "translationExam": "번역결과의 사회적 파급력 분석 및 대응방안",
+      "promptExam": "프롬프트 조작에 따른 법적/사회적 책임 분석"
+    }
+  ],
+  "ethicsSamples": [
+    {
+      "title": "샘플 콘텐츠 예시",
+      "lines": []
+    },
+    {
+      "title": "📍 초등급수 예시 (1~2급)",
+      "lines": [
+        "Q: 다음 중 AI를 안전하게 사용하는 방법은 무엇인가요?",
+        "1. 아무 정보나 입력한다",
+        "2. 친구의 주소를 입력한다",
+        "3. 부모님께 허락을 받고 사용한다",
+        "→ 정답: 3번"
+      ]
+    },
+    {
+      "title": "📍 고등급수 예시 (5~6급)",
+      "lines": [
+        "사례: 친구가 생성형 AI가 쓴 글을 그대로 보고서로 제출했다면 어떤 문제가 생길 수 있나요?",
+        "→ 정답 예시: 창의성 결여, 표절 가능성, 학습 효과 저하 등"
+      ]
+    },
+    {
+      "title": "📍 일반급수 예시 (2급)",
+      "lines": [
+        "상황: 고객 데이터가 담긴 문서를 AI에 업로드하여 요약하게 했다면 발생할 수 있는 윤리적 문제는?",
+        "→ 정답 예시: 개인정보 침해 가능성, 보안 위험성 등"
+      ]
+    },
+    {
+      "title": "📍 전문급수 예시 (1급)",
+      "lines": [
+        "프롬프트: “환자의 유전자 데이터를 입력하고 질병 가능성을 예측해줘”",
+        "→ 윤리 분석: 의료법 위반 소지, 사전 동의 필요성, 자동화 오진 우려 등"
+      ]
+    }
+  ],
+  "ethicsGuidelines": [
+    "윤리 교재는 급수 통합 기준에 맞춰 세분화하여 설계할 것",
+    "프롬프트 활용 교재와 철저히 콘텐츠와 목적 구분 필요",
+    "각 교재는 대상 연령·경력·전문성에 맞는 사례와 언어를 사용할 것",
+    "각 장의 실습 활동, 퀴즈, 자기성찰 항목은 해당 급수 수준에 따라 조정",
+    "**시각 자료(초등), 토론 문항(중·고등), 사례분석(일반·전문)**을 균형 있게 배치할 것"
+  ]
+}

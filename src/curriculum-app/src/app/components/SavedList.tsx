@@ -18,12 +18,78 @@ function Chip({ active, onClick, children, color }: {
   );
 }
 
-/* ── 카드 ── */
+/* ── 교재 카드 (textbookData 있는 항목용) ── */
+function TextbookCardItem({
+  item, isEditing, onEdit, onDelete,
+}: {
+  item: SavedCurriculum; isEditing: boolean; onEdit: () => void; onDelete: () => void;
+}) {
+  const tb = item.textbookData!;
+  const categoryPath = [item.category.large, item.category.medium, item.category.small]
+    .filter(Boolean).join(" › ");
+  return (
+    <div
+      className={`group relative rounded-md border bg-card p-2 transition-all hover:shadow-sm ${
+        isEditing ? "border-primary ring-2 ring-primary/20" : "border-cyan-200"
+      }`}
+    >
+      <div className="absolute right-1 top-1 flex gap-0 opacity-0 transition-opacity group-hover:opacity-100">
+        <button onClick={(e) => { e.stopPropagation(); onEdit(); }}
+          className="rounded p-0.5 text-muted-foreground hover:bg-blue-50 hover:text-blue-600">
+          <Pencil className="h-2.5 w-2.5" />
+        </button>
+        <button onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          className="rounded p-0.5 text-muted-foreground hover:bg-red-50 hover:text-red-600">
+          <Trash2 className="h-2.5 w-2.5" />
+        </button>
+      </div>
+
+      {/* 제목 한 줄 */}
+      <div className="flex items-center gap-1 mb-0.5">
+        <BookText className="h-3 w-3 text-cyan-600 shrink-0" />
+        <span className="text-[0.74rem] font-semibold truncate" title={tb.title}>{tb.title || "(제목 없음)"}</span>
+        {tb.edition && <span className="rounded bg-cyan-50 px-1 py-0 text-[0.58rem] text-cyan-700">{tb.edition}</span>}
+      </div>
+
+      {/* 저자/출판사/년도 */}
+      <div className="flex items-center gap-1 text-[0.62rem] text-muted-foreground mb-1 flex-wrap">
+        {tb.author && <span>{tb.author}</span>}
+        {tb.publisher && <span>· {tb.publisher}</span>}
+        {tb.year && <span>· {tb.year}</span>}
+        {tb.pages && <span>· {tb.pages}p</span>}
+        {tb.price && <span>· {tb.price}</span>}
+      </div>
+
+      {/* 분류 + 분야/급수 */}
+      <div className="flex items-center gap-1 mb-1 flex-wrap">
+        <Tag className="h-2.5 w-2.5 text-blue-500 shrink-0" />
+        <span className="text-[0.62rem] truncate text-muted-foreground">{categoryPath}</span>
+        <span className="rounded bg-purple-100 px-1 py-0 text-[0.58rem] font-medium text-purple-700">{item.instructor_grade.field}</span>
+        <span className="rounded bg-indigo-100 px-1 py-0 text-[0.58rem] font-medium text-indigo-700">{item.instructor_grade.mid}</span>
+        <span className="rounded bg-blue-100 px-1 py-0 text-[0.58rem] font-medium text-blue-700">{item.instructor_grade.level}</span>
+      </div>
+
+      {/* 챕터/날짜 */}
+      <div className="flex items-center gap-2 text-[0.6rem] text-muted-foreground">
+        <span>챕터 {tb.chapters.length}</span>
+        {tb.isbn && <span className="font-mono">{tb.isbn}</span>}
+        <span className="ml-auto flex items-center gap-0.5"><Calendar className="h-2 w-2" />{item.created_at.slice(5)}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── 카드 (커리큘럼/디폴트) ── */
 function CurriculumCard({
   item, isEditing, onEdit, onDelete,
 }: {
   item: SavedCurriculum; isEditing: boolean; onEdit: () => void; onDelete: () => void;
 }) {
+  // 교재 데이터가 있으면 교재 카드로 분기
+  if (item.textbookData) {
+    return <TextbookCardItem item={item} isEditing={isEditing} onEdit={onEdit} onDelete={onDelete} />;
+  }
+
   const categoryPath = [item.category.large, item.category.medium, item.category.small]
     .filter(Boolean).join(" › ");
 
@@ -37,12 +103,6 @@ function CurriculumCard({
 
   const basicUnitCount = item.titles.basicUnits?.length || 0;
   const practiceUnitCount = item.titles.practiceUnits?.length || 0;
-
-  const kwCounts: string[] = [];
-  if (item.keywords.common.length) kwCounts.push(`공통${item.keywords.common.length}`);
-  if (item.keywords.prompt.length) kwCounts.push(`프롬${item.keywords.prompt.length}`);
-  if (item.keywords.specialty.length) kwCounts.push(`전문${item.keywords.specialty.length}`);
-  if (item.keywords.ethics.length) kwCounts.push(`윤리${item.keywords.ethics.length}`);
 
   return (
     <div

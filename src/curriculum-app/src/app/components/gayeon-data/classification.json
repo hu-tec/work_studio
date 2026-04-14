@@ -1,0 +1,710 @@
+{
+  "fieldA": [
+    {
+      "large": "문서",
+      "mid": "비즈니스",
+      "small": "사업계획서"
+    },
+    {
+      "large": "문서",
+      "mid": "비즈니스",
+      "small": "회사소개"
+    },
+    {
+      "large": "문서",
+      "mid": "비즈니스",
+      "small": "PPT"
+    },
+    {
+      "large": "문서",
+      "mid": "비즈니스",
+      "small": "엑셀"
+    },
+    {
+      "large": "문서",
+      "mid": "비즈니스",
+      "small": "기획서"
+    },
+    {
+      "large": "문서",
+      "mid": "법률",
+      "small": "소송장"
+    },
+    {
+      "large": "문서",
+      "mid": "법률",
+      "small": "준비서면"
+    },
+    {
+      "large": "문서",
+      "mid": "법률",
+      "small": "형사"
+    },
+    {
+      "large": "문서",
+      "mid": "법률",
+      "small": "민사"
+    },
+    {
+      "large": "문서",
+      "mid": "의료",
+      "small": ""
+    },
+    {
+      "large": "문서",
+      "mid": "특허",
+      "small": ""
+    },
+    {
+      "large": "문서",
+      "mid": "노무",
+      "small": ""
+    },
+    {
+      "large": "문서",
+      "mid": "교재",
+      "small": ""
+    },
+    {
+      "large": "문서",
+      "mid": "논문",
+      "small": ""
+    },
+    {
+      "large": "문서",
+      "mid": "기사",
+      "small": ""
+    },
+    {
+      "large": "문서",
+      "mid": "고전",
+      "small": ""
+    },
+    {
+      "large": "문서",
+      "mid": "그외",
+      "small": ""
+    },
+    {
+      "large": "음성",
+      "mid": "아나운서",
+      "small": ""
+    },
+    {
+      "large": "음성",
+      "mid": "관광가이드",
+      "small": ""
+    },
+    {
+      "large": "음성",
+      "mid": "큐레이터",
+      "small": ""
+    },
+    {
+      "large": "음성",
+      "mid": "안내 방송",
+      "small": ""
+    },
+    {
+      "large": "음성",
+      "mid": "교육 강의",
+      "small": ""
+    },
+    {
+      "large": "음성",
+      "mid": "실시간",
+      "small": ""
+    },
+    {
+      "large": "음성",
+      "mid": "화상수업",
+      "small": ""
+    },
+    {
+      "large": "영상/SNS",
+      "mid": "미디어/장르",
+      "small": "유튜브"
+    },
+    {
+      "large": "영상/SNS",
+      "mid": "미디어/장르",
+      "small": "다큐멘터리"
+    },
+    {
+      "large": "영상/SNS",
+      "mid": "미디어/장르",
+      "small": "영화"
+    },
+    {
+      "large": "영상/SNS",
+      "mid": "미디어/장르",
+      "small": "드라마"
+    },
+    {
+      "large": "영상/SNS",
+      "mid": "미디어/장르",
+      "small": "예능"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "개발/보안",
+      "small": "AI"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "개발/보안",
+      "small": "에이전트"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "개발/보안",
+      "small": "디비(DB)"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "개발/보안",
+      "small": "빅데이터"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "개발/보안",
+      "small": "백엔드"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "개발/보안",
+      "small": "프론트"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "개발/보안",
+      "small": "프로그램"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "디자인/기획",
+      "small": "웹모바일 디자인"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "디자인/기획",
+      "small": "웹기획"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "디자인/기획",
+      "small": "홈페이지 UIUX"
+    },
+    {
+      "large": "IT/개발",
+      "mid": "디자인/기획",
+      "small": "컨텐츠"
+    },
+    {
+      "large": "창의적활동",
+      "mid": "콘텐츠",
+      "small": "드라마"
+    },
+    {
+      "large": "창의적활동",
+      "mid": "콘텐츠",
+      "small": "웹툰소설"
+    },
+    {
+      "large": "창의적활동",
+      "mid": "콘텐츠",
+      "small": "소설"
+    },
+    {
+      "large": "창의적활동",
+      "mid": "콘텐츠",
+      "small": "시"
+    },
+    {
+      "large": "창의적활동",
+      "mid": "콘텐츠",
+      "small": "음악"
+    },
+    {
+      "large": "창의적활동",
+      "mid": "콘텐츠",
+      "small": "미술"
+    },
+    {
+      "large": "번역",
+      "mid": "통번역 방식",
+      "small": "순차통역"
+    },
+    {
+      "large": "번역",
+      "mid": "통번역 방식",
+      "small": "동시통역"
+    },
+    {
+      "large": "번역",
+      "mid": "통번역 방식",
+      "small": "음성번역"
+    },
+    {
+      "large": "번역",
+      "mid": "통번역 방식",
+      "small": "자가선택"
+    },
+    {
+      "large": "프롬프트",
+      "mid": "—",
+      "small": ""
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "암"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "요리"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "재무"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "주식"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "부동산"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "자녀"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "연애"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "입시"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "사주"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "결혼"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "영어"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "직장찾기"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "운동"
+    },
+    {
+      "large": "확장영역",
+      "mid": "라이프/전문",
+      "small": "사업"
+    }
+  ],
+  "gradeB": [
+    {
+      "subject": "프롬",
+      "track": "교육",
+      "level": "1급"
+    },
+    {
+      "subject": "프롬",
+      "track": "교육",
+      "level": "2급"
+    },
+    {
+      "subject": "프롬",
+      "track": "교육",
+      "level": "3급"
+    },
+    {
+      "subject": "프롬",
+      "track": "교육",
+      "level": "4급"
+    },
+    {
+      "subject": "프롬",
+      "track": "교육",
+      "level": "5급"
+    },
+    {
+      "subject": "프롬",
+      "track": "교육",
+      "level": "6급"
+    },
+    {
+      "subject": "프롬",
+      "track": "교육",
+      "level": "7급"
+    },
+    {
+      "subject": "프롬",
+      "track": "교육",
+      "level": "8급"
+    },
+    {
+      "subject": "프롬",
+      "track": "일반",
+      "level": "1급"
+    },
+    {
+      "subject": "프롬",
+      "track": "일반",
+      "level": "2급"
+    },
+    {
+      "subject": "프롬",
+      "track": "일반",
+      "level": "3급"
+    },
+    {
+      "subject": "프롬",
+      "track": "전문",
+      "level": "1급"
+    },
+    {
+      "subject": "프롬",
+      "track": "전문",
+      "level": "2급"
+    },
+    {
+      "subject": "번역",
+      "track": "교육",
+      "level": "1급"
+    },
+    {
+      "subject": "번역",
+      "track": "교육",
+      "level": "2급"
+    },
+    {
+      "subject": "번역",
+      "track": "교육",
+      "level": "3급"
+    },
+    {
+      "subject": "번역",
+      "track": "교육",
+      "level": "4급"
+    },
+    {
+      "subject": "번역",
+      "track": "교육",
+      "level": "5급"
+    },
+    {
+      "subject": "번역",
+      "track": "교육",
+      "level": "6급"
+    },
+    {
+      "subject": "번역",
+      "track": "교육",
+      "level": "7급"
+    },
+    {
+      "subject": "번역",
+      "track": "교육",
+      "level": "8급"
+    },
+    {
+      "subject": "번역",
+      "track": "일반",
+      "level": "1급"
+    },
+    {
+      "subject": "번역",
+      "track": "일반",
+      "level": "2급"
+    },
+    {
+      "subject": "번역",
+      "track": "일반",
+      "level": "3급"
+    },
+    {
+      "subject": "번역",
+      "track": "전문",
+      "level": "1급"
+    },
+    {
+      "subject": "번역",
+      "track": "전문",
+      "level": "2급"
+    },
+    {
+      "subject": "윤리",
+      "track": "교육",
+      "level": "1급"
+    },
+    {
+      "subject": "윤리",
+      "track": "교육",
+      "level": "2급"
+    },
+    {
+      "subject": "윤리",
+      "track": "교육",
+      "level": "3급"
+    },
+    {
+      "subject": "윤리",
+      "track": "교육",
+      "level": "4급"
+    },
+    {
+      "subject": "윤리",
+      "track": "교육",
+      "level": "5급"
+    },
+    {
+      "subject": "윤리",
+      "track": "교육",
+      "level": "6급"
+    },
+    {
+      "subject": "윤리",
+      "track": "교육",
+      "level": "7급"
+    },
+    {
+      "subject": "윤리",
+      "track": "교육",
+      "level": "8급"
+    },
+    {
+      "subject": "윤리",
+      "track": "일반",
+      "level": "1급"
+    },
+    {
+      "subject": "윤리",
+      "track": "일반",
+      "level": "2급"
+    },
+    {
+      "subject": "윤리",
+      "track": "일반",
+      "level": "3급"
+    },
+    {
+      "subject": "윤리",
+      "track": "전문",
+      "level": "1급"
+    },
+    {
+      "subject": "윤리",
+      "track": "전문",
+      "level": "2급"
+    }
+  ],
+  "homepageC": [
+    {
+      "large": "교육",
+      "detail": ""
+    },
+    {
+      "large": "번역",
+      "detail": "109개언어"
+    },
+    {
+      "large": "",
+      "detail": "A분야 나눔"
+    },
+    {
+      "large": "통독 문서",
+      "detail": "A분야 나눔"
+    },
+    {
+      "large": "전시회",
+      "detail": "박물관"
+    },
+    {
+      "large": "전시회",
+      "detail": "전시회"
+    },
+    {
+      "large": "전시회",
+      "detail": "관광지"
+    },
+    {
+      "large": "",
+      "detail": "국가별, 지역별"
+    },
+    {
+      "large": "전문가 매칭",
+      "detail": "영업전문"
+    },
+    {
+      "large": "",
+      "detail": "번역가"
+    },
+    {
+      "large": "",
+      "detail": "전문가"
+    },
+    {
+      "large": "",
+      "detail": "신입"
+    },
+    {
+      "large": "",
+      "detail": "경력 1년차"
+    }
+  ],
+  "groupD": [
+    {
+      "large": "기획",
+      "mid": ""
+    },
+    {
+      "large": "기획",
+      "mid": ""
+    },
+    {
+      "large": "기획",
+      "mid": ""
+    },
+    {
+      "large": "홈피",
+      "mid": ""
+    },
+    {
+      "large": "홈피",
+      "mid": ""
+    },
+    {
+      "large": "홈피",
+      "mid": ""
+    },
+    {
+      "large": "홈피",
+      "mid": ""
+    },
+    {
+      "large": "영업",
+      "mid": ""
+    },
+    {
+      "large": "마케팅",
+      "mid": ""
+    },
+    {
+      "large": "회계",
+      "mid": ""
+    },
+    {
+      "large": "인사",
+      "mid": ""
+    },
+    {
+      "large": "관리",
+      "mid": ""
+    },
+    {
+      "large": "상담",
+      "mid": ""
+    },
+    {
+      "large": "총무",
+      "mid": ""
+    },
+    {
+      "large": "강사 팀",
+      "mid": "테솔"
+    },
+    {
+      "large": "",
+      "mid": "프롬프트"
+    },
+    {
+      "large": "",
+      "mid": "AI번역"
+    },
+    {
+      "large": "",
+      "mid": "윤리"
+    },
+    {
+      "large": "커리 교제 팀",
+      "mid": "테솔"
+    },
+    {
+      "large": "",
+      "mid": "프롬프트"
+    },
+    {
+      "large": "",
+      "mid": "AI번역"
+    },
+    {
+      "large": "",
+      "mid": "윤리"
+    },
+    {
+      "large": "문제은행팀",
+      "mid": "프롬프트"
+    },
+    {
+      "large": "",
+      "mid": "AI번역"
+    },
+    {
+      "large": "",
+      "mid": "윤리"
+    },
+    {
+      "large": "총무팀",
+      "mid": "재직"
+    },
+    {
+      "large": "",
+      "mid": "경력"
+    },
+    {
+      "large": "",
+      "mid": "업무 확인서"
+    },
+    {
+      "large": "",
+      "mid": "근무 확인서"
+    },
+    {
+      "large": "",
+      "mid": "사직서"
+    },
+    {
+      "large": "안사팀",
+      "mid": "정직원계약서"
+    },
+    {
+      "large": "",
+      "mid": "프린랜서 계약서"
+    }
+  ]
+}

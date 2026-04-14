@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { COMMON_KEYWORDS, getFieldKeywords } from "./data";
-import type { CurriculumKeywords, UnitExtra, CustomUnit } from "./types";
-import { BookOpen, CheckSquare, Square, BookText, Wrench, Expand, Minimize2, FileWarning } from "lucide-react";
+import type { CurriculumKeywords, UnitExtra, CustomUnit, TextbookData, TextbookChapter } from "./types";
+import { BookOpen, CheckSquare, Square, BookText, Wrench, Expand, Minimize2, FileWarning, Plus, Trash2 } from "lucide-react";
 import { CurriculumUnits } from "./CurriculumUnits";
 import type { CurriculumGroup } from "./curriculum-data";
 import { getGradeBasicCurriculum, getFieldBasicCurriculum, getPracticeCurriculum, getTranslationBasicCurriculum, getTranslationPracticeCurriculum } from "./curriculum-data";
 import { MODE_LABEL, type ContentMode } from "./mode";
-import { QuestionsView } from "./QuestionsView";
+
+const QuestionsView = lazy(() =>
+  import("./QuestionsView").then((m) => ({ default: m.QuestionsView }))
+);
 
 interface Props {
   mode: ContentMode;
@@ -39,6 +42,12 @@ interface Props {
   onUpdatePracticeCustomUnit: (unitId: string, field: keyof CustomUnit, value: string) => void;
   onDeleteBasicCustomUnit: (unitId: string) => void;
   onDeletePracticeCustomUnit: (unitId: string) => void;
+  // 교재 모드 전용 props (curriculum 모드에서는 무시)
+  textbookData?: TextbookData;
+  onUpdateTextbookField?: (field: keyof TextbookData, value: string) => void;
+  onAddChapter?: () => void;
+  onUpdateChapter?: (id: string, field: keyof TextbookChapter, value: string) => void;
+  onDeleteChapter?: (id: string) => void;
 }
 
 function KeywordPanel({
@@ -138,6 +147,11 @@ export function StepCurriculum({
   onUpdatePracticeCustomUnit,
   onDeleteBasicCustomUnit,
   onDeletePracticeCustomUnit,
+  textbookData,
+  onUpdateTextbookField,
+  onAddChapter,
+  onUpdateChapter,
+  onDeleteChapter,
 }: Props) {
   const [showExtra, setShowExtra] = useState(false);
   const fieldInfo = selectedField ? getFieldKeywords(selectedField) : null;
@@ -167,12 +181,28 @@ export function StepCurriculum({
   const isOtherMode = mode !== "curriculum";
   const modeLabel = MODE_LABEL[mode];
 
-  // 문제은행 모드: 실제 답안 데이터(question-data.ts)를 QuestionsView로 렌더
   if (mode === "questions") {
-    return <QuestionsView />;
+    return (
+      <Suspense fallback={<div className="text-[0.7rem] text-muted-foreground py-4 text-center">로딩 중...</div>}>
+        <QuestionsView />
+      </Suspense>
+    );
   }
 
-  // 교재 모드 등 나머지: 원본 데이터 미제공 → 빈 상태 렌더
+  // 교재 모드: 실제 입력 가능한 교재 편집 폼
+  if (mode === "textbooks" && textbookData && onUpdateTextbookField && onAddChapter && onUpdateChapter && onDeleteChapter) {
+    return (
+      <TextbookEditor
+        data={textbookData}
+        onUpdate={onUpdateTextbookField}
+        onAddChapter={onAddChapter}
+        onUpdateChapter={onUpdateChapter}
+        onDeleteChapter={onDeleteChapter}
+      />
+    );
+  }
+
+  // 나머지 모드: 원본 데이터 미제공 → 빈 상태 렌더 (현재는 없음)
   if (isOtherMode) {
     return (
       <div className="space-y-1">
@@ -299,6 +329,200 @@ export function StepCurriculum({
           onUpdateCustomUnit={onUpdatePracticeCustomUnit}
           onDeleteCustomUnit={onDeletePracticeCustomUnit}
           showExtra={showExtra}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════
+   교재 편집 폼 (Step3 — mode=textbooks)
+   ════════════════════════════════════════════ */
+function TextbookEditor({
+  data,
+  onUpdate,
+  onAddChapter,
+  onUpdateChapter,
+  onDeleteChapter,
+}: {
+  data: TextbookData;
+  onUpdate: (field: keyof TextbookData, value: string) => void;
+  onAddChapter: () => void;
+  onUpdateChapter: (id: string, field: keyof TextbookChapter, value: string) => void;
+  onDeleteChapter: (id: string) => void;
+}) {
+  const inputCls =
+    "w-full rounded border border-border bg-background px-1.5 py-0.5 text-[0.7rem] focus:outline-none focus:border-primary";
+  const labelCls = "text-[0.6rem] text-muted-foreground font-medium mb-0.5";
+
+  return (
+    <div className="space-y-2">
+      {/* 헤더 */}
+      <div className="flex items-center gap-2">
+        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-cyan-100 text-cyan-600">
+          <BookOpen className="h-3.5 w-3.5" />
+        </div>
+        <h3 className="text-[0.88rem] font-semibold tracking-tight">Step 3 — 교재 편집</h3>
+        <span className="text-[0.62rem] text-muted-foreground">
+          제목·저자·출판사·연도·판수·ISBN·가격·페이지·챕터·파일·비고
+        </span>
+        <span className="ml-auto text-[0.6rem] text-muted-foreground italic">
+          제목만 필수 · 나머지는 선택
+        </span>
+      </div>
+
+      {/* 기본정보 — 4단 그리드 (제목 한 줄, 나머지 4단) */}
+      <div className="rounded-lg border border-border bg-card p-2 space-y-1.5">
+        <div className="grid grid-cols-1 gap-1.5">
+          <div>
+            <div className={labelCls}>
+              제목 <span className="text-rose-600">*</span>
+            </div>
+            <input
+              className={inputCls}
+              value={data.title}
+              onChange={(e) => onUpdate("title", e.target.value)}
+              placeholder="예: 초등 프롬프트 활용 1급"
+            />
+          </div>
+          <div>
+            <div className={labelCls}>부제</div>
+            <input
+              className={inputCls}
+              value={data.subtitle}
+              onChange={(e) => onUpdate("subtitle", e.target.value)}
+              placeholder="예: AI와 함께하는 첫걸음"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-1.5">
+          <div>
+            <div className={labelCls}>저자</div>
+            <input className={inputCls} value={data.author} onChange={(e) => onUpdate("author", e.target.value)} placeholder="홍길동, 김철수" />
+          </div>
+          <div>
+            <div className={labelCls}>출판사</div>
+            <input className={inputCls} value={data.publisher} onChange={(e) => onUpdate("publisher", e.target.value)} placeholder="출판사명" />
+          </div>
+          <div>
+            <div className={labelCls}>출판년도</div>
+            <input className={inputCls} value={data.year} onChange={(e) => onUpdate("year", e.target.value)} placeholder="2025" />
+          </div>
+          <div>
+            <div className={labelCls}>판수</div>
+            <input className={inputCls} value={data.edition} onChange={(e) => onUpdate("edition", e.target.value)} placeholder="초판 / 2판" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-1.5">
+          <div>
+            <div className={labelCls}>ISBN</div>
+            <input className={inputCls} value={data.isbn} onChange={(e) => onUpdate("isbn", e.target.value)} placeholder="978-..." />
+          </div>
+          <div>
+            <div className={labelCls}>총 페이지</div>
+            <input className={inputCls} value={data.pages} onChange={(e) => onUpdate("pages", e.target.value)} placeholder="240" />
+          </div>
+          <div>
+            <div className={labelCls}>정가</div>
+            <input className={inputCls} value={data.price} onChange={(e) => onUpdate("price", e.target.value)} placeholder="18,000원" />
+          </div>
+          <div>
+            <div className={labelCls}>표지 URL</div>
+            <input className={inputCls} value={data.coverUrl} onChange={(e) => onUpdate("coverUrl", e.target.value)} placeholder="https://..." />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-1.5">
+          <div>
+            <div className={labelCls}>PDF/파일 URL</div>
+            <input className={inputCls} value={data.fileUrl} onChange={(e) => onUpdate("fileUrl", e.target.value)} placeholder="https://... (S3 등)" />
+          </div>
+        </div>
+      </div>
+
+      {/* 챕터 CRUD */}
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="flex items-center gap-2 px-2 py-1 bg-muted/40 border-b border-border">
+          <BookText className="h-3 w-3 text-cyan-600" />
+          <span className="text-[0.72rem] font-semibold">챕터 목록</span>
+          <span className="text-[0.6rem] text-muted-foreground">{data.chapters.length}개</span>
+          <button
+            onClick={onAddChapter}
+            className="ml-auto flex items-center gap-0.5 rounded border border-cyan-300 bg-cyan-50 px-1.5 py-0.5 text-[0.62rem] font-medium text-cyan-700 hover:bg-cyan-100"
+          >
+            <Plus className="h-2.5 w-2.5" />챕터 추가
+          </button>
+        </div>
+        {data.chapters.length === 0 ? (
+          <div className="text-center py-3 text-[0.66rem] text-muted-foreground italic">
+            챕터가 없습니다. "+챕터 추가"로 시작하세요.
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="bg-muted/30 border-b border-border">
+                <th className="px-2 py-1 text-[0.6rem] font-semibold text-muted-foreground text-center w-[30px]">#</th>
+                <th className="px-2 py-1 text-[0.6rem] font-semibold text-muted-foreground text-left">챕터 제목</th>
+                <th className="px-2 py-1 text-[0.6rem] font-semibold text-muted-foreground text-left w-[80px]">페이지</th>
+                <th className="px-2 py-1 text-[0.6rem] font-semibold text-muted-foreground text-left">비고</th>
+                <th className="px-2 py-1 text-[0.6rem] font-semibold text-muted-foreground text-center w-[30px]"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.chapters.map((ch, i) => (
+                <tr key={ch.id} className="border-b border-border hover:bg-muted/10">
+                  <td className="px-1 py-0.5 text-[0.66rem] text-center text-muted-foreground tabular-nums">{i + 1}</td>
+                  <td className="px-1 py-0.5">
+                    <input
+                      className="w-full bg-transparent text-[0.68rem] focus:outline-none focus:bg-white px-1 py-0.5 rounded"
+                      value={ch.title}
+                      onChange={(e) => onUpdateChapter(ch.id, "title", e.target.value)}
+                      placeholder="챕터 제목"
+                    />
+                  </td>
+                  <td className="px-1 py-0.5">
+                    <input
+                      className="w-full bg-transparent text-[0.66rem] focus:outline-none focus:bg-white px-1 py-0.5 rounded"
+                      value={ch.pages}
+                      onChange={(e) => onUpdateChapter(ch.id, "pages", e.target.value)}
+                      placeholder="1-30"
+                    />
+                  </td>
+                  <td className="px-1 py-0.5">
+                    <input
+                      className="w-full bg-transparent text-[0.62rem] focus:outline-none focus:bg-white px-1 py-0.5 rounded text-muted-foreground"
+                      value={ch.notes || ""}
+                      onChange={(e) => onUpdateChapter(ch.id, "notes", e.target.value)}
+                      placeholder="비고"
+                    />
+                  </td>
+                  <td className="px-1 py-0.5 text-center">
+                    <button
+                      onClick={() => {
+                        if (confirm("이 챕터를 삭제하시겠습니까?")) onDeleteChapter(ch.id);
+                      }}
+                      className="rounded p-0.5 text-muted-foreground hover:bg-red-50 hover:text-red-600"
+                    >
+                      <Trash2 className="h-2.5 w-2.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* 비고 */}
+      <div className="rounded-lg border border-border bg-card p-2">
+        <div className={labelCls}>비고</div>
+        <textarea
+          className={`${inputCls} resize-y min-h-[60px]`}
+          value={data.notes}
+          onChange={(e) => onUpdate("notes", e.target.value)}
+          placeholder="자유 메모 — 검토자, 검토 상태, 사용 여부, 추가 설명 등"
         />
       </div>
     </div>

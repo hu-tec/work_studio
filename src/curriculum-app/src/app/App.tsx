@@ -4,16 +4,36 @@ import { StepGrade } from "./components/StepGrade";
 import { StepCurriculum } from "./components/StepCurriculum";
 import { SavedList } from "./components/SavedList";
 import { DashboardOverview } from "./components/DashboardOverview";
-import { CurriculumExpandView } from "./components/CurriculumExpandView";
-import { RegulationView } from "./components/RegulationView";
-import { QuestionsView } from "./components/QuestionsView";
 import { MODE_LABEL, MODE_SHORT } from "./components/mode";
-import { useState, useEffect } from "react";
-import { RotateCcw, Save, X, GraduationCap, Tag, Award, Hash, BookText, ClipboardList, FolderOpen, BarChart3, Layers, ShieldCheck } from "lucide-react";
+import { useState, useEffect, lazy, Suspense } from "react";
+
+// 가연 데이터 기반 무거운 뷰는 lazy split (각 ~20~70KB JSON 동반)
+const CurriculumExpandView = lazy(() =>
+  import("./components/CurriculumExpandView").then((m) => ({ default: m.CurriculumExpandView }))
+);
+const RegulationView = lazy(() =>
+  import("./components/RegulationView").then((m) => ({ default: m.RegulationView }))
+);
+const QuestionsView = lazy(() =>
+  import("./components/QuestionsView").then((m) => ({ default: m.QuestionsView }))
+);
+const TextbookView = lazy(() =>
+  import("./components/TextbookView").then((m) => ({ default: m.TextbookView }))
+);
+const GradingView = lazy(() =>
+  import("./components/GradingView").then((m) => ({ default: m.GradingView }))
+);
+
+const ViewFallback = () => (
+  <div className="flex items-center justify-center py-8 text-[0.7rem] text-muted-foreground">
+    로딩 중...
+  </div>
+);
+import { RotateCcw, Save, X, GraduationCap, Tag, Award, Hash, BookText, ClipboardList, FolderOpen, BarChart3, Layers, ShieldCheck, Scale } from "lucide-react";
 
 export default function App() {
   const c = useCurriculum();
-  const [activeTab, setActiveTab] = useState<"editor" | "expand" | "regulation" | "saved" | "dashboard">("editor");
+  const [activeTab, setActiveTab] = useState<"editor" | "expand" | "regulation" | "grading" | "saved" | "dashboard">("editor");
 
   useEffect(() => {
     document.title = `${MODE_LABEL[c.mode]} 관리`;
@@ -79,6 +99,17 @@ export default function App() {
               >
                 <ShieldCheck className="h-3.5 w-3.5" />
                 규정
+              </button>
+              <button
+                onClick={() => setActiveTab("grading")}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[0.76rem] font-medium transition-all ${
+                  activeTab === "grading"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Scale className="h-3.5 w-3.5" />
+                채점기준
               </button>
               <button
                 onClick={() => setActiveTab("saved")}
@@ -170,11 +201,27 @@ export default function App() {
       <div className="flex-1 min-h-0 overflow-y-auto">
         {activeTab === "expand" ? (
             <div className="p-1">
-              {c.mode === "questions" ? <QuestionsView /> : <CurriculumExpandView mode={c.mode} />}
+              <Suspense fallback={<ViewFallback />}>
+                {c.mode === "questions" ? (
+                  <QuestionsView />
+                ) : c.mode === "textbooks" ? (
+                  <TextbookView />
+                ) : (
+                  <CurriculumExpandView mode={c.mode} />
+                )}
+              </Suspense>
             </div>
         ) : activeTab === "regulation" ? (
             <div className="p-1">
-              <RegulationView mode={c.mode} />
+              <Suspense fallback={<ViewFallback />}>
+                <RegulationView mode={c.mode} />
+              </Suspense>
+            </div>
+        ) : activeTab === "grading" ? (
+            <div className="p-1">
+              <Suspense fallback={<ViewFallback />}>
+                <GradingView />
+              </Suspense>
             </div>
         ) : activeTab === "editor" ? (
           <div className="p-4 space-y-4">
@@ -233,6 +280,11 @@ export default function App() {
               onUpdatePracticeCustomUnit={c.updatePracticeCustomUnit}
               onDeleteBasicCustomUnit={c.deleteBasicCustomUnit}
               onDeletePracticeCustomUnit={c.deletePracticeCustomUnit}
+              textbookData={c.textbookData}
+              onUpdateTextbookField={c.updateTextbookField}
+              onAddChapter={c.addChapter}
+              onUpdateChapter={c.updateChapter}
+              onDeleteChapter={c.deleteChapter}
             />
           </div>
         ) : activeTab === "saved" ? (
