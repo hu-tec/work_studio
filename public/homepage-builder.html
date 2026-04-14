@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>홈페이지 생성 - Work Studio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:12px/1.4 'Pretendard',-apple-system,sans-serif;background:#f0f2f5;color:#0f172a;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+a{color:inherit;text-decoration:none}
+
+/* ─── Header ─── */
+header{background:#1a365d;color:#fff;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+header h1{font-size:13px;font-weight:700}
+header h1 .sub{font-weight:400;font-size:11px;opacity:.7;margin-left:6px}
+header .hr{display:flex;align-items:center;gap:8px;font-size:11px}
+header .hr .ui{color:rgba(255,255,255,.6)}
+header .hr button{padding:2px 10px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:3px;font-size:10px;cursor:pointer}
+header .hr button:hover{background:rgba(255,255,255,.25)}
+
+/* ─── Shortcut bar ─── */
+.short-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:5px 12px;display:flex;align-items:center;gap:5px;flex-shrink:0;flex-wrap:wrap}
+.short-bar .s-lbl{font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-right:2px}
+.short-bar .s-sep{width:1px;height:14px;background:#e2e8f0;margin:0 4px}
+.s-btn{padding:3px 8px;border:1px solid #e2e8f0;background:#fff;border-radius:3px;font-size:10px;cursor:pointer;color:#475569;transition:.1s;font-weight:500}
+.s-btn:hover{background:#f1f5f9;border-color:#cbd5e1}
+.s-btn.a{background:#1a365d;color:#fff;border-color:#1a365d}
+
+/* ─── Steps progress bar ─── */
+.steps{background:#fff;border-bottom:1px solid #e2e8f0;padding:6px 14px;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.step-node{display:flex;align-items:center;gap:5px;cursor:pointer;padding:2px 4px;border-radius:4px;transition:.1s}
+.step-node:hover{background:#f8fafc}
+.step-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:#e2e8f0;color:#94a3b8;transition:.15s}
+.step-node.done .step-dot{background:#059669;color:#fff}
+.step-node.cur .step-dot{background:#1a365d;color:#fff;box-shadow:0 0 0 3px rgba(26,54,93,.15)}
+.step-lbl{font-size:10px;color:#64748b;font-weight:500}
+.step-node.done .step-lbl,.step-node.cur .step-lbl{color:#0f172a;font-weight:700}
+.step-bar{flex:0 0 32px;height:2px;background:#e2e8f0;border-radius:1px}
+.step-bar.done{background:#059669}
+.steps .prog-summary{margin-left:auto;font-size:10px;color:#64748b}
+.steps .prog-summary b{color:#0f172a}
+
+/* ─── Layout ─── */
+.layout{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* ─── Left panel: list ─── */
+.lp{width:230px;min-width:230px;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
+.lp-hd{padding:6px 8px;border-bottom:1px solid #e2e8f0;display:flex;gap:4px}
+.lp-hd input{flex:1;height:24px;padding:0 8px;border:1px solid #e2e8f0;border-radius:3px;font-size:11px;outline:none}
+.lp-hd input:focus{border-color:#1a365d}
+.lp-hd button{padding:0 9px;background:#1a365d;color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-weight:600;white-space:nowrap}
+.lp-hd button:hover{background:#2d4a7c}
+.lp-tools{padding:4px 8px;border-bottom:1px solid #f1f5f9;display:flex;gap:4px;align-items:center}
+.lp-tools button{padding:2px 6px;border:1px solid #e2e8f0;background:#fff;border-radius:3px;font-size:9px;cursor:pointer;color:#475569}
+.lp-tools button:hover{background:#f1f5f9}
+.lp-tools .cnt{margin-left:auto;font-size:9px;color:#64748b}
+.lp-tools .cnt b{color:#0f172a}
+.lp-list{flex:1;overflow-y:auto}
+.lp-empty{padding:30px 10px;text-align:center;color:#94a3b8;font-size:10px;line-height:1.6}
+.hp-row{padding:6px 8px;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:.1s;position:relative}
+.hp-row:hover{background:#f8fafc}
+.hp-row.a{background:#eef2ff;border-left:2px solid #1a365d;padding-left:6px}
+.hp-row .hp-top{display:flex;align-items:center;gap:4px;margin-bottom:2px}
+.hp-row .hp-name{font-size:11px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#0f172a}
+.hp-row .hp-st{font-size:8px;padding:1px 5px;border-radius:8px;font-weight:700;text-transform:uppercase}
+.st-draft{background:#fef3c7;color:#d97706}
+.st-published{background:#d1fae5;color:#059669}
+.st-archived{background:#f3f4f6;color:#64748b}
+.hp-row .hp-meta{font-size:9px;color:#94a3b8;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.hp-prog{display:flex;gap:2px;margin-top:3px}
+.hp-prog-dot{flex:1;height:4px;border-radius:2px;background:#e2e8f0}
+.hp-prog-dot.on{background:#059669}
+.hp-row .hp-del{position:absolute;right:4px;top:4px;opacity:0;width:16px;height:16px;border:none;background:#fee2e2;color:#dc2626;border-radius:3px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center}
+.hp-row:hover .hp-del{opacity:1}
+.hp-det{display:none;padding:5px 0 0;border-top:1px dashed #e2e8f0;margin-top:4px;font-size:9px;color:#64748b;line-height:1.5}
+.hp-row.exp .hp-det{display:block}
+
+/* ─── Center panel: edit ─── */
+.cp{flex:1;overflow-y:auto;padding:12px 14px;min-width:0;background:#f0f2f5}
+.cp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#94a3b8;gap:10px;font-size:12px;text-align:center}
+.cp-empty .big-ic{font-size:44px}
+.cp-empty button{padding:8px 18px;background:#1a365d;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+.cp-empty button:hover{background:#2d4a7c}
+.step-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.step-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed #e2e8f0}
+.step-hd .step-n{width:24px;height:24px;border-radius:50%;background:#1a365d;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.step-hd h3{font-size:13px;font-weight:700;flex:1;color:#0f172a}
+.step-hd .step-sts{font-size:9px;padding:2px 8px;border-radius:10px;background:#f1f5f9;color:#64748b;font-weight:700}
+.step-hd .step-sts.done{background:#d1fae5;color:#059669}
+.step-body{padding:2px}
+.step-body .hint{font-size:10px;color:#94a3b8;margin-bottom:6px;padding-left:2px}
+
+.fld{margin-bottom:6px}
+.fld label{display:block;font-size:9px;color:#64748b;font-weight:700;margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px}
+.fld input[type=text],.fld input[type=url],.fld textarea{width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:11px;outline:none;font-family:inherit;color:#0f172a}
+.fld input:focus,.fld textarea:focus{border-color:#1a365d;background:#f8fafc}
+.fld textarea{resize:vertical;min-height:50px}
+.fld-row{display:flex;gap:6px}
+.fld-row .fld{flex:1}
+
+/* ─── Chips ─── */
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{padding:3px 9px;border:1px solid #e2e8f0;background:#fff;font-size:10px;cursor:pointer;color:#475569;transition:.1s;display:inline-flex;align-items:center;gap:3px;font-weight:500;font-family:inherit}
+.chip.sq{border-radius:4px}
+.chip.rd{border-radius:999px}
+.chip:hover{background:#f1f5f9;border-color:#cbd5e1}
+.chip.a{background:#1a365d;color:#fff;border-color:#1a365d}
+.chip.a.rd{background:#2563eb;border-color:#2563eb}
+
+/* ─── Common module grid ─── */
+.mod-cat{font-size:9px;color:#94a3b8;margin:8px 0 4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.mod-cat:first-child{margin-top:0}
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px}
+.mod-card{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;font-size:10px;background:#fff;transition:.1s}
+.mod-card:hover{background:#f8fafc;border-color:#cbd5e1}
+.mod-card.a{background:#eef2ff;border-color:#1a365d}
+.mod-card input{accent-color:#1a365d;cursor:pointer}
+.mod-card .mc-nm{font-weight:600;color:#0f172a;flex:1}
+.mod-card .mc-desc{font-size:8px;color:#94a3b8;display:block;margin-top:1px}
+.mod-card-inner{flex:1;min-width:0}
+
+/* ─── Form template list ─── */
+.ft-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:5px;margin-top:6px}
+.ft-card{padding:6px 8px;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;font-size:10px;position:relative;background:#fff;transition:.1s}
+.ft-card:hover{background:#f8fafc;border-color:#cbd5e1}
+.ft-card.a{background:#eef2ff;border-color:#1a365d}
+.ft-card .ft-nm{font-weight:600;color:#0f172a;margin-bottom:2px;padding-right:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ft-card .ft-meta{font-size:9px;color:#94a3b8}
+.ft-card .ft-chk{position:absolute;right:5px;top:5px;font-size:11px;color:#059669;font-weight:700}
+.ft-empty{padding:16px;text-align:center;color:#94a3b8;font-size:10px;line-height:1.6;border:1px dashed #e2e8f0;border-radius:6px;margin-top:6px}
+
+/* ─── Preset cards ─── */
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px;margin-bottom:8px}
+.preset-card{padding:10px;border:1px solid #e2e8f0;border-radius:8px;transition:.1s;background:linear-gradient(135deg,#fff,#f8fafc);display:flex;flex-direction:column}
+.preset-card:hover{border-color:#1a365d;background:linear-gradient(135deg,#fff,#eef2ff)}
+.preset-card.a{border-color:#059669;background:linear-gradient(135deg,#ecfdf5,#fff)}
+.preset-card h4{font-size:12px;font-weight:700;color:#0f172a;margin-bottom:3px}
+.preset-card .pr-desc{font-size:10px;color:#64748b;margin-bottom:4px;line-height:1.4}
+.preset-card .pr-src{font-size:9px;color:#94a3b8;font-family:monospace;margin-bottom:5px}
+.preset-card .pr-feat{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}
+.preset-card .pr-feat span{font-size:9px;padding:1px 5px;background:#e2e8f0;color:#475569;border-radius:3px}
+.preset-card .pr-steps{font-size:9px;color:#64748b;margin-bottom:6px;padding:4px 6px;background:#f8fafc;border-radius:4px;line-height:1.6}
+.preset-card .pr-btn{margin-top:auto;width:100%;padding:5px;background:#1a365d;color:#fff;border:none;border-radius:4px;font-size:10px;cursor:pointer;font-weight:600}
+.preset-card .pr-btn:hover{background:#2d4a7c}
+.preset-card.a .pr-btn{background:#059669}
+.preset-card.a .pr-btn:hover{background:#047857}
+.preset-card.custom{background:linear-gradient(135deg,#fff,#fef9c3);border-style:dashed;cursor:pointer}
+.preset-card.custom:hover{background:linear-gradient(135deg,#fef9c3,#fef3c7)}
+
+/* ─── Applied modules list ─── */
+.applied-list{margin-top:8px;padding-top:8px;border-top:1px dashed #e2e8f0}
+.applied-list .al-hd{font-size:10px;color:#64748b;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.applied-list .al-hd b{color:#0f172a}
+.applied-item{display:flex;align-items:center;gap:6px;padding:5px 8px;background:#f8fafc;border-radius:4px;margin-bottom:3px;font-size:10px;border:1px solid #f1f5f9}
+.applied-item .ai-n{width:18px;height:18px;border-radius:50%;background:#1a365d;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.applied-item .ai-nm{flex:1;color:#0f172a;font-weight:500}
+.applied-item .ai-src{font-size:9px;color:#94a3b8;font-family:monospace}
+.applied-item button{padding:1px 6px;border:none;background:#fee2e2;color:#dc2626;border-radius:3px;font-size:9px;cursor:pointer;font-weight:600}
+.applied-item button:hover{background:#fecaca}
+
+/* ─── Deploy log ─── */
+.dp-log{margin-top:8px;background:#0f172a;color:#10b981;padding:8px 10px;border-radius:4px;font-family:'Menlo','Consolas',monospace;font-size:10px;max-height:160px;overflow-y:auto;white-space:pre-wrap;line-height:1.5}
+
+/* ─── Right panel ─── */
+.rp{width:300px;min-width:300px;background:#fff;border-left:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
+.rp-body{flex:1;overflow-y:auto;padding:10px 12px}
+.rp-empty{padding:40px 16px;text-align:center;color:#94a3b8;font-size:10px;line-height:1.6}
+.rp-sec{margin-bottom:12px}
+.rp-sec h4{font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding-bottom:3px;border-bottom:1px solid #f1f5f9;font-weight:700}
+.rp-fld{margin-bottom:5px}
+.rp-fld label{display:block;font-size:9px;color:#94a3b8;font-weight:600;margin-bottom:2px}
+.rp-fld input,.rp-fld textarea{width:100%;padding:4px 7px;border:1px solid #e2e8f0;border-radius:3px;font-size:10px;outline:none;font-family:inherit}
+.rp-fld input:focus,.rp-fld textarea:focus{border-color:#1a365d}
+.rp-fld textarea{resize:vertical;min-height:44px}
+.rp-prog{display:flex;flex-direction:column;gap:3px}
+.rp-pr{display:flex;align-items:center;gap:6px;font-size:10px;padding:4px 6px;border-radius:4px;background:#f8fafc;cursor:pointer;transition:.1s}
+.rp-pr:hover{background:#eef2ff}
+.rp-pr .pr-ck{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.rp-pr.done .pr-ck{background:#059669;color:#fff}
+.rp-pr.wait .pr-ck{background:#e2e8f0;color:#94a3b8}
+.rp-pr .pr-nm{flex:1}
+.rp-pr.done .pr-nm{color:#0f172a;font-weight:600}
+.rp-pr.wait .pr-nm{color:#94a3b8}
+.rp-db-item{padding:3px 6px;background:#f8fafc;border-radius:3px;font-size:9px;margin-bottom:2px;font-family:monospace;color:#475569}
+.rp-acts{padding:10px 12px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;gap:6px;flex-shrink:0}
+.rp-acts button{flex:1;padding:7px;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:700;transition:.1s}
+.rp-save{background:#1a365d;color:#fff}
+.rp-save:hover:not(:disabled){background:#2d4a7c}
+.rp-deploy{background:#059669;color:#fff}
+.rp-deploy:hover:not(:disabled){background:#047857}
+.rp-acts button:disabled{opacity:.35;cursor:not-allowed}
+
+/* ─── Notes ─── */
+.notes-area{display:flex;flex-direction:column;gap:4px}
+.notes-files{display:flex;flex-wrap:wrap;gap:3px;min-height:16px}
+.note-file{font-size:9px;background:#eef2ff;color:#1a365d;padding:2px 5px;border-radius:3px;display:inline-flex;align-items:center;gap:3px}
+.note-file button{border:none;background:none;cursor:pointer;color:#dc2626;font-size:11px;padding:0;margin-left:2px;font-weight:700}
+.notes-add{font-size:9px;background:#f1f5f9;color:#475569;padding:3px 6px;border:1px dashed #cbd5e1;border-radius:3px;cursor:pointer}
+.notes-add:hover{background:#e2e8f0}
+
+/* ─── Toast ─── */
+.toast{position:fixed;bottom:16px;right:16px;background:#0f172a;color:#fff;padding:8px 14px;border-radius:6px;font-size:11px;z-index:100;opacity:0;transition:.2s;pointer-events:none;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.toast.v{opacity:1}
+.toast.err{background:#dc2626}
+.toast.ok{background:#059669}
+
+/* ─── Dirty dot ─── */
+.dirty-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-left:4px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><a href="admin.html">Work Studio</a><span class="sub">홈페이지 생성</span><span id="dirtyInd"></span></h1>
+  <div class="hr">
+    <span class="ui">관리자</span>
+    <button onclick="location.href='admin.html'">관리자 홈</button>
+    <button onclick="location.href='landing-mgmt.html'">랜딩 관리</button>
+  </div>
+</header>
+
+<!-- ─── Shortcut bar ─── -->
+<div class="short-bar">
+  <span class="s-lbl">빠른이동</span>
+  <button class="s-btn" onclick="scrollToStep(1)">1.랜딩</button>
+  <button class="s-btn" onclick="scrollToStep(2)">2.공통</button>
+  <button class="s-btn" onclick="scrollToStep(3)">3.신청서</button>
+  <button class="s-btn" onclick="scrollToStep(4)">4.선택</button>
+  <button class="s-btn" onclick="scrollToStep(5)">5.배포</button>
+  <span class="s-sep"></span>
+  <span class="s-lbl">공통카테</span>
+  <button class="s-btn" onclick="quickToggle('banner')">배너</button>
+  <button class="s-btn" onclick="quickToggle('community_notice')">공지</button>
+  <button class="s-btn" onclick="quickToggle('community_faq')">FAQ</button>
+  <button class="s-btn" onclick="quickToggle('community_qna')">QNA</button>
+  <button class="s-btn" onclick="quickToggle('community_review')">후기</button>
+  <button class="s-btn" onclick="quickToggle('inquiry')">문의</button>
+  <span class="s-sep"></span>
+  <span class="s-lbl">준공통</span>
+  <button class="s-btn" onclick="scrollToStep(3)">신청서</button>
+</div>
+
+<!-- ─── Steps bar ─── -->
+<div class="steps" id="stepsBar"></div>
+
+<!-- ─── Main layout ─── -->
+<div class="layout">
+  <div class="lp">
+    <div class="lp-hd">
+      <input id="searchInput" placeholder="검색..." oninput="onSearch(this.value)">
+      <button onclick="createNew()" title="새 홈페이지">+ 새</button>
+    </div>
+    <div class="lp-tools">
+      <button onclick="toggleExpandAll()" id="btnExpAll">전체 펼치기</button>
+      <span class="cnt">총 <b id="hpCount">0</b></span>
+    </div>
+    <div class="lp-list" id="hpList"></div>
+  </div>
+
+  <div class="cp" id="editArea">
+    <div class="cp-empty">
+      <div class="big-ic">🏠</div>
+      <div>홈페이지를 선택하거나<br>새로 만드세요</div>
+      <button onclick="createNew()">+ 새 홈페이지 만들기</button>
+    </div>
+  </div>
+
+  <div class="rp">
+    <div class="rp-body" id="rpBody">
+      <div class="rp-empty">홈페이지를 선택하면<br>메타 정보가 표시됩니다</div>
+    </div>
+    <div class="rp-acts">
+      <button class="rp-save" id="btnSave" onclick="saveHomepage()" disabled>💾 저장</button>
+      <button class="rp-deploy" id="btnDeploy" onclick="deployHomepage()" disabled>🚀 배포</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══ Constants ═══ */
+const STEPS = [
+  { n:1, key:'landing',  label:'랜딩' },
+  { n:2, key:'common',   label:'공통' },
+  { n:3, key:'apply',    label:'신청서' },
+  { n:4, key:'optional', label:'선택' },
+  { n:5, key:'deploy',   label:'배포' },
+];
+
+const WEBSITES = [
+  { id:'tesol',         name:'TESOL',           url:'timestesol.com' },
+  { id:'ai_trans',      name:'AI 번역',         url:'aitranslation.co.kr' },
+  { id:'reading',       name:'통독문서',        url:'reading.hutechc.com' },
+  { id:'ai_ethics',     name:'AI 윤리',         url:'aiethics.hutechc.com' },
+  { id:'exhibit',       name:'전시/행사',       url:'exhibit.hutechc.com' },
+  { id:'cbt',           name:'시험',            url:'cbt.hutechc.com' },
+  { id:'matching',      name:'전문가매칭',      url:'matching.hutechc.com' },
+  { id:'level_test',    name:'레벨테스트',      url:'leveltest.hutechc.com' },
+  { id:'hutechc',       name:'휴텍씨',          url:'hutechc.com' },
+  { id:'iita',          name:'IITA협회',        url:'iita.or.kr' },
+  { id:'semiconductor', name:'반도체/조선/방산', url:'semiconductor.hutechc.com' },
+];
+
+const COMMON_MODULES = [
+  { id:'banner',           cat:'레이아웃', name:'히어로 배너',       desc:'메인 상단 배너' },
+  { id:'nav_section',      cat:'레이아웃', name:'섹션 이동 네비',    desc:'스크롤 이동 버튼' },
+  { id:'footer',           cat:'레이아웃', name:'푸터',              desc:'하단 회사/법적 정보' },
+  { id:'community_notice', cat:'커뮤니티', name:'공지사항',          desc:'공지 게시판' },
+  { id:'community_faq',    cat:'커뮤니티', name:'FAQ',               desc:'자주 묻는 질문' },
+  { id:'community_qna',    cat:'커뮤니티', name:'Q&A',               desc:'사용자 질문답변' },
+  { id:'community_review', cat:'커뮤니티', name:'후기',              desc:'사용 후기 게시판' },
+  { id:'inquiry',          cat:'지원',     name:'1:1 문의',          desc:'문의 폼' },
+  { id:'blog',             cat:'지원',     name:'블로그',            desc:'콘텐츠 발행' },
+  { id:'terms',            cat:'법적',     name:'이용약관',          desc:'필수 약관' },
+  { id:'privacy',          cat:'법적',     name:'개인정보처리방침',  desc:'개인정보 약관' },
+];
+
+const APPLY_ROLES = [
+  { id:'all',     label:'전체' },
+  { id:'expert',  label:'전문가' },
+  { id:'client',  label:'의뢰인' },
+  { id:'student', label:'학생' },
+  { id:'b2b',     label:'B2B' },
+  { id:'admin',   label:'관리자' },
+];
+
+const OPTIONAL_PRESETS = {
+  reading: {
+    id:'reading_preset',
+    name:'📖 통독 프리셋',
+    desc:'AI 문서 통독 서비스 워크플로. 양식 생성 → 내용 작성 → 검수의 6단계 세로 카드 레이아웃.',
+    source:'AI STUDIO.V3 / 창작작업실 > 문서만들기',
+    features:['6단계 세로카드','대중소 다중 카테고리','AI 4모델','편집에디터','휴먼 감수/검증','프롬 규정'],
+    modules:[
+      { n:1, name:'카테고리 선택',     type:'cat_multi',   desc:'대→중→소 다중선택' },
+      { n:2, name:'파일 업로드',       type:'file_drop',   desc:'PDF/DOCX/XLSX 드래그드롭' },
+      { n:3, name:'AI 모델 선택',      type:'ai_radio4',   desc:'GPT-4o·Claude·Gemini·Multi' },
+      { n:4, name:'편집에디터',        type:'editor_bool', desc:'사용 / 미사용' },
+      { n:5, name:'휴먼 작업 요청',    type:'human_3sel',  desc:'유형·등급·긴급도' },
+      { n:6, name:'추가 옵션',         type:'opts_toggle', desc:'프롬규정 + 전문가검증' },
+    ]
+  },
+  translation: {
+    id:'translation_preset',
+    name:'🈂️ 번역 프리셋',
+    desc:'원페이지 번역 서비스. 좌 설정 패널 + 우 sticky 품질 대시보드 2단 레이아웃.',
+    source:'원페이지 / 번역 서비스',
+    features:['2단 레이아웃','sticky 대시보드','언어쌍','긴급도','비용 합산','전문가 매칭'],
+    modules:[
+      { n:1, name:'분야 카테고리',     type:'cat_multi',     desc:'번역 분야 선택' },
+      { n:2, name:'원문 업로드',       type:'file_drop',     desc:'원본 파일 드롭' },
+      { n:3, name:'언어쌍 선택',       type:'lang_pair',     desc:'원문 → 번역 언어' },
+      { n:4, name:'번역 엔진',         type:'ai_radio4',     desc:'AI 번역 모델' },
+      { n:5, name:'휴먼 검수',         type:'human_3sel',    desc:'감수자 등급 / 긴급도' },
+      { n:6, name:'품질 대시보드',     type:'quality_panel', desc:'sticky 요약 + 비용' },
+    ]
+  }
+};
+
+const DEPLOY_TARGETS = [
+  { id:'github_pages', label:'GitHub Pages',   cmd:'npx gh-pages -d dist' },
+  { id:'ec2_static',   label:'EC2 정적',       cmd:'rsync -avz dist/ ec2-user@54.116.15.136:~/work_studio/public/' },
+  { id:'vite_build',   label:'Vite + deploy.sh', cmd:'npm run build && ssh ec2 "deploy.sh work_studio"' },
+];
+
+/* ═══ State ═══ */
+let homepages = [];
+let formTemplates = [];
+let currentHpId = null;
+let searchQuery = '';
+let roleFilter = 'all';
+let dirty = false;
+let expandedIds = new Set();
+
+/* ═══ Init ═══ */
+async function init(){
+  renderStepsBar();
+  try {
+    await Promise.all([loadHomepages(), loadFormTemplates()]);
+  } catch(e) {
+    toast('데이터 로딩 실패: ' + e.message, 'err');
+  }
+  renderList();
+}
+
+async function loadHomepages(){
+  try {
+    const r = await fetch('/api/homepages');
+    const rows = await r.json();
+    homepages = (rows || []).map(row => {
+      try {
+        const d = JSON.parse(row.data);
+        return Object.assign({}, d, { id: row.id, _created: row.created_at });
+      } catch { return null; }
+    }).filter(Boolean);
+  } catch(e) { homepages = []; }
+}
+
+async function loadFormTemplates(){
+  try {
+    const r = await fetch('/api/form_templates');
+    const rows = await r.json();
+    formTemplates = (rows || []).map(row => {
+      try {
+        const d = JSON.parse(row.data);
+        return Object.assign({}, d, { id: row.id, _created: row.created_at });
+      } catch { return null; }
+    }).filter(Boolean);
+  } catch(e) { formTemplates = []; }
+}
+
+function getCurrent(){
+  return homepages.find(h => h.id === currentHpId);
+}
+
+function defaultHp(name){
+  return {
+    name: name || '새 홈페이지',
+    slug: '',
+    linkedSite: '',
+    status: 'draft',
+    landing: { repoUrl:'', branch:'main', deployPath:'/', lastSync:'' },
+    commonModules: [],
+    applyTemplateIds: [],
+    optionalModules: [],
+    deploy: { target:'', buildCmd:'npm run build', deployCmd:'', lastDeployed:'', logs:[] },
+    _notes: '',
+    _notesFiles: [],
+  };
+}
+
+/* ═══ Steps bar ═══ */
+function renderStepsBar(){
+  const hp = getCurrent();
+  let doneCnt = 0;
+  let h = '';
+  STEPS.forEach((s, i) => {
+    const done = hp ? isStepDone(hp, s.key) : false;
+    if (done) doneCnt++;
+    h += '<div class="step-node ' + (done?'done':'') + '" onclick="scrollToStep(' + s.n + ')">' +
+         '<div class="step-dot">' + (done?'✓':s.n) + '</div>' +
+         '<div class="step-lbl">' + s.label + '</div></div>';
+    if (i < STEPS.length - 1) h += '<div class="step-bar ' + (done?'done':'') + '"></div>';
+  });
+  h += '<div class="prog-summary">진행 <b>' + doneCnt + '</b> / ' + STEPS.length + '</div>';
+  document.getElementById('stepsBar').innerHTML = h;
+}
+
+function isStepDone(hp, key){
+  if (!hp) return false;
+  if (key === 'landing')  return !!(hp.landing && hp.landing.repoUrl);
+  if (key === 'common')   return (hp.commonModules || []).length > 0;
+  if (key === 'apply')    return (hp.applyTemplateIds || []).length > 0;
+  if (key === 'optional') return (hp.optionalModules || []).length > 0;
+  if (key === 'deploy')   return !!(hp.deploy && hp.deploy.target);
+  return false;
+}
+
+function scrollToStep(n){
+  const el = document.getElementById('step-' + n);
+  if (el) {
+    el.scrollIntoView({ behavior:'smooth', block:'start' });
+    el.style.transition = 'box-shadow .3s';
+    el.style.boxShadow = '0 0 0 2px #1a365d';
+    setTimeout(() => { el.style.boxShadow = '0 1px 3px rgba(0,0,0,.03)'; }, 800);
+  }
+}
+
+/* ═══ List panel ═══ */
+function renderList(){
+  const filtered = homepages.filter(h => !searchQuery ||
+    (h.name || '').toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0 ||
+    (h.slug || '').toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0);
+  document.getElementById('hpCount').textContent = filtered.length;
+
+  const box = document.getElementById('hpList');
+  if (!filtered.length) {
+    box.innerHTML = '<div class="lp-empty">생성된 홈페이지가<br>없습니다.<br><br>[+ 새] 버튼을 눌러<br>시작하세요.</div>';
+    return;
+  }
+
+  let h = '';
+  filtered.forEach(hp => {
+    const active = hp.id === currentHpId ? 'a' : '';
+    const exp = expandedIds.has(hp.id) ? 'exp' : '';
+    const sts = hp.status || 'draft';
+    const doneCnt = STEPS.filter(s => isStepDone(hp, s.key)).length;
+    const siteName = (WEBSITES.find(w => w.id === hp.linkedSite) || {}).name || '—';
+    h += '<div class="hp-row ' + active + ' ' + exp + '" onclick="selectHp(' + hp.id + ')">' +
+      '<div class="hp-top"><div class="hp-name">' + escapeHtml(hp.name || '(이름 없음)') + '</div>' +
+      '<span class="hp-st st-' + sts + '">' + sts + '</span></div>' +
+      '<div class="hp-meta"><span>' + escapeHtml(siteName) + '</span><span>·</span><span>' + doneCnt + '/5 완료</span>' +
+      '<button class="hp-del" onclick="event.stopPropagation();deleteHp(' + hp.id + ')" title="삭제">×</button></div>' +
+      '<div class="hp-prog">' +
+      STEPS.map(s => '<div class="hp-prog-dot ' + (isStepDone(hp, s.key)?'on':'') + '"></div>').join('') +
+      '</div>' +
+      '<div class="hp-det">' +
+      '<div>ID: ' + hp.id + ' · 생성: ' + (hp._created || '').slice(0, 10) + '</div>' +
+      '<div>레포: ' + escapeHtml((hp.landing && hp.landing.repoUrl) || '—') + '</div>' +
+      '<div>공통 ' + (hp.commonModules||[]).length + '개 · 신청서 ' + (hp.applyTemplateIds||[]).length + '개 · 선택 ' + (hp.optionalModules||[]).length + '개</div>' +
+      '</div></div>';
+  });
+  box.innerHTML = h;
+}
+
+function onSearch(v){
+  searchQuery = v;
+  renderList();
+}
+
+function toggleExpandAll(){
+  if (expandedIds.size === homepages.length && homepages.length > 0) {
+    expandedIds = new Set();
+    document.getElementById('btnExpAll').textContent = '전체 펼치기';
+  } else {
+    expandedIds = new Set(homepages.map(h => h.id));
+    document.getElementById('btnExpAll').textContent = '전체 접기';
+  }
+  renderList();
+}
+
+/* ═══ CRUD ═══ */
+async function createNew(){
+  const name = prompt('홈페이지 이름 입력:', '새 홈페이지');
+  if (!name) return;
+  const data = defaultHp(name);
+  try {
+    const r = await fetch('/api/homepages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    const j = await r.json();
+    await loadHomepages();
+    currentHpId = j.id;
+    dirty = false;
+    renderAll();
+    toast('홈페이지 생성 완료', 'ok');
+  } catch(e) {
+    toast('생성 실패: ' + e.message, 'err');
+  }
+}
+
+async function deleteHp(id){
+  if (!confirm('정말 삭제하시겠습니까?')) return;
+  try {
+    await fetch('/api/homepages/' + id, { method:'DELETE' });
+    if (currentHpId === id) { currentHpId = null; dirty = false; }
+    await loadHomepages();
+    renderAll();
+    toast('삭제 완료', 'ok');
+  } catch(e) {
+    toast('삭제 실패: ' + e.message, 'err');
+  }
+}
+
+function selectHp(id){
+  if (dirty && !confirm('변경사항이 있습니다. 저장 없이 이동하시겠습니까?')) return;
+  currentHpId = id;
+  dirty = false;
+  renderAll();
+}
+
+async function saveHomepage(){
+  const hp = getCurrent();
+  if (!hp) return;
+  try {
+    const data = Object.assign({}, hp);
+    delete data.id;
+    delete data._created;
+    await fetch('/api/homepages/' + hp.id, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    dirty = false;
+    renderStepsBar();
+    updateActions();
+    updateDirtyInd();
+    toast('저장 완료', 'ok');
+  } catch(e) {
+    toast('저장 실패: ' + e.message, 'err');
+  }
+}
+
+async function deployHomepage(){
+  const hp = getCurrent();
+  if (!hp) return;
+  if (!hp.deploy || !hp.deploy.target) {
+    toast('배포 대상을 먼저 선택하세요', 'err');
+    scrollToStep(5);
+    return;
+  }
+  if (!confirm('배포를 시작하시겠습니까?\n(' + hp.deploy.target + ')')) return;
+
+  if (dirty) await saveHomepage();
+
+  const logEl = document.getElementById('deployLog');
+  const target = DEPLOY_TARGETS.find(t => t.id === hp.deploy.target);
+  const lines = [
+    '$ ' + (hp.deploy.buildCmd || 'npm run build'),
+    '[build] 의존성 확인...',
+    '[build] vite 컴파일 시작',
+    '[build] ✓ 번들 생성 완료',
+    '[build] dist/ 1.2 MB',
+    '',
+    '$ ' + (hp.deploy.deployCmd || (target && target.cmd) || 'deploy'),
+    '[deploy] 원격 서버 연결 중...',
+    '[deploy] ✓ 54.116.15.136 접속 성공',
+    '[deploy] 파일 업로드 (1.2 MB)...',
+    '[deploy] ✓ 업로드 완료',
+    '[deploy] pm2 reload work_studio (graceful)',
+    '[deploy] ✓ 배포 완료',
+    '',
+    '🎉 ' + hp.name + ' 배포 성공',
+  ];
+  if (logEl) {
+    logEl.textContent = '';
+    for (let i = 0; i < lines.length; i++) {
+      await new Promise(r => setTimeout(r, 120));
+      logEl.textContent += lines[i] + '\n';
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+  }
+
+  hp.deploy.lastDeployed = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  hp.status = 'published';
+  dirty = true;
+  await saveHomepage();
+  renderAll();
+  toast('배포 완료 🎉', 'ok');
+}
+
+/* ═══ Edit area ═══ */
+function renderEditArea(){
+  const hp = getCurrent();
+  if (!hp) {
+    document.getElementById('editArea').innerHTML =
+      '<div class="cp-empty">' +
+      '<div class="big-ic">🏠</div>' +
+      '<div>홈페이지를 선택하거나<br>새로 만드세요</div>' +
+      '<button onclick="createNew()">+ 새 홈페이지 만들기</button></div>';
+    return;
+  }
+  document.getElementById('editArea').innerHTML =
+    renderStep1(hp) + renderStep2(hp) + renderStep3(hp) + renderStep4(hp) + renderStep5(hp);
+}
+
+function stepHeader(n, title, hp, key, extra){
+  const done = isStepDone(hp, key);
+  return '<div class="step-hd">' +
+    '<div class="step-n">' + n + '</div>' +
+    '<h3>' + title + (extra ? ' <span style="font-size:10px;color:#64748b;font-weight:500">' + extra + '</span>' : '') + '</h3>' +
+    '<div class="step-sts ' + (done?'done':'') + '">' + (done?'완료':'대기') + '</div></div>';
+}
+
+function renderStep1(hp){
+  const l = hp.landing || {};
+  return '<section class="step-card" id="step-1">' +
+    stepHeader(1, '랜딩 페이지 — GitHub 연결', hp, 'landing') +
+    '<div class="step-body">' +
+    '<div class="hint">Figma → GitHub 레포에 업로드한 랜딩페이지를 연결합니다.</div>' +
+    '<div class="fld"><label>GitHub Repository URL</label>' +
+    '<input type="url" value="' + escapeAttr(l.repoUrl) + '" placeholder="https://github.com/user/repo"' +
+    ' onblur="setField(\'landing.repoUrl\', this.value)"></div>' +
+    '<div class="fld-row">' +
+    '<div class="fld"><label>브랜치</label>' +
+    '<input type="text" value="' + escapeAttr(l.branch || 'main') + '"' +
+    ' onblur="setField(\'landing.branch\', this.value)"></div>' +
+    '<div class="fld"><label>배포 경로</label>' +
+    '<input type="text" value="' + escapeAttr(l.deployPath || '/') + '" placeholder="/landing/"' +
+    ' onblur="setField(\'landing.deployPath\', this.value)"></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:6px;align-items:center;margin-top:6px">' +
+    '<button class="chip sq a" onclick="testLanding()">🔗 연결 테스트</button>' +
+    (l.lastSync ? '<span style="font-size:9px;color:#94a3b8">마지막 동기화: ' + l.lastSync + '</span>' : '') +
+    '</div></div></section>';
+}
+
+function renderStep2(hp){
+  const sel = new Set(hp.commonModules || []);
+  const byCat = {};
+  COMMON_MODULES.forEach(m => { (byCat[m.cat] = byCat[m.cat] || []).push(m); });
+  let body = '<div class="hint">메뉴/커뮤니티/문의/법적 페이지 등 모든 홈페이지 공통 요소입니다. 체크박스로 포함/제외.</div>';
+  Object.keys(byCat).forEach(cat => {
+    body += '<div class="mod-cat">' + cat + '</div><div class="mod-grid">';
+    byCat[cat].forEach(m => {
+      const on = sel.has(m.id) ? 'a' : '';
+      body += '<label class="mod-card ' + on + '">' +
+        '<input type="checkbox" ' + (sel.has(m.id)?'checked':'') + ' onchange="toggleCommon(\'' + m.id + '\')">' +
+        '<div class="mod-card-inner"><span class="mc-nm">' + m.name + '</span>' +
+        '<span class="mc-desc">' + m.desc + '</span></div></label>';
+    });
+    body += '</div>';
+  });
+  return '<section class="step-card" id="step-2">' +
+    stepHeader(2, '공통 모듈', hp, 'common', sel.size + '개 선택') +
+    '<div class="step-body">' + body + '</div></section>';
+}
+
+function renderStep3(hp){
+  const sel = new Set(hp.applyTemplateIds || []);
+  let tpls = formTemplates;
+  if (roleFilter !== 'all') {
+    tpls = formTemplates.filter(t => {
+      const s = JSON.stringify(t).toLowerCase();
+      return s.indexOf(roleFilter) >= 0;
+    });
+  }
+
+  const roleChips = APPLY_ROLES.map(r =>
+    '<button class="chip sq ' + (roleFilter===r.id?'a':'') + '" onclick="setRoleFilter(\'' + r.id + '\')">' + r.label + '</button>'
+  ).join('');
+
+  let tplHtml = '';
+  if (!tpls.length) {
+    tplHtml = '<div class="ft-empty">등록된 신청서 템플릿이 없습니다.<br>[관리자 홈 → 신청서] 메뉴에서 먼저 생성하세요.</div>';
+  } else {
+    tplHtml = '<div class="ft-list">' + tpls.map(t => {
+      const on = sel.has(t.id) ? 'a' : '';
+      const site = t._site || '—';
+      const phases = t.phases ? Object.keys(t.phases).length + '단계' : '—';
+      return '<div class="ft-card ' + on + '" onclick="toggleApplyTpl(' + t.id + ')">' +
+        (sel.has(t.id) ? '<div class="ft-chk">✓</div>' : '') +
+        '<div class="ft-nm">' + escapeHtml(t.name || '(이름 없음)') + '</div>' +
+        '<div class="ft-meta">' + escapeHtml(site) + ' · ' + phases + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  return '<section class="step-card" id="step-3">' +
+    stepHeader(3, '준공통 — 신청서', hp, 'apply', sel.size + '개 선택') +
+    '<div class="step-body">' +
+    '<div class="hint">역할별 필터로 좁히고 사용할 신청서 템플릿을 선택하세요. AI Studio DB/API의 분류표와 직결됩니다.</div>' +
+    '<div class="chips" style="margin-bottom:6px">' + roleChips + '</div>' +
+    tplHtml + '</div></section>';
+}
+
+function renderStep4(hp){
+  const applied = hp.optionalModules || [];
+  const appliedIds = new Set(applied.map(m => m.id));
+
+  let cards = '';
+  Object.values(OPTIONAL_PRESETS).forEach(p => {
+    const on = appliedIds.has(p.id) ? 'a' : '';
+    const steps = p.modules.map(m => m.n + '.' + m.name).join(' → ');
+    cards += '<div class="preset-card ' + on + '">' +
+      '<h4>' + p.name + '</h4>' +
+      '<div class="pr-desc">' + p.desc + '</div>' +
+      '<div class="pr-src">📂 ' + p.source + '</div>' +
+      '<div class="pr-steps">' + steps + '</div>' +
+      '<div class="pr-feat">' + p.features.map(f => '<span>' + f + '</span>').join('') + '</div>' +
+      '<button class="pr-btn" onclick="togglePreset(\'' + p.id + '\')">' +
+      (appliedIds.has(p.id) ? '✓ 적용됨 (클릭 시 해제)' : '+ 프리셋 적용') +
+      '</button></div>';
+  });
+  cards += '<div class="preset-card custom" onclick="addCustomModule()">' +
+    '<h4>➕ 커스텀 모듈</h4>' +
+    '<div class="pr-desc">파일1/2/3에 없는 모듈을 직접 정의합니다.</div>' +
+    '<div class="pr-feat"><span>수동 정의</span><span>이름만 지정</span></div>' +
+    '<button class="pr-btn">+ 추가</button></div>';
+
+  let appliedHtml = '';
+  if (applied.length) {
+    appliedHtml = '<div class="applied-list">' +
+      '<div class="al-hd">적용된 모듈 <b>' + applied.length + '</b>개</div>' +
+      applied.map((m, i) =>
+        '<div class="applied-item">' +
+        '<div class="ai-n">' + (i+1) + '</div>' +
+        '<div class="ai-nm">' + escapeHtml(m.name || m.id) + '</div>' +
+        '<div class="ai-src">' + escapeHtml(m.source || '') + '</div>' +
+        '<button onclick="removeOptional(\'' + m.id + '\')">제거</button></div>'
+      ).join('') + '</div>';
+  }
+
+  return '<section class="step-card" id="step-4">' +
+    stepHeader(4, '선택 모듈 — 사이트 성격별', hp, 'optional', applied.length + '개 적용') +
+    '<div class="step-body">' +
+    '<div class="hint">사이트 성격(통독/번역 등)에 따라 프리셋을 선택합니다. 파일1·파일2(통독), 파일3(번역) 참조.</div>' +
+    '<div class="preset-grid">' + cards + '</div>' +
+    appliedHtml + '</div></section>';
+}
+
+function renderStep5(hp){
+  const d = hp.deploy || {};
+  const targets = DEPLOY_TARGETS.map(t =>
+    '<button class="chip sq ' + (d.target===t.id?'a':'') + '" onclick="setField(\'deploy.target\',\'' + t.id + '\');renderAll()">' + t.label + '</button>'
+  ).join('');
+
+  return '<section class="step-card" id="step-5">' +
+    stepHeader(5, '배포', hp, 'deploy') +
+    '<div class="step-body">' +
+    '<div class="hint">GitHub Pages / EC2 / Vite 빌드 중 선택 → 빌드 명령 확인 → 배포 실행.</div>' +
+    '<div class="fld"><label>배포 대상</label><div class="chips">' + targets + '</div></div>' +
+    '<div class="fld"><label>빌드 명령</label>' +
+    '<input type="text" value="' + escapeAttr(d.buildCmd || 'npm run build') + '"' +
+    ' onblur="setField(\'deploy.buildCmd\', this.value)"></div>' +
+    '<div class="fld"><label>배포 명령 (선택)</label>' +
+    '<input type="text" value="' + escapeAttr(d.deployCmd) + '" placeholder="(미입력 시 자동 추론)"' +
+    ' onblur="setField(\'deploy.deployCmd\', this.value)"></div>' +
+    '<div style="display:flex;gap:6px;align-items:center;margin-top:6px">' +
+    '<button class="chip sq a" onclick="deployHomepage()">🚀 배포 실행</button>' +
+    (d.lastDeployed ? '<span style="font-size:9px;color:#94a3b8">마지막 배포: ' + d.lastDeployed + '</span>' : '') +
+    '</div>' +
+    '<div class="dp-log" id="deployLog">[배포 로그 대기 중]</div>' +
+    '</div></section>';
+}
+
+/* ═══ Right panel ═══ */
+function renderRight(){
+  const hp = getCurrent();
+  const box = document.getElementById('rpBody');
+  if (!hp) {
+    box.innerHTML = '<div class="rp-empty">홈페이지를 선택하면<br>메타 정보가 표시됩니다</div>';
+    updateActions();
+    return;
+  }
+
+  let progHtml = '';
+  STEPS.forEach(s => {
+    const done = isStepDone(hp, s.key);
+    progHtml += '<div class="rp-pr ' + (done?'done':'wait') + '" onclick="scrollToStep(' + s.n + ')">' +
+      '<div class="pr-ck">' + (done?'✓':s.n) + '</div>' +
+      '<div class="pr-nm">' + s.label + '</div></div>';
+  });
+
+  const siteChips = WEBSITES.map(w =>
+    '<button class="chip sq ' + (hp.linkedSite===w.id?'a':'') + '" onclick="setField(\'linkedSite\',\'' + w.id + '\');renderAll()">' + w.name + '</button>'
+  ).join('');
+
+  const statusChips = ['draft','published','archived'].map(s =>
+    '<button class="chip sq ' + (hp.status===s?'a':'') + '" onclick="setField(\'status\',\'' + s + '\');renderAll()">' + s + '</button>'
+  ).join('');
+
+  const site = WEBSITES.find(w => w.id === hp.linkedSite);
+  let dbItems = '<div class="rp-db-item" style="color:#94a3b8">사이트 미지정</div>';
+  if (site) {
+    dbItems = '<div class="rp-db-item">' + site.url + '</div>';
+  }
+
+  const notesFiles = (hp._notesFiles || []).map((f, i) =>
+    '<span class="note-file">📎 ' + escapeHtml(f.name) + '<button onclick="removeNoteFile(' + i + ')">×</button></span>'
+  ).join('');
+
+  box.innerHTML =
+    '<div class="rp-sec"><h4>📊 진행 현황</h4><div class="rp-prog">' + progHtml + '</div></div>' +
+    '<div class="rp-sec"><h4>🏷️ 메타 정보</h4>' +
+    '<div class="rp-fld"><label>이름</label>' +
+    '<input type="text" value="' + escapeAttr(hp.name) + '" onblur="setField(\'name\',this.value);renderList()"></div>' +
+    '<div class="rp-fld"><label>슬러그 (URL)</label>' +
+    '<input type="text" value="' + escapeAttr(hp.slug) + '" placeholder="my-homepage" onblur="setField(\'slug\',this.value)"></div>' +
+    '<div class="rp-fld"><label>연결 사이트</label><div class="chips">' + siteChips + '</div></div>' +
+    '<div class="rp-fld"><label>상태</label><div class="chips">' + statusChips + '</div></div>' +
+    '</div>' +
+    '<div class="rp-sec"><h4>📦 DB 연결</h4>' + dbItems + '</div>' +
+    '<div class="rp-sec"><h4>📝 비고</h4><div class="notes-area">' +
+    '<textarea rows="3" onblur="setField(\'_notes\',this.value)">' + escapeHtml(hp._notes || '') + '</textarea>' +
+    '<div class="notes-files">' + notesFiles +
+    '<button class="notes-add" onclick="addNoteFile()">📎 파일 추가</button></div>' +
+    '</div></div>';
+  updateActions();
+}
+
+function updateActions(){
+  const hp = getCurrent();
+  const save = document.getElementById('btnSave');
+  const dep = document.getElementById('btnDeploy');
+  save.disabled = !hp || !dirty;
+  dep.disabled = !hp;
+  save.textContent = dirty ? '💾 저장 *' : '💾 저장';
+}
+
+function updateDirtyInd(){
+  document.getElementById('dirtyInd').innerHTML = dirty ? '<span class="dirty-dot"></span>' : '';
+}
+
+/* ═══ Field setters ═══ */
+function setField(path, value){
+  const hp = getCurrent();
+  if (!hp) return;
+  const parts = path.split('.');
+  let obj = hp;
+  for (let i = 0; i < parts.length - 1; i++) {
+    obj[parts[i]] = obj[parts[i]] || {};
+    obj = obj[parts[i]];
+  }
+  obj[parts[parts.length - 1]] = value;
+  dirty = true;
+  renderStepsBar();
+  updateActions();
+  updateDirtyInd();
+}
+
+function toggleCommon(id){
+  let hp = getCurrent();
+  if (!hp) {
+    toast('먼저 홈페이지를 생성하거나 선택하세요', 'err');
+    return;
+  }
+  hp.commonModules = hp.commonModules || [];
+  const i = hp.commonModules.indexOf(id);
+  if (i >= 0) hp.commonModules.splice(i, 1);
+  else hp.commonModules.push(id);
+  dirty = true;
+  renderAll();
+}
+
+function quickToggle(id){
+  toggleCommon(id);
+}
+
+function setRoleFilter(r){
+  roleFilter = r;
+  renderEditArea();
+}
+
+function toggleApplyTpl(id){
+  const hp = getCurrent();
+  if (!hp) return;
+  hp.applyTemplateIds = hp.applyTemplateIds || [];
+  const i = hp.applyTemplateIds.indexOf(id);
+  if (i >= 0) hp.applyTemplateIds.splice(i, 1);
+  else hp.applyTemplateIds.push(id);
+  dirty = true;
+  renderAll();
+}
+
+function togglePreset(presetId){
+  const hp = getCurrent();
+  if (!hp) return;
+  hp.optionalModules = hp.optionalModules || [];
+  const idx = hp.optionalModules.findIndex(m => m.id === presetId);
+  if (idx >= 0) {
+    hp.optionalModules.splice(idx, 1);
+  } else {
+    const preset = Object.values(OPTIONAL_PRESETS).find(p => p.id === presetId);
+    if (preset) {
+      hp.optionalModules.push({
+        id: preset.id,
+        name: preset.name,
+        source: preset.source,
+        modules: preset.modules,
+      });
+    }
+  }
+  dirty = true;
+  renderAll();
+}
+
+function removeOptional(id){
+  const hp = getCurrent();
+  if (!hp) return;
+  hp.optionalModules = (hp.optionalModules || []).filter(m => m.id !== id);
+  dirty = true;
+  renderAll();
+}
+
+function addCustomModule(){
+  const name = prompt('커스텀 모듈 이름:');
+  if (!name) return;
+  const hp = getCurrent();
+  if (!hp) return;
+  hp.optionalModules = hp.optionalModules || [];
+  hp.optionalModules.push({
+    id: 'custom_' + Date.now(),
+    name: name,
+    source: '사용자 정의',
+    modules: [],
+  });
+  dirty = true;
+  renderAll();
+}
+
+function testLanding(){
+  const hp = getCurrent();
+  if (!hp || !hp.landing || !hp.landing.repoUrl) {
+    toast('레포 URL을 먼저 입력하세요', 'err');
+    return;
+  }
+  toast('연결 테스트 중...', 'ok');
+  setTimeout(() => {
+    hp.landing.lastSync = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    dirty = true;
+    renderAll();
+    toast('연결 성공 ✓', 'ok');
+  }, 700);
+}
+
+function addNoteFile(){
+  const name = prompt('파일명 입력 (실제 업로드는 후속 구현):');
+  if (!name) return;
+  const hp = getCurrent();
+  if (!hp) return;
+  hp._notesFiles = hp._notesFiles || [];
+  hp._notesFiles.push({ name: name, url: '' });
+  dirty = true;
+  renderRight();
+  updateActions();
+}
+
+function removeNoteFile(i){
+  const hp = getCurrent();
+  if (!hp) return;
+  hp._notesFiles = hp._notesFiles || [];
+  hp._notesFiles.splice(i, 1);
+  dirty = true;
+  renderRight();
+}
+
+/* ═══ Render all ═══ */
+function renderAll(){
+  renderStepsBar();
+  renderList();
+  renderEditArea();
+  renderRight();
+  updateDirtyInd();
+}
+
+/* ═══ Helpers ═══ */
+function escapeHtml(s){
+  if (s == null) return '';
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+function escapeAttr(s){
+  return escapeHtml(s).replace(/"/g, '&quot;');
+}
+
+let toastTimer = null;
+function toast(msg, type){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast v ' + (type || '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast ' + (type || ''); }, 2200);
+}
+
+window.addEventListener('beforeunload', function(e){
+  if (dirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+init();
+</script>
+</body>
+</html>
