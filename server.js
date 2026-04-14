@@ -109,6 +109,7 @@ app.post("/api/upload/presign", async (req, res) => {
 // --- 신청서 설정 API (외부 사이트 → work_studio) ---
 app.get("/api/form-config/:siteId/:formId", (req, res) => {
   const { siteId, formId } = req.params;
+  const phaseFilter = req.query.phase; // "part1" | "part2" | undefined (all)
   // Find template
   const templates = getAll("form_templates");
   const tpl = templates.find(r => {
@@ -117,18 +118,56 @@ app.get("/api/form-config/:siteId/:formId", (req, res) => {
   if (!tpl) return res.status(404).json({ error: "Form template not found" });
   const tplData = JSON.parse(tpl.data);
 
+  // 레거시 modules → phases 마이그레이션 (읽기 전용)
+  let phases = tplData.phases;
+  if (!phases || (!Array.isArray(phases.part1) && !Array.isArray(phases.part2))) {
+    phases = { part1: Array.isArray(tplData.modules) ? tplData.modules.slice() : [], part2: [] };
+  }
+
   // Load modules
   const modules = getAll("form_modules").map(r => ({ id: r.id, ...JSON.parse(r.data) }));
-
-  // Assemble form: resolve module references
-  const assembledSections = [];
-  for (const modId of (tplData.modules || [])) {
-    const mod = modules.find(m => m.moduleId === modId);
-    if (mod) assembledSections.push({ moduleId: mod.moduleId, name: mod.name, category: mod.category, fields: mod.fields });
+  function migrateMod(m) {
+    if (m.roleGroup && m.role) return m;
+    const cat = m.category || "common";
+    if (cat === "common") { m.roleGroup = "common"; m.role = "common"; }
+    else if (cat === "student") { m.roleGroup = "user"; m.role = "student"; }
+    else if (cat === "instructor") { m.roleGroup = "expert"; m.role = "instructor"; }
+    else if (cat === "expert") { m.roleGroup = "expert"; m.role = "specialist"; }
+    else if (cat === "internal") { m.roleGroup = "admin"; m.role = "admin"; }
+    else { m.roleGroup = "common"; m.role = "common"; }
+    return m;
   }
-  // Add any extra inline fields
-  if (tplData.extraFields && tplData.extraFields.length) {
-    assembledSections.push({ moduleId: "_extra", name: "추가 항목", category: "extra", fields: tplData.extraFields });
+
+  // Assemble form: resolve module references per phase
+  function assemblePhase(phaseKey) {
+    const out = [];
+    for (const modId of (phases[phaseKey] || [])) {
+      const mod = modules.find(m => m.moduleId === modId);
+      if (mod) {
+        migrateMod(mod);
+        out.push({
+          moduleId: mod.moduleId, name: mod.name,
+          roleGroup: mod.roleGroup, role: mod.role,
+          category: mod.category,
+          fields: mod.fields,
+          evaluable: mod.evaluable || false,
+          phase: phaseKey
+        });
+      }
+    }
+    return out;
+  }
+
+  let assembledSections;
+  if (phaseFilter === "part1" || phaseFilter === "part2") {
+    assembledSections = assemblePhase(phaseFilter);
+  } else {
+    assembledSections = [...assemblePhase("part1"), ...assemblePhase("part2")];
+  }
+
+  // Add any extra inline fields (part1 전용)
+  if ((!phaseFilter || phaseFilter === "part1") && tplData.extraFields && tplData.extraFields.length) {
+    assembledSections.push({ moduleId: "_extra", name: "추가 항목", roleGroup: "common", role: "common", category: "extra", fields: tplData.extraFields, phase: "part1" });
   }
 
   // Resolve site label (icon/color/name) from sites.json
@@ -142,12 +181,13 @@ app.get("/api/form-config/:siteId/:formId", (req, res) => {
     site: tplData._site,
     formId: tplData._formId,
     role: tplData._role,
-    phase: tplData._phase,                       // part1 | part2
+    phase: phaseFilter || null,
+    phases: { part1: phases.part1 || [], part2: phases.part2 || [] },
     displayName: tplData.displayName || tplData.name || tplData._formId,
     shortName:   tplData.shortName   || tplData.displayName || tplData._formId,
-    steps: tplData.steps || null,                // module id groupings per step
+    steps: tplData.steps || null,
     sections: assembledSections,
-    siteInfo,                                    // { id, name, icon, color, ... } or null
+    siteInfo,
     submitUrl: `/api/applications`,
     version: tplData.version || 1
   });

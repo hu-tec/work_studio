@@ -702,21 +702,28 @@ function renderDetail(r) {
       ${p2Keys.map(k => kv(k, p2[k])).join('')}
     </div>` : `<div class="detail-sec"><h4>📝 2부</h4><div style="font-size:10px;color:#94a3b8">미제출 — <a href="#" onclick="sendPart2Link(${r.id});return false">Part 2 링크 생성</a></div></div>`;
 
+  const currentGrade=fn.final_grade||'';
+  const gradeChip=(g)=>`<span class="chip chip-sq ${currentGrade===g?'sel grade-'+g:''}" style="padding:4px 14px;font-size:12px;font-weight:800;${currentGrade===g?'':'background:#f8fafc;color:#64748b'}" onclick="setGrade(${r.id},'${g}')">${g}</span>`;
+  const avgScore=(Number(fn.final_autoScore)||0)+(Number(fn.final_manualScore)||0);
+  const gradeBadge=currentGrade?`<span class="grade grade-${currentGrade}" style="font-size:18px;padding:6px 16px;margin-right:8px">${currentGrade}</span>`:'<span style="font-size:11px;color:#94a3b8;padding:4px 10px;border:1px dashed #cbd5e1;border-radius:4px;margin-right:8px">미평가</span>';
   const finalSection = `
     <div class="detail-sec">
-      <h4>🏆 최종 등급 (M-FINAL)</h4>
-      <div class="kv"><div class="k">자동 점수</div><input class="score-in" type="number" style="width:70px" value="${fn.final_autoScore||''}" onchange="saveNested(${r.id},'final','final_autoScore',Number(this.value))"></div>
-      <div class="kv"><div class="k">수동 점수</div><input class="score-in" type="number" style="width:70px" value="${fn.final_manualScore||''}" onchange="saveNested(${r.id},'final','final_manualScore',Number(this.value))"></div>
-      <div class="kv"><div class="k">등급</div>
-        <select class="grade-select" onchange="saveNested(${r.id},'final','final_grade',this.value);setStatus(${r.id},4);setPhase(${r.id},'final')">
-          <option value="">-</option>
-          <option ${fn.final_grade==='A'?'selected':''}>A</option>
-          <option ${fn.final_grade==='B'?'selected':''}>B</option>
-          <option ${fn.final_grade==='C'?'selected':''}>C</option>
-          <option ${fn.final_grade==='D'?'selected':''}>D</option>
-        </select>
+      <h4>🏆 최종 등급 (관리자 평가)</h4>
+      <div style="display:flex;align-items:center;margin-bottom:8px;padding:6px 8px;background:#f8fafc;border-radius:4px">
+        ${gradeBadge}
+        <span style="font-size:10px;color:#64748b">합계 ${avgScore}점</span>
       </div>
-      <div class="kv"><div class="k">사유</div><textarea class="edit-ta" onblur="saveNested(${r.id},'final','final_reason',this.value)">${esc(fn.final_reason||'')}</textarea></div>
+      <div class="kv"><div class="k">자동 점수</div><input class="score-in" type="number" style="width:70px" value="${fn.final_autoScore||''}" onchange="saveNested(${r.id},'final','final_autoScore',Number(this.value));rerender()"></div>
+      <div class="kv"><div class="k">수동 점수</div><input class="score-in" type="number" style="width:70px" value="${fn.final_manualScore||''}" onchange="saveNested(${r.id},'final','final_manualScore',Number(this.value));rerender()"></div>
+      <div class="kv"><div class="k">등급</div>
+        <div style="display:flex;gap:4px">
+          ${gradeChip('A')}${gradeChip('B')}${gradeChip('C')}${gradeChip('D')}
+          <span class="chip chip-sq" style="padding:4px 10px;font-size:11px;background:#fff;color:#94a3b8" onclick="setGrade(${r.id},'')">해제</span>
+        </div>
+      </div>
+      <div class="kv"><div class="k">평가 사유</div><textarea class="edit-ta" onblur="saveNested(${r.id},'final','final_reason',this.value)">${esc(fn.final_reason||'')}</textarea></div>
+      <div class="kv"><div class="k">평가자</div><input class="edit-ta" type="text" style="min-height:auto;padding:2px 4px" value="${esc(fn.final_evaluator||'')}" onchange="saveNested(${r.id},'final','final_evaluator',this.value)"></div>
+      <div class="kv"><div class="k">평가일</div><input class="edit-ta" type="datetime-local" style="min-height:auto;padding:2px 4px" value="${fn.final_evalAt||''}" onchange="saveNested(${r.id},'final','final_evalAt',this.value)"></div>
     </div>`;
 
   return `
@@ -941,6 +948,21 @@ async function setPhase(id, phase) {
   const row = state.rows.find(r => r.id === id);
   if (!row) return;
   row.d._phase = phase;
+  await fetch('/api/applications/' + id, {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(row.d)
+  });
+  rerender();
+}
+
+async function setGrade(id, grade) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  if (!row.d.final) row.d.final = {};
+  row.d.final.final_grade = grade || null;
+  row.d.final.final_evalAt = new Date().toISOString().slice(0,16);
+  if (grade) { row.d._status = 4; row.d._phase = 'final'; }
   await fetch('/api/applications/' + id, {
     method:'PUT',
     headers:{'Content-Type':'application/json'},
