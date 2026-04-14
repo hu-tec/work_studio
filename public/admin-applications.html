@@ -22,9 +22,13 @@
 
     /* Filters */
     .filters{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px;margin-bottom:10px}
-    .filter-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:3px 0;border-bottom:1px dashed #f1f5f9}
-    .filter-row:last-child{border-bottom:none}
-    .filter-row .lbl{font-size:10px;font-weight:700;color:#64748b;min-width:52px}
+    .filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 8px;margin-bottom:4px}
+    .filter-row{display:flex;flex-direction:column;gap:2px;padding:4px 6px;border:1px solid #f1f5f9;border-radius:4px;background:#fafbfc;min-width:0}
+    .filter-row.full{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 8px;background:#fff;border-color:#e3e5ed}
+    .filter-row .lbl{font-size:9px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.3px}
+    .filter-row .chips-wrap{display:flex;flex-wrap:wrap;gap:2px}
+    .expand-toggle{margin-left:auto;font-size:10px;font-weight:700;padding:3px 10px;border:1px solid #cbd5e1;background:#fff;border-radius:4px;cursor:pointer;color:#0088ff}
+    .expand-toggle:hover{background:#f0f4ff;border-color:#0088ff}
     .chip{padding:3px 9px;border:1px solid #d1d5db;border-radius:999px;font-size:10px;font-weight:600;color:#475569;background:#fff;user-select:none;white-space:nowrap}
     .chip:hover{border-color:#94a3b8}
     .chip.sel{background:#1a365d;color:#fff;border-color:#1a365d}
@@ -238,6 +242,8 @@ async function loadAll() {
   state.templates = (tpls || []).map(r => { try { return { id:r.id, ...JSON.parse(r.data||'{}') }; } catch { return {}; } });
   state.modules = (mods || []).map(r => { try { return { id:r.id, ...JSON.parse(r.data||'{}') }; } catch { return {}; } });
   state.sites = sitesDef.websites || [];
+  // 기본값: 모든 행 펼침 (사용자 요청 — 한 눈에 정보 노출)
+  state.expanded = new Set(state.rows.map(r => r.id));
 }
 
 // ============================================================
@@ -395,7 +401,7 @@ function renderFilters() {
 
   const usedForms = [...new Set(state.templates.map(t => t._formId).filter(Boolean))];
 
-  const row = (label, content) => `<div class="filter-row"><span class="lbl">${label}</span>${content}</div>`;
+  const row = (label, content) => `<div class="filter-row"><span class="lbl">${label}</span><div class="chips-wrap">${content}</div></div>`;
   const chipMulti = (axis, options, fmt) => options.map(o => {
     const sel = state.filter[axis].includes(o);
     return `<span class="chip${sel?' sel':''}" onclick="togMulti('${axis}','${o.replace(/'/g,"\\'")}')">${fmt ? fmt(o) : o}</span>`;
@@ -407,7 +413,9 @@ function renderFilters() {
     return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('${axis}',${js(v)})">${lb}</span>`;
   }).join('');
 
-  let html = '';
+  // 펼침 상태 계산
+  const allExpanded = state.rows.length > 0 && state.rows.every(r => state.expanded.has(r.id));
+  let html = `<div class="filter-grid">`;
 
   // 사이트 (멀티가 아니라 싱글 네모칩. 색깔 적용)
   const siteChips = allSites.map(sid => {
@@ -459,15 +467,19 @@ function renderFilters() {
   // 레이어
   html += row('레이어', chipMulti('layer', LAYERS));
 
-  // 검색 + 기간 + reset
-  html += `<div class="filter-row">
+  // 4단 그리드 종료
+  html += `</div>`;
+
+  // 검색 + 기간 + 펼치기 + reset (전체 폭)
+  html += `<div class="filter-row full">
     <span class="lbl">검색</span>
     <input class="srch" type="text" id="searchBox" placeholder="이름·전화·이메일" value="${state.filter.search||''}" oninput="state.filter.search=this.value;rerender()">
     <span class="lbl" style="margin-left:12px">기간</span>
     <input class="date" type="date" value="${state.filter.dateFrom}" onchange="state.filter.dateFrom=this.value;rerender()">
     ~
     <input class="date" type="date" value="${state.filter.dateTo}" onchange="state.filter.dateTo=this.value;rerender()">
-    <button class="reset" style="margin-left:auto" onclick="resetFilters()">전체 초기화</button>
+    <button class="expand-toggle" onclick="toggleExpandAll()">${allExpanded ? '▲ 전체 접기' : '▼ 전체 펼치기'}</button>
+    <button class="reset" onclick="resetFilters()">전체 초기화</button>
   </div>`;
 
   el.innerHTML = html;
@@ -821,6 +833,16 @@ function focusSite(sid) {
 function toggleExpand(id) {
   if (state.expanded.has(id)) state.expanded.delete(id);
   else state.expanded.add(id);
+  rerender();
+}
+
+function toggleExpandAll() {
+  const allExpanded = state.rows.length > 0 && state.rows.every(r => state.expanded.has(r.id));
+  if (allExpanded) {
+    state.expanded.clear();
+  } else {
+    state.expanded = new Set(state.rows.map(r => r.id));
+  }
   rerender();
 }
 

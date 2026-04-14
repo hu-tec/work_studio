@@ -5,6 +5,67 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { TABLES, getAll, getById, insert, update, remove } = require("./db");
 
+// ============================================================
+//  서버 시작 시 1회 마이그레이션 — 레거시 스키마 → 신규 스키마
+// ============================================================
+function migrateLegacySchema() {
+  let count = { tplMigrated: 0, modMigrated: 0 };
+  try {
+    // 1. form_templates: modules[] → phases:{part1:[], part2:[]}
+    const tplRows = getAll("form_templates");
+    for (const row of tplRows) {
+      let d;
+      try { d = JSON.parse(row.data); } catch { continue; }
+      const hasPhases = d.phases && (Array.isArray(d.phases.part1) || Array.isArray(d.phases.part2));
+      const hasLegacy = Array.isArray(d.modules);
+      if (!hasPhases && hasLegacy) {
+        d.phases = { part1: d.modules.slice(), part2: [] };
+        delete d.modules;
+        update("form_templates", row.id, d);
+        count.tplMigrated++;
+      } else if (hasPhases && hasLegacy && d.phases.part1.length === 0 && d.phases.part2.length === 0) {
+        d.phases = { part1: d.modules.slice(), part2: [] };
+        delete d.modules;
+        update("form_templates", row.id, d);
+        count.tplMigrated++;
+      }
+    }
+    // 2. form_modules: category → roleGroup/role 자동 채우기
+    const modRows = getAll("form_modules");
+    for (const row of modRows) {
+      let d;
+      try { d = JSON.parse(row.data); } catch { continue; }
+      if (d.roleGroup && d.role) continue;
+      const cat = d.category || "common";
+      let rg = "common", r = "common";
+      if (cat === "common") { rg = "common"; r = "common"; }
+      else if (cat === "student") { rg = "user"; r = "student"; }
+      else if (cat === "instructor") { rg = "expert"; r = "instructor"; }
+      else if (cat === "expert") { rg = "expert"; r = "specialist"; }
+      else if (cat === "internal") { rg = "admin"; r = "admin"; }
+      else if (cat === "specialty") {
+        const id = d.moduleId || "";
+        if (id.includes("teacher") || id.includes("instructor")) { rg = "expert"; r = "instructor"; }
+        else if (id.includes("translation") || id.includes("translator")) { rg = "expert"; r = "translator"; }
+        else if (id.includes("expert")) { rg = "expert"; r = "specialist"; }
+        else if (id.includes("course") || id.includes("student")) { rg = "user"; r = "student"; }
+        else if (id.includes("quote") || id.includes("client")) { rg = "user"; r = "client"; }
+        else { rg = "expert"; r = "specialist"; }
+      }
+      d.roleGroup = rg;
+      d.role = r;
+      update("form_modules", row.id, d);
+      count.modMigrated++;
+    }
+  } catch (e) {
+    console.error("[migrateLegacySchema] error:", e.message);
+  }
+  if (count.tplMigrated > 0 || count.modMigrated > 0) {
+    console.log(`[migrate] templates=${count.tplMigrated} modules=${count.modMigrated} 마이그레이션 완료`);
+  }
+}
+migrateLegacySchema();
+
 const S3_BUCKET = process.env.S3_BUCKET || "work-studio-uploads";
 const S3_REGION = process.env.S3_REGION || "ap-northeast-2";
 const s3 = new S3Client({ region: S3_REGION });
