@@ -273,9 +273,38 @@ function Chip({
   );
 }
 
+/* ── 빈 상태 (non-curriculum 모드) — 커리 규정은 재표시하지 않는다 ── */
+function RegulationEmpty({ mode }: { mode: ContentMode }) {
+  return (
+    <div className="space-y-1">
+      <div className="rounded border border-border bg-card px-1.5 py-1 flex items-center gap-1.5">
+        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[12px] font-semibold">{MODE_LABEL[mode]} 규정</span>
+        <span className="text-[9px] text-muted-foreground italic ml-auto">원본 규정 문서 미제공</span>
+      </div>
+      <div className="rounded border border-dashed border-amber-300 bg-amber-50 p-3 flex items-start gap-2">
+        <FileWarning className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+        <div className="flex-1 space-y-1">
+          <div className="text-[11px] font-semibold text-amber-900">
+            {MODE_LABEL[mode]} 규정 — 원본 문서 미제공
+          </div>
+          <div className="text-[10px] text-amber-800 leading-snug">
+            필터(등급/블록) · 검색 · 전체 펼치기 · 컴팩트 UI 셸은 준비되었습니다.
+            {MODE_LABEL[mode]} 고유 규정(고정/준고정/선택)이 제공되면 literal하게 입력됩니다.
+          </div>
+          <div className="text-[10px] text-amber-700 pt-1 border-t border-amber-200">
+            ⚠ 임의 생성 금지 — 커리 규정을 {MODE_LABEL[mode]}로 재표시하지 않습니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── 메인 ── */
 export function RegulationView({ mode = "curriculum" }: { mode?: ContentMode }) {
-  return <RegulationViewInternal mode={mode} />;
+  if (mode !== "curriculum") return <RegulationEmpty mode={mode} />;
+  return <RegulationViewInternal />;
 }
 
 // ═══ DB 저장 (localStorage 폐지) ═══
@@ -317,7 +346,7 @@ function buildSeedItems(): Omit<RegRow, "_id">[] {
   return out;
 }
 
-function RegulationViewInternal({ mode }: { mode: ContentMode }) {
+function RegulationViewInternal() {
   const [search, setSearch] = useState("");
   const [tiers, setTiers] = useState<Set<Tier>>(new Set(["fixed", "semi", "optional"]));
   const [blocks, setBlocks] = useState<Set<BlockId>>(
@@ -418,61 +447,86 @@ function RegulationViewInternal({ mode }: { mode: ContentMode }) {
     }
   }
 
-  // 블록 단위 diff 뮤테이션 — updater 결과를 API에 반영
+  // 블록 단위 diff 뮤테이션 — _order 보존, no 자동 재번호, tier 이동 정확 처리
   const mutateBlock = (blockId: BlockId) => async (updater: (b: RegulationBlock) => RegulationBlock) => {
     const before = blockId === "common" ? commonBlock : subjectBlocks[blockId];
     const after = updater(before);
     const newRows: RegRow[] = [...rows];
     const tasks: Promise<unknown>[] = [];
+
+    // 모든 tier의 모든 before 아이템 — id별 lookup
+    const beforeById = new Map<number, { tier: Tier; item: RegulationItem & { _id?: number } }>();
+    (["fixed", "semi", "optional"] as Tier[]).forEach((tier) => {
+      (before[tier] as (RegulationItem & { _id?: number })[]).forEach((it) => {
+        if (it._id != null) beforeById.set(it._id, { tier, item: it });
+      });
+    });
+
+    // 새 상태에서 살아있는 id
+    const survivingIds = new Set<number>();
+    (["fixed", "semi", "optional"] as Tier[]).forEach((tier) => {
+      (after[tier] as (RegulationItem & { _id?: number })[]).forEach((it) => {
+        if (it._id != null) survivingIds.add(it._id);
+      });
+    });
+
+    // 1. 삭제
+    for (const [id] of beforeById) {
+      if (!survivingIds.has(id)) {
+        tasks.push(apiDelete(id));
+        const i = newRows.findIndex((r) => r._id === id);
+        if (i >= 0) newRows.splice(i, 1);
+      }
+    }
+
+    // 2. tier 별 처리: 수정/이동/추가 + 자동 재번호 + _order 부여
     for (const tier of ["fixed", "semi", "optional"] as Tier[]) {
-      const oldItems = before[tier] as (RegulationItem & { _id?: number })[];
       const newItems = after[tier] as (RegulationItem & { _id?: number })[];
-      const newIds = new Set(newItems.map((x) => x._id).filter((x): x is number => x != null));
-      // 삭제
-      for (const it of oldItems) {
-        if (it._id != null && !newIds.has(it._id)) {
-          tasks.push(apiDelete(it._id));
-          const i = newRows.findIndex((r) => r._id === it._id);
-          if (i >= 0) newRows.splice(i, 1);
-        }
-      }
-      // 수정
-      for (const it of newItems) {
-        if (it._id != null) {
-          const old = oldItems.find((o) => o._id === it._id);
-          if (old && (old.text !== it.text || old.no !== it.no)) {
-            const p: Omit<RegRow, "_id"> = { _block: blockId, _tier: tier, no: it.no, text: it.text };
-            tasks.push(apiUpdate(it._id, p));
-            const i = newRows.findIndex((r) => r._id === it._id);
-            if (i >= 0) newRows[i] = { _id: it._id, ...p };
-          }
-        }
-      }
-      // tier 이동 감지: before에서 다른 tier에 있던 item이 newItems에 있으면 PUT
-      for (const it of newItems) {
-        if (it._id != null) {
-          const inSameTier = oldItems.find((o) => o._id === it._id);
-          if (!inSameTier) {
-            // 다른 tier에서 이동 온 것
-            const p: Omit<RegRow, "_id"> = { _block: blockId, _tier: tier, no: it.no, text: it.text };
-            tasks.push(apiUpdate(it._id, p));
-            const i = newRows.findIndex((r) => r._id === it._id);
-            if (i >= 0) newRows[i] = { _id: it._id, ...p };
-          }
-        }
-      }
-      // 추가
-      for (const it of newItems) {
+      // 기존 _order의 max를 이 블록 안에서 찾기
+      const blockRows = newRows.filter((r) => r._block === blockId);
+      let maxOrder = blockRows.reduce((m, r) => Math.max(m, r._order ?? r._id ?? 0), 0);
+
+      newItems.forEach((it, idx) => {
+        const desiredNo = idx + 1; // 1-based 자동 재번호
         if (it._id == null) {
-          const p: Omit<RegRow, "_id"> = { _block: blockId, _tier: tier, no: it.no, text: it.text };
+          // 추가
+          maxOrder += 1;
+          const p: Omit<RegRow, "_id"> = {
+            _block: blockId,
+            _tier: tier,
+            no: desiredNo,
+            text: it.text,
+            _order: maxOrder,
+          };
           tasks.push(
             apiCreate(p).then((created) => {
               if (created) newRows.push(created);
             })
           );
+        } else {
+          const found = beforeById.get(it._id);
+          const existingRow = newRows.find((r) => r._id === it._id);
+          const order = existingRow?._order ?? it._id;
+          // 변경 사항: text 변화, no 자동 재번호 변화, tier 변화
+          const tierChanged = !found || found.tier !== tier;
+          const textChanged = found && found.item.text !== it.text;
+          const noChanged = (existingRow?.no ?? -1) !== desiredNo;
+          if (tierChanged || textChanged || noChanged) {
+            const p: Omit<RegRow, "_id"> = {
+              _block: blockId,
+              _tier: tier,
+              no: desiredNo,
+              text: it.text,
+              _order: order,
+            };
+            tasks.push(apiUpdate(it._id, p));
+            const i = newRows.findIndex((r) => r._id === it._id);
+            if (i >= 0) newRows[i] = { _id: it._id, ...p };
+          }
         }
-      }
+      });
     }
+
     await Promise.all(tasks);
     setRows([...newRows]);
   };
@@ -515,15 +569,23 @@ function RegulationViewInternal({ mode }: { mode: ContentMode }) {
 
   return (
     <div className="space-y-1">
+      {/* ── 로딩/에러 배너 ── */}
+      {!loaded && (
+        <div className="rounded border border-blue-200 bg-blue-50 px-2 py-1 text-[11px] text-blue-700 flex items-center gap-1">
+          <span className="h-3 w-3 border-2 border-blue-300 border-t-blue-700 rounded-full animate-spin inline-block" />
+          DB에서 규정 불러오는 중...
+        </div>
+      )}
+      {loadError && (
+        <div className="rounded border border-red-300 bg-red-50 px-2 py-1 text-[11px] text-red-700 flex items-center gap-1">
+          <AlertTriangle className="h-3 w-3" />
+          API 오류: {loadError} — 네트워크/서버 확인 필요
+        </div>
+      )}
       {/* ── 헤더 1줄: 타이틀 + 검색 + 필터 + 전체펼치기 + 카운트 ── */}
       <div className="rounded border border-border bg-card px-1.5 py-1 flex flex-wrap items-center gap-1">
         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-        <span className="text-[12px] font-semibold">{MODE_LABEL[mode]} 규정 (마스터)</span>
-        {mode !== "curriculum" && (
-          <span className="rounded-md bg-indigo-100 px-1 py-0 text-[9px] font-semibold text-indigo-700">
-            {MODE_LABEL[mode]} 모드 · 공통 규정 프레임
-          </span>
-        )}
+        <span className="text-[12px] font-semibold">커리 규정</span>
 
         {/* 검색 */}
         <div className="relative flex-1 min-w-[120px] max-w-[200px]">

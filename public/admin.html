@@ -1187,9 +1187,10 @@ let ftSite=null,ftFormId=null,ftData=null,ftTemplates=[],ftModules=[],ftSubTab='
 function ftSetSubTab(t){ftSubTab=t;rForms()}
 function ftSetPhase(p){ftPhase=p;rForms()}
 
-// 레거시 category → roleGroup/role 변환
+// 레거시 category → roleGroup/role 변환 (메모리 상 마이그레이션)
 function migrateModule(m){
 if(m.roleGroup&&m.role)return m;
+m._legacyMigrated=true;
 const cat=m.category||"common";
 if(cat==="common"){m.roleGroup="common";m.role="common"}
 else if(cat==="student"){m.roleGroup="user";m.role="student"}
@@ -1206,11 +1207,20 @@ else{m.roleGroup="expert";m.role="specialist"}
 }else{m.roleGroup="common";m.role="common"}
 return m;
 }
-// 레거시 template.modules → phases 변환
+// 레거시 template.modules → phases 변환 (메모리 상). _legacyMigrated 플래그로 영속화 필요 표시
 function migrateTemplate(t){
-if(t.phases&&(Array.isArray(t.phases.part1)||Array.isArray(t.phases.part2)))return t;
+if(t.phases&&(Array.isArray(t.phases.part1)||Array.isArray(t.phases.part2))){
+// 이미 phases 구조면 추가 검증: part1 오직 legacy _phase='part1'이고 modules도 남아있다면 병합
+if(Array.isArray(t.modules)&&t.modules.length&&t.phases.part1.length===0&&t.phases.part2.length===0){
+t.phases={part1:t.modules.slice(),part2:[]};
+delete t.modules;
+t._legacyMigrated=true;
+}
+return t;
+}
 t.phases={part1:Array.isArray(t.modules)?t.modules.slice():[],part2:[]};
 delete t.modules;
+t._legacyMigrated=true;
 return t;
 }
 
@@ -1262,21 +1272,35 @@ await fetch(`/api/form_templates/${existing.id}`,{method:"PUT",headers:{"Content
 dirty=true;
 }
 }
-// 모든 템플릿(기본 + 사용자 생성)의 moduleId 레거시 참조 치환
+// 모든 템플릿(기본 + 사용자 생성)의 moduleId 레거시 참조 치환 + 레거시 modules→phases 영속화
 for(const t of ftTemplates){
-if(!t.phases){t.phases={part1:[],part2:[]};dirty=true}
+if(!t.phases){t.phases={part1:[],part2:[]};t._legacyMigrated=true}
 const r1=rewriteIds(t.phases.part1);
 const r2=rewriteIds(t.phases.part2);
-if(r1.changed||r2.changed){
-t.phases.part1=r1.out;
-t.phases.part2=r2.out;
-const{id,..._rest}=t;
-const body={_site:t._site,_formId:t._formId,name:t.name,_rev:t._rev||1,phases:t.phases,extraFields:t.extraFields||[]};
-await fetch(`/api/form_templates/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+if(r1.changed||r2.changed){t.phases.part1=r1.out;t.phases.part2=r2.out;t._legacyMigrated=true}
+if(t._legacyMigrated){
+// 모든 기존 키 보존하며 phases로 영속화. modules는 제거.
+const{id,_legacyMigrated,...rest}=t;
+delete rest.modules;
+rest.phases=t.phases;
+await fetch(`/api/form_templates/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(rest)});
 dirty=true;
 }
 }
-if(dirty){tRows=await f("/api/form_templates");ftTemplates=tRows.map(r=>migrateTemplate({id:r.id,...JSON.parse(r.data)}))}
+// 레거시 모듈도 동일하게 — migrateModule이 _legacyMigrated 플래그 세팅
+for(const m of ftModules){
+if(m._legacyMigrated){
+const{id,_legacyMigrated,...rest}=m;
+await fetch(`/api/form_modules/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(rest)});
+dirty=true;
+}
+}
+if(dirty){
+tRows=await f("/api/form_templates");
+ftTemplates=tRows.map(r=>migrateTemplate({id:r.id,...JSON.parse(r.data)}));
+mRows=await f("/api/form_modules");
+ftModules=mRows.map(r=>migrateModule({id:r.id,...JSON.parse(r.data)}));
+}
 }
 
 function getModule(modId){return ftModules.find(m=>m.moduleId===modId)}

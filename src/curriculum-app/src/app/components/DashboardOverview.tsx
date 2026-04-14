@@ -800,6 +800,21 @@ function DashboardMain({ mode, savedList, onNavigate }: {
 
       {/* A-3: 저장 목록으로 이동됨 → 저장 목록 탭 참조 */}
 
+      {/* 커리큘럼 마스터 섹션(ZONE B/C/D) — 커리큘럼 모드에서만 렌더
+          (분류체계·급수체계는 3모드 공통이지만 키워드 풀·커리 단원은 커리 전용이라
+           전체를 커리에만 노출하고, 문제/교재 모드에는 ZONE A 숫자표 + 상단 감사표만 표시) */}
+      {mode !== "curriculum" && (
+        <div className="rounded-lg border border-dashed border-indigo-300 bg-indigo-50 p-2 flex items-start gap-2">
+          <Layers className="h-3.5 w-3.5 text-indigo-700 shrink-0 mt-0.5" />
+          <div className="text-[0.68rem] text-indigo-900 leading-snug">
+            <b>마스터 데이터 총괄 · 분류체계/급수/키워드/단원 상세</b>는 커리큘럼 전용 섹션이라 {MODE_LABEL[mode]} 모드에서는 숨김.
+            {MODE_LABEL[mode]} 원본이 제공되면 {MODE_LABEL[mode]} 전용 마스터 섹션이 이 자리에 표시됩니다.
+          </div>
+        </div>
+      )}
+
+      {mode === "curriculum" && <>
+
       {/* ════════════════════════════════════════
           ZONE B · 마스터 데이터 총괄 (2단 컬럼)
          ════════════════════════════════════════ */}
@@ -1297,6 +1312,7 @@ function DashboardMain({ mode, savedList, onNavigate }: {
           </tbody>
         </table>
       </Section>
+      </>}
     </div>
   );
 }

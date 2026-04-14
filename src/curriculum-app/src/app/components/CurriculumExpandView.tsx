@@ -9,7 +9,7 @@ import {
 } from "./curriculum-data";
 import type { CurriculumGroup } from "./curriculum-data";
 import {
-  Hash, BookText, Wrench, Award, Users, ChevronRight, Layers, Filter,
+  Hash, BookText, Wrench, Award, Users, ChevronRight, Layers, Filter, FileWarning,
 } from "lucide-react";
 import { MODE_LABEL, type ContentMode } from "./mode";
 
@@ -198,12 +198,41 @@ function CombinationCard({ field, mid, level, showCommon, showFieldKw, showBasic
   );
 }
 
-/* ── 메인 ── */
-export function CurriculumExpandView({ mode = "curriculum" }: { mode?: ContentMode }) {
-  return <CurriculumExpandViewInternal mode={mode} />;
+/* ── 빈 상태 (non-curriculum 모드) — 커리 마스터는 재표시하지 않는다 ── */
+function ExpandEmpty({ mode }: { mode: ContentMode }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5">
+        <Layers className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[12px] font-semibold">전체 {MODE_LABEL[mode]} 펼치기</span>
+      </div>
+      <div className="rounded border border-dashed border-amber-300 bg-amber-50 p-3 flex items-start gap-2">
+        <FileWarning className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+        <div className="flex-1 space-y-1">
+          <div className="text-[11px] font-semibold text-amber-900">
+            {MODE_LABEL[mode]} 전체 펼치기 — 원본 데이터 미제공
+          </div>
+          <div className="text-[10px] text-amber-800 leading-snug">
+            5탭 셸 · 필터 · 검색 · 저장 · 대시보드 숫자표는 적용되었습니다.
+            {MODE_LABEL[mode]} 원본 콘텐츠(단원·키워드·규정)는 임의 생성 금지 원칙상 제공되기 전까지 빈 상태로 유지됩니다.
+          </div>
+          <div className="text-[10px] text-amber-700 pt-1 border-t border-amber-200">
+            ⚠ 커리큘럼 마스터 데이터(기본단·실습단·키워드 풀)는 {MODE_LABEL[mode]}와 다릅니다 — 이 탭에 재표시하지 않습니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function CurriculumExpandViewInternal({ mode }: { mode: ContentMode }) {
+/* ── 메인 ── */
+export function CurriculumExpandView({ mode = "curriculum" }: { mode?: ContentMode }) {
+  if (mode !== "curriculum") return <ExpandEmpty mode={mode} />;
+  return <CurriculumExpandViewInternal />;
+}
+
+function CurriculumExpandViewInternal() {
+  const mode: ContentMode = "curriculum";
   const [selectedFields, setSelectedFields] = useState<Set<string>>(new Set(FIELD_OPTIONS));
   const [selectedMids, setSelectedMids] = useState<Set<string>>(new Set(MID_OPTIONS));
   const [showCommon, setShowCommon] = useState(true);
@@ -224,13 +253,8 @@ function CurriculumExpandViewInternal({ mode }: { mode: ContentMode }) {
       {/* 헤더 */}
       <div className="flex items-center gap-2">
         <Layers className="h-4 w-4 text-primary" />
-        <span className="text-[0.85rem] font-semibold">전체 {MODE_LABEL[mode]} 펼치기 (마스터 프레임)</span>
+        <span className="text-[0.85rem] font-semibold">전체 {MODE_LABEL[mode]} 펼치기</span>
         <span className="text-[0.7rem] text-muted-foreground">— 모든 분야 × 급수 조합별 키워드·단원 일람</span>
-        {mode !== "curriculum" && (
-          <span className="ml-auto rounded-md bg-indigo-100 px-2 py-0.5 text-[0.64rem] font-semibold text-indigo-700">
-            {MODE_LABEL[mode]} 모드 · 마스터 분류/급수/키워드 공유
-          </span>
-        )}
       </div>
 
       {/* 필터 바 — 한 줄 */}
