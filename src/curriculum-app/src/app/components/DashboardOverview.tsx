@@ -24,8 +24,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { MODE_LABEL, MODE_SHORT, type ContentMode } from "./mode";
-import { ANSWER_BANK, ANSWER_BANK_SUMMARY, type QualityGrade, type Difficulty } from "./question-data";
-import { ALL_TEXTBOOKS } from "./textbook-data";
+// NOTE: question-data / textbook-data / exam-question-data 는 eager import 금지.
+// lazy chunk split 유지를 위해 useEffect 내부에서 dynamic import 로 로드한다.
+// (T1 브리핑: "view-only 데이터 wrapper는 eager import 하면 lazy split 무력화")
 
 const API_BASE = "https://bmidcy9z17.execute-api.ap-northeast-2.amazonaws.com";
 import {
@@ -266,23 +267,24 @@ export function DashboardOverview({ mode = "curriculum", savedList, onNavigate }
   return <DashboardMain mode={mode} savedList={savedList} onNavigate={onNavigate} />;
 }
 
-// ANSWER_BANK 카테고리 → CATEGORY_TREE 대분류 매핑
+// ─── 시드 매핑 상수 (데이터 wrapper는 import 안 함 — 키 문자열만 사용) ───
+// ANSWER_BANK + STRUCTURED 카테고리 → CATEGORY_TREE 대분류
 const Q_CAT_TO_LARGE: Record<string, string> = {
   "문서": "문서",
   "개발": "IT/개발",
   "통역": "번역",
   "창의적 활동": "창의적활동",
+  "창의적활동": "창의적활동",
   "영상": "영상/SNS",
+  "영상/SNS": "영상/SNS",
 };
-
-// 교재 subject → 분야 매핑
+// 교재 subject → 분야
 const TB_SUBJECT_TO_FIELD: Record<string, string> = {
   "prompt": "프롬프트",
   "ethics": "AI 윤리",
   "translation": "번역",
 };
-
-// 가연 엑셀 교재 이름 → 급수 매핑 (textbook.json promptMeta/targets 기준)
+// 가연 엑셀 교재 이름 → 급수 (10권 전수 매핑)
 const TB_NAME_TO_LEVEL: Record<string, { mid: string; level: string }> = {
   "프롬프트 활용 교재(초등)": { mid: "교육", level: "1급" },
   "프롬프트 활용 교재(중등)": { mid: "교육", level: "3급" },
@@ -295,39 +297,6 @@ const TB_NAME_TO_LEVEL: Record<string, { mid: string; level: string }> = {
   "번역 교재 (2차)": { mid: "일반", level: "2급" },
   "번역 교재 (3차)": { mid: "일반", level: "3급" },
 };
-function guessLevelFromName(name: string): { mid: string; level: string } | null {
-  return TB_NAME_TO_LEVEL[name] || null;
-}
-
-// 시드 데이터 → 가상 SavedCurriculum 변환 (모드별)
-function buildSeedEntries(mode: ContentMode): SavedCurriculum[] {
-  if (mode === "questions") {
-    return ANSWER_BANK.map((a) => ({
-      id: `__seed_q_${a.id}`,
-      created_at: "",
-      category: { large: Q_CAT_TO_LARGE[a.category] || "", medium: a.subcategory || "", small: "" },
-      instructor_grade: { field: "", mid: "", level: "" },
-      targets: [],
-      keywords: { common: [], prompt: [], specialty: [], ethics: [] },
-      titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
-    }));
-  }
-  if (mode === "textbooks") {
-    return ALL_TEXTBOOKS.map((b, i) => {
-      const lvl = guessLevelFromName(b.name);
-      return {
-        id: `__seed_tb_${i}`,
-        created_at: "",
-        category: { large: "", medium: "", small: "" },
-        instructor_grade: { field: TB_SUBJECT_TO_FIELD[b.subject] || "", mid: lvl?.mid || "", level: lvl?.level || "" },
-        targets: [],
-        keywords: { common: [], prompt: [], specialty: [], ethics: [] },
-        titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
-      };
-    });
-  }
-  return [];
-}
 
 function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
   mode: ContentMode;
@@ -336,8 +305,118 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
 }) {
   const [hideZero, setHideZero] = useState(false);
   const [includeSeed, setIncludeSeed] = useState(true);
-  // 시드 데이터 합산 (모드별)
-  const seedEntries = includeSeed ? buildSeedEntries(mode) : [];
+  const [seedEntries, setSeedEntries] = useState<SavedCurriculum[]>([]);
+  const [gradeCounts, setGradeCounts] = useState<Record<string, number>>({ A: 0, B: 0, C: 0, D: 0 });
+  const [gradeTotal, setGradeTotal] = useState(0);
+  const [seedBreakdown, setSeedBreakdown] = useState<{ label: string; count: number }[]>([]);
+  const [dbCount, setDbCount] = useState<number | null>(null);
+
+  // ── DB 실제 카운트 (레거시 /api/:table) ──
+  useEffect(() => {
+    const table = mode === "questions" ? "questions" : mode === "textbooks" ? "textbooks" : "curriculum";
+    fetch(`${API_BASE}/api/${table}`)
+      .then((r) => r.json())
+      .then((arr) => setDbCount(Array.isArray(arr) ? arr.length : 0))
+      .catch(() => setDbCount(null));
+  }, [mode]);
+
+  // ── 시드 데이터 dynamic import (lazy chunk 유지) ──
+  useEffect(() => {
+    if (!includeSeed) {
+      setSeedEntries([]);
+      setGradeCounts({ A: 0, B: 0, C: 0, D: 0 });
+      setGradeTotal(0);
+      setSeedBreakdown([]);
+      return;
+    }
+    let cancelled = false;
+    const entries: SavedCurriculum[] = [];
+    const breakdown: { label: string; count: number }[] = [];
+
+    if (mode === "questions") {
+      Promise.all([
+        import("./question-data"),
+        import("./exam-question-data"),
+      ]).then(([qMod, eqMod]) => {
+        if (cancelled) return;
+        // 1. ANSWER_BANK 감사 샘플 (13)
+        qMod.ANSWER_BANK.forEach((a) => {
+          entries.push({
+            id: `__seed_ab_${a.id}`,
+            created_at: "",
+            category: { large: Q_CAT_TO_LARGE[a.category] || "", medium: a.subcategory || "", small: "" },
+            instructor_grade: { field: "", mid: "", level: "" },
+            targets: [],
+            keywords: { common: [], prompt: [], specialty: [], ethics: [] },
+            titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
+          });
+        });
+        breakdown.push({ label: "ANSWER_BANK 감사", count: qMod.ANSWER_BANK.length });
+        // 2. STRUCTURED_QUESTIONS (31) — 1~4차 프롬 차수별
+        eqMod.STRUCTURED_QUESTIONS.forEach((q) => {
+          entries.push({
+            id: `__seed_sq_${q.seq}`,
+            created_at: "",
+            category: { large: Q_CAT_TO_LARGE[q.category] || q.category || "", medium: "", small: "" },
+            instructor_grade: { field: "", mid: "", level: "" },
+            targets: [],
+            keywords: { common: [], prompt: [], specialty: [], ethics: [] },
+            titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
+          });
+        });
+        breakdown.push({ label: "구조화(1~4차)", count: eqMod.STRUCTURED_QUESTIONS.length });
+        // 3. CATEGORY_BANK (50) — 난이도(대/중/소) 라벨
+        eqMod.CATEGORY_BANK.forEach((q) => {
+          entries.push({
+            id: `__seed_cb_${q.seq}`,
+            created_at: "",
+            category: { large: "", medium: "", small: "" },
+            instructor_grade: { field: "", mid: "", level: "" },
+            targets: [],
+            keywords: { common: [], prompt: [], specialty: [], ethics: [] },
+            titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
+          });
+        });
+        breakdown.push({ label: "분류뱅크(대/중/소)", count: eqMod.CATEGORY_BANK.length });
+        setSeedEntries(entries);
+        setGradeCounts(qMod.ANSWER_BANK_SUMMARY.byGrade as unknown as Record<string, number>);
+        setGradeTotal(qMod.ANSWER_BANK.length);
+        setSeedBreakdown(breakdown);
+      });
+    } else if (mode === "textbooks") {
+      import("./textbook-data").then((tbMod) => {
+        if (cancelled) return;
+        tbMod.ALL_TEXTBOOKS.forEach((b, i) => {
+          const lvl = TB_NAME_TO_LEVEL[b.name] || null;
+          entries.push({
+            id: `__seed_tb_${i}`,
+            created_at: "",
+            category: { large: "", medium: "", small: "" },
+            instructor_grade: { field: TB_SUBJECT_TO_FIELD[b.subject] || "", mid: lvl?.mid || "", level: lvl?.level || "" },
+            targets: [],
+            keywords: { common: [], prompt: [], specialty: [], ethics: [] },
+            titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
+          });
+        });
+        const totalUnits = tbMod.ALL_TEXTBOOKS.reduce((s, b) => s + b.units.length, 0);
+        breakdown.push({ label: "교재 권수", count: tbMod.ALL_TEXTBOOKS.length });
+        breakdown.push({ label: "총 단원", count: totalUnits });
+        setSeedEntries(entries);
+        setGradeCounts({ A: 0, B: 0, C: 0, D: 0 });
+        setGradeTotal(0);
+        setSeedBreakdown(breakdown);
+      });
+    } else {
+      setSeedEntries([]);
+      setGradeCounts({ A: 0, B: 0, C: 0, D: 0 });
+      setGradeTotal(0);
+      setSeedBreakdown([]);
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [mode, includeSeed]);
+
   const savedList = [...rawSavedList, ...seedEntries];
   const seedCount = seedEntries.length;
   // ── 마스터 데이터 통계 ──
@@ -456,27 +535,35 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
 
   return (
     <div className="w-full space-y-3">
-      {/* 모드 헤더 */}
-      <div className="flex items-center gap-2">
+      {/* 모드 헤더 — DB + 시드 + 사용자 저장 카운트 표시 */}
+      <div className="flex items-center gap-2 flex-wrap">
         <BarChart3 className="h-4 w-4 text-primary" />
         <span className="text-[0.9rem] font-semibold">{MODE_LABEL[mode]} 데이터 현황</span>
-        {mode !== "curriculum" && (
-          <span className="rounded-md bg-indigo-100 px-2 py-0.5 text-[0.66rem] font-semibold text-indigo-700">
-            {MODE_LABEL[mode]} 모드 · 모범 셸 공유
+        <button
+          onClick={() => setIncludeSeed(!includeSeed)}
+          className={`rounded-md border px-1.5 py-0.5 text-[0.62rem] font-medium ${includeSeed ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-border text-muted-foreground hover:bg-muted"}`}
+          title="가연 시드 포함/제외"
+        >
+          시드 {includeSeed ? "포함" : "제외"}
+        </button>
+        {/* 카운트 뱃지들 */}
+        <span className="inline-flex items-center gap-1 rounded bg-blue-50 border border-blue-200 px-1.5 py-0 text-[0.62rem] text-blue-700">
+          DB <b>{dbCount === null ? "…" : dbCount}</b>건
+        </span>
+        <span className="inline-flex items-center gap-1 rounded bg-emerald-50 border border-emerald-200 px-1.5 py-0 text-[0.62rem] text-emerald-700">
+          시드 <b>{seedCount}</b>건
+        </span>
+        <span className="inline-flex items-center gap-1 rounded bg-amber-50 border border-amber-200 px-1.5 py-0 text-[0.62rem] text-amber-700">
+          사용자 <b>{rawSavedList.length}</b>건
+        </span>
+        <span className="inline-flex items-center gap-1 rounded bg-indigo-50 border border-indigo-200 px-1.5 py-0 text-[0.62rem] text-indigo-700">
+          매트릭스 합계 <b>{savedList.length}</b>건
+        </span>
+        {seedBreakdown.length > 0 && (
+          <span className="text-[0.58rem] text-muted-foreground">
+            ({seedBreakdown.map((b) => `${b.label} ${b.count}`).join(" · ")})
           </span>
         )}
-        {seedCount > 0 && (
-          <button
-            onClick={() => setIncludeSeed(!includeSeed)}
-            className={`rounded-md border px-1.5 py-0.5 text-[0.62rem] font-medium ${includeSeed ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-border text-muted-foreground hover:bg-muted"}`}
-            title={`가연 시드 ${seedCount}건 포함/제외 토글`}
-          >
-            시드 {includeSeed ? "포함" : "제외"} ({seedCount})
-          </button>
-        )}
-        <span className="ml-auto text-[0.62rem] text-muted-foreground">
-          사용자 저장 {rawSavedList.length}건 {seedCount > 0 && `+ 시드 ${includeSeed ? seedCount : 0}건`} = 매트릭스 합계 {savedList.length}건
-        </span>
       </div>
 
       {/* ════════════════════════════════════════
@@ -881,8 +968,8 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
           <div className="p-2.5">
             <div className="space-y-1.5">
               {(["A", "B", "C", "D"] as const).map((g) => {
-                const cnt = mode === "questions" ? ANSWER_BANK_SUMMARY.byGrade[g] : 0;
-                const max = mode === "questions" ? ANSWER_BANK.length : 1;
+                const cnt = gradeCounts[g] || 0;
+                const max = gradeTotal > 0 ? gradeTotal : 1;
                 const label = { A: "완비", B: "보완", C: "결함", D: "런타임" }[g];
                 const color = { A: "bg-emerald-500", B: "bg-amber-500", C: "bg-red-500", D: "bg-sky-500" }[g];
                 return (
@@ -897,7 +984,9 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
                 );
               })}
               <div className="pt-1 mt-1 border-t border-border/50 text-[0.58rem] text-muted-foreground">
-                {mode === "questions" ? `ANSWER_BANK 감사 샘플 ${ANSWER_BANK.length}건 · DB 전체는 /api/questions` : "문제은행 모드에서만 집계"}
+                {mode === "questions"
+                  ? `ANSWER_BANK 감사 샘플 ${gradeTotal}건 · DB 전체 ${dbCount ?? "…"}건`
+                  : "문제은행 모드에서만 집계"}
               </div>
             </div>
           </div>
