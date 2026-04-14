@@ -20,9 +20,11 @@ import {
   Download,
   Trash2,
   File,
-  FileWarning,
+  ShieldCheck,
+  AlertTriangle,
 } from "lucide-react";
-import { MODE_LABEL, type ContentMode } from "./mode";
+import { MODE_LABEL, MODE_SHORT, type ContentMode } from "./mode";
+import { ANSWER_BANK, ANSWER_BANK_SUMMARY, type QualityGrade, type Difficulty } from "./question-data";
 
 const API_BASE = "https://bmidcy9z17.execute-api.ap-northeast-2.amazonaws.com";
 import {
@@ -261,36 +263,11 @@ export function DashboardOverview({ mode = "curriculum", savedList, onNavigate }
   savedList: SavedCurriculum[];
   onNavigate?: (filter: { catLarge?: string[]; field?: string[]; mid?: string[] }) => void;
 }) {
-  if (mode !== "curriculum") return <DashboardEmpty mode={mode} savedCount={savedList.length} />;
-  return <DashboardCurriculum savedList={savedList} onNavigate={onNavigate} />;
+  return <DashboardMain mode={mode} savedList={savedList} onNavigate={onNavigate} />;
 }
 
-function DashboardEmpty({ mode, savedCount }: { mode: ContentMode; savedCount: number }) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-1.5">
-        <span className="text-[12px] font-semibold">{MODE_LABEL[mode]} 데이터 현황</span>
-      </div>
-      <div className="rounded border border-dashed border-amber-300 bg-amber-50 p-3 flex items-start gap-2">
-        <FileWarning className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
-        <div className="flex-1 space-y-1">
-          <div className="text-[11px] font-semibold text-amber-900">
-            {MODE_LABEL[mode]} 데이터 현황 — 원본 콘텐츠 미제공
-          </div>
-          <div className="text-[10px] text-amber-800 leading-snug">
-            커리큘럼 대시보드와 동일한 구조(분류/급수/키워드/단원 통계 · 카드 · 표 · 차트) 셸이 준비되어 있습니다.
-            실제 {MODE_LABEL[mode]} 원본이 제공되면 literal하게 동일 구조로 집계됩니다.
-          </div>
-          <div className="text-[10px] text-amber-700 pt-1 border-t border-amber-200">
-            현재 저장된 {MODE_LABEL[mode]} 항목: <b>{savedCount}건</b>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DashboardCurriculum({ savedList, onNavigate }: {
+function DashboardMain({ mode, savedList, onNavigate }: {
+  mode: ContentMode;
   savedList: SavedCurriculum[];
   onNavigate?: (filter: { catLarge?: string[]; field?: string[]; mid?: string[] }) => void;
 }) {
@@ -411,6 +388,23 @@ function DashboardCurriculum({ savedList, onNavigate }: {
 
   return (
     <div className="w-full space-y-3">
+      {/* 모드 헤더 */}
+      <div className="flex items-center gap-2">
+        <BarChart3 className="h-4 w-4 text-primary" />
+        <span className="text-[0.9rem] font-semibold">{MODE_LABEL[mode]} 데이터 현황</span>
+        {mode !== "curriculum" && (
+          <span className="rounded-md bg-indigo-100 px-2 py-0.5 text-[0.66rem] font-semibold text-indigo-700">
+            {MODE_LABEL[mode]} 모드 · 마스터 프레임 공유
+          </span>
+        )}
+        <span className="ml-auto text-[0.62rem] text-muted-foreground">
+          저장 {savedList.length}건 · 마스터 분류/급수/키워드 = 3모드 공통
+        </span>
+      </div>
+
+      {/* 문제은행 전용: 품질 감사 숫자표 */}
+      {mode === "questions" && <QuestionsAuditZone onNavigate={onNavigate} />}
+
       {/* ════════════════════════════════════════
           ZONE A · 저장 데이터 현황 (최상단)
          ════════════════════════════════════════ */}
@@ -420,7 +414,7 @@ function DashboardCurriculum({ savedList, onNavigate }: {
         <KpiCard
           label="저장 세트"
           value={savedList.length}
-          sub="총 커리큘럼 수"
+          sub={`총 ${MODE_LABEL[mode]} 수`}
           icon={<Archive className="h-5 w-5 text-amber-600" />}
           color="bg-amber-100"
           onClick={() => onNavigate?.({})}
@@ -626,10 +620,12 @@ function DashboardCurriculum({ savedList, onNavigate }: {
       })()}
       </div>{/* /grid-cols-2 중분류+급수 */}
 
-      {/* A-1d: 파일 현황 (좌측 절반) */}
-      <div className="grid grid-cols-2 gap-2">
-        <FileStatusSection />
-      </div>
+      {/* A-1d: 파일 현황 (좌측 절반) — 커리큘럼 전용 */}
+      {mode === "curriculum" && (
+        <div className="grid grid-cols-2 gap-2">
+          <FileStatusSection />
+        </div>
+      )}
 
       {/* A-2: 분포 분석 — 분류체계 3단 */}
       <div className="grid grid-cols-3 gap-2.5">
@@ -869,7 +865,7 @@ function DashboardCurriculum({ savedList, onNavigate }: {
                 </tr>
               ))}
               <tr>
-                <td className={tdCls} rowSpan={3}>커리큘럼 단</td>
+                <td className={tdCls} rowSpan={3}>{MODE_SHORT[mode]} 단</td>
                 <td className={tdCls}>급수별 기본</td>
                 <td className={tdNum}>{gradeRows.reduce((s, r) => s + r.unitCount, 0)}</td>
                 <td className={tdNum} rowSpan={3}>
@@ -1119,9 +1115,9 @@ function DashboardCurriculum({ savedList, onNavigate }: {
         </Section>
       </div>
 
-      {/* 커리큘럼 단(Unit) — 전체 너비 */}
+      {/* 단(Unit) — 전체 너비 */}
       <Section
-        title="커리큘럼 단(Unit) 상세"
+        title={`${MODE_SHORT[mode]} 단(Unit) 상세 (마스터)`}
         icon={<Layers className="h-4 w-4 text-indigo-600" />}
         iconBg="bg-indigo-100"
         badge={`급수 ${gradeRows.reduce((s, r) => s + r.unitCount, 0)} · 분야 ${fieldBasicRows.reduce((s, r) => s + r.unitCount, 0)} · 실습 ${practiceRows.reduce((s, r) => s + r.unitCount, 0)}`}
@@ -1290,7 +1286,7 @@ function DashboardCurriculum({ savedList, onNavigate }: {
               <td className={tdNum}>{practiceRows.reduce((s, r) => s + r.unitCount, 0)}단</td>
             </tr>
             <tr className={grandTotalRow}>
-              <td className={`${tdCls} text-right`} colSpan={5}>커리큘럼 총합계</td>
+              <td className={`${tdCls} text-right`} colSpan={5}>{MODE_SHORT[mode]} 총합계</td>
               <td className={tdNum}>
                 {gradeRows.reduce((s, r) => s + r.unitCount, 0) +
                   fieldBasicRows.reduce((s, r) => s + r.unitCount, 0) +
@@ -1301,6 +1297,237 @@ function DashboardCurriculum({ savedList, onNavigate }: {
           </tbody>
         </table>
       </Section>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   문제은행 전용 — 답안 품질 감사 숫자표
+   (ANSWER_BANK 13건 기반: 분야 × 품질등급 × 난이도 매트릭스)
+   ═══════════════════════════════════════════ */
+const GRADE_LABELS: Record<QualityGrade, string> = {
+  A: "완비", B: "보완", C: "결함", D: "런타임",
+};
+const GRADE_COLORS: Record<QualityGrade, string> = {
+  A: "bg-emerald-500", B: "bg-amber-500", C: "bg-red-500", D: "bg-sky-500",
+};
+const DIFF_ORDER: Difficulty[] = ["대", "중", "소", "미표기"];
+const DIFF_COLORS: Record<Difficulty, string> = {
+  "대": "bg-rose-500", "중": "bg-amber-500", "소": "bg-sky-500", "미표기": "bg-gray-400",
+};
+
+function QuestionsAuditZone({ onNavigate }: { onNavigate?: (filter: { catLarge?: string[]; field?: string[]; mid?: string[] }) => void }) {
+  void onNavigate;
+  // 분야 목록
+  const qCats = Array.from(new Set(ANSWER_BANK.map((a) => a.category)));
+  const grades: QualityGrade[] = ["A", "B", "C", "D"];
+
+  // 분야 × 등급 매트릭스
+  const catGrade: Record<string, Record<QualityGrade, number>> = {};
+  qCats.forEach((c) => { catGrade[c] = { A: 0, B: 0, C: 0, D: 0 }; });
+  ANSWER_BANK.forEach((a) => { catGrade[a.category][a.grade]++; });
+
+  // 분야 × 난이도 매트릭스
+  const catDiff: Record<string, Record<Difficulty, number>> = {};
+  qCats.forEach((c) => { catDiff[c] = { "대": 0, "중": 0, "소": 0, "미표기": 0 }; });
+  ANSWER_BANK.forEach((a) => { catDiff[a.category][a.difficulty]++; });
+
+  const totalIssues = ANSWER_BANK.reduce((s, a) => s + a.issues.length, 0);
+  const total = ANSWER_BANK.length;
+
+  return (
+    <div className="rounded-xl border-2 border-violet-300 bg-violet-50/30 overflow-hidden">
+      <div className="px-3 py-1.5 bg-violet-100 border-b border-violet-300 flex items-center gap-2">
+        <ShieldCheck className="h-3.5 w-3.5 text-violet-700" />
+        <span className="text-[0.78rem] font-semibold text-violet-900">문제은행 · 답안 품질 감사 숫자표</span>
+        <span className="rounded-full bg-violet-200 px-1.5 py-0 text-[0.62rem] font-medium text-violet-800">원본 {total}건</span>
+        <span className="ml-auto text-[0.6rem] text-violet-700 italic">※ A/B/C/D는 감사 라벨 — 원본 데이터 없음</span>
+      </div>
+
+      <div className="p-2 space-y-2">
+        {/* KPI 4카드 */}
+        <div className="grid grid-cols-6 gap-1.5">
+          <div className="rounded border border-violet-200 bg-white px-2 py-1">
+            <div className="text-[0.58rem] text-muted-foreground">총 답안</div>
+            <div className="text-[1.1rem] font-semibold tabular-nums">{total}</div>
+          </div>
+          {grades.map((g) => {
+            const cnt = ANSWER_BANK_SUMMARY.byGrade[g];
+            const pct = total > 0 ? Math.round((cnt / total) * 100) : 0;
+            return (
+              <div key={g} className="rounded border border-violet-200 bg-white px-2 py-1">
+                <div className="text-[0.58rem] text-muted-foreground flex items-center gap-1">
+                  <span className={`inline-block h-1.5 w-1.5 rounded-full ${GRADE_COLORS[g]}`} />
+                  {g}·{GRADE_LABELS[g]}
+                </div>
+                <div className="text-[1.1rem] font-semibold tabular-nums">{cnt}</div>
+                <div className="text-[0.56rem] text-muted-foreground">{pct}%</div>
+              </div>
+            );
+          })}
+          <div className="rounded border border-red-200 bg-red-50 px-2 py-1">
+            <div className="text-[0.58rem] text-red-700 flex items-center gap-1">
+              <AlertTriangle className="h-2.5 w-2.5" />이슈
+            </div>
+            <div className="text-[1.1rem] font-semibold tabular-nums text-red-700">{totalIssues}</div>
+            <div className="text-[0.56rem] text-red-600">누적</div>
+          </div>
+        </div>
+
+        {/* 2단: 분야×등급 매트릭스 + 분야×난이도 매트릭스 */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-2 py-1 bg-muted/40 border-b border-border flex items-center gap-1.5">
+              <BarChart3 className="h-3 w-3 text-violet-600" />
+              <span className="text-[0.7rem] font-semibold">분야 × 품질등급</span>
+            </div>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className={thCls}>분야</th>
+                  {grades.map((g) => (
+                    <th key={g} className={`${thCls} text-center w-[36px]`}>{g}</th>
+                  ))}
+                  <th className={`${thCls} text-center w-[36px]`}>계</th>
+                </tr>
+              </thead>
+              <tbody>
+                {qCats.map((c) => {
+                  const row = catGrade[c];
+                  const rowTotal = grades.reduce((s, g) => s + row[g], 0);
+                  return (
+                    <tr key={c} className="hover:bg-muted/20">
+                      <td className={`${tdCls} text-[0.66rem] font-medium`}>{c}</td>
+                      {grades.map((g) => (
+                        <td key={g} className={`${tdNum} ${row[g] === 0 ? "text-muted-foreground/20" : "font-semibold"}`}>
+                          {row[g] || "·"}
+                        </td>
+                      ))}
+                      <td className={`${tdNum} font-semibold`}>{rowTotal}</td>
+                    </tr>
+                  );
+                })}
+                <tr className={grandTotalRow}>
+                  <td className={`${tdCls} text-right`}>합계</td>
+                  {grades.map((g) => (
+                    <td key={g} className={`${tdNum} font-bold`}>{ANSWER_BANK_SUMMARY.byGrade[g]}</td>
+                  ))}
+                  <td className={`${tdNum} font-bold`}>{total}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-2 py-1 bg-muted/40 border-b border-border flex items-center gap-1.5">
+              <BarChart3 className="h-3 w-3 text-amber-600" />
+              <span className="text-[0.7rem] font-semibold">분야 × 난이도</span>
+            </div>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className={thCls}>분야</th>
+                  {DIFF_ORDER.map((d) => (
+                    <th key={d} className={`${thCls} text-center w-[40px]`}>{d}</th>
+                  ))}
+                  <th className={`${thCls} text-center w-[36px]`}>계</th>
+                </tr>
+              </thead>
+              <tbody>
+                {qCats.map((c) => {
+                  const row = catDiff[c];
+                  const rowTotal = DIFF_ORDER.reduce((s, d) => s + row[d], 0);
+                  return (
+                    <tr key={c} className="hover:bg-muted/20">
+                      <td className={`${tdCls} text-[0.66rem] font-medium`}>{c}</td>
+                      {DIFF_ORDER.map((d) => (
+                        <td key={d} className={`${tdNum} ${row[d] === 0 ? "text-muted-foreground/20" : "font-semibold"}`}>
+                          {row[d] || "·"}
+                        </td>
+                      ))}
+                      <td className={`${tdNum} font-semibold`}>{rowTotal}</td>
+                    </tr>
+                  );
+                })}
+                <tr className={grandTotalRow}>
+                  <td className={`${tdCls} text-right`}>합계</td>
+                  {DIFF_ORDER.map((d) => {
+                    const cnt = ANSWER_BANK.filter((a) => a.difficulty === d).length;
+                    return <td key={d} className={`${tdNum} font-bold`}>{cnt}</td>;
+                  })}
+                  <td className={`${tdNum} font-bold`}>{total}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="px-2 py-1 border-t border-border flex items-center gap-1 flex-wrap">
+              {DIFF_ORDER.map((d) => (
+                <span key={d} className="inline-flex items-center gap-1 text-[0.58rem] text-muted-foreground">
+                  <span className={`inline-block h-1.5 w-1.5 rounded-full ${DIFF_COLORS[d]}`} />{d}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 이상치 목록 */}
+        {ANSWER_BANK_SUMMARY.knownAnomalies.length > 0 && (
+          <div className="rounded-lg border border-amber-300 bg-amber-50 overflow-hidden">
+            <div className="px-2 py-1 bg-amber-100 border-b border-amber-300 flex items-center gap-1.5">
+              <AlertTriangle className="h-3 w-3 text-amber-800" />
+              <span className="text-[0.7rem] font-semibold text-amber-900">확인 필요 이상치</span>
+              <span className="ml-auto rounded-full bg-amber-200 px-1.5 py-0 text-[0.58rem] font-medium text-amber-800">
+                {ANSWER_BANK_SUMMARY.knownAnomalies.length}건
+              </span>
+            </div>
+            <ol className="p-1.5 space-y-0.5 list-decimal list-inside">
+              {ANSWER_BANK_SUMMARY.knownAnomalies.map((a, i) => (
+                <li key={i} className="text-[0.64rem] text-amber-900 leading-snug">{a}</li>
+              ))}
+            </ol>
+          </div>
+        )}
+
+        {/* 답안 상세 표 */}
+        <div className="rounded-lg border border-border bg-card overflow-hidden">
+          <div className="px-2 py-1 bg-muted/40 border-b border-border flex items-center gap-1.5">
+            <FileText className="h-3 w-3 text-blue-600" />
+            <span className="text-[0.7rem] font-semibold">답안 상세 일람</span>
+            <span className="ml-auto text-[0.58rem] text-muted-foreground">{total}건</span>
+          </div>
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th className={`${thCls} w-[28px] text-center`}>#</th>
+                <th className={thCls}>라벨</th>
+                <th className={`${thCls} w-[80px]`}>분야</th>
+                <th className={`${thCls} w-[90px]`}>소분류</th>
+                <th className={`${thCls} w-[40px] text-center`}>난이도</th>
+                <th className={`${thCls} w-[60px] text-center`}>등급</th>
+                <th className={`${thCls} w-[40px] text-center`}>이슈</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ANSWER_BANK.map((a) => (
+                <tr key={a.id} className="hover:bg-muted/20">
+                  <td className={tdNum}>{a.seq}</td>
+                  <td className={`${tdCls} text-[0.66rem] truncate max-w-[200px]`} title={a.labelRaw}>{a.labelRaw}</td>
+                  <td className={`${tdCls} text-[0.64rem]`}>{a.category}</td>
+                  <td className={`${tdCls} text-[0.62rem] text-muted-foreground`}>{a.subcategory || "—"}</td>
+                  <td className={`${tdCls} text-[0.62rem] text-center`}>{a.difficulty}</td>
+                  <td className={`${tdCls} text-center`}>
+                    <span className={`inline-block rounded px-1 text-[0.58rem] font-semibold text-white ${GRADE_COLORS[a.grade]}`}>
+                      {a.grade}·{GRADE_LABELS[a.grade]}
+                    </span>
+                  </td>
+                  <td className={`${tdNum} text-[0.62rem] ${a.issues.length > 0 ? "text-red-600 font-semibold" : "text-muted-foreground/40"}`}>
+                    {a.issues.length || "·"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

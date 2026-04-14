@@ -273,56 +273,51 @@ function Chip({
   );
 }
 
-/* ── 빈 상태 (non-curriculum 모드) ── */
-function RegulationEmpty({ mode }: { mode: ContentMode }) {
-  return (
-    <div className="space-y-1">
-      <div className="rounded border border-border bg-card px-1.5 py-1 flex items-center gap-1.5">
-        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-        <span className="text-[12px] font-semibold">{MODE_LABEL[mode]} 규정</span>
-        <span className="text-[9px] text-muted-foreground italic ml-auto">
-          원본 규정 문서 미제공
-        </span>
-      </div>
-      <div className="rounded border border-dashed border-amber-300 bg-amber-50 p-3 flex items-start gap-2">
-        <FileWarning className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
-        <div className="flex-1 space-y-1">
-          <div className="text-[11px] font-semibold text-amber-900">
-            {MODE_LABEL[mode]} 규정 — 원본 문서 미제공
-          </div>
-          <div className="text-[10px] text-amber-800 leading-snug">
-            커리큘럼의 규정 뷰와 동일한 구조(공통 + 과목별 뼈대 + 빈칸/모순/누락 추적) · 필터(등급/블록) ·
-            검색 · 전체 펼치기 · 컴팩트 UI 셸이 준비되어 있습니다. 실제 {MODE_LABEL[mode]} 규정 원본
-            (고정/준고정/선택 등급별 항목)이 제공되면 literal하게 동일 구조로 표시됩니다.
-          </div>
-          <div className="text-[10px] text-amber-700 pt-1 border-t border-amber-200">
-            ⚠ 임의 생성 금지 원칙에 따라 규정 내용을 추측으로 채우지 않습니다.
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ── 메인 ── */
 export function RegulationView({ mode = "curriculum" }: { mode?: ContentMode }) {
-  if (mode !== "curriculum") return <RegulationEmpty mode={mode} />;
-  return <RegulationViewInternal />;
+  return <RegulationViewInternal mode={mode} />;
 }
 
-// localStorage 키
-const LS_KEY = "regulation-edits-v1";
-function loadEdits(): { common: RegulationBlock; subjects: Record<string, RegulationBlock> } | null {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+// ═══ DB 저장 (localStorage 폐지) ═══
+interface RegRow {
+  _id: number;
+  _block: BlockId;
+  _tier: Tier;
+  no: number;
+  text: string;
+  _order?: number;
 }
-function saveEdits(edits: { common: RegulationBlock; subjects: Record<string, RegulationBlock> }) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(edits)); } catch {}
+type ApiRow = { id: number; data: string | Record<string, unknown> };
+
+const API_BASE = "/api/regulations";
+
+// DB rows → 블록 (tier별 그룹핑)
+function groupRowsToBlock(rows: RegRow[], blockId: BlockId): RegulationBlock {
+  const pick = (tier: Tier) =>
+    rows
+      .filter((r) => r._block === blockId && r._tier === tier)
+      .sort((a, b) => (a._order ?? a._id) - (b._order ?? b._id))
+      .map((r) => ({ no: r.no, text: r.text, _id: r._id } as RegulationItem & { _id?: number }));
+  return { fixed: pick("fixed"), semi: pick("semi"), optional: pick("optional") };
 }
 
-function RegulationViewInternal() {
+// 1회 시드 — data constants → DB
+function buildSeedItems(): Omit<RegRow, "_id">[] {
+  const out: Omit<RegRow, "_id">[] = [];
+  let ord = 0;
+  const push = (block: RegulationBlock, blockId: BlockId) => {
+    (["fixed", "semi", "optional"] as Tier[]).forEach((tier) => {
+      (block[tier] || []).forEach((it) => {
+        out.push({ _block: blockId, _tier: tier, no: it.no, text: it.text, _order: ord++ });
+      });
+    });
+  };
+  push(COMMON_REGULATION.block, "common");
+  SUBJECT_REGULATIONS.forEach((s) => push(s.block, s.id as BlockId));
+  return out;
+}
+
+function RegulationViewInternal({ mode }: { mode: ContentMode }) {
   const [search, setSearch] = useState("");
   const [tiers, setTiers] = useState<Set<Tier>>(new Set(["fixed", "semi", "optional"]));
   const [blocks, setBlocks] = useState<Set<BlockId>>(
@@ -333,23 +328,154 @@ function RegulationViewInternal() {
     new Set(["common", "unlabeled-A", "translation", "ethics", "notes", "missing"])
   );
 
-  // 편집 상태 — 초기값은 data constants, 이후 localStorage 로드
-  const [commonBlock, setCommonBlock] = useState<RegulationBlock>(() => {
-    const edits = loadEdits();
-    return edits?.common || COMMON_REGULATION.block;
-  });
-  const [subjectBlocks, setSubjectBlocks] = useState<Record<string, RegulationBlock>>(() => {
-    const edits = loadEdits();
-    if (edits?.subjects) return edits.subjects;
-    const init: Record<string, RegulationBlock> = {};
-    SUBJECT_REGULATIONS.forEach((s) => { init[s.id] = s.block; });
-    return init;
-  });
+  // ─── DB rows ───
+  const [rows, setRows] = useState<RegRow[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  // 변경 시 localStorage에 저장
   useEffect(() => {
-    saveEdits({ common: commonBlock, subjects: subjectBlocks });
-  }, [commonBlock, subjectBlocks]);
+    let alive = true;
+    (async () => {
+      try {
+        let res = await fetch(API_BASE);
+        if (!res.ok) throw new Error("GET " + API_BASE + " → " + res.status);
+        let apiRows: ApiRow[] = await res.json();
+        if (apiRows.length === 0) {
+          const seed = buildSeedItems();
+          for (const s of seed) {
+            await fetch(API_BASE, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(s),
+            });
+          }
+          res = await fetch(API_BASE);
+          apiRows = await res.json();
+        }
+        const parsed: RegRow[] = apiRows.map((r) => {
+          const d = typeof r.data === "string" ? JSON.parse(r.data) : (r.data as Record<string, unknown>);
+          return { _id: r.id, ...d } as unknown as RegRow;
+        });
+        if (alive) {
+          setRows(parsed);
+          setLoaded(true);
+        }
+      } catch (e) {
+        if (alive) {
+          setLoadError((e as Error).message || String(e));
+          setLoaded(true);
+        }
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // 파생 상태
+  const commonBlock = useMemo(() => groupRowsToBlock(rows, "common"), [rows]);
+  const subjectBlocks = useMemo(() => {
+    const out: Record<string, RegulationBlock> = {};
+    (["unlabeled-A", "translation", "ethics"] as BlockId[]).forEach((id) => {
+      out[id] = groupRowsToBlock(rows, id);
+    });
+    return out;
+  }, [rows]);
+
+  // ─── API 뮤테이션 ───
+  async function apiCreate(payload: Omit<RegRow, "_id">): Promise<RegRow | null> {
+    try {
+      const r = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) return null;
+      const j = await r.json();
+      return { _id: j.id, ...payload };
+    } catch {
+      return null;
+    }
+  }
+  async function apiUpdate(id: number, payload: Omit<RegRow, "_id">): Promise<boolean> {
+    try {
+      const r = await fetch(`${API_BASE}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      return r.ok;
+    } catch {
+      return false;
+    }
+  }
+  async function apiDelete(id: number): Promise<boolean> {
+    try {
+      const r = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+      return r.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  // 블록 단위 diff 뮤테이션 — updater 결과를 API에 반영
+  const mutateBlock = (blockId: BlockId) => async (updater: (b: RegulationBlock) => RegulationBlock) => {
+    const before = blockId === "common" ? commonBlock : subjectBlocks[blockId];
+    const after = updater(before);
+    const newRows: RegRow[] = [...rows];
+    const tasks: Promise<unknown>[] = [];
+    for (const tier of ["fixed", "semi", "optional"] as Tier[]) {
+      const oldItems = before[tier] as (RegulationItem & { _id?: number })[];
+      const newItems = after[tier] as (RegulationItem & { _id?: number })[];
+      const newIds = new Set(newItems.map((x) => x._id).filter((x): x is number => x != null));
+      // 삭제
+      for (const it of oldItems) {
+        if (it._id != null && !newIds.has(it._id)) {
+          tasks.push(apiDelete(it._id));
+          const i = newRows.findIndex((r) => r._id === it._id);
+          if (i >= 0) newRows.splice(i, 1);
+        }
+      }
+      // 수정
+      for (const it of newItems) {
+        if (it._id != null) {
+          const old = oldItems.find((o) => o._id === it._id);
+          if (old && (old.text !== it.text || old.no !== it.no)) {
+            const p: Omit<RegRow, "_id"> = { _block: blockId, _tier: tier, no: it.no, text: it.text };
+            tasks.push(apiUpdate(it._id, p));
+            const i = newRows.findIndex((r) => r._id === it._id);
+            if (i >= 0) newRows[i] = { _id: it._id, ...p };
+          }
+        }
+      }
+      // tier 이동 감지: before에서 다른 tier에 있던 item이 newItems에 있으면 PUT
+      for (const it of newItems) {
+        if (it._id != null) {
+          const inSameTier = oldItems.find((o) => o._id === it._id);
+          if (!inSameTier) {
+            // 다른 tier에서 이동 온 것
+            const p: Omit<RegRow, "_id"> = { _block: blockId, _tier: tier, no: it.no, text: it.text };
+            tasks.push(apiUpdate(it._id, p));
+            const i = newRows.findIndex((r) => r._id === it._id);
+            if (i >= 0) newRows[i] = { _id: it._id, ...p };
+          }
+        }
+      }
+      // 추가
+      for (const it of newItems) {
+        if (it._id == null) {
+          const p: Omit<RegRow, "_id"> = { _block: blockId, _tier: tier, no: it.no, text: it.text };
+          tasks.push(
+            apiCreate(p).then((created) => {
+              if (created) newRows.push(created);
+            })
+          );
+        }
+      }
+    }
+    await Promise.all(tasks);
+    setRows([...newRows]);
+  };
 
   const toggleSet = <T,>(set: Set<T>, v: T, setter: (s: Set<T>) => void) => {
     const n = new Set(set);
@@ -392,7 +518,12 @@ function RegulationViewInternal() {
       {/* ── 헤더 1줄: 타이틀 + 검색 + 필터 + 전체펼치기 + 카운트 ── */}
       <div className="rounded border border-border bg-card px-1.5 py-1 flex flex-wrap items-center gap-1">
         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-        <span className="text-[12px] font-semibold">커리 규정</span>
+        <span className="text-[12px] font-semibold">{MODE_LABEL[mode]} 규정 (마스터)</span>
+        {mode !== "curriculum" && (
+          <span className="rounded-md bg-indigo-100 px-1 py-0 text-[9px] font-semibold text-indigo-700">
+            {MODE_LABEL[mode]} 모드 · 공통 규정 프레임
+          </span>
+        )}
 
         {/* 검색 */}
         <div className="relative flex-1 min-w-[120px] max-w-[200px]">
@@ -511,7 +642,7 @@ function RegulationViewInternal() {
           open={open.has("common")}
           onToggle={toggleSection}
         >
-          <BlockGrid block={commonBlock} tiers={tiers} onMutate={(u) => setCommonBlock(u(commonBlock))} />
+          <BlockGrid block={commonBlock} tiers={tiers} onMutate={mutateBlock("common")} />
           {COMMON_REGULATION.extras.map((t, i) => (
             <WarnLine key={`e${i}`} text={`[부가] ${t}`} tone="info" />
           ))}
@@ -544,12 +675,7 @@ function RegulationViewInternal() {
                 <BlockGrid
                   block={subjectBlocks[sub.id] || sub.block}
                   tiers={tiers}
-                  onMutate={(u) =>
-                    setSubjectBlocks({
-                      ...subjectBlocks,
-                      [sub.id]: u(subjectBlocks[sub.id] || sub.block),
-                    })
-                  }
+                  onMutate={mutateBlock(sub.id as BlockId)}
                 />
                 {sub.gaps.map((t, i) => (
                   <WarnLine key={i} text={`[빈칸] ${t}`} tone="error" />
