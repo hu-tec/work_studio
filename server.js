@@ -111,6 +111,40 @@ app.get("/api/definitions", (req, res) => {
   res.json(files);
 });
 
+// --- 홈페이지 생성 — PRD 마크다운 JSON (CRUD 앞에 위치해야 /api/:table/:id 충돌 회피) ---
+function loadHomepageBySlug(slug) {
+  const rows = getAll("homepages");
+  for (const r of rows) {
+    try {
+      const d = JSON.parse(r.data);
+      if (d && d.slug === slug) return Object.assign({}, d, { id: r.id, _created: r.created_at });
+    } catch {}
+  }
+  return null;
+}
+
+function loadFormTemplatesParsed() {
+  return getAll("form_templates").map(row => {
+    try { return Object.assign({}, JSON.parse(row.data), { id: row.id }); }
+    catch { return null; }
+  }).filter(Boolean);
+}
+
+app.get("/api/hp-prd/:slug", (req, res) => {
+  const { slug } = req.params;
+  const hp = loadHomepageBySlug(slug);
+  if (!hp) return res.status(404).json({ error: "Not found", slug });
+  const templates = loadFormTemplatesParsed();
+  const markdown = buildPrd(hp, templates);
+  res.json({
+    slug: hp.slug,
+    name: hp.name,
+    status: hp.status || 'draft',
+    markdown,
+    generatedAt: new Date().toISOString(),
+  });
+});
+
 // --- 범용 CRUD: /api/:table ---
 app.get("/api/:table", (req, res) => {
   const { table } = req.params;
@@ -276,40 +310,6 @@ app.get("/level-test-jungeol/*", (req, res) => {
 // --- 커리큘럼 SPA fallback ---
 app.get("/curriculum/*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "curriculum", "index.html"));
-});
-
-// --- 홈페이지 생성 — PRD 마크다운 JSON ---
-function loadHomepageBySlug(slug) {
-  const rows = getAll("homepages");
-  for (const r of rows) {
-    try {
-      const d = JSON.parse(r.data);
-      if (d && d.slug === slug) return Object.assign({}, d, { id: r.id, _created: r.created_at });
-    } catch {}
-  }
-  return null;
-}
-
-function loadFormTemplatesParsed() {
-  return getAll("form_templates").map(row => {
-    try { return Object.assign({}, JSON.parse(row.data), { id: row.id }); }
-    catch { return null; }
-  }).filter(Boolean);
-}
-
-app.get("/api/hp-prd/:slug", (req, res) => {
-  const { slug } = req.params;
-  const hp = loadHomepageBySlug(slug);
-  if (!hp) return res.status(404).json({ error: "Not found", slug });
-  const templates = loadFormTemplatesParsed();
-  const markdown = buildPrd(hp, templates);
-  res.json({
-    slug: hp.slug,
-    name: hp.name,
-    status: hp.status || 'draft',
-    markdown,
-    generatedAt: new Date().toISOString(),
-  });
 });
 
 // --- 홈페이지 생성 — PRD 뷰어 & raw Markdown ---
