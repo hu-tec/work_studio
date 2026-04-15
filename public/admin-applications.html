@@ -64,11 +64,11 @@
     .sum.g-status b{color:#b45309}
     .sum.g-status.sel{background:#b45309;border-color:#b45309;color:#fff}
     .sum.g-status.sel b{color:#fff}
-    /* Group: 급수 (grade) — purple */
-    .sum.g-grade{background:#faf5ff;border-color:#e9d5ff}
-    .sum.g-grade b{color:#7e22ce}
-    .sum.g-grade.sel{background:#7e22ce;border-color:#7e22ce;color:#fff}
-    .sum.g-grade.sel b{color:#fff}
+    /* Group: 평가 (finalGrade A/B/C/D) — purple */
+    .sum.g-eval{background:#faf5ff;border-color:#e9d5ff}
+    .sum.g-eval b{color:#7e22ce}
+    .sum.g-eval.sel{background:#7e22ce;border-color:#7e22ce;color:#fff}
+    .sum.g-eval.sel b{color:#fff}
 
     /* Table */
     .tbl{width:100%;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
@@ -204,15 +204,16 @@ const state = {
   modules: [],        // form_modules
   sites: [],          // sites.json websites
   filter: {
-    site: null,       // single
-    formId: null,     // single
-    role: null,       // single
-    phase: null,      // single
-    status: null,     // single
-    subject: [],      // multi
-    grade: null,      // single
-    function: [],     // multi
-    layer: [],        // multi
+    site: null,        // single
+    formId: null,      // single
+    role: null,        // single
+    phase: null,       // single
+    status: null,      // single
+    subject: [],       // multi — tax_subject (종목)
+    category: null,    // single — tax_grade (교육/비즈니스/전문 과정)
+    finalGrade: null,  // single — final.final_grade (A/B/C/D 관리자 평가)
+    function: [],      // multi — tax_function
+    layer: [],         // multi — tax_layer
     search: '',
     dateFrom: '',
     dateTo: ''
@@ -224,7 +225,10 @@ const state = {
 };
 
 const SUBJECTS = ['TESOL 영어교육','AI 프롬프트','AI 번역/통역','AI 윤리','ITT 정통 통번역'];
-const GRADES = ['교육','일반(비즈니스)','전문'];
+// 과정(카테고리): 교육/비즈니스/전문 — 데이터 필드명은 레거시로 tax_grade 유지
+const CATEGORIES = ['교육','일반(비즈니스)','전문'];
+// 평가 등급(관리자 채점): A/B/C/D — final.final_grade
+const FINAL_GRADES = ['A','B','C','D'];
 const FUNCTIONS = ['문서','영상/SNS','음성','IT/개발','창의적 활동','번역 방법론','프롬프트','확장 영역'];
 const LAYERS = ['번역','윤리','보안'];
 const ROLES = [
@@ -326,7 +330,10 @@ function applyFilters(rows) {
 
     const taxSubject = getTax(d, 'subject') || [];
     if (fl.subject.length && !fl.subject.some(s => taxSubject.includes(s))) return false;
-    if (fl.grade && getTax(d, 'grade') !== fl.grade) return false;
+    // 과정: tax_grade 데이터 필드를 category 필터로 조회 (레거시 필드명 유지)
+    if (fl.category && getTax(d, 'grade') !== fl.category) return false;
+    // 평가: 관리자 채점 결과 A/B/C/D
+    if (fl.finalGrade && d.final?.final_grade !== fl.finalGrade) return false;
 
     const taxFunction = getTax(d, 'function') || [];
     if (fl.function.length && !fl.function.some(f => taxFunction.includes(f))) return false;
@@ -367,7 +374,7 @@ function sortRows(rows) {
       case 'role':       return d._role || '';
       case 'phase':      return d._phase || '';
       case 'status':     return Number(d._status || 0);
-      case 'grade':      return d.final?.final_grade || 'Z';
+      case 'finalGrade': return d.final?.final_grade || 'Z';
       default: return '';
     }
   };
@@ -483,9 +490,13 @@ function renderFilters() {
   // 과목 (멀티 원형)
   html += row('과목', chipMulti('subject', SUBJECTS));
   // 급수
-  html += row('급수', `<span class="chip chip-sq${state.filter.grade===null?' sel':''}" onclick="togSingle('grade',null)">전체</span>` + GRADES.map(g => {
-    const sel = state.filter.grade === g;
-    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('grade',${js(g)})">${g}</span>`;
+  html += row('과정', `<span class="chip chip-sq${state.filter.category===null?' sel':''}" onclick="togSingle('category',null)">전체</span>` + CATEGORIES.map(c => {
+    const sel = state.filter.category === c;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('category',${js(c)})">${c}</span>`;
+  }).join(''));
+  html += row('평가', `<span class="chip chip-sq${state.filter.finalGrade===null?' sel':''}" onclick="togSingle('finalGrade',null)">전체</span>` + FINAL_GRADES.map(g => {
+    const sel = state.filter.finalGrade === g;
+    return `<span class="chip chip-sq${sel?' sel':''}" onclick="togSingle('finalGrade',${js(g)})">${g}</span>`;
   }).join(''));
   // 기능
   html += row('기능', chipMulti('function', FUNCTIONS));
@@ -529,7 +540,7 @@ function togMulti(axis, value) {
 function resetFilters() {
   state.filter = {
     site:null, formId:null, role:null, phase:null, status:null,
-    subject:[], grade:null, function:[], layer:[],
+    subject:[], category:null, finalGrade:null, function:[], layer:[],
     search:'', dateFrom:'', dateTo:''
   };
   rerender();
@@ -571,11 +582,11 @@ function renderSumBar(filtered) {
     <span class="sum-lbl">상태</span>
     <div class="sum g-status${sc('status',0)}" onclick="filterBy('status',0)"><b>${byStatus[0]}</b>미확인</div>
     <div class="sum g-status${sc('status',4)}" onclick="filterBy('status',4)"><b>${byStatus[4]}</b>완료</div>
-    <span class="sum-lbl">급수</span>
-    <div class="sum g-grade${sc('grade','A')}" onclick="filterBy('grade','A')"><b>${byGrade.A}</b>A</div>
-    <div class="sum g-grade${sc('grade','B')}" onclick="filterBy('grade','B')"><b>${byGrade.B}</b>B</div>
-    <div class="sum g-grade${sc('grade','C')}" onclick="filterBy('grade','C')"><b>${byGrade.C}</b>C</div>
-    <div class="sum g-grade${sc('grade','D')}" onclick="filterBy('grade','D')"><b>${byGrade.D}</b>D</div>
+    <span class="sum-lbl">평가</span>
+    <div class="sum g-eval${sc('finalGrade','A')}" onclick="filterBy('finalGrade','A')"><b>${byGrade.A}</b>A</div>
+    <div class="sum g-eval${sc('finalGrade','B')}" onclick="filterBy('finalGrade','B')"><b>${byGrade.B}</b>B</div>
+    <div class="sum g-eval${sc('finalGrade','C')}" onclick="filterBy('finalGrade','C')"><b>${byGrade.C}</b>C</div>
+    <div class="sum g-eval${sc('finalGrade','D')}" onclick="filterBy('finalGrade','D')"><b>${byGrade.D}</b>D</div>
   `;
 }
 
@@ -602,7 +613,7 @@ function renderList(filtered) {
       ${H('phase','단계','64px')}
       ${H('status','상태','64px')}
       <th style="width:70px">과목</th>
-      ${H('grade','등급','50px')}
+      ${H('finalGrade','평가','50px')}
       <th style="width:90px">작업</th>
       <th>비고</th>
     </tr>`;
@@ -639,7 +650,7 @@ function renderList(filtered) {
         <td><span class="phase phase-${phase} cell-click" onclick="event.stopPropagation();filterBy('phase','${phase}')" title="이 단계로 필터">${phaseObj?phaseObj.label:phase}</span></td>
         <td><span class="status ${stObj?stObj.cls:'st-0'} cell-click" onclick="event.stopPropagation();filterBy('status',${status})" title="이 상태로 필터">${stObj?stObj.label:status}</span></td>
         <td style="font-size:9px;color:#64748b">${subjects.map(sj=>`<span class="subj-chip cell-click" onclick="filterBy('subject','${sj.replace(/'/g,"&#39;")}')">${esc(sj)}</span>`).join(' ')}</td>
-        <td>${grade !== '-' ? `<span class="grade grade-${grade} cell-click" onclick="filterBy('grade','${grade}')" title="이 등급으로 필터">${grade}</span>` : '-'}</td>
+        <td>${grade !== '-' ? `<span class="grade grade-${grade} cell-click" onclick="filterBy('finalGrade','${grade}')" title="이 평가로 필터">${grade}</span>` : '-'}</td>
         <td>
           <button class="btn" onclick="toggleExpand(${r.id})">${exp ? '접기' : '펼치기'}</button>
           <button class="btn btn-danger" onclick="delRow(${r.id})">×</button>
@@ -697,7 +708,7 @@ function renderDetail(r) {
     <div class="detail-sec">
       <h4>🏷️ 분류 5축</h4>
       ${kv('과목', (p1.tax_subject || []).join(', '))}
-      ${kv('급수', p1.tax_grade)}
+      ${kv('과정', p1.tax_grade)}
       ${kv('기능', (p1.tax_function || []).join(', '))}
       ${kv('산업', p1.tax_industry)}
       ${kv('영역', p1.tax_domain)}
