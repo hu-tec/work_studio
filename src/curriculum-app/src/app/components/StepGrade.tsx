@@ -20,7 +20,7 @@ export function StepGrade({
   const levelOptions = selectedMid ? LEVEL_BY_MID[selectedMid] || [] : [];
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div className="rounded-xl border border-border bg-card p-3">
       <div className="mb-3 flex items-center gap-2">
         <div className="flex h-6 w-6 items-center justify-center rounded-md bg-purple-100 text-purple-600">
           <Award className="h-3.5 w-3.5" />

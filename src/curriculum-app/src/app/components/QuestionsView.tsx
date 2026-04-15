@@ -533,7 +533,7 @@ function StructuredQuestionsPanel() {
             ))}
           </div>
           {items.length === 0 && (
-            <div className="text-center text-[0.68rem] text-muted-foreground py-4">
+            <div className="text-center text-[0.68rem] text-muted-foreground py-2">
               조건에 맞는 문제 없음
             </div>
           )}

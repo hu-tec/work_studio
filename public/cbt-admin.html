@@ -27,6 +27,10 @@ tr:hover{background:#f8fafc}
 .btn-p{background:#1a365d;color:#fff}.btn-p:hover{background:#2d4a7c}
 .btn-d{background:#fee;color:#c00;border:1px solid #fcc}.btn-d:hover{background:#fdd}
 .btn-s{background:#f0f0f0;color:#555}.btn-s:hover{background:#e0e0e0}
+.fbn{padding:4px 10px;border:1px solid #ddd;border-radius:4px;background:#fff;font-size:11px;cursor:pointer;transition:.15s}
+.fbn:hover{background:#f5f5f5}
+.fbn.a{background:#1a365d;color:#fff;border-color:#1a365d}
+.fbg{display:flex;gap:2px;flex-wrap:wrap}
 .badge{font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600}
 .badge-g{background:#d4edda;color:#155724}.badge-r{background:#f8d7da;color:#721c24}
 .badge-b{background:#cce5ff;color:#004085}.badge-y{background:#fff3cd;color:#856404}
@@ -125,13 +129,9 @@ const q=id?qs.find(x=>x.id===id):null;
 const opts=q?.options||[{label:"A",text:"",isCorrect:true},{label:"B",text:"",isCorrect:false},{label:"C",text:"",isCorrect:false},{label:"D",text:"",isCorrect:false}];
 let h=`<h3>${q?"문제 수정":"문제 등록"}</h3>
 <div class="form-grid">
-<div><label>카테고리</label><select id="qCat">${cats.map(c=>`<option value="${c.id}" ${q?.categoryId===c.id?"selected":""}>${c.name}</option>`).join("")}</select></div>
-<div><label>유형</label><select id="qType" onchange="toggleOpts()">
-<option value="MULTIPLE_CHOICE" ${q?.type==="MULTIPLE_CHOICE"?"selected":""}>객관식(단일)</option>
-<option value="MULTIPLE_SELECT" ${q?.type==="MULTIPLE_SELECT"?"selected":""}>객관식(복수)</option>
-<option value="SHORT_ANSWER" ${q?.type==="SHORT_ANSWER"?"selected":""}>단답형</option>
-<option value="TRUE_FALSE" ${q?.type==="TRUE_FALSE"?"selected":""}>O/X</option></select></div>
-<div><label>난이도</label><select id="qDiff">${[1,2,3,4,5].map(d=>`<option value="${d}" ${q?.difficulty===d?"selected":""}>${"★".repeat(d)}</option>`).join("")}</select></div>
+<div><label>카테고리</label><input type="hidden" id="qCat" value="${q?.categoryId||cats[0]?.id||""}"><div class="fbg">${cats.map(c=>`<button type="button" class="fbn ${(q?.categoryId||cats[0]?.id)===c.id?"a":""}" onclick="setFld(this,'qCat','${c.id}')">${esc(c.name)}</button>`).join("")}</div></div>
+<div><label>유형</label><input type="hidden" id="qType" value="${q?.type||"MULTIPLE_CHOICE"}"><div class="fbg">${[["MULTIPLE_CHOICE","객관식(단일)"],["MULTIPLE_SELECT","객관식(복수)"],["SHORT_ANSWER","단답형"],["TRUE_FALSE","O/X"]].map(([v,l])=>`<button type="button" class="fbn ${(q?.type||"MULTIPLE_CHOICE")===v?"a":""}" onclick="setFld(this,'qType','${v}');toggleOpts()">${l}</button>`).join("")}</div></div>
+<div><label>난이도</label><input type="hidden" id="qDiff" value="${q?.difficulty||1}"><div class="fbg">${[1,2,3,4,5].map(d=>`<button type="button" class="fbn ${(q?.difficulty||1)===d?"a":""}" onclick="setFld(this,'qDiff','${d}')">${"★".repeat(d)}</button>`).join("")}</div></div>
 <div><label>배점</label><input id="qPts" type="number" value="${q?.points||10}"/></div>
 <div class="full"><label>문제 본문</label><textarea id="qContent" rows="3">${esc(q?.content||"")}</textarea></div>
 <div class="full" id="optsWrap"><label>보기</label><div id="optsList"></div>
@@ -166,6 +166,7 @@ if(t==="MULTIPLE_CHOICE")window._opts.forEach((o,j)=>o.isCorrect=j===i);
 else window._opts[i].isCorrect=v;
 renderOpts();
 }
+function setFld(btn,id,v){btn.parentNode.querySelectorAll('.fbn').forEach(b=>b.classList.remove('a'));btn.classList.add('a');document.getElementById(id).value=v;}
 function toggleOpts(){
 const t=document.getElementById("qType").value;
 const ow=document.getElementById("optsWrap"),aw=document.getElementById("ansWrap");
@@ -226,7 +227,7 @@ const selIds=e?e.items.map(i=>i.question.id):[];
 let h=`<h3>${e?"시험 수정":"시험 생성"}</h3>
 <div class="form-grid">
 <div><label>시험명</label><input id="eTitle" value="${esc(e?.title||"")}"/></div>
-<div><label>모드</label><select id="eMode"><option value="MOCK" ${e?.mode==="MOCK"?"selected":""}>모의시험</option><option value="OFFICIAL" ${e?.mode==="OFFICIAL"?"selected":""}>본시험</option></select></div>
+<div><label>모드</label><input type="hidden" id="eMode" value="${e?.mode||"MOCK"}"><div class="fbg">${[["MOCK","모의시험"],["OFFICIAL","본시험"]].map(([v,l])=>`<button type="button" class="fbn ${(e?.mode||"MOCK")===v?"a":""}" onclick="setFld(this,'eMode','${v}')">${l}</button>`).join("")}</div></div>
 <div><label>제한시간(분)</label><input id="eTime" type="number" value="${e?.timeLimitMin||60}"/></div>
 <div><label>합격점</label><input id="ePass" type="number" value="${e?.passingScore||70}"/></div>
 <div><label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="eSQ" ${e?.shuffleQuestions!==false?"checked":""}/> 문제 셔플</label></div>

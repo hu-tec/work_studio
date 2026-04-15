@@ -291,7 +291,7 @@ function TableGroupPanel({
                   )}
                   <td className="px-1 py-0.5 text-center">
                     <button
-                      onClick={(e) => { e.stopPropagation(); onDeleteCustomUnit(cu.id); }}
+                      onClick={(e) => { e.stopPropagation(); if (window.confirm("이 행을 삭제하시겠습니까?")) onDeleteCustomUnit(cu.id); }}
                       className="rounded p-0.5 text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors"
                       title="행 삭제"
                     >

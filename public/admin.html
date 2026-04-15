@@ -69,6 +69,9 @@ header .bc{font-size:12px;color:#888}.bc b{color:#222;font-weight:600}
 .tl button:hover{background:#f0f0f0}
 .tl .db{color:#c00;border-color:#c00}.tl .db:hover{background:#fff0f0}
 .tl .ab{background:#0088ff;color:#fff;border-color:#0088ff}
+.tl .fb{padding:3px 8px;font-size:10px}
+.tl .fb.a{background:#222;color:#fff;border-color:#222}
+.tl .fg{display:inline-flex;gap:2px;align-items:center;padding-left:4px;border-left:1px solid #eee}
 .tl .cnt{font-size:10px;background:#e8ecf0;padding:1px 6px;border-radius:8px;font-weight:600}
 .tw{overflow-x:auto;max-height:calc(100vh - 220px);overflow-y:auto}
 table{width:100%;border-collapse:collapse;font-size:11px}
@@ -728,24 +731,26 @@ function rAL(){uB();const all=aR();
 if(!all.length){ca.innerHTML='<div class="ct"><div class="em">데이터 없음</div></div>';return}
 const siteLbl=cSite?(SITES.find(s=>s.id===cSite)||{}).label||"":"";
 const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fAL(this.value)"/>
-<select onchange="fALS(this.value)"><option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
-<select onchange="fALD(this.value)"><option value="">전체기간</option><option value="t">오늘</option><option value="w">7일</option><option value="m">30일</option></select>
+<span class="fg"><button class="fb a" onclick="fbS(this,fALS,'')">전체</button><button class="fb" onclick="fbS(this,fALS,'0')">신규</button><button class="fb" onclick="fbS(this,fALS,'1')">확인</button><button class="fb" onclick="fbS(this,fALS,'2')">완료</button></span>
+<span class="fg"><button class="fb a" onclick="fbS(this,fALD,'')">전체기간</button><button class="fb" onclick="fbS(this,fALD,'t')">오늘</button><button class="fb" onclick="fbS(this,fALD,'w')">7일</button><button class="fb" onclick="fbS(this,fALD,'m')">30일</button></span>
 <span class="cnt">${all.length}건</span></div>`;
 
-const th=`<tr><th>접수번호</th><th>홈페이지</th><th>종류</th><th>상태</th><th>이름</th><th>연락처</th><th>일시</th></tr>`;
+const th=`<tr><th style="width:80px">일시</th><th>접수번호</th><th>홈페이지</th><th>종류</th><th>상태</th><th>이름</th><th>연락처</th></tr>`;
 const tb=all.map(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}
 const st=p._status||0;const nm=p.name||p.title||p.studentName||p.orgName||"—";const ct=p.email||p.contact||p.phone||"";
 const site=gSite(r._t);const sLabel=site?site.label:"기타";const tb_=TB[r._t]||{l:"?",c:"#888"};
 return`<tr class="alr" data-st="${st}" data-d="${r.created_at||""}" onclick="sT('${r._t}')">
+<td>${(r.created_at||"").slice(5,16)}</td>
 <td><span class="bid">${rn(r._t,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</td>
 <td><span class="rit">${sLabel}</span></td>
 <td><span class="qt" style="background:${tb_.c};display:inline-block">${tb_.l}</span></td>
 <td><span class="bs s${st}">${ST[st]}</span></td>
 <td>${eh(String(nm).slice(0,15))}</td><td>${eh(String(ct).slice(0,25))}</td>
-<td>${(r.created_at||"").slice(5,16)}</td></tr>`}).join("");
+</tr>`}).join("");
 
 ca.innerHTML=`<div class="ct">${tl}<div class="tw"><table><thead>${th}</thead><tbody id="tBAL">${tb}</tbody></table></div></div>`}
 
+function fbS(e,f,v){e.parentNode.querySelectorAll(".fb").forEach(b=>b.classList.remove("a"));e.classList.add("a");f(v)}
 function fAL(q){q=q.toLowerCase();document.querySelectorAll(".alr").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?"":"none"})}
 function fALS(v){document.querySelectorAll(".alr").forEach(r=>{r.style.display=(!v||r.dataset.st===v)?"":"none"})}
 function fALD(v){const now=new Date();let cut=null;
@@ -775,8 +780,8 @@ const start=(curPage-1)*PER_PAGE;
 const paged=sorted.slice(start,start+PER_PAGE);
 
 const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fT(this.value)"/>
-<select onchange="fS(this.value)"><option value="">전체상태</option><option value="0">신규</option><option value="1">확인</option><option value="2">처리완료</option></select>
-<select onchange="fD(this.value)"><option value="">전체기간</option><option value="t">오늘</option><option value="w">7일</option><option value="m">30일</option></select>
+<span class="fg"><button class="fb a" onclick="fbS(this,fS,'')">전체</button><button class="fb" onclick="fbS(this,fS,'0')">신규</button><button class="fb" onclick="fbS(this,fS,'1')">확인</button><button class="fb" onclick="fbS(this,fS,'2')">완료</button></span>
+<span class="fg"><button class="fb a" onclick="fbS(this,fD,'')">전체기간</button><button class="fb" onclick="fbS(this,fD,'t')">오늘</button><button class="fb" onclick="fbS(this,fD,'w')">7일</button><button class="fb" onclick="fbS(this,fD,'m')">30일</button></span>
 <span class="cnt">${ps.length}건</span>${sel.size?`<span style="font-size:10px;color:#0088ff;font-weight:600">(${sel.size}선택)</span>`:""}
 <button class="ab" onclick="sAF()">+추가</button>
 <button onclick="bSt(1)">확인처리</button><button onclick="bSt(2)">완료처리</button>
@@ -784,15 +789,16 @@ const tl=`<div class="tl"><input type="text" placeholder="검색…" oninput="fT
 <button class="${eM?"em-on":""}" onclick="tEM()">${eM?"편집 ON":"편집"}</button></div>`;
 
 const sortIc=(k)=>sortKey===k?`<span class="si">${sortDir==="asc"?"▲":"▼"}</span>`:"";
-const th=`<tr><th style="width:30px"><input type="checkbox" class="cb" onchange="tA(this.checked)"/></th><th onclick="doSort('id')">번호${sortIc('id')}</th><th>상태</th>${keys.map(k=>`<th onclick="doSort('${k}')">${k}${sortIc(k)}</th>`).join("")}<th onclick="doSort('created_at')">일시${sortIc('created_at')}</th><th style="width:60px">작업</th></tr>`;
-const tb=paged.map((r,idx)=>{const st=r.p._status||0;
+const th=`<tr><th style="width:30px"><input type="checkbox" class="cb" onchange="tA(this.checked)"/></th><th onclick="doSort('created_at')" style="width:80px">일시${sortIc('created_at')}</th><th onclick="doSort('id')">번호${sortIc('id')}</th><th>상태</th>${keys.map(k=>`<th onclick="doSort('${k}')">${k}${sortIc(k)}</th>`).join("")}<th style="width:60px">작업</th><th>비고</th></tr>`;
+const tb=paged.map((r,idx)=>{const st=r.p._status||0;const nt=r.p._notes||"";
 return`<tr data-id="${r.id}" data-d="${r.created_at||""}">
 <td><input type="checkbox" class="cb" ${sel.has(r.id)?"checked":""} onclick="tSel(${r.id},this.checked)"/></td>
+<td>${(r.created_at||"").slice(5,16)}</td>
 <td><span class="bid">${rn(cT,r.id)}</span>${iT(r.created_at)?'<span class="bn">N</span>':""}</td>
 <td><span class="bs s${st}" onclick="cyS(${r.id})" title="클릭하면 상태 변경" style="cursor:pointer">${ST[st]}</span></td>
 ${eM?keys.map(k=>`<td><input class="emi" data-id="${r.id}" data-key="${k}" value="${eh(fv(r.p[k]))}" style="width:100%;padding:2px 4px;border:1px solid #ccc;border-radius:2px;font-size:11px"/></td>`).join(""):keys.map(k=>`<td onclick="tD(this.parentElement,${r.id})" title="상세보기">${eh(fv(r.p[k]))}</td>`).join("")}
-<td>${(r.created_at||"").slice(5,16)}</td>
 <td class="acts">${eM?`<span class="ic sc" onclick="svRow(${r.id})" title="저장">&#10004;</span>`:`<span class="ic" onclick="qE(${r.id})" title="수정">&#9998;</span>`}<span class="ic xc" onclick="dOne(${r.id})" title="삭제">&#128465;</span></td>
+<td><input class="nti" data-id="${r.id}" value="${eh(nt)}" placeholder="비고…" onblur="svNote(${r.id},this.value)" style="width:100%;padding:2px 4px;border:1px solid #eee;border-radius:2px;font-size:10px;background:#fafbfc" onclick="event.stopPropagation()"/></td>
 </tr>`}).join("");
 
 // Pagination HTML
@@ -840,7 +846,7 @@ return`<div class="di"><div class="lbl">${k}</div><div class="val" id="v-${id}-$
 const dt=document.createElement("tr");dt.className="dr";
 dt.innerHTML=`<td colspan="99"><div class="dh"><span>${rn(cT,id)} | ${row.created_at} | 상태: <span class="bs s${p._status||0}">${ST[p._status||0]}</span></span>
 <span><button class="eb" onclick="eS(${id})">수정</button><button class="sv" id="sv${id}" onclick="eSv(${id})">저장</button><button class="cl" id="cl${id}" onclick="eCl(${id})">취소</button>
-<select onchange="cSt(${id},this.value)" style="font-size:10px;padding:2px"><option value="0" ${(p._status||0)===0?"selected":""}>신규</option><option value="1" ${p._status===1?"selected":""}>확인</option><option value="2" ${p._status===2?"selected":""}>처리완료</option></select>
+<span class="fg">${[0,1,2].map(s=>`<button class="fb ${(p._status||0)===s?"a":""}" onclick="cSt(${id},'${s}')">${["신규","확인","완료"][s]}</button>`).join("")}</span>
 <button class="xb" onclick="dOne(${id})">삭제</button></span></div>
 <div class="dg" id="dg-${id}">${fields}</div>
 <div class="memo-wrap"><textarea id="mm-${id}" placeholder="관리자 메모…">${eh(memo)}</textarea><button onclick="sMm(${id})">메모 저장</button></div></td>`;
@@ -857,6 +863,7 @@ await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"applicatio
 async function cSt(id,st){const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)return;let d;try{d=JSON.parse(row.data)}catch{d={}}
 d._status=Number(st);await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});await lA();rNav();rL()}
 async function dOne(id){if(!confirm("삭제?"))return;await fetch(`/api/${cT}/${id}`,{method:"DELETE"});await lA();rNav();rL()}
+async function svNote(id,val){const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)return;let d;try{d=JSON.parse(row.data)}catch{d={}}if((d._notes||"")===val)return;d._notes=val;await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});await lA()}
 async function sMm(id){const row=(TD[cT]||[]).find(r=>r.id===id);if(!row)return;let d;try{d=JSON.parse(row.data)}catch{d={}}
 d._memo=document.getElementById("mm-"+id).value;await fetch(`/api/${cT}/${id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});alert("메모 저장됨")}
 
@@ -2405,8 +2412,8 @@ let h=`<div class="st-cards" style="grid-template-columns:repeat(6,1fr)">
 </div>`;
 
 h+=`<div class="ct"><div class="tl"><input type="text" placeholder="검색…" oninput="fSP(this.value)"/>
-<select onchange="fSPL(this.value)"><option value="">전체 위치</option><option value="work_studio">work_studio</option><option value="ai_studio">ai_studio</option></select>
-<select onchange="fSPS(this.value)"><option value="">전체 상태</option><option value="대기중">대기중</option><option value="진행">진행</option><option value="완료">완료</option><option value="불가">불가</option></select>
+<span class="fg"><button class="fb a" onclick="fbS(this,fSPL,'')">전체 위치</button><button class="fb" onclick="fbS(this,fSPL,'work_studio')">work_studio</button><button class="fb" onclick="fbS(this,fSPL,'ai_studio')">ai_studio</button></span>
+<span class="fg"><button class="fb a" onclick="fbS(this,fSPS,'')">전체 상태</button><button class="fb" onclick="fbS(this,fSPS,'대기중')">대기중</button><button class="fb" onclick="fbS(this,fSPS,'진행')">진행</button><button class="fb" onclick="fbS(this,fSPS,'완료')">완료</button><button class="fb" onclick="fbS(this,fSPS,'불가')">불가</button></span>
 <span class="cnt">${PROJ_ITEMS.length}건</span></div>`;
 h+=`<div class="tw" style="max-height:calc(100vh - 240px)">`;
 h+=`<div class="sp-row sp-hd"><span>#</span><span>분류</span><span>상태</span><span>제목</span><span>위치</span><span>담당</span><span></span><span></span></div>`;

@@ -183,7 +183,7 @@ export function StepCurriculum({
 
   if (mode === "questions") {
     return (
-      <Suspense fallback={<div className="text-[0.7rem] text-muted-foreground py-4 text-center">로딩 중...</div>}>
+      <Suspense fallback={<div className="text-[0.7rem] text-muted-foreground py-2 text-center">로딩 중...</div>}>
         <QuestionsView />
       </Suspense>
     );

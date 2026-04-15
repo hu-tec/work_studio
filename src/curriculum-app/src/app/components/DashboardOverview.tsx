@@ -20,7 +20,6 @@ import {
   Download,
   Trash2,
   File,
-  ShieldCheck,
   AlertTriangle,
 } from "lucide-react";
 import { MODE_LABEL, MODE_SHORT, type ContentMode } from "./mode";
@@ -70,7 +69,7 @@ function KpiCard({
 }) {
   return (
     <div
-      className={`flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-all ${onClick ? "cursor-pointer hover:shadow-md hover:border-primary/30" : ""}`}
+      className={`flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 transition-all ${onClick ? "cursor-pointer hover:shadow-md hover:border-primary/30" : ""}`}
       onClick={onClick}
       title={tooltip}
     >
@@ -120,7 +119,7 @@ function Section({
     <div className="rounded-xl border border-border bg-card overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-4 py-2.5 hover:bg-muted/30 transition-colors"
+        className="flex w-full items-center justify-between px-3 py-2 hover:bg-muted/30 transition-colors"
       >
         <div className="flex items-center gap-2.5">
           <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${iconBg}`}>{icon}</div>
@@ -220,7 +219,7 @@ function FileStatusSection() {
         </label>
       </div>
       {files.length === 0 ? (
-        <div className="text-center py-4 text-muted-foreground text-[0.72rem]">파일 없음</div>
+        <div className="text-center py-2 text-muted-foreground text-[0.72rem]">파일 없음</div>
       ) : (
         <table className="w-full">
           <thead><tr>
@@ -267,51 +266,15 @@ export function DashboardOverview({ mode = "curriculum", savedList, onNavigate }
   return <DashboardMain mode={mode} savedList={savedList} onNavigate={onNavigate} />;
 }
 
-// ─── 시드 매핑 상수 (데이터 wrapper는 import 안 함 — 키 문자열만 사용) ───
-// ANSWER_BANK + STRUCTURED 카테고리 → CATEGORY_TREE 대분류
-const Q_CAT_TO_LARGE: Record<string, string> = {
-  "문서": "문서",
-  "개발": "IT/개발",
-  "통역": "번역",
-  "창의적 활동": "창의적활동",
-  "창의적활동": "창의적활동",
-  "영상": "영상/SNS",
-  "영상/SNS": "영상/SNS",
-};
-// 교재 subject → 분야
-const TB_SUBJECT_TO_FIELD: Record<string, string> = {
-  "prompt": "프롬프트",
-  "ethics": "AI 윤리",
-  "translation": "번역",
-};
-// 가연 엑셀 교재 이름 → 급수 (10권 전수 매핑)
-const TB_NAME_TO_LEVEL: Record<string, { mid: string; level: string }> = {
-  "프롬프트 활용 교재(초등)": { mid: "교육", level: "1급" },
-  "프롬프트 활용 교재(중등)": { mid: "교육", level: "3급" },
-  "프롬프트 활용 교재(고등)": { mid: "교육", level: "5급" },
-  "프롬프트 활용 교재(실무)": { mid: "일반", level: "1급" },
-  "프롬프트 활용 교재(상위전문)": { mid: "전문", level: "2급" },
-  "프롬프트 활용 교재(전문1급)": { mid: "전문", level: "1급" },
-  "윤리 교재 (1차)": { mid: "일반", level: "1급" },
-  "번역 교재 (1차)": { mid: "일반", level: "1급" },
-  "번역 교재 (2차)": { mid: "일반", level: "2급" },
-  "번역 교재 (3차)": { mid: "일반", level: "3급" },
-};
-
-function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
+function DashboardMain({ mode, savedList, onNavigate }: {
   mode: ContentMode;
   savedList: SavedCurriculum[];
   onNavigate?: (filter: { catLarge?: string[]; field?: string[]; mid?: string[] }) => void;
 }) {
   const [hideZero, setHideZero] = useState(false);
-  const [includeSeed, setIncludeSeed] = useState(true);
-  const [seedEntries, setSeedEntries] = useState<SavedCurriculum[]>([]);
-  const [gradeCounts, setGradeCounts] = useState<Record<string, number>>({ A: 0, B: 0, C: 0, D: 0 });
-  const [gradeTotal, setGradeTotal] = useState(0);
-  const [seedBreakdown, setSeedBreakdown] = useState<{ label: string; count: number }[]>([]);
   const [dbCount, setDbCount] = useState<number | null>(null);
 
-  // ── DB 실제 카운트 (레거시 /api/:table) ──
+  // DB 실제 카운트 (/api/:table) — 표시용, 매트릭스 집계에는 사용하지 않음
   useEffect(() => {
     const table = mode === "questions" ? "questions" : mode === "textbooks" ? "textbooks" : "curriculum";
     fetch(`${API_BASE}/api/${table}`)
@@ -319,106 +282,6 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
       .then((arr) => setDbCount(Array.isArray(arr) ? arr.length : 0))
       .catch(() => setDbCount(null));
   }, [mode]);
-
-  // ── 시드 데이터 dynamic import (lazy chunk 유지) ──
-  useEffect(() => {
-    if (!includeSeed) {
-      setSeedEntries([]);
-      setGradeCounts({ A: 0, B: 0, C: 0, D: 0 });
-      setGradeTotal(0);
-      setSeedBreakdown([]);
-      return;
-    }
-    let cancelled = false;
-    const entries: SavedCurriculum[] = [];
-    const breakdown: { label: string; count: number }[] = [];
-
-    if (mode === "questions") {
-      Promise.all([
-        import("./question-data"),
-        import("./exam-question-data"),
-      ]).then(([qMod, eqMod]) => {
-        if (cancelled) return;
-        // 1. ANSWER_BANK 감사 샘플 (13)
-        qMod.ANSWER_BANK.forEach((a) => {
-          entries.push({
-            id: `__seed_ab_${a.id}`,
-            created_at: "",
-            category: { large: Q_CAT_TO_LARGE[a.category] || "", medium: a.subcategory || "", small: "" },
-            instructor_grade: { field: "", mid: "", level: "" },
-            targets: [],
-            keywords: { common: [], prompt: [], specialty: [], ethics: [] },
-            titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
-          });
-        });
-        breakdown.push({ label: "ANSWER_BANK 감사", count: qMod.ANSWER_BANK.length });
-        // 2. STRUCTURED_QUESTIONS (31) — 1~4차 프롬 차수별
-        eqMod.STRUCTURED_QUESTIONS.forEach((q) => {
-          entries.push({
-            id: `__seed_sq_${q.seq}`,
-            created_at: "",
-            category: { large: Q_CAT_TO_LARGE[q.category] || q.category || "", medium: "", small: "" },
-            instructor_grade: { field: "", mid: "", level: "" },
-            targets: [],
-            keywords: { common: [], prompt: [], specialty: [], ethics: [] },
-            titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
-          });
-        });
-        breakdown.push({ label: "구조화(1~4차)", count: eqMod.STRUCTURED_QUESTIONS.length });
-        // 3. CATEGORY_BANK (50) — 난이도(대/중/소) 라벨
-        eqMod.CATEGORY_BANK.forEach((q) => {
-          entries.push({
-            id: `__seed_cb_${q.seq}`,
-            created_at: "",
-            category: { large: "", medium: "", small: "" },
-            instructor_grade: { field: "", mid: "", level: "" },
-            targets: [],
-            keywords: { common: [], prompt: [], specialty: [], ethics: [] },
-            titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
-          });
-        });
-        breakdown.push({ label: "분류뱅크(대/중/소)", count: eqMod.CATEGORY_BANK.length });
-        setSeedEntries(entries);
-        setGradeCounts(qMod.ANSWER_BANK_SUMMARY.byGrade as unknown as Record<string, number>);
-        setGradeTotal(qMod.ANSWER_BANK.length);
-        setSeedBreakdown(breakdown);
-      });
-    } else if (mode === "textbooks") {
-      import("./textbook-data").then((tbMod) => {
-        if (cancelled) return;
-        tbMod.ALL_TEXTBOOKS.forEach((b, i) => {
-          const lvl = TB_NAME_TO_LEVEL[b.name] || null;
-          entries.push({
-            id: `__seed_tb_${i}`,
-            created_at: "",
-            category: { large: "", medium: "", small: "" },
-            instructor_grade: { field: TB_SUBJECT_TO_FIELD[b.subject] || "", mid: lvl?.mid || "", level: lvl?.level || "" },
-            targets: [],
-            keywords: { common: [], prompt: [], specialty: [], ethics: [] },
-            titles: { basicClass: "", practiceClass: "", basicUnits: [], practiceUnits: [] },
-          });
-        });
-        const totalUnits = tbMod.ALL_TEXTBOOKS.reduce((s, b) => s + b.units.length, 0);
-        breakdown.push({ label: "교재 권수", count: tbMod.ALL_TEXTBOOKS.length });
-        breakdown.push({ label: "총 단원", count: totalUnits });
-        setSeedEntries(entries);
-        setGradeCounts({ A: 0, B: 0, C: 0, D: 0 });
-        setGradeTotal(0);
-        setSeedBreakdown(breakdown);
-      });
-    } else {
-      setSeedEntries([]);
-      setGradeCounts({ A: 0, B: 0, C: 0, D: 0 });
-      setGradeTotal(0);
-      setSeedBreakdown([]);
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [mode, includeSeed]);
-
-  const savedList = [...rawSavedList, ...seedEntries];
-  const seedCount = seedEntries.length;
   // ── 마스터 데이터 통계 ──
   const largeCats = Object.keys(CATEGORY_TREE);
   const totalMedium = largeCats.reduce((s, l) => s + Object.keys(CATEGORY_TREE[l]).length, 0);
@@ -535,35 +398,16 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
 
   return (
     <div className="w-full space-y-3">
-      {/* 모드 헤더 — DB + 시드 + 사용자 저장 카운트 표시 */}
+      {/* 모드 헤더 — DB + 사용자 저장 카운트 (매트릭스 집계는 savedList prop 그대로) */}
       <div className="flex items-center gap-2 flex-wrap">
         <BarChart3 className="h-4 w-4 text-primary" />
         <span className="text-[0.9rem] font-semibold">{MODE_LABEL[mode]} 데이터 현황</span>
-        <button
-          onClick={() => setIncludeSeed(!includeSeed)}
-          className={`rounded-md border px-1.5 py-0.5 text-[0.62rem] font-medium ${includeSeed ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-border text-muted-foreground hover:bg-muted"}`}
-          title="가연 시드 포함/제외"
-        >
-          시드 {includeSeed ? "포함" : "제외"}
-        </button>
-        {/* 카운트 뱃지들 */}
         <span className="inline-flex items-center gap-1 rounded bg-blue-50 border border-blue-200 px-1.5 py-0 text-[0.62rem] text-blue-700">
           DB <b>{dbCount === null ? "…" : dbCount}</b>건
         </span>
-        <span className="inline-flex items-center gap-1 rounded bg-emerald-50 border border-emerald-200 px-1.5 py-0 text-[0.62rem] text-emerald-700">
-          시드 <b>{seedCount}</b>건
-        </span>
         <span className="inline-flex items-center gap-1 rounded bg-amber-50 border border-amber-200 px-1.5 py-0 text-[0.62rem] text-amber-700">
-          사용자 <b>{rawSavedList.length}</b>건
+          저장 <b>{savedList.length}</b>건
         </span>
-        <span className="inline-flex items-center gap-1 rounded bg-indigo-50 border border-indigo-200 px-1.5 py-0 text-[0.62rem] text-indigo-700">
-          매트릭스 합계 <b>{savedList.length}</b>건
-        </span>
-        {seedBreakdown.length > 0 && (
-          <span className="text-[0.58rem] text-muted-foreground">
-            ({seedBreakdown.map((b) => `${b.label} ${b.count}`).join(" · ")})
-          </span>
-        )}
       </div>
 
       {/* ════════════════════════════════════════
@@ -719,7 +563,7 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
               <span className="text-[0.78rem] font-semibold">분야 × 급수</span>
             </div>
             {savedList.length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-[0.72rem]">데이터 없음</div>
+              <div className="text-center py-2 text-muted-foreground text-[0.72rem]">데이터 없음</div>
             ) : (
               <table className="w-full">
                 <thead><tr>
@@ -851,7 +695,7 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
           </div>
           <div className="p-2.5 space-y-1.5 max-h-[240px] overflow-y-auto">
             {allSmallCats.length === 0 ? (
-              <div className="text-[0.68rem] text-muted-foreground text-center py-4">소분류 없음</div>
+              <div className="text-[0.68rem] text-muted-foreground text-center py-2">소분류 없음</div>
             ) : (
               allSmallCats.map(({ key, label }) => {
                 const cnt = savedByCatSmall[key] || 0;
@@ -870,8 +714,8 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
         </div>
       </div>
 
-      {/* A-2b: 분포 분석 — 분야/급수/품질등급 3단 */}
-      <div className="grid grid-cols-3 gap-2.5">
+      {/* A-2b: 분포 분석 — 분야/급수 2단 */}
+      <div className="grid grid-cols-2 gap-2.5">
         {/* 분야별 */}
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <div className="px-3 py-2 bg-muted/40 border-b border-border flex items-center justify-between">
@@ -956,41 +800,6 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
           </div>
         </div>
 
-        {/* 품질 등급별 (문제은행 ANSWER_BANK 기반) */}
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="px-3 py-2 bg-muted/40 border-b border-border flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-3.5 w-3.5 text-violet-600" />
-              <span className="text-[0.74rem] font-semibold">품질 등급별 분포</span>
-            </div>
-            <span className="text-[0.62rem] text-muted-foreground">A/B/C/D</span>
-          </div>
-          <div className="p-2.5">
-            <div className="space-y-1.5">
-              {(["A", "B", "C", "D"] as const).map((g) => {
-                const cnt = gradeCounts[g] || 0;
-                const max = gradeTotal > 0 ? gradeTotal : 1;
-                const label = { A: "완비", B: "보완", C: "결함", D: "런타임" }[g];
-                const color = { A: "bg-emerald-500", B: "bg-amber-500", C: "bg-red-500", D: "bg-sky-500" }[g];
-                return (
-                  <div key={g} className={`flex items-center gap-2 ${cnt === 0 ? "opacity-40" : ""}`}>
-                    <span className="text-[0.68rem] w-14 shrink-0 flex items-center gap-1">
-                      <span className={`inline-block h-1.5 w-1.5 rounded-full ${color}`} />
-                      {g}·{label}
-                    </span>
-                    <MiniBar value={cnt} max={max} color={color} />
-                    <span className="text-[0.68rem] tabular-nums font-medium w-6 text-right shrink-0">{cnt}</span>
-                  </div>
-                );
-              })}
-              <div className="pt-1 mt-1 border-t border-border/50 text-[0.58rem] text-muted-foreground">
-                {mode === "questions"
-                  ? `ANSWER_BANK 감사 샘플 ${gradeTotal}건 · DB 전체 ${dbCount ?? "…"}건`
-                  : "문제은행 모드에서만 집계"}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* A-3: 저장 목록으로 이동됨 → 저장 목록 탭 참조 */}
@@ -1002,7 +811,7 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
       <div className="grid grid-cols-2 gap-2.5">
         {/* 좌: 총괄 요약 */}
         <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="px-4 py-2 bg-muted/40 border-b border-border flex items-center gap-2">
+          <div className="px-3 py-1.5 bg-muted/40 border-b border-border flex items-center gap-2">
             <Layers className="h-4 w-4 text-indigo-600" />
             <span className="text-[0.82rem] font-semibold">마스터 데이터 총괄</span>
           </div>
@@ -1246,7 +1055,7 @@ function DashboardMain({ mode, savedList: rawSavedList, onNavigate }: {
               })}
             </tbody>
           </table>
-          <div className="px-4 py-2 bg-muted/20 border-t border-border">
+          <div className="px-3 py-1.5 bg-muted/20 border-t border-border">
             <div className="text-[0.7rem] font-medium text-muted-foreground mb-1">분야 목록</div>
             <div className="flex gap-1.5">
               {FIELD_OPTIONS.map((f) => (

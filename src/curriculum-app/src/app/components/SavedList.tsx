@@ -38,7 +38,7 @@ function TextbookCardItem({
           className="rounded p-0.5 text-muted-foreground hover:bg-blue-50 hover:text-blue-600">
           <Pencil className="h-2.5 w-2.5" />
         </button>
-        <button onClick={(e) => { e.stopPropagation(); onDelete(); }}
+        <button onClick={(e) => { e.stopPropagation(); if (window.confirm("정말 삭제하시겠습니까?")) onDelete(); }}
           className="rounded p-0.5 text-muted-foreground hover:bg-red-50 hover:text-red-600">
           <Trash2 className="h-2.5 w-2.5" />
         </button>
@@ -115,7 +115,7 @@ function CurriculumCard({
           className="rounded p-0.5 text-muted-foreground hover:bg-blue-50 hover:text-blue-600">
           <Pencil className="h-2.5 w-2.5" />
         </button>
-        <button onClick={(e) => { e.stopPropagation(); onDelete(); }}
+        <button onClick={(e) => { e.stopPropagation(); if (window.confirm("정말 삭제하시겠습니까?")) onDelete(); }}
           className="rounded p-0.5 text-muted-foreground hover:bg-red-50 hover:text-red-600">
           <Trash2 className="h-2.5 w-2.5" />
         </button>
@@ -345,7 +345,7 @@ export function SavedList({ mode = "curriculum", savedList, editingId, onEdit, o
                         <button onClick={() => onEdit(item)} className="rounded p-0.5 hover:bg-blue-50 hover:text-blue-600 text-muted-foreground">
                           <Pencil className="h-3 w-3" />
                         </button>
-                        <button onClick={() => onDelete(item.id)} className="rounded p-0.5 hover:bg-red-50 hover:text-red-600 text-muted-foreground">
+                        <button onClick={() => { if (window.confirm("정말 삭제하시겠습니까?")) onDelete(item.id); }} className="rounded p-0.5 hover:bg-red-50 hover:text-red-600 text-muted-foreground">
                           <Trash2 className="h-3 w-3" />
                         </button>
                       </div>

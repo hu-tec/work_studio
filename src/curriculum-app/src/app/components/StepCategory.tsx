@@ -16,7 +16,7 @@ export function StepCategory({ catLarge, catMedium, catSmall, onLargeChange, onM
   const smallOptions = catLarge && catMedium ? CATEGORY_TREE[catLarge]?.[catMedium] || [] : [];
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div className="rounded-xl border border-border bg-card p-3">
       <div className="mb-3 flex items-center gap-2">
         <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-100 text-blue-600">
           <FolderOpen className="h-3.5 w-3.5" />

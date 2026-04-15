@@ -52,6 +52,7 @@ header h1 a{color:#fff;text-decoration:none}
 .fs-sel{height:28px;padding:0 6px;border:1px solid #e3e5ed;border-radius:4px;font-size:11px;background:#fff}
 .fs-qbtn{display:inline-flex;align-items:center;gap:2px;padding:4px 10px;border:1px solid #ddd;border-radius:4px;font-size:11px;cursor:pointer;background:#fff}
 .fs-qbtn:hover{background:#f5f5f5}
+.fs-qbtn.a{background:#222;color:#fff;border-color:#222}
 .fs-search-btn{height:28px;padding:0 16px;background:#222;color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer}
 .fs-search-btn:hover{background:#333}
 .fs-reset{height:28px;padding:0 10px;border:none;background:none;color:#888;font-size:11px;cursor:pointer}
@@ -156,9 +157,13 @@ tbody td{padding:6px;text-align:center;white-space:nowrap;overflow:hidden;text-o
   <div class="fs-body" id="filterBody">
     <div class="fs-row">
       <span class="fs-lbl">검색어</span>
-      <select class="fs-sel" id="searchField">
-        <option value="all">전체</option><option value="name">이름</option><option value="email">이메일</option><option value="num">관리번호</option>
-      </select>
+      <input type="hidden" id="searchField" value="all">
+      <span class="fg-row" style="display:inline-flex;gap:2px">
+        <button class="fs-qbtn a" data-sf="all" onclick="setSearchField(this,'all')">전체</button>
+        <button class="fs-qbtn" data-sf="name" onclick="setSearchField(this,'name')">이름</button>
+        <button class="fs-qbtn" data-sf="email" onclick="setSearchField(this,'email')">이메일</button>
+        <button class="fs-qbtn" data-sf="num" onclick="setSearchField(this,'num')">관리번호</button>
+      </span>
       <input type="text" class="fs-input" style="flex:1;max-width:260px" id="searchInput" placeholder="검색어 입력">
       <button class="fs-search-btn" onclick="applySearch()">검색</button>
       <button class="fs-reset" onclick="resetSearch()">&#x21bb; 초기화</button>
@@ -176,7 +181,12 @@ tbody td{padding:6px;text-align:center;white-space:nowrap;overflow:hidden;text-o
     </div>
     <div class="fs-row">
       <span class="fs-lbl">기간설정</span>
-      <select class="fs-sel" id="dateType"><option>가입일순</option><option>결제일순</option><option>활동일순</option></select>
+      <input type="hidden" id="dateType" value="가입일순">
+      <span class="fg-row" style="display:inline-flex;gap:2px">
+        <button class="fs-qbtn a" data-dt="가입일순" onclick="setDateType(this,'가입일순')">가입일순</button>
+        <button class="fs-qbtn" data-dt="결제일순" onclick="setDateType(this,'결제일순')">결제일순</button>
+        <button class="fs-qbtn" data-dt="활동일순" onclick="setDateType(this,'활동일순')">활동일순</button>
+      </span>
       <input type="date" class="fs-input" id="dateFrom" style="width:130px">
       <span style="color:#999">~</span>
       <input type="date" class="fs-input" id="dateTo" style="width:130px">
@@ -320,6 +330,8 @@ function toggleFilter(){
   b.classList.toggle('hid');
 }
 
+function setSearchField(btn,v){btn.parentNode.querySelectorAll('.fs-qbtn').forEach(b=>b.classList.remove('a'));btn.classList.add('a');document.getElementById('searchField').value=v;}
+function setDateType(btn,v){btn.parentNode.querySelectorAll('.fs-qbtn').forEach(b=>b.classList.remove('a'));btn.classList.add('a');document.getElementById('dateType').value=v;}
 function applySearch(){searchKw=document.getElementById('searchInput').value;currentPage=1;applyFilters();}
 function resetSearch(){
   document.getElementById('searchInput').value='';searchKw='';

@@ -120,15 +120,23 @@ select{appearance:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://w
         <input type="text" id="f-name" placeholder="이름을 입력하세요" required/>
       </div>
       <div class="fg">
-        <label for="f-program">시험 과정</label>
-        <select id="f-program">
-          <option value="TESOL">TESOL</option>
-          <option value="AI번역">AI번역</option>
-          <option value="AI프롬프트">AI프롬프트</option>
-          <option value="AI윤리">AI윤리</option>
-          <option value="ITT정통번역">ITT정통번역</option>
-        </select>
+        <label>시험 과정</label>
+        <input type="hidden" id="f-program" value="TESOL">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button type="button" class="pgm-btn a" data-v="TESOL" onclick="setProgram(this)" style="padding:8px 14px;border:1px solid #1a365d;border-radius:8px;font-size:13px;background:#1a365d;color:#fff;cursor:pointer;font-weight:600">TESOL</button>
+          <button type="button" class="pgm-btn" data-v="AI번역" onclick="setProgram(this)" style="padding:8px 14px;border:1px solid #ddd;border-radius:8px;font-size:13px;background:#fff;color:#555;cursor:pointer">AI번역</button>
+          <button type="button" class="pgm-btn" data-v="AI프롬프트" onclick="setProgram(this)" style="padding:8px 14px;border:1px solid #ddd;border-radius:8px;font-size:13px;background:#fff;color:#555;cursor:pointer">AI프롬프트</button>
+          <button type="button" class="pgm-btn" data-v="AI윤리" onclick="setProgram(this)" style="padding:8px 14px;border:1px solid #ddd;border-radius:8px;font-size:13px;background:#fff;color:#555;cursor:pointer">AI윤리</button>
+          <button type="button" class="pgm-btn" data-v="ITT정통번역" onclick="setProgram(this)" style="padding:8px 14px;border:1px solid #ddd;border-radius:8px;font-size:13px;background:#fff;color:#555;cursor:pointer">ITT정통번역</button>
+        </div>
       </div>
+      <script>
+      function setProgram(btn){
+        btn.parentNode.querySelectorAll('.pgm-btn').forEach(b=>{b.style.background='#fff';b.style.color='#555';b.style.borderColor='#ddd';b.style.fontWeight='normal';b.classList.remove('a');});
+        btn.style.background='#1a365d';btn.style.color='#fff';btn.style.borderColor='#1a365d';btn.style.fontWeight='600';btn.classList.add('a');
+        document.getElementById('f-program').value=btn.dataset.v;
+      }
+      </script>
       <div class="fg">
         <label for="f-date">시험 일자</label>
         <input type="date" id="f-date"/>

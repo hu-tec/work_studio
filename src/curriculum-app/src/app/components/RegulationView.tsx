@@ -147,8 +147,10 @@ function BlockGrid({
   const editItem = (tier: Tier, idx: number, newText: string) =>
     onMutate((b) => ({ ...b, [tier]: b[tier].map((x, i) => (i === idx ? { ...x, text: newText } : x)) }));
 
-  const deleteItem = (tier: Tier, idx: number) =>
+  const deleteItem = (tier: Tier, idx: number) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
     onMutate((b) => ({ ...b, [tier]: b[tier].filter((_, i) => i !== idx) }));
+  };
 
   const moveTier = (tier: Tier, idx: number, newTier: Tier) =>
     onMutate((b) => {
@@ -871,7 +873,7 @@ function RegulationViewInternal() {
 
       {/* ── 결과 없음 ── */}
       {totalShown === 0 && !gapsOnly && (
-        <div className="rounded border border-border bg-muted/30 px-2 py-3 text-center text-[11px] text-muted-foreground">
+        <div className="rounded border border-border bg-muted/30 px-2 py-1.5 text-center text-[11px] text-muted-foreground">
           필터 조건에 맞는 규정이 없습니다. 검색어를 지우거나 필터를 조정하세요.
         </div>
       )}
