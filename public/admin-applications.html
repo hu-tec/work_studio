@@ -173,6 +173,99 @@
     .empty{padding:40px;text-align:center;color:#94a3b8;font-size:12px}
     .loading{padding:20px;text-align:center;color:#6b7280;font-size:11px}
 
+    /* ══════════ GW-STYLE DETAIL POPUP (신규, 기존 인라인 펼침 미간섭) ══════════
+       내용 참조: gw 팝업 / 구현 규칙: 공용 메모리 (compact·4단·칩·드롭다운 금지·실데이터만)
+       네임스페이스: .gwp-* 전용 — 기존 .detail-sec/.fld-grid 등과 충돌 없음 */
+    #gwp{display:none;position:fixed;inset:0;z-index:9000;font-size:11px}
+    #gwp.open{display:block}
+    .gwp-bd{position:absolute;inset:0;background:rgba(15,23,42,.58);backdrop-filter:blur(3px);animation:gwpFade .14s}
+    @keyframes gwpFade{from{opacity:0}to{opacity:1}}
+    .gwp-dlg{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:min(1280px,96vw);max-height:calc(100vh - 28px);background:#f1f5f9;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.38);display:flex;flex-direction:column;overflow:hidden;border:1px solid #cbd5e1}
+    .gwp-hd{display:flex;align-items:center;gap:8px;padding:7px 12px;background:linear-gradient(180deg,#1a365d 0%,#0f2541 100%);color:#fff;flex-shrink:0}
+    .gwp-hd .gwp-name{font-size:14px;font-weight:800}
+    .gwp-hd .gwp-grade{font-size:11px;padding:2px 10px;border-radius:3px;font-weight:800}
+    .gwp-hd .gwp-sub{font-size:10px;color:#cbd5e1;font-weight:600}
+    .gwp-hd .gwp-meta{margin-left:auto;display:flex;gap:10px;font-size:10px;color:#cbd5e1}
+    .gwp-hd .gwp-x{width:24px;height:24px;font-size:14px;color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:4px;cursor:pointer;font-family:inherit;font-weight:700}
+    .gwp-hd .gwp-x:hover{background:#dc2626;border-color:#dc2626}
+    .gwp-tabs{display:flex;background:#fff;border-bottom:1px solid #e5e7eb;padding:0 10px;flex-shrink:0}
+    .gwp-tab{padding:8px 22px;font-size:12px;font-weight:700;color:#64748b;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+    .gwp-tab .ltr{display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;background:#e2e8f0;color:#64748b;border-radius:3px;font-size:10px;font-weight:800}
+    .gwp-tab:hover{color:#1a365d;background:#f8fafc}
+    .gwp-tab.a{color:#0088ff;border-bottom-color:#0088ff}
+    .gwp-tab.a .ltr{background:#0088ff;color:#fff}
+    .gwp-bd2{overflow:auto;padding:8px 10px;flex:1;background:#f1f5f9}
+    .gwp-pn{display:none}
+    .gwp-dlg[data-tab="A"] .gwp-pn[data-pane="A"],
+    .gwp-dlg[data-tab="B"] .gwp-pn[data-pane="B"],
+    .gwp-dlg[data-tab="C"] .gwp-pn[data-pane="C"]{display:block}
+    .gwp-card{background:#fff;border:1px solid #e5e7eb;border-radius:5px;padding:6px 8px;margin-bottom:6px}
+    .gwp-card h5{font-size:10px;font-weight:800;color:#1a365d;padding-bottom:3px;border-bottom:1px solid #e5e7eb;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+    .gwp-card h5 .sp{margin-left:auto;font-size:9px;color:#64748b;font-weight:600}
+    .gwp-g{display:grid;gap:3px}
+    .gwp-g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .gwp-g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .gwp-g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .gwp-2col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+    .gwp-3col{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+    .gwp-4col{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+    @media(max-width:900px){.gwp-4col{grid-template-columns:repeat(2,1fr)}.gwp-3col{grid-template-columns:repeat(2,1fr)}}
+    .gwp-f{padding:3px 5px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:3px;min-width:0}
+    .gwp-f.s2{grid-column:span 2}
+    .gwp-f.s3{grid-column:span 3}
+    .gwp-f.s4{grid-column:span 4}
+    .gwp-fl{font-size:9px;color:#475569;font-weight:800;margin-bottom:1px;letter-spacing:.2px;line-height:1.2}
+    .gwp-fv{font-size:10px;color:#1f2937;word-break:break-all;line-height:1.35;font-weight:500}
+    .gwp-fv.e{color:#cbd5e1;font-weight:400}
+    .gwp-fv.ta{white-space:pre-wrap}
+    .gwp-chips{display:flex;flex-wrap:wrap;gap:2px}
+    .gwp-chip{display:inline-block;padding:1px 6px;background:#e0e7ff;color:#3730a3;border-radius:999px;font-size:9px;font-weight:600;border:1px solid #c7d2fe;line-height:1.4}
+    .gwp-photo{width:96px;height:120px;background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#94a3b8;flex-shrink:0;overflow:hidden;text-align:center;line-height:1.3}
+    .gwp-photo img{width:100%;height:100%;object-fit:cover}
+    .gwp-idr{display:flex;gap:8px;align-items:stretch}
+    .gwp-idr .gwp-idg{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;align-content:start}
+    .gwp-con-row{grid-column:1/-1;display:flex;gap:4px;padding-top:4px;margin-top:2px;border-top:1px dashed #e5e7eb;flex-wrap:wrap}
+    .gwp-con{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;font-size:9px;font-weight:700;border-radius:3px;border:1px solid}
+    .gwp-con.y{background:#dcfce7;color:#15803d;border-color:#86efac}
+    .gwp-con.n{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+    .gwp-con.u{background:#f8fafc;color:#94a3b8;border-color:#e2e8f0}
+    .gwp-tl{display:flex;align-items:stretch;background:linear-gradient(180deg,#fffbeb 0%,#fef9c3 100%);border:1px solid #fde68a;border-radius:5px;padding:0;margin-bottom:6px;overflow:hidden}
+    .gwp-st{flex:1;display:flex;flex-direction:column;padding:6px 10px;border-right:1px dashed #fcd34d;min-width:0;position:relative}
+    .gwp-st:last-child{border-right:none}
+    .gwp-st .t{font-size:9px;font-weight:800;color:#92400e;letter-spacing:.3px;margin-bottom:2px;display:flex;align-items:center;gap:3px}
+    .gwp-st .v{font-size:12px;font-weight:800;color:#1f2937;line-height:1.2}
+    .gwp-st .sub{font-size:9px;color:#78716c;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:12px}
+    .gwp-st.done{background:rgba(255,255,255,.55)}
+    .gwp-st.pend{opacity:.45}
+    .gwp-st .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#d6d3d1}
+    .gwp-st.done .dot{background:#16a34a;box-shadow:0 0 0 2px #dcfce7}
+    .gwp-in{padding:2px 5px;font-size:10px;border:1px solid #d1d5db;border-radius:3px;width:100%;font-family:inherit;background:#fff}
+    .gwp-in:focus{outline:none;border-color:#0088ff}
+    .gwp-ta{padding:4px 6px;font-size:10px;border:1px solid #d1d5db;border-radius:3px;width:100%;min-height:40px;resize:vertical;font-family:inherit;background:#fff}
+    .gwp-ta:focus{outline:none;border-color:#0088ff}
+    .gwp-sc{width:44px;padding:2px 4px;font-size:10px;border:1px solid #d1d5db;border-radius:3px;text-align:center;font-family:inherit;background:#fff}
+    .gwp-btn{padding:3px 8px;font-size:10px;font-weight:700;border:1px solid #cbd5e1;border-radius:3px;background:#fff;color:#1a365d;cursor:pointer;font-family:inherit}
+    .gwp-btn:hover{background:#f1f5f9}
+    .gwp-btn.p{background:#0088ff;color:#fff;border-color:#0088ff}
+    .gwp-btn.p:hover{background:#0070d4}
+    .gwp-gc{padding:5px 14px;font-size:13px;font-weight:800;border-radius:3px;border:1px solid #cbd5e1;background:#fff;color:#64748b;cursor:pointer;font-family:inherit}
+    .gwp-gc:hover{background:#f1f5f9}
+    .gwp-gc.sel.A{background:#16a34a;color:#fff;border-color:#16a34a}
+    .gwp-gc.sel.B{background:#2563eb;color:#fff;border-color:#2563eb}
+    .gwp-gc.sel.C{background:#ea580c;color:#fff;border-color:#ea580c}
+    .gwp-gc.sel.D{background:#64748b;color:#fff;border-color:#64748b}
+    .gwp-cross{margin-top:6px;background:#fff;border:1px solid #e5e7eb;border-radius:5px;padding:6px 8px}
+    .gwp-cross h5{font-size:10px;font-weight:800;color:#1a365d;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+    .gwp-cross h5 .c{margin-left:6px;color:#64748b;font-weight:600;font-size:9px}
+    .gwp-cross table{width:100%;font-size:10px;border-collapse:collapse}
+    .gwp-cross thead th{padding:3px 5px;background:#f9fafb;border-bottom:1px solid #e5e7eb;color:#64748b;font-size:9px;font-weight:700;text-align:left;white-space:nowrap}
+    .gwp-cross tbody td{padding:3px 5px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+    .gwp-cross tbody tr:last-child td{border-bottom:none}
+    .gwp-cross tbody tr:hover{background:#f8fafc;cursor:pointer}
+    .gwp-cross-e{padding:6px;font-size:10px;color:#94a3b8;font-style:italic;text-align:center}
+    .gwp-sm{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;color:#fff;white-space:nowrap}
+    .gwp-hint{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:#64748b;padding:3px 8px;border:1px dashed #cbd5e1;border-radius:4px;margin-right:6px;background:#f8fafc}
+
     /* Embed mode — hide top header when inside admin.html iframe */
     body.embed .top{display:none}
     body.embed .wrap{padding:8px 10px}
@@ -207,6 +300,9 @@
     <div class="dash4" id="dashGrid"></div>
   </div>
 </div>
+
+<!-- GW-style detail popup root (신규, 기존 인라인 펼침과 병행) -->
+<div id="gwp"></div>
 
 <script>
 // ============================================================
@@ -724,6 +820,7 @@ function renderList(filtered) {
         <td>${grade !== '-' ? `<span class="grade grade-${grade} cell-click" onclick="filterBy('finalGrade','${grade}')" title="이 평가로 필터">${grade}</span>` : '-'}</td>
         <td>
           <button class="btn" onclick="toggleExpand(${r.id})">${exp ? '접기' : '펼치기'}</button>
+          <button class="btn" onclick="openGwp(${r.id})" title="A/B/C 탭 상세 팝업">상세 팝업</button>
           <button class="btn btn-danger" onclick="delRow(${r.id})">×</button>
         </td>
         <td>
@@ -939,6 +1036,383 @@ function renderDetail(r) {
         </div>
       </td>
     </tr>`;
+}
+
+// ============================================================
+//  GW-STYLE DETAIL POPUP (신규 · 기존 인라인 펼침과 완전 분리)
+//  내용 참조: gw 팝업 이미지 (사진·기본·학력·경력·자격·비고·이력)
+//  구현 규칙: 공용 메모리 (compact, 4단 그리드, 칩, 드롭다운 금지, 실데이터만)
+//  트리거: 행 액션 셀의 [상세 팝업] 버튼 → openGwp(id)
+//  저장: 기존 saveNested/saveScore/setStatus/setPhase/setGrade 재사용 + gwpRefresh
+// ============================================================
+
+const gwp = { id: null, tab: 'A' };
+
+function openGwp(id) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  gwp.id = id;
+  if (!gwp.tab) gwp.tab = 'A';
+  renderGwp(row);
+  document.getElementById('gwp').classList.add('open');
+  document.addEventListener('keydown', gwpEsc);
+}
+
+function closeGwp() {
+  const root = document.getElementById('gwp');
+  if (root) { root.classList.remove('open'); root.innerHTML = ''; }
+  gwp.id = null;
+  document.removeEventListener('keydown', gwpEsc);
+}
+
+function gwpEsc(e) { if (e.key === 'Escape') closeGwp(); }
+
+function gwpSetTab(tab) {
+  gwp.tab = tab;
+  const dlg = document.querySelector('#gwp .gwp-dlg');
+  if (!dlg) return;
+  dlg.dataset.tab = tab;
+  dlg.querySelectorAll('.gwp-tab').forEach(b => b.classList.toggle('a', b.dataset.t === tab));
+}
+
+function gwpRefresh() {
+  if (gwp.id == null) return;
+  const row = state.rows.find(r => r.id === gwp.id);
+  if (row) renderGwp(row);
+}
+
+// 한 필드 (라벨 + 값) — 값 없으면 '—' (실데이터 규칙 준수)
+function gwpF(label, value, span) {
+  const has = value != null && value !== '' && !(Array.isArray(value) && !value.length);
+  const spanCls = span ? ' s' + span : '';
+  let vHtml;
+  if (!has) {
+    vHtml = `<div class="gwp-fv e">—</div>`;
+  } else if (Array.isArray(value)) {
+    vHtml = `<div class="gwp-chips">${value.map(x => `<span class="gwp-chip">${esc(String(x))}</span>`).join('')}</div>`;
+  } else if (typeof value === 'boolean') {
+    vHtml = `<div class="gwp-fv">${value ? '✓' : '✗'}</div>`;
+  } else {
+    vHtml = `<div class="gwp-fv">${esc(String(value))}</div>`;
+  }
+  return `<div class="gwp-f${spanCls}"><div class="gwp-fl">${esc(label)}</div>${vHtml}</div>`;
+}
+
+// ── PANE A: 인적 (사진 + 기본 + 분류5축 + 학력/경력/자격) ──
+function gwpPaneA(row) {
+  const p1 = row.d.part1 || {};
+  const photoUrl = p1.photoUrl || p1.photo || p1.profileImage || '';
+  const photo = photoUrl
+    ? `<div class="gwp-photo"><img src="${esc(photoUrl)}" alt="프로필"></div>`
+    : `<div class="gwp-photo">사진<br>없음</div>`;
+
+  const basicGrid = `
+    <div class="gwp-idg">
+      ${gwpF('성명', p1.name)}
+      ${gwpF('영문명', p1.nameEn)}
+      ${gwpF('생년월일', p1.birthDate)}
+      ${gwpF('성별', p1.gender)}
+      ${gwpF('연락처', p1.phone)}
+      ${gwpF('이메일', p1.email, 2)}
+      ${gwpF('국적', p1.nationality)}
+      ${gwpF('주소', p1.address, 4)}
+      <div class="gwp-con-row">
+        <span class="gwp-con ${p1.privacyConsent===true?'y':(p1.privacyConsent===false?'n':'u')}">개인정보 ${p1.privacyConsent===true?'✓':(p1.privacyConsent===false?'✗':'—')}</span>
+        <span class="gwp-con ${p1.marketingConsent===true?'y':(p1.marketingConsent===false?'n':'u')}">마케팅 ${p1.marketingConsent===true?'✓':(p1.marketingConsent===false?'✗':'—')}</span>
+      </div>
+    </div>`;
+
+  const identityCard = `
+    <div class="gwp-card">
+      <h5>👤 기본 인적사항</h5>
+      <div class="gwp-idr">${photo}${basicGrid}</div>
+    </div>`;
+
+  // 분류 5축 (3단)
+  const taxCard = `
+    <div class="gwp-card">
+      <h5>🏷️ 분류 5축</h5>
+      <div class="gwp-g gwp-g3">
+        ${gwpF('과목', p1.tax_subject)}
+        ${gwpF('과정', p1.tax_grade)}
+        ${gwpF('산업', p1.tax_industry)}
+        ${gwpF('기능', p1.tax_function)}
+        ${gwpF('영역', p1.tax_domain)}
+        ${gwpF('레이어', p1.tax_layer)}
+      </div>
+    </div>`;
+
+  // 학력/경력/자격 — 모듈 패턴 매칭으로 분류
+  const fieldMeta = buildFieldMeta();
+  const HANDLED = new Set([
+    'name','nameEn','birthDate','gender','phone','email','address','nationality',
+    'photoUrl','photo','profileImage',
+    'tax_subject','tax_grade','tax_function','tax_industry','tax_domain','tax_layer',
+    'privacyConsent','marketingConsent'
+  ]);
+  const edu = [], car = [], qua = [];
+  for (const [k, v] of Object.entries(p1)) {
+    if (HANDLED.has(k)) continue;
+    if (v == null || v === '' || (Array.isArray(v) && !v.length)) continue;
+    const m = fieldMeta[k] || { label: k, type: 'text', moduleId: '_other', moduleName: '기타' };
+    const tag = ((m.moduleId||'') + ' ' + (m.moduleName||'') + ' ' + (m.label||'')).toLowerCase();
+    const item = { label: m.label, value: v, type: m.type };
+    if (/학력|education|\bedu\b|school|univ|전공/.test(tag)) edu.push(item);
+    else if (/경력|career|\bwork\b|experience|근무/.test(tag)) car.push(item);
+    else if (/자격|qualif|license|certif|면허/.test(tag)) qua.push(item);
+  }
+  const groupCard = (title, icon, items) => {
+    const body = items.length
+      ? `<div class="gwp-g gwp-g2">${items.map(it => gwpF(it.label, it.value, (it.type === 'textarea' || Array.isArray(it.value)) ? 2 : null)).join('')}</div>`
+      : `<div class="gwp-fv e" style="padding:6px 2px;text-align:center">등록된 항목 없음</div>`;
+    return `<div class="gwp-card"><h5>${icon} ${title} <span class="sp">${items.length}건</span></h5>${body}</div>`;
+  };
+
+  return `
+    ${identityCard}
+    ${taxCard}
+    <div class="gwp-3col">
+      ${groupCard('학력', '🎓', edu)}
+      ${groupCard('경력', '💼', car)}
+      ${groupCard('자격/면허', '📜', qua)}
+    </div>`;
+}
+
+// ── PANE B: 지원내용 (Part1 나머지 + Part2 전체) ──
+function gwpPaneB(row) {
+  const p1 = row.d.part1 || {};
+  const p2 = row.d.part2 || {};
+  const fieldMeta = buildFieldMeta();
+  const HANDLED = new Set([
+    'name','nameEn','birthDate','gender','phone','email','address','nationality',
+    'photoUrl','photo','profileImage',
+    'tax_subject','tax_grade','tax_function','tax_industry','tax_domain','tax_layer',
+    'privacyConsent','marketingConsent'
+  ]);
+
+  // Pane A에서 학력/경력/자격으로 분류된 키 목록
+  const aKeys = new Set();
+  for (const [k, v] of Object.entries(p1)) {
+    if (HANDLED.has(k)) continue;
+    const m = fieldMeta[k];
+    if (!m) continue;
+    const tag = ((m.moduleId||'') + ' ' + (m.moduleName||'') + ' ' + (m.label||'')).toLowerCase();
+    if (/학력|education|\bedu\b|school|univ|전공|경력|career|\bwork\b|experience|근무|자격|qualif|license|certif|면허/.test(tag)) aKeys.add(k);
+  }
+
+  const groupByModule = (obj, skipKeys) => {
+    const groups = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (HANDLED.has(k) || (skipKeys && skipKeys.has(k))) continue;
+      if (v == null || v === '' || (Array.isArray(v) && !v.length)) continue;
+      const m = fieldMeta[k] || { label: k, type: 'text', moduleId: '_other', moduleName: '기타' };
+      const g = groups[m.moduleId] = groups[m.moduleId] || { name: m.moduleName, items: [] };
+      g.items.push({ key: k, label: m.label, value: v, type: m.type });
+    }
+    const ordered = Object.keys(groups).sort((a, b) => {
+      const ai = MODULE_SECTION_ORDER.indexOf(a);
+      const bi = MODULE_SECTION_ORDER.indexOf(b);
+      if (ai === -1 && bi === -1) return a.localeCompare(b);
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+    return ordered.map(mid => ({ mid, ...groups[mid] }));
+  };
+
+  const p1Groups = groupByModule(p1, aKeys);
+  const p2Groups = groupByModule(p2);
+
+  const renderCard = (g, phase) => {
+    const legacy = /^M-[A-Z]+-/.test(g.mid);
+    const items = g.items.map(it => {
+      const span = (it.type === 'textarea' || (Array.isArray(it.value) && it.value.length >= 4)) ? 2 : null;
+      return gwpF(it.label, it.value, span);
+    }).join('');
+    const icon = legacy ? '🗂️' : (phase === 'p2' ? '📝' : '📋');
+    const phaseTag = phase === 'p2' ? ' <span style="color:#0e7490;font-weight:600">· 2부</span>' : '';
+    return `<div class="gwp-card"><h5>${icon} ${esc(g.name)}${phaseTag} <span class="sp">${g.items.length}필드</span></h5><div class="gwp-g gwp-g2">${items}</div></div>`;
+  };
+
+  const p1Html = p1Groups.map(g => renderCard(g, 'p1')).join('');
+  const p2Html = p2Groups.map(g => renderCard(g, 'p2')).join('');
+
+  if (!p1Html && !p2Html) {
+    return `<div class="gwp-card"><h5>📋 지원내용</h5><div class="gwp-fv e" style="padding:8px 2px;text-align:center">역할별 모듈 응답 없음 · <a href="#" onclick="sendPart2Link(${row.id});return false" style="color:#0088ff">Part 2 링크 생성</a></div></div>`;
+  }
+
+  const p2EmptyHint = !p2Html
+    ? `<div class="gwp-card"><div class="gwp-fv e" style="padding:6px 2px;text-align:center">📝 Part 2 미제출 — <a href="#" onclick="sendPart2Link(${row.id});return false" style="color:#0088ff">링크 생성</a></div></div>`
+    : '';
+
+  return `<div class="gwp-2col">${p1Html}${p2Html}</div>${p2EmptyHint}`;
+}
+
+// ── PANE C: 처리 (타임라인 + 통화/면접/평가 + 동일인 이력) ──
+function gwpPaneC(row) {
+  const id = row.id;
+  const d = row.d;
+  const call = d.call || {};
+  const iv = d.interview || {};
+  const fn = d.final || {};
+  const currentGrade = fn.final_grade || '';
+  const sc = iv.score || {};
+  const total = Number(sc.communication||0) + Number(sc.expertise||0) + Number(sc.attitude||0) + Number(sc.availability||0);
+
+  // 타임라인
+  const step = (done, title, val, sub) => `
+    <div class="gwp-st ${done ? 'done' : 'pend'}">
+      <span class="t"><span class="dot"></span>${title}</span>
+      <span class="v">${done ? esc(val) : '—'}</span>
+      <span class="sub">${sub ? esc(sub) : '&nbsp;'}</span>
+    </div>`;
+  const timeline = `<div class="gwp-tl">
+    ${step(!!row.created_at, '① 접수', (row.created_at||'').slice(0,16).replace('T',' '), '')}
+    ${step(!!call.at, '② 통화', (call.at||'').replace('T',' '), call.by || '')}
+    ${step(total > 0, '③ 면접', total ? `${total} / 20` : '', iv.memo ? String(iv.memo).slice(0, 28) : '')}
+    ${step(!!fn.final_grade, '④ 평가', fn.final_grade || '', fn.final_evaluator || '')}
+  </div>`;
+
+  // 통화 카드
+  const callCard = `
+    <div class="gwp-card">
+      <h5>📞 통화</h5>
+      <div class="gwp-g gwp-g2">
+        <div class="gwp-f"><div class="gwp-fl">일시</div><input class="gwp-in" type="datetime-local" value="${call.at||''}" onchange="saveNested(${id},'call','at',this.value);gwpRefresh()"></div>
+        <div class="gwp-f"><div class="gwp-fl">담당자</div><input class="gwp-in" type="text" value="${esc(call.by||'')}" onchange="saveNested(${id},'call','by',this.value);gwpRefresh()"></div>
+      </div>
+      <div class="gwp-f s2" style="margin-top:3px"><div class="gwp-fl">메모</div><textarea class="gwp-ta" onblur="saveNested(${id},'call','notes',this.value);gwpRefresh()">${esc(call.notes||'')}</textarea></div>
+      <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">
+        <button class="gwp-btn" onclick="setStatus(${id}, 2);gwpRefresh()">통화 완료</button>
+        <button class="gwp-btn p" onclick="setStatus(${id}, 3);setPhase(${id}, 'interview');gwpRefresh()">→ 면접</button>
+      </div>
+    </div>`;
+
+  // 면접 카드
+  const interviewCard = `
+    <div class="gwp-card">
+      <h5>🗣️ 면접 점수 <span class="sp" style="color:#0088ff">${total || '-'} / 20</span></h5>
+      <div class="gwp-g gwp-g4">
+        <div class="gwp-f"><div class="gwp-fl">커뮤니케이션</div><input class="gwp-sc" type="number" min="1" max="5" value="${sc.communication||''}" onchange="saveScore(${id},'communication',this.value);gwpRefresh()"></div>
+        <div class="gwp-f"><div class="gwp-fl">전문성</div><input class="gwp-sc" type="number" min="1" max="5" value="${sc.expertise||''}" onchange="saveScore(${id},'expertise',this.value);gwpRefresh()"></div>
+        <div class="gwp-f"><div class="gwp-fl">태도</div><input class="gwp-sc" type="number" min="1" max="5" value="${sc.attitude||''}" onchange="saveScore(${id},'attitude',this.value);gwpRefresh()"></div>
+        <div class="gwp-f"><div class="gwp-fl">가용성</div><input class="gwp-sc" type="number" min="1" max="5" value="${sc.availability||''}" onchange="saveScore(${id},'availability',this.value);gwpRefresh()"></div>
+      </div>
+      <div class="gwp-f s2" style="margin-top:3px"><div class="gwp-fl">메모</div><textarea class="gwp-ta" onblur="saveNested(${id},'interview','memo',this.value);gwpRefresh()">${esc(iv.memo||'')}</textarea></div>
+    </div>`;
+
+  // 최종 평가 카드 (드롭다운 금지 원칙 — 칩 버튼)
+  const avgScore = (Number(fn.final_autoScore)||0) + (Number(fn.final_manualScore)||0);
+  const gradeChip = (g) => `<button class="gwp-gc ${currentGrade===g?'sel '+g:''}" onclick="setGrade(${id},'${g}');gwpRefresh()">${g}</button>`;
+  const finalCard = `
+    <div class="gwp-card">
+      <h5>🏆 최종 등급 <span class="sp">합계 ${avgScore}점</span></h5>
+      <div class="gwp-g gwp-g2">
+        <div class="gwp-f"><div class="gwp-fl">자동 점수</div><input class="gwp-in" type="number" value="${fn.final_autoScore||''}" onchange="saveNested(${id},'final','final_autoScore',Number(this.value));gwpRefresh()"></div>
+        <div class="gwp-f"><div class="gwp-fl">수동 점수</div><input class="gwp-in" type="number" value="${fn.final_manualScore||''}" onchange="saveNested(${id},'final','final_manualScore',Number(this.value));gwpRefresh()"></div>
+      </div>
+      <div style="display:flex;gap:3px;margin:5px 0;flex-wrap:wrap">
+        ${gradeChip('A')}${gradeChip('B')}${gradeChip('C')}${gradeChip('D')}
+        <button class="gwp-gc" style="padding:5px 10px;font-size:11px" onclick="setGrade(${id},'');gwpRefresh()">해제</button>
+      </div>
+      <div class="gwp-f s2"><div class="gwp-fl">평가 사유</div><textarea class="gwp-ta" onblur="saveNested(${id},'final','final_reason',this.value);gwpRefresh()">${esc(fn.final_reason||'')}</textarea></div>
+      <div class="gwp-g gwp-g2" style="margin-top:3px">
+        <div class="gwp-f"><div class="gwp-fl">평가자</div><input class="gwp-in" type="text" value="${esc(fn.final_evaluator||'')}" onchange="saveNested(${id},'final','final_evaluator',this.value);gwpRefresh()"></div>
+        <div class="gwp-f"><div class="gwp-fl">평가일</div><input class="gwp-in" type="datetime-local" value="${fn.final_evalAt||''}" onchange="saveNested(${id},'final','final_evalAt',this.value);gwpRefresh()"></div>
+      </div>
+    </div>`;
+
+  // 동일인 다른 접수 이력 (email/phone normalize 매칭)
+  const p1 = d.part1 || {};
+  const email = (p1.email || '').trim().toLowerCase();
+  const phone = (p1.phone || '').replace(/\D/g, '');
+  const others = (email || phone.length >= 8) ? state.rows.filter(r => {
+    if (r.id === row.id) return false;
+    const op1 = r.d.part1 || {};
+    const oe = (op1.email || '').trim().toLowerCase();
+    const op = (op1.phone || '').replace(/\D/g, '');
+    return (email && oe === email) || (phone.length >= 8 && op === phone);
+  }) : [];
+
+  let crossHtml;
+  if (others.length) {
+    const trs = others.map(o => {
+      const s2 = siteInfo(o.d._site);
+      const t2 = templateInfo(o.d._site, o.d._formId);
+      const ph = o.d._phase || 'part1';
+      const phaseObj = PHASES.find(p => p.id === ph);
+      const stObj = STATUSES.find(x => x.id === Number(o.d._status||0));
+      const g = o.d.final?.final_grade;
+      const formLabel = t2 ? (t2.shortName || t2.name) : (o.d._formId || '-');
+      return `<tr onclick="openGwp(${o.id})" title="이 접수 팝업 열기">
+        <td>${esc((o.created_at||'').slice(0,10))}</td>
+        <td><span class="gwp-sm" style="background:${s2.color}">${s2.icon||''} ${esc(s2.name||o.d._site||'')}</span></td>
+        <td>${esc(formLabel)}</td>
+        <td><span class="phase phase-${ph}">${phaseObj?phaseObj.label:ph}</span></td>
+        <td><span class="status ${stObj?stObj.cls:'st-0'}">${stObj?stObj.label:'-'}</span></td>
+        <td>${g ? `<span class="grade grade-${g}">${g}</span>` : '<span style="color:#cbd5e1">-</span>'}</td>
+      </tr>`;
+    }).join('');
+    crossHtml = `<div class="gwp-cross">
+      <h5>📚 동일인 다른 접수 이력 <span class="c">${others.length}건 · email/phone 매칭</span></h5>
+      <table>
+        <thead><tr><th>접수일</th><th>출처</th><th>신청서</th><th>단계</th><th>상태</th><th>평가</th></tr></thead>
+        <tbody>${trs}</tbody>
+      </table>
+    </div>`;
+  } else {
+    crossHtml = `<div class="gwp-cross"><h5>📚 동일인 다른 접수 이력</h5><div class="gwp-cross-e">같은 이메일/전화번호로 제출된 다른 접수 없음</div></div>`;
+  }
+
+  return `
+    ${timeline}
+    <div class="gwp-3col">
+      ${callCard}
+      ${interviewCard}
+      ${finalCard}
+    </div>
+    ${crossHtml}`;
+}
+
+function renderGwp(row) {
+  const d = row.d;
+  const s = siteInfo(d._site);
+  const t = templateInfo(d._site, d._formId);
+  const formLabel = t ? (t.shortName || t.name) : (d._formId || '-');
+  const currentGrade = d.final?.final_grade || '';
+  const gradeColors = { A:'#16a34a', B:'#2563eb', C:'#ea580c', D:'#64748b' };
+  const gradeBadge = currentGrade
+    ? `<span class="gwp-grade" style="background:${gradeColors[currentGrade]};color:#fff">${currentGrade}</span>`
+    : '<span class="gwp-grade" style="background:rgba(255,255,255,.1);color:#cbd5e1;border:1px dashed #cbd5e1">미평가</span>';
+
+  const header = `
+    <div class="gwp-hd">
+      <span class="gwp-name">${esc(getName(d))}</span>
+      ${gradeBadge}
+      <span class="gwp-sub">${s.icon||''} ${esc(s.name||d._site||'')} · ${esc(formLabel)}</span>
+      <span class="gwp-meta">
+        <span>📞 ${esc(getPhone(d)||'-')}</span>
+        <span>✉ ${esc(getEmail(d)||'-')}</span>
+        <span>📅 ${esc((row.created_at||'').slice(0,10))}</span>
+      </span>
+      <button class="gwp-x" onclick="closeGwp()" title="닫기 (Esc)">×</button>
+    </div>
+    <div class="gwp-tabs">
+      <button class="gwp-tab ${gwp.tab==='A'?'a':''}" data-t="A" onclick="gwpSetTab('A')"><span class="ltr">A</span>인적</button>
+      <button class="gwp-tab ${gwp.tab==='B'?'a':''}" data-t="B" onclick="gwpSetTab('B')"><span class="ltr">B</span>지원내용</button>
+      <button class="gwp-tab ${gwp.tab==='C'?'a':''}" data-t="C" onclick="gwpSetTab('C')"><span class="ltr">C</span>처리</button>
+    </div>`;
+
+  document.getElementById('gwp').innerHTML = `
+    <div class="gwp-bd" onclick="closeGwp()"></div>
+    <div class="gwp-dlg" data-tab="${gwp.tab}">
+      ${header}
+      <div class="gwp-bd2">
+        <div class="gwp-pn" data-pane="A">${gwpPaneA(row)}</div>
+        <div class="gwp-pn" data-pane="B">${gwpPaneB(row)}</div>
+        <div class="gwp-pn" data-pane="C">${gwpPaneC(row)}</div>
+      </div>
+    </div>`;
 }
 
 // ============================================================
