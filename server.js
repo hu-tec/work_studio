@@ -67,6 +67,58 @@ function migrateLegacySchema() {
 }
 migrateLegacySchema();
 
+// ============================================================
+//  homepage_modules 기본 시드 — 빈 테이블일 때 1회 주입
+// ============================================================
+const DEFAULT_HP_MODULES = [
+  // 레이아웃
+  { moduleId: "HM-BANNER-HUTECHC", name: "휴텍씨 기본 배너", type: "banner", category: "layout",
+    data: { title: "휴텍씨 | AI 번역·교육 플랫폼", subtitle: "맞춤형 전문가 매칭 서비스", image: "", ctaLabel: "문의하기", ctaUrl: "#inquiry" } },
+  { moduleId: "HM-NAV-DEFAULT", name: "기본 네비게이션", type: "nav", category: "layout",
+    data: { sections: [{ id: "about", label: "소개" }, { id: "apply", label: "신청" }, { id: "faq", label: "FAQ" }, { id: "contact", label: "문의" }] } },
+  { moduleId: "HM-FOOTER-HUTECHC", name: "휴텍씨 기본 푸터", type: "footer", category: "layout",
+    data: { company: "(주)휴텍씨", address: "서울특별시 강남구", contact: "contact@hutechc.com", copyright: "© HuTechC. All rights reserved." } },
+  // 커뮤니티
+  { moduleId: "HM-FAQ-BASIC", name: "기본 FAQ", type: "faq", category: "community",
+    data: { items: [
+      { q: "신청 절차는 어떻게 되나요?", a: "홈페이지에서 폼 작성 → 내부 검토 → 승인 → 시작합니다." },
+      { q: "비용은 얼마인가요?", a: "서비스 종류에 따라 상이하며, 상세 견적은 문의 주세요." },
+    ] } },
+  { moduleId: "HM-NOTICE-BASIC", name: "기본 공지 (빈)", type: "notice", category: "community",
+    data: { items: [] } },
+  { moduleId: "HM-QNA-DEFAULT", name: "기본 Q&A", type: "qna", category: "community",
+    data: { policy: "auto", categories: ["일반", "기술", "결제"] } },
+  { moduleId: "HM-REVIEW-DEFAULT", name: "기본 후기", type: "review", category: "community",
+    data: { limit: 10, sort: "latest" } },
+  { moduleId: "HM-BLOG-DEFAULT", name: "기본 블로그", type: "blog", category: "community",
+    data: { categories: ["소식", "사례"] } },
+  // 지원/접수
+  { moduleId: "HM-INQUIRY-BASIC", name: "기본 1:1 문의", type: "inquiry", category: "form",
+    data: { fields: ["name", "email", "phone", "title", "content"] } },
+  // 법적
+  { moduleId: "HM-TERMS-V1", name: "이용약관 v1", type: "terms", category: "legal",
+    data: { text: "제1조 (목적)\n본 약관은 (주)휴텍씨가 제공하는 서비스의 이용 조건 및 절차, 기타 필요한 사항을 규정함을 목적으로 합니다.\n\n(샘플 텍스트 — 실제 약관으로 대체하세요.)" } },
+  { moduleId: "HM-PRIVACY-V1", name: "개인정보처리방침 v1", type: "privacy", category: "legal",
+    data: { text: "(주)휴텍씨는 이용자의 개인정보를 중요시하며 개인정보보호법을 준수합니다.\n\n(샘플 텍스트 — 실제 방침으로 대체하세요.)" } },
+];
+
+function seedHomepageModules() {
+  try {
+    const rows = getAll("homepage_modules");
+    if (rows.length > 0) {
+      console.log(`[seed] homepage_modules: ${rows.length} rows already exist, skip`);
+      return;
+    }
+    for (const mod of DEFAULT_HP_MODULES) {
+      insert("homepage_modules", mod);
+    }
+    console.log(`[seed] homepage_modules: ${DEFAULT_HP_MODULES.length} default modules inserted`);
+  } catch (e) {
+    console.error("[seed] homepage_modules failed:", e.message);
+  }
+}
+seedHomepageModules();
+
 const S3_BUCKET = process.env.S3_BUCKET || "work-studio-uploads";
 const S3_REGION = process.env.S3_REGION || "ap-northeast-2";
 const s3 = new S3Client({ region: S3_REGION });
@@ -123,19 +175,35 @@ function loadHomepageBySlug(slug) {
   return null;
 }
 
-function loadFormTemplatesParsed() {
-  return getAll("form_templates").map(row => {
-    try { return Object.assign({}, JSON.parse(row.data), { id: row.id }); }
-    catch { return null; }
-  }).filter(Boolean);
+function loadModulesById() {
+  const map = {};
+  getAll("homepage_modules").forEach(row => {
+    try {
+      const d = JSON.parse(row.data);
+      if (d && d.moduleId) map[d.moduleId] = Object.assign({}, d, { id: row.id });
+    } catch {}
+  });
+  return map;
+}
+
+function loadTemplatesById() {
+  const map = {};
+  getAll("form_templates").forEach(row => {
+    try {
+      const d = JSON.parse(row.data);
+      if (d) map[row.id] = Object.assign({}, d, { id: row.id });
+    } catch {}
+  });
+  return map;
 }
 
 app.get("/api/hp-prd/:slug", (req, res) => {
   const { slug } = req.params;
   const hp = loadHomepageBySlug(slug);
   if (!hp) return res.status(404).json({ error: "Not found", slug });
-  const templates = loadFormTemplatesParsed();
-  const markdown = buildPrd(hp, templates);
+  const modulesById = loadModulesById();
+  const templatesById = loadTemplatesById();
+  const markdown = buildPrd(hp, modulesById, templatesById);
   res.json({
     slug: hp.slug,
     name: hp.name,
@@ -334,8 +402,9 @@ app.get("/hp/:slug", (req, res) => {
   }
 
   if (wantsMd) {
-    const templates = loadFormTemplatesParsed();
-    const markdown = buildPrd(hp, templates);
+    const modulesById = loadModulesById();
+    const templatesById = loadTemplatesById();
+    const markdown = buildPrd(hp, modulesById, templatesById);
     return res
       .type('text/markdown; charset=utf-8')
       .set('Content-Disposition', `inline; filename="${slug}.md"`)

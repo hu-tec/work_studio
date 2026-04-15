@@ -3,293 +3,174 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>홈페이지 생성 - Work Studio</title>
+<title>홈생성 - Work Studio</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font:12px/1.4 'Pretendard',-apple-system,sans-serif;background:#f0f2f5;color:#0f172a;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+body{font:12px/1.45 'Pretendard',-apple-system,sans-serif;background:#f3f4f6;color:#0f172a;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 a{color:inherit;text-decoration:none}
 
 header{background:#1a365d;color:#fff;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 header h1{font-size:13px;font-weight:700}
-header h1 .sub{font-weight:400;font-size:11px;opacity:.7;margin-left:6px}
-header .hr{display:flex;align-items:center;gap:8px;font-size:11px}
-header .hr .ui{color:rgba(255,255,255,.6)}
-header .hr button{padding:2px 10px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:3px;font-size:10px;cursor:pointer}
+header h1 a{color:#fff}
+header h1 .sub{font-weight:400;font-size:11px;opacity:.8;margin-left:6px}
+header .hr{display:flex;align-items:center;gap:6px;font-size:11px}
+header .hr button{padding:3px 10px;background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:3px;font-size:10px;cursor:pointer;font-family:inherit}
 header .hr button:hover{background:rgba(255,255,255,.25)}
 .dirty-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-left:4px}
 
-.short-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:5px 12px;display:flex;align-items:center;gap:5px;flex-shrink:0;flex-wrap:wrap}
-.short-bar .s-lbl{font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-right:2px}
-.short-bar .s-sep{width:1px;height:14px;background:#e2e8f0;margin:0 4px}
-.s-btn{padding:3px 8px;border:1px solid #e2e8f0;background:#fff;border-radius:3px;font-size:10px;cursor:pointer;color:#475569;font-weight:500;font-family:inherit}
-.s-btn:hover{background:#f1f5f9;border-color:#cbd5e1}
-.s-btn.a{background:#1a365d;color:#fff;border-color:#1a365d}
+/* ── Layout ─────────────────────────────── */
+.fe-wrap{display:flex;gap:10px;padding:10px;flex:1;overflow:hidden}
+.fe-sidebar{width:250px;background:#fff;border-radius:6px;border:1px solid #e3e5ed;overflow-y:auto;flex-shrink:0}
+.fe-main{flex:1;overflow-y:auto}
 
-.steps{background:#fff;border-bottom:1px solid #e2e8f0;padding:6px 14px;display:flex;align-items:center;gap:4px;flex-shrink:0}
-.step-node{display:flex;align-items:center;gap:5px;cursor:pointer;padding:2px 4px;border-radius:4px;transition:.1s}
-.step-node:hover{background:#f8fafc}
-.step-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:#e2e8f0;color:#94a3b8;transition:.15s}
-.step-node.done .step-dot{background:#059669;color:#fff}
-.step-lbl{font-size:10px;color:#64748b;font-weight:500}
-.step-node.done .step-lbl{color:#0f172a;font-weight:700}
-.step-bar{flex:0 0 30px;height:2px;background:#e2e8f0;border-radius:1px}
-.step-bar.done{background:#059669}
-.steps .prog-summary{margin-left:auto;font-size:10px;color:#64748b}
-.steps .prog-summary b{color:#0f172a}
+/* ── Sidebar ────────────────────────────── */
+.sb-hd{padding:7px 10px;font-size:10px;font-weight:700;color:#0088ff;background:#fafbfc;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;text-transform:uppercase;letter-spacing:.3px}
+.sb-hd.lib{border-top:2px solid #0088ff;margin-top:4px;background:#f0f4ff}
+.sb-hd .cnt{color:#94a3b8;font-weight:400;font-size:9px}
+.sb-hd button{background:#16a34a;color:#fff;border:none;padding:2px 7px;border-radius:3px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit}
+.sb-hd button:hover{background:#15803d}
 
-.layout{display:flex;flex:1;overflow:hidden;min-height:0}
+.fe-site{padding:6px 10px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.fe-site:hover{background:#f8fafc}
+.fe-site.a{background:#f0f4ff;font-weight:700;color:#0088ff;border-left:3px solid #0088ff;padding-left:7px}
+.fe-site .cnt{font-size:9px;color:#94a3b8;font-weight:400}
 
-.lp{width:230px;min-width:230px;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
-.lp-hd{padding:6px 8px;border-bottom:1px solid #e2e8f0;display:flex;gap:4px}
-.lp-hd input{flex:1;height:24px;padding:0 8px;border:1px solid #e2e8f0;border-radius:3px;font-size:11px;outline:none}
-.lp-hd input:focus{border-color:#1a365d}
-.lp-hd button{padding:0 9px;background:#1a365d;color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-weight:600;white-space:nowrap}
-.lp-hd button:hover{background:#2d4a7c}
-.lp-tools{padding:4px 8px;border-bottom:1px solid #f1f5f9;display:flex;gap:4px;align-items:center}
-.lp-tools button{padding:2px 6px;border:1px solid #e2e8f0;background:#fff;border-radius:3px;font-size:9px;cursor:pointer;color:#475569}
-.lp-tools .cnt{margin-left:auto;font-size:9px;color:#64748b}
-.lp-tools .cnt b{color:#0f172a}
-.lp-list{flex:1;overflow-y:auto}
-.lp-empty{padding:30px 10px;text-align:center;color:#94a3b8;font-size:10px;line-height:1.6}
-.hp-row{padding:6px 8px;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:.1s;position:relative}
-.hp-row:hover{background:#f8fafc}
-.hp-row.a{background:#eef2ff;border-left:2px solid #1a365d;padding-left:6px}
-.hp-row .hp-top{display:flex;align-items:center;gap:4px;margin-bottom:2px}
-.hp-row .hp-name{font-size:11px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hp-row .hp-st{font-size:8px;padding:1px 5px;border-radius:8px;font-weight:700;text-transform:uppercase}
-.st-draft{background:#fef3c7;color:#d97706}
-.st-published{background:#d1fae5;color:#059669}
-.st-archived{background:#f3f4f6;color:#64748b}
-.hp-row .hp-meta{font-size:9px;color:#94a3b8;display:flex;gap:5px}
-.hp-prog{display:flex;gap:2px;margin-top:3px}
-.hp-prog-dot{flex:1;height:4px;border-radius:2px;background:#e2e8f0}
-.hp-prog-dot.on{background:#059669}
-.hp-row .hp-del{position:absolute;right:4px;top:4px;opacity:0;width:16px;height:16px;border:none;background:#fee2e2;color:#dc2626;border-radius:3px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center}
-.hp-row:hover .hp-del{opacity:1}
-.hp-det{display:none;padding:5px 0 0;border-top:1px dashed #e2e8f0;margin-top:4px;font-size:9px;color:#64748b;line-height:1.5}
-.hp-row.exp .hp-det{display:block}
+.fe-form-item{padding:4px 10px 4px 22px;cursor:pointer;font-size:11px;color:#555;border-bottom:1px solid #f8f8f8;display:flex;justify-content:space-between;gap:4px;align-items:center}
+.fe-form-item:hover{background:#f8fafc;color:#0088ff}
+.fe-form-item.a{background:#e8f4ff;font-weight:700;color:#0088ff}
+.fe-form-item .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fe-form-item .meta{font-size:9px;color:#94a3b8;font-weight:400}
+.fe-form-item.plus{color:#16a34a;font-style:italic}
+.fe-form-item.plus:hover{background:#f0fdf4}
 
-.cp{flex:1;overflow-y:auto;padding:12px 14px;min-width:0;background:#f0f2f5}
-.cp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#94a3b8;gap:10px;font-size:12px;text-align:center}
-.cp-empty .big-ic{font-size:44px}
-.cp-empty button{padding:8px 18px;background:#1a365d;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+.rg-head{padding:4px 10px;font-size:9px;font-weight:700;background:#fafbfc;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eee;text-transform:uppercase;letter-spacing:.3px}
+.rg-sub{padding:2px 10px 2px 18px;font-size:8px;font-weight:600;color:#94a3b8;background:#fff;text-transform:uppercase;letter-spacing:.2px}
 
-.step-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
-.step-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed #e2e8f0}
-.step-hd .step-n{width:24px;height:24px;border-radius:50%;background:#1a365d;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
-.step-hd h3{font-size:13px;font-weight:700;flex:1;color:#0f172a}
-.step-hd h3 .meta{font-size:10px;color:#64748b;font-weight:500;margin-left:6px}
-.step-hd .step-sts{font-size:9px;padding:2px 8px;border-radius:10px;background:#f1f5f9;color:#64748b;font-weight:700}
-.step-hd .step-sts.done{background:#d1fae5;color:#059669}
-.step-body{padding:2px}
-.hint{font-size:10px;color:#94a3b8;margin-bottom:6px;padding-left:2px;line-height:1.5}
+/* ── Main Editor ─────────────────────────── */
+.fe-editor{background:#fff;border-radius:6px;border:1px solid #e3e5ed;padding:12px 14px}
+.fe-editor h3{font-size:13px;font-weight:700;color:#0088ff;margin-bottom:10px}
+.fe-toolbar{display:flex;gap:6px;margin-bottom:10px;align-items:center;flex-wrap:wrap}
+.fe-toolbar button{padding:5px 13px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.fe-toolbar .meta-summary{margin-left:auto;font-size:10px;color:#64748b}
 
-.fld{margin-bottom:6px}
-.fld label{display:block;font-size:9px;color:#64748b;font-weight:700;margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px}
-.fld input[type=text],.fld input[type=url],.fld input[type=email],.fld input[type=number],.fld textarea{width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:11px;outline:none;font-family:inherit;color:#0f172a}
-.fld input:focus,.fld textarea:focus{border-color:#1a365d;background:#f8fafc}
-.fld textarea{resize:vertical;min-height:48px}
-.fld-row{display:flex;gap:6px}
-.fld-row .fld{flex:1}
+.fe-meta{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:8px;padding:8px 10px;background:#fafbfc;border:1px solid #e3e5ed;border-radius:5px}
+.fe-meta .fld{display:flex;flex-direction:column;gap:2px}
+.fe-meta .fld label{font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.3px}
+.fe-meta .fld input{padding:4px 8px;border:1px solid #cbd5e1;border-radius:3px;font-size:11px;font-family:inherit;outline:none}
+.fe-meta .fld input:focus{border-color:#0088ff;background:#fefefe}
+.fe-meta .chips{display:flex;gap:3px;flex-wrap:wrap}
 
-.chips{display:flex;flex-wrap:wrap;gap:4px}
-.chip{padding:3px 9px;border:1px solid #e2e8f0;background:#fff;font-size:10px;cursor:pointer;color:#475569;display:inline-flex;align-items:center;gap:3px;font-weight:500;font-family:inherit}
-.chip.sq{border-radius:4px}
-.chip.rd{border-radius:999px}
-.chip:hover{background:#f1f5f9;border-color:#cbd5e1}
-.chip.a{background:#1a365d;color:#fff;border-color:#1a365d}
-.chip.a.rd{background:#2563eb;border-color:#2563eb}
+/* ── Chips ──────────────────────────────── */
+.chip{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border:1px solid #cbd5e1;border-radius:3px;background:#fff;font-size:10px;cursor:pointer;color:#64748b;font-family:inherit;font-weight:600}
+.chip:hover{background:#f1f5f9;border-color:#94a3b8}
+.chip.a{background:#0088ff;color:#fff;border-color:#0088ff}
+.chip.rd{border-radius:10px}
+.chip.sm{padding:2px 6px;font-size:9px}
 
-/* GitHub verify result */
-.gh-result{margin-top:8px;padding:8px 10px;border-radius:6px;font-size:11px;border:1px solid #e2e8f0}
-.gh-result.ok{background:#ecfdf5;border-color:#059669}
-.gh-result.err{background:#fef2f2;border-color:#dc2626}
-.gh-result .gh-title{font-weight:700;color:#0f172a;margin-bottom:3px;display:flex;align-items:center;gap:6px}
-.gh-result .gh-meta{font-size:10px;color:#64748b;line-height:1.6}
-.gh-result .gh-meta code{background:#f1f5f9;padding:1px 4px;border-radius:2px;font-family:monospace;font-size:9px}
+/* ── Phase block (sections block) ────────── */
+.phase-block{background:#fff;border:1px solid #e3e5ed;border-radius:6px;padding:10px;margin-bottom:10px}
+.phase-block h4{font-size:12px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px;color:#1a365d}
+.phase-block h4 .pbadge{padding:2px 8px;border-radius:10px;font-size:10px;color:#fff;background:#1a365d}
+.phase-block h4 .meta{color:#888;font-weight:400;font-size:10px}
 
-/* Common module card */
-.cm-card{border:1px solid #e2e8f0;border-radius:6px;margin-bottom:5px;overflow:hidden;background:#fff}
-.cm-card.disabled{opacity:.5}
-.cm-hd{display:flex;align-items:center;gap:6px;padding:7px 10px;cursor:pointer;background:#f8fafc;transition:.1s}
-.cm-hd:hover{background:#f1f5f9}
-.cm-card.exp .cm-hd{background:#eef2ff;border-bottom:1px solid #e2e8f0}
-.cm-hd .cm-chev{width:12px;text-align:center;color:#64748b;font-size:10px;transition:.15s}
-.cm-card.exp .cm-hd .cm-chev{transform:rotate(90deg)}
-.cm-hd .cm-ic{font-size:14px}
-.cm-hd .cm-nm{flex:1;font-size:11px;font-weight:700;color:#0f172a}
-.cm-hd .cm-cat{font-size:9px;color:#94a3b8;padding:1px 6px;background:#f1f5f9;border-radius:3px;font-weight:600}
-.cm-hd .cm-cnt{font-size:9px;color:#64748b;margin:0 4px}
-.cm-tog{width:30px;height:16px;border-radius:8px;border:none;cursor:pointer;position:relative;transition:.15s;flex-shrink:0}
-.cm-tog.on{background:#059669}
-.cm-tog.off{background:#cbd5e1}
-.cm-tog::after{content:'';position:absolute;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:.15s}
-.cm-tog.on::after{left:16px}
-.cm-tog.off::after{left:2px}
-.cm-body{display:none;padding:10px;border-top:1px solid #f1f5f9}
-.cm-card.exp .cm-body{display:block}
+.phase-mod-chips{display:flex;gap:3px;flex-wrap:wrap;padding:6px 8px;background:#f8fafc;border-radius:4px;margin-bottom:6px;min-height:30px;align-items:center}
+.phase-mod-chip{display:inline-flex;align-items:center;gap:2px;padding:3px 7px;border-radius:3px;font-size:10px;font-weight:600;border:1px solid}
+.phase-mod-chip .mv{cursor:pointer;opacity:.5;padding:0 1px;font-size:9px;user-select:none}
+.phase-mod-chip .mv:hover{opacity:1}
+.phase-mod-chip button.ed{margin-left:2px;background:#fff;font-size:8px;padding:1px 4px;border-radius:2px;cursor:pointer;font-weight:700;font-family:inherit}
+.phase-mod-chip .x{cursor:pointer;font-size:12px;padding:0 2px;margin-left:2px;opacity:.7}
+.phase-mod-chip .x:hover{opacity:1;color:#dc2626}
 
-/* List editor (notice/faq/sections etc) */
-.list-ed{display:flex;flex-direction:column;gap:4px}
-.list-ed-item{display:flex;gap:4px;align-items:flex-start;padding:5px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px}
-.list-ed-item .idx{width:18px;height:18px;border-radius:50%;background:#1a365d;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;margin-top:2px}
-.list-ed-item .fields{flex:1;display:flex;flex-direction:column;gap:3px}
-.list-ed-item .fields input,.list-ed-item .fields textarea{padding:3px 6px;border:1px solid #e2e8f0;border-radius:3px;font-size:10px;font-family:inherit}
-.list-ed-item .rm{padding:0 6px;background:#fee2e2;color:#dc2626;border:none;border-radius:3px;font-size:10px;cursor:pointer;font-weight:700;align-self:flex-start}
-.list-ed-add{padding:5px 10px;border:1px dashed #cbd5e1;background:#fff;border-radius:4px;font-size:10px;cursor:pointer;color:#1a365d;font-weight:600}
-.list-ed-add:hover{background:#eef2ff}
+.phase-add{margin-top:6px;padding-top:6px;border-top:1px dashed #e3e5ed}
+.phase-add .title{font-size:9px;color:#64748b;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+.phase-add-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:3px}
+.phase-add-row .label{font-size:8px;font-weight:700;min-width:64px;padding:3px 0;text-transform:uppercase;letter-spacing:.2px}
+.phase-add-row .chips-wrap{flex:1;display:flex;flex-wrap:wrap;gap:2px}
+.phase-add-chip{display:inline-flex;align-items:center;gap:2px;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:600;border:1px solid;cursor:pointer}
 
-/* Step 3: filter rows */
-.filter-bar{display:flex;flex-direction:column;gap:5px;padding:6px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;margin-bottom:8px}
-.filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.filter-row .fr-lbl{font-size:9px;color:#94a3b8;font-weight:700;min-width:44px;text-transform:uppercase}
+/* ── 4-col content preview ──────────────── */
+.phase-sections{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.ps-card{background:#fff;border:1px solid #e3e5ed;border-radius:4px;overflow:hidden;font-size:9px}
+.ps-head{padding:4px 7px;display:flex;justify-content:space-between;align-items:center;font-weight:700;gap:4px}
+.ps-head .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ps-head button{background:#fff;border:1px solid;padding:0 5px;border-radius:2px;font-size:8px;cursor:pointer;font-weight:700;font-family:inherit}
+.ps-body{padding:4px 7px;max-height:130px;overflow-y:auto}
+.ps-fld{padding:1px 0;border-bottom:1px dashed #f1f5f9;display:flex;justify-content:space-between;gap:3px}
+.ps-fld .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#475569;font-weight:600}
+.ps-fld .tp{color:#94a3b8;font-size:8px}
 
-/* Template cards */
-.ft-list{display:flex;flex-direction:column;gap:6px;margin-top:4px}
-.ft-card{padding:8px 10px;border:1px solid #e2e8f0;border-radius:6px;background:#fff}
-.ft-card.sel{border-color:#1a365d;background:#eef2ff}
-.ft-card .ft-top{display:flex;align-items:center;gap:6px;margin-bottom:5px}
-.ft-card .ft-nm{font-weight:700;color:#0f172a;font-size:11px;flex:1}
-.ft-card .ft-badge{font-size:9px;padding:1px 6px;border-radius:3px;font-weight:700}
-.ft-card .ft-badge.site{background:#1a365d;color:#fff}
-.ft-card .ft-badge.role{background:#7c3aed;color:#fff}
-.ft-card .ft-phases{display:flex;flex-direction:column;gap:4px;margin-top:4px}
-.ft-card .ph-block{padding:5px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;display:flex;flex-direction:column;gap:3px}
-.ft-card .ph-block.on{background:#ecfdf5;border-color:#059669}
-.ft-card .ph-hd{display:flex;align-items:center;gap:5px}
-.ft-card .ph-hd input{accent-color:#059669;cursor:pointer}
-.ft-card .ph-name{font-weight:700;font-size:10px;color:#0f172a;flex:1}
-.ft-card .ph-cnt{font-size:9px;color:#64748b;background:#fff;padding:1px 6px;border-radius:3px}
-.ft-card .ph-mods{display:flex;flex-wrap:wrap;gap:2px;padding-left:18px}
-.ft-card .ph-mod{font-size:8px;padding:1px 5px;background:#fff;border:1px solid #e2e8f0;border-radius:3px;color:#64748b;font-family:monospace}
-.ft-empty{padding:16px;text-align:center;color:#94a3b8;font-size:10px;border:1px dashed #e2e8f0;border-radius:6px;line-height:1.6}
+/* ── Empty state / home cards grid ───────── */
+.cp-empty{padding:40px 20px;text-align:center;color:#94a3b8}
+.cp-empty .big-ic{font-size:48px;margin-bottom:10px}
+.cp-empty button{padding:8px 16px;background:#0088ff;color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit}
+.hp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.hp-card{background:#fff;border:1px solid #e3e5ed;border-top:3px solid #64748b;border-radius:6px;padding:8px 10px;cursor:pointer;transition:.15s}
+.hp-card:hover{box-shadow:0 2px 8px rgba(26,54,93,.12)}
+.hp-card .top{display:flex;gap:4px;margin-bottom:3px;flex-wrap:wrap}
+.hp-card .site-badge{padding:1px 7px;border-radius:10px;color:#fff;font-size:9px;font-weight:700;white-space:nowrap}
+.hp-card .cnt-badge{font-size:9px;padding:1px 5px;background:#f1f5f9;border-radius:8px;color:#64748b;font-weight:700}
+.hp-card .hp-nm{font-size:12px;font-weight:700;color:#1a365d;margin-bottom:2px}
+.hp-card .hp-slug{font-size:9px;color:#94a3b8}
 
-/* Step 4: blocks */
-.block-lib-hd{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin:8px 0 4px}
-.block-lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px;margin-bottom:8px}
-.block-lib .blk-lib-card{padding:6px 8px;border:1px solid #e2e8f0;border-radius:5px;background:#fff;cursor:pointer;font-size:10px;transition:.1s}
-.block-lib .blk-lib-card:hover{background:#eef2ff;border-color:#1a365d}
-.block-lib .blk-lib-card .bl-nm{font-weight:700;color:#0f172a;margin-bottom:1px}
-.block-lib .blk-lib-card .bl-desc{font-size:9px;color:#94a3b8;line-height:1.3}
-.stack-btns{display:flex;gap:4px;margin-bottom:4px}
-.stack-btn{flex:1;padding:6px 10px;border:1px dashed #1a365d;background:#eef2ff;color:#1a365d;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer}
-.stack-btn:hover{background:#c7d2fe}
+/* ── Module editor modal ─────────────────── */
+.fp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px}
+.fp-modal{background:#fff;border-radius:10px;width:980px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative}
+.fp-close{position:absolute;top:10px;right:14px;font-size:20px;cursor:pointer;color:#999;z-index:1;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f5f5f5;font-family:inherit}
+.fp-close:hover{background:#eee;color:#333}
+.fp-header{padding:14px 20px 10px;border-bottom:2px solid}
+.fp-header h2{font-size:16px;font-weight:700;margin-bottom:3px}
+.fp-header p{font-size:10px;color:#64748b}
+.fp-body{padding:14px 18px}
 
-.applied-hd{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin:10px 0 4px;display:flex;align-items:center;gap:6px}
-.applied-hd b{color:#0f172a}
-.applied-list{display:flex;flex-direction:column;gap:5px}
-.app-blk{border:1px solid #e2e8f0;border-radius:6px;background:#fff;overflow:hidden}
-.app-blk.exp .ab-body{display:block}
-.app-blk-hd{display:flex;align-items:center;gap:5px;padding:6px 10px;background:#f8fafc;cursor:pointer}
-.app-blk-hd:hover{background:#f1f5f9}
-.app-blk-hd .ab-n{width:18px;height:18px;border-radius:50%;background:#1a365d;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.app-blk-hd .ab-nm{flex:1;font-size:11px;font-weight:700;color:#0f172a}
-.app-blk-hd .ab-type{font-size:9px;color:#94a3b8;font-family:monospace;background:#fff;padding:1px 5px;border-radius:2px}
-.app-blk-hd .ab-ctrls{display:flex;gap:2px}
-.app-blk-hd .ab-ctrls button{width:20px;height:20px;border:none;background:#fff;border-radius:3px;font-size:10px;cursor:pointer;color:#64748b}
-.app-blk-hd .ab-ctrls button:hover{background:#eef2ff;color:#1a365d}
-.app-blk-hd .ab-ctrls .rm{color:#dc2626}
-.app-blk-hd .ab-ctrls .rm:hover{background:#fee2e2}
-.ab-body{display:none;padding:8px 10px;border-top:1px solid #e2e8f0;background:#fff}
+.me-row{display:flex;gap:4px;align-items:center;margin-bottom:5px}
+.me-row.top{align-items:flex-start}
+.me-row .me-lbl{font-size:9px;color:#64748b;font-weight:700;min-width:62px;text-transform:uppercase;letter-spacing:.3px;padding-top:4px}
+.me-row input,.me-row textarea{padding:4px 7px;border:1px solid #cbd5e1;border-radius:3px;font-size:11px;outline:none;font-family:inherit;flex:1}
+.me-row input:focus,.me-row textarea:focus{border-color:#0088ff}
+.me-row textarea{resize:vertical;min-height:48px;font-family:inherit}
+.me-row .chips{display:flex;gap:3px;flex-wrap:wrap;flex:1}
 
-/* Step 5 routing */
-.rt-table{width:100%;border-collapse:collapse;font-size:10px;margin-top:6px}
-.rt-table th{background:#f8fafc;padding:5px 8px;text-align:left;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:9px;text-transform:uppercase;letter-spacing:.3px}
-.rt-table td{padding:5px 8px;border-bottom:1px solid #f1f5f9;color:#475569}
-.rt-table td.tgt{font-family:monospace;color:#1a365d;font-weight:600}
-.preview-box{background:#0f172a;color:#10b981;padding:8px 12px;border-radius:5px;font-family:'Menlo','Consolas',monospace;font-size:11px;display:flex;flex-direction:column;gap:4px}
-.preview-box .pv-url{display:flex;align-items:center;gap:6px}
-.preview-box .pv-url a{color:#67e8f9;text-decoration:underline}
-.preview-box .pv-url .label{color:#64748b}
-.publish-btn{padding:10px 16px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;margin-top:6px}
-.publish-btn:hover{background:#047857}
-.publish-btn:disabled{opacity:.4;cursor:not-allowed}
-.warn-box{padding:6px 10px;background:#fef3c7;border:1px solid #f59e0b;border-radius:5px;font-size:10px;color:#92400e;margin-top:6px}
+.me-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:6px}
+.me-card{background:#fff;border:1px solid #e3e5ed;border-top:3px solid #64748b;border-radius:5px;padding:6px 8px;font-size:10px;display:flex;flex-direction:column;gap:3px;position:relative}
+.me-card input,.me-card textarea{width:100%;padding:2px 4px;border:1px solid #e3e5ed;border-radius:2px;font-size:10px;font-family:inherit}
+.me-card .me-del{position:absolute;top:3px;right:3px;cursor:pointer;color:#cbd5e1;font-size:14px;line-height:1;padding:1px 4px}
+.me-card .me-del:hover{color:#dc2626}
+.me-card .inrow{display:flex;gap:3px;align-items:center}
+.me-card .inlbl{font-size:8px;color:#94a3b8;font-weight:700;min-width:26px}
 
-/* Right panel */
-.rp{width:300px;min-width:300px;background:#fff;border-left:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
-.rp-body{flex:1;overflow-y:auto;padding:10px 12px}
-.rp-empty{padding:40px 16px;text-align:center;color:#94a3b8;font-size:10px;line-height:1.6}
-.rp-sec{margin-bottom:12px}
-.rp-sec h4{font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding-bottom:3px;border-bottom:1px solid #f1f5f9;font-weight:700}
-.rp-fld{margin-bottom:5px}
-.rp-fld label{display:block;font-size:9px;color:#94a3b8;font-weight:600;margin-bottom:2px}
-.rp-fld input,.rp-fld textarea{width:100%;padding:4px 7px;border:1px solid #e2e8f0;border-radius:3px;font-size:10px;outline:none;font-family:inherit}
-.rp-fld input:focus,.rp-fld textarea:focus{border-color:#1a365d}
-.rp-fld textarea{resize:vertical;min-height:44px}
-.rp-prog{display:flex;flex-direction:column;gap:3px}
-.rp-pr{display:flex;align-items:center;gap:6px;font-size:10px;padding:4px 6px;border-radius:4px;background:#f8fafc;cursor:pointer}
-.rp-pr:hover{background:#eef2ff}
-.rp-pr .pr-ck{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.rp-pr.done .pr-ck{background:#059669;color:#fff}
-.rp-pr.wait .pr-ck{background:#e2e8f0;color:#94a3b8}
-.rp-pr .pr-nm{flex:1}
-.rp-pr.done .pr-nm{color:#0f172a;font-weight:600}
-.rp-acts{padding:10px 12px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;gap:6px;flex-shrink:0}
-.rp-acts button{flex:1;padding:7px;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-weight:700}
-.rp-save{background:#1a365d;color:#fff}
-.rp-save:hover:not(:disabled){background:#2d4a7c}
-.rp-preview{background:#059669;color:#fff}
-.rp-preview:hover:not(:disabled){background:#047857}
-.rp-acts button:disabled{opacity:.35;cursor:not-allowed}
+.me-add-card{background:#fafbfc;border:1px dashed #cbd5e1;border-radius:5px;padding:10px;text-align:center;font-size:10px;color:#888;cursor:pointer;font-weight:700}
+.me-add-card:hover{background:#f0f4ff;border-color:#0088ff;color:#0088ff}
 
-.toast{position:fixed;bottom:16px;right:16px;background:#0f172a;color:#fff;padding:8px 14px;border-radius:6px;font-size:11px;z-index:100;opacity:0;transition:.2s;pointer-events:none;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+/* ── Verify landing result ───────────────── */
+.landing-result{margin-top:6px;padding:6px 10px;border-radius:4px;font-size:10px;border:1px solid}
+.landing-result.ok{background:#ecfdf5;border-color:#059669;color:#065f46}
+.landing-result.err{background:#fef2f2;border-color:#dc2626;color:#991b1b}
+
+/* ── Toast ──────────────────────────────── */
+.toast{position:fixed;bottom:16px;right:16px;background:#0f172a;color:#fff;padding:8px 14px;border-radius:6px;font-size:11px;z-index:9999;opacity:0;transition:.2s;pointer-events:none;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.15)}
 .toast.v{opacity:1}
 .toast.err{background:#dc2626}
 .toast.ok{background:#059669}
+
+/* ── Search ─────────────────────────────── */
+.sb-search{padding:6px 8px;border-bottom:1px solid #eee}
+.sb-search input{width:100%;padding:4px 7px;border:1px solid #cbd5e1;border-radius:3px;font-size:10px;outline:none;font-family:inherit}
+.sb-search input:focus{border-color:#0088ff}
 </style>
 </head>
 <body>
 
 <header>
-  <h1><a href="admin.html">Work Studio</a><span class="sub">홈페이지 생성</span><span id="dirtyInd"></span></h1>
+  <h1><a href="admin.html">Work Studio</a><span class="sub">홈생성</span><span id="dirtyInd"></span></h1>
   <div class="hr">
-    <span class="ui">관리자</span>
-    <button onclick="location.href='admin.html'">관리자 홈</button>
+    <span style="color:rgba(255,255,255,.6);font-size:10px">신청서 포맷 포트 · sections[] 모듈 조립</span>
+    <button onclick="location.href='admin.html'">← 관리자</button>
   </div>
 </header>
 
-<div class="short-bar">
-  <span class="s-lbl">빠른이동</span>
-  <button class="s-btn" onclick="scrollToStep(1)">1.랜딩</button>
-  <button class="s-btn" onclick="scrollToStep(2)">2.공통</button>
-  <button class="s-btn" onclick="scrollToStep(3)">3.신청서</button>
-  <button class="s-btn" onclick="scrollToStep(4)">4.선택</button>
-  <button class="s-btn" onclick="scrollToStep(5)">5.배포</button>
-</div>
-
-<div class="steps" id="stepsBar"></div>
-
-<div class="layout">
-  <div class="lp">
-    <div class="lp-hd">
-      <input id="searchInput" placeholder="검색..." oninput="onSearch(this.value)">
-      <button onclick="createNew()" title="새 홈페이지">+ 새</button>
-    </div>
-    <div class="lp-tools">
-      <button onclick="toggleExpandAll()" id="btnExpAll">전체 펼치기</button>
-      <span class="cnt">총 <b id="hpCount">0</b></span>
-    </div>
-    <div class="lp-list" id="hpList"></div>
-  </div>
-
-  <div class="cp" id="editArea">
-    <div class="cp-empty">
-      <div class="big-ic">🏠</div>
-      <div>홈페이지를 선택하거나<br>새로 만드세요</div>
-      <button onclick="createNew()">+ 새 홈페이지 만들기</button>
-    </div>
-  </div>
-
-  <div class="rp">
-    <div class="rp-body" id="rpBody">
-      <div class="rp-empty">홈페이지를 선택하면<br>메타 정보가 표시됩니다</div>
-    </div>
-    <div class="rp-acts">
-      <button class="rp-save" id="btnSave" onclick="saveHomepage()" disabled>💾 저장</button>
-      <button class="rp-preview" id="btnPreview" onclick="openPreview()" disabled>📄 PRD 뷰어</button>
-    </div>
-  </div>
+<div class="fe-wrap">
+  <div class="fe-sidebar" id="sidebar"></div>
+  <div class="fe-main" id="main"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -298,14 +179,6 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
 /* ═══════════════════════════════════════════════════════════ */
 /*   상수                                                        */
 /* ═══════════════════════════════════════════════════════════ */
-
-const STEPS = [
-  { n:1, key:'landing',  label:'랜딩' },
-  { n:2, key:'common',   label:'공통' },
-  { n:3, key:'apply',    label:'신청서' },
-  { n:4, key:'optional', label:'선택' },
-  { n:5, key:'deploy',   label:'배포' },
-];
 
 const WEBSITES = [
   { id:'tesol',         name:'TESOL',           color:'#be185d' },
@@ -321,128 +194,83 @@ const WEBSITES = [
   { id:'semiconductor', name:'반도체/조선/방산', color:'#64748b' },
 ];
 
-const APPLY_ROLES = [
-  { id:'all',     label:'전체' },
-  { id:'expert',  label:'전문가' },
-  { id:'client',  label:'의뢰인' },
-  { id:'student', label:'학생' },
-  { id:'b2b',     label:'B2B' },
-  { id:'admin',   label:'관리자' },
+const TYPE_GROUPS = [
+  { id:'layout', name:'🎨 레이아웃', color:'#1a365d', bg:'#eef2ff', bd:'#c7d2fe',
+    types:[
+      { id:'banner', icon:'🎯', name:'히어로 배너' },
+      { id:'nav',    icon:'🧭', name:'네비게이션' },
+      { id:'footer', icon:'⬇️', name:'푸터' },
+    ] },
+  { id:'community', name:'💬 커뮤니티', color:'#059669', bg:'#ecfdf5', bd:'#a7f3d0',
+    types:[
+      { id:'notice', icon:'📢', name:'공지사항' },
+      { id:'faq',    icon:'❓', name:'FAQ' },
+      { id:'qna',    icon:'💬', name:'Q&A' },
+      { id:'review', icon:'⭐', name:'후기' },
+      { id:'blog',   icon:'📝', name:'블로그' },
+    ] },
+  { id:'form', name:'📋 지원/접수', color:'#7c3aed', bg:'#f5f3ff', bd:'#ddd6fe',
+    types:[
+      { id:'inquiry',   icon:'📧', name:'1:1 문의' },
+      { id:'apply_ref', icon:'📝', name:'신청서 참조' },
+    ] },
+  { id:'legal', name:'📜 법적', color:'#d97706', bg:'#fffbeb', bd:'#fde68a',
+    types:[
+      { id:'terms',   icon:'📜', name:'이용약관' },
+      { id:'privacy', icon:'🔐', name:'개인정보처리방침' },
+    ] },
+  { id:'block', name:'🧩 블록', color:'#be185d', bg:'#fdf2f8', bd:'#fbcfe8',
+    types:[
+      { id:'block_cat_multi',  icon:'🗂️', name:'카테고리 선택' },
+      { id:'block_file_drop',  icon:'📎', name:'파일 업로드' },
+      { id:'block_ai_radio4',  icon:'🤖', name:'AI 모델' },
+      { id:'block_editor',     icon:'✏️', name:'편집 에디터' },
+      { id:'block_human',      icon:'👷', name:'휴먼 작업' },
+      { id:'block_opts',       icon:'⚙️', name:'추가 옵션' },
+      { id:'block_lang_pair',  icon:'🈂️', name:'언어쌍' },
+      { id:'block_quality',    icon:'📊', name:'품질 패널' },
+      { id:'block_regulation', icon:'📋', name:'프롬 규정' },
+      { id:'block_textarea',   icon:'📝', name:'텍스트 입력' },
+    ] },
 ];
 
-const PHASE_FILTERS = [
-  { id:'all',   label:'전체' },
-  { id:'part1', label:'1부만' },
-  { id:'part2', label:'2부만' },
-];
-
-/* ─── 공통 모듈 정의 (스키마 + 기본값) ─── */
-const COMMON_MODULES = [
-  { id:'banner',           cat:'레이아웃', ic:'🎯', name:'히어로 배너', defaultEnabled:true,
-    defaultData:{ title:'', subtitle:'', image:'', ctaLabel:'신청하기', ctaUrl:'#' },
-    editor:'banner' },
-  { id:'nav_section',      cat:'레이아웃', ic:'🧭', name:'섹션 이동 네비', defaultEnabled:true,
-    defaultData:{ sections:[] },
-    editor:'nav_section' },
-  { id:'footer',           cat:'레이아웃', ic:'⬇️',  name:'푸터', defaultEnabled:true,
-    defaultData:{ company:'', address:'', contact:'', copyright:'' },
-    editor:'footer' },
-  { id:'community_notice', cat:'커뮤니티', ic:'📢', name:'공지사항', defaultEnabled:true,
-    defaultData:{ items:[] },
-    editor:'notice' },
-  { id:'community_faq',    cat:'커뮤니티', ic:'❓',  name:'FAQ', defaultEnabled:true,
-    defaultData:{ items:[] },
-    editor:'faq' },
-  { id:'community_qna',    cat:'커뮤니티', ic:'💬', name:'Q&A', defaultEnabled:true,
-    defaultData:{ policy:'auto', categories:['일반','기술','결제'] },
-    editor:'qna' },
-  { id:'community_review', cat:'커뮤니티', ic:'⭐',  name:'후기', defaultEnabled:true,
-    defaultData:{ limit:10, sort:'latest' },
-    editor:'review' },
-  { id:'inquiry',          cat:'지원',     ic:'📧', name:'1:1 문의', defaultEnabled:true,
-    defaultData:{ fields:['name','email','phone','title','content'] },
-    editor:'inquiry' },
-  { id:'blog',             cat:'지원',     ic:'📝', name:'블로그', defaultEnabled:false,
-    defaultData:{ categories:[] },
-    editor:'blog' },
-  { id:'terms',            cat:'법적',     ic:'📜', name:'이용약관', defaultEnabled:true,
-    defaultData:{ text:'' },
-    editor:'longtext' },
-  { id:'privacy',          cat:'법적',     ic:'🔐', name:'개인정보처리방침', defaultEnabled:true,
-    defaultData:{ text:'' },
-    editor:'longtext' },
-];
-
-/* ─── 블록 라이브러리 (파일2/파일3 분해) ─── */
-const BLOCK_LIBRARY = [
-  { type:'cat_multi',     name:'카테고리 선택',   desc:'대→중→소 다중선택', src:'파일2/3',
-    defaultConfig:{ axes:3, multi:true, selected:[] } },
-  { type:'file_drop',     name:'파일 업로드',     desc:'드래그드롭 + 목록', src:'파일2/3',
-    defaultConfig:{ accept:['pdf','docx','xlsx'], maxMb:50, multi:true } },
-  { type:'ai_radio4',     name:'AI 모델 선택',    desc:'4모델 라디오 그리드', src:'파일2/3',
-    defaultConfig:{ models:['GPT-4o','Claude 3.5','Gemini 1.5','Multi-Model'], defaultIdx:3 } },
-  { type:'editor_bool',   name:'편집에디터',      desc:'사용/미사용 토글', src:'파일3',
-    defaultConfig:{ defaultMode:'use' } },
-  { type:'human_3sel',    name:'휴먼 작업 요청',  desc:'유형/등급/긴급도', src:'파일3',
-    defaultConfig:{ types:['감수요청','검증요청'], grades:['일반전문가','고급전문가'], urgencies:[{label:'일반',surcharge:0},{label:'긴급1',surcharge:50},{label:'긴급2',surcharge:100}] } },
-  { type:'opts_toggle',   name:'추가 옵션',       desc:'토글 확장식 옵션', src:'파일3',
-    defaultConfig:{ options:[{id:'regulation',label:'프롬 규정',enabled:false},{id:'expert_verify',label:'전문가 검증',enabled:false}] } },
-  { type:'lang_pair',     name:'언어쌍',          desc:'원문→번역 언어', src:'번역',
-    defaultConfig:{ sources:['한국어','영어','중국어'], targets:['영어','한국어','일본어'] } },
-  { type:'quality_panel', name:'품질 대시보드',   desc:'sticky 요약 + 비용', src:'파일3',
-    defaultConfig:{ metrics:['files','categories','model','cost'] } },
-  { type:'regulation',    name:'프롬 규정',       desc:'카테고리별 규칙', src:'파일3',
-    defaultConfig:{ ruleSet:'default' } },
-  { type:'textarea_big',  name:'텍스트 입력',     desc:'큰 입력 영역', src:'파일2',
-    defaultConfig:{ placeholder:'입력하세요', minH:260 } },
-];
-
-const STACK_PRESETS = {
-  reading: {
-    label:'📖 통독 6단 일괄 추가',
-    source:'AI STUDIO V3 / 원페이지',
-    blocks:['cat_multi','file_drop','ai_radio4','editor_bool','human_3sel','opts_toggle'],
-  },
-  translation: {
-    label:'🈂️ 번역 6단 일괄 추가',
-    source:'원페이지',
-    blocks:['cat_multi','file_drop','lang_pair','ai_radio4','human_3sel','quality_panel'],
-  },
-};
+function getTypeInfo(typeId) {
+  for (const g of TYPE_GROUPS) {
+    const t = g.types.find(t => t.id === typeId);
+    if (t) return { group: g, type: t };
+  }
+  const fallback = TYPE_GROUPS[0];
+  return { group: fallback, type: { id: typeId, icon: '•', name: typeId || '(타입 없음)' } };
+}
 
 /* ═══════════════════════════════════════════════════════════ */
 /*   State                                                       */
 /* ═══════════════════════════════════════════════════════════ */
 
 let homepages = [];
-let formTemplates = [];
-let currentHpId = null;
-let searchQuery = '';
+let modules = [];        // homepage_modules
+let formTemplates = [];  // for apply_ref picker
+let hmSite = null;       // selected site in sidebar (null = 전체)
+let hmHpId = null;       // selected homepage id
+let hmData = null;       // working copy of selected hp
 let dirty = false;
-let expandedIds = new Set();
-
-/* Local UI state (not persisted) */
-let filterSite = 'all';
-let filterRole = 'all';
-let filterPhase = 'all';
-let expandedCommon = new Set();
-let expandedBlocks = new Set();
+let sbSearch = '';
+let meEditModId = null;  // currently editing module id in modal
 
 /* ═══════════════════════════════════════════════════════════ */
 /*   Init                                                        */
 /* ═══════════════════════════════════════════════════════════ */
 
-async function init(){
-  renderStepsBar();
+async function init() {
   try {
-    await Promise.all([loadHomepages(), loadFormTemplates()]);
+    await Promise.all([loadHomepages(), loadModules(), loadFormTemplates()]);
   } catch(e) {
     toast('데이터 로딩 실패: ' + e.message, 'err');
   }
-  renderList();
+  rHomes();
 }
 
-async function loadHomepages(){
+async function loadHomepages() {
   try {
     const r = await fetch('/api/homepages');
     const rows = await r.json();
@@ -455,1105 +283,927 @@ async function loadHomepages(){
   } catch(e) { homepages = []; }
 }
 
-async function loadFormTemplates(){
+async function loadModules() {
+  try {
+    const r = await fetch('/api/homepage_modules');
+    const rows = await r.json();
+    modules = (rows || []).map(row => {
+      try { return Object.assign({}, JSON.parse(row.data), { id: row.id }); }
+      catch { return null; }
+    }).filter(Boolean);
+  } catch(e) { modules = []; }
+}
+
+async function loadFormTemplates() {
   try {
     const r = await fetch('/api/form_templates');
     const rows = await r.json();
     formTemplates = (rows || []).map(row => {
-      try {
-        const d = JSON.parse(row.data);
-        return Object.assign({}, d, { id: row.id, _created: row.created_at });
-      } catch { return null; }
+      try { return Object.assign({}, JSON.parse(row.data), { id: row.id }); }
+      catch { return null; }
     }).filter(Boolean);
   } catch(e) { formTemplates = []; }
 }
 
-function getCurrent(){
-  return homepages.find(h => h.id === currentHpId);
-}
-
-function defaultCommonState(){
-  const cs = {};
-  COMMON_MODULES.forEach(m => {
-    cs[m.id] = { enabled: m.defaultEnabled, data: JSON.parse(JSON.stringify(m.defaultData)) };
-  });
-  return cs;
-}
-
-function defaultHp(name){
-  return {
-    name: name || '새 홈페이지',
-    slug: '',
-    linkedSite: '',
-    status: 'draft',
-    landing: { repoUrl:'', branch:'main', deployPath:'/', lastSync:'', verified:null },
-    commonState: defaultCommonState(),
-    applyTemplates: [],
-    blocks: [],
-    deploy: { lastPublished:'' },
-    _notes: '',
-    _notesFiles: [],
-  };
-}
-
-/* v1 → v2 마이그레이션 (기존 데이터 호환) */
-function migrateHp(hp){
-  if (!hp.commonState) {
-    hp.commonState = defaultCommonState();
-    if (Array.isArray(hp.commonModules)) {
-      Object.keys(hp.commonState).forEach(k => { hp.commonState[k].enabled = hp.commonModules.indexOf(k) >= 0; });
-    }
-    delete hp.commonModules;
-  }
-  if (!hp.applyTemplates) {
-    hp.applyTemplates = (hp.applyTemplateIds || []).map(id => ({ templateId: id, phases: ['part1','part2'] }));
-    delete hp.applyTemplateIds;
-  }
-  if (!hp.blocks) {
-    hp.blocks = (hp.optionalModules || []).map(m => ({
-      type: m.type || 'legacy',
-      name: m.name || '이전 모듈',
-      desc: m.source || '',
-      config: {},
-    }));
-    delete hp.optionalModules;
-  }
-  if (!hp.landing) hp.landing = { repoUrl:'', branch:'main', deployPath:'/', lastSync:'', verified:null };
-  if (!hp.deploy) hp.deploy = { lastPublished:'' };
+function migrateHp(hp) {
+  if (!Array.isArray(hp.sections)) hp.sections = [];
+  if (!hp.landing) hp.landing = { repoUrl:'', branch:'main', deployPath:'/', verified:null };
+  if (!hp.deploy)  hp.deploy  = { lastPublished:'' };
+  if (!hp._notesFiles) hp._notesFiles = [];
   return hp;
 }
 
-/* ═══════════════════════════════════════════════════════════ */
-/*   Step completion                                             */
-/* ═══════════════════════════════════════════════════════════ */
-
-function isStepDone(hp, key){
-  if (!hp) return false;
-  if (key === 'landing')  return !!(hp.landing && hp.landing.verified);
-  if (key === 'common') {
-    const cs = hp.commonState || {};
-    return Object.keys(cs).some(k => cs[k].enabled);
-  }
-  if (key === 'apply')    return (hp.applyTemplates || []).length > 0;
-  if (key === 'optional') return (hp.blocks || []).length > 0;
-  if (key === 'deploy')   return hp.status === 'published';
-  return false;
+function getModule(modId) { return modules.find(m => m.moduleId === modId); }
+function assembleHome(hp) {
+  return (hp.sections || []).map(mid => getModule(mid)).filter(Boolean);
+}
+function countModuleUsage(modId) {
+  return homepages.filter(hp => (hp.sections || []).includes(modId)).length;
 }
 
 /* ═══════════════════════════════════════════════════════════ */
-/*   Steps bar                                                   */
+/*   Render                                                      */
 /* ═══════════════════════════════════════════════════════════ */
 
-function renderStepsBar(){
-  const hp = getCurrent();
-  let doneCnt = 0;
+function rHomes() {
+  renderSidebar();
+  renderMain();
+  updateDirty();
+}
+
+function renderSidebar() {
   let h = '';
-  STEPS.forEach((s, i) => {
-    const done = hp ? isStepDone(hp, s.key) : false;
-    if (done) doneCnt++;
-    h += '<div class="step-node ' + (done?'done':'') + '" onclick="scrollToStep(' + s.n + ')">' +
-         '<div class="step-dot">' + (done?'✓':s.n) + '</div>' +
-         '<div class="step-lbl">' + s.label + '</div></div>';
-    if (i < STEPS.length - 1) h += '<div class="step-bar ' + (done?'done':'') + '"></div>';
-  });
-  h += '<div class="prog-summary">진행 <b>' + doneCnt + '</b> / ' + STEPS.length + '</div>';
-  document.getElementById('stepsBar').innerHTML = h;
+  h += `<div class="sb-search"><input placeholder="🔍 검색 (홈/모듈)" value="${escAttr(sbSearch)}" oninput="sbSearch=this.value;renderSidebar()"></div>`;
+
+  // ─── 홈페이지 목록 (사이트별) ───
+  h += `<div class="sb-hd">📋 홈페이지 <span class="cnt">${homepages.length}개</span></div>`;
+  const q = sbSearch.toLowerCase();
+  const filter = hp => !q || (hp.name || '').toLowerCase().includes(q) || (hp.slug || '').toLowerCase().includes(q);
+
+  for (const w of WEBSITES) {
+    const list = homepages.filter(hp => hp.linkedSite === w.id).filter(filter);
+    if (!list.length && hmSite !== w.id) continue;
+    const active = hmSite === w.id;
+    h += `<div class="fe-site ${active?'a':''}" onclick="hmSelSite('${w.id}')">
+      <span>${esc(w.name)}</span><span class="cnt">${list.length}개</span></div>`;
+    if (active) {
+      for (const hp of list) {
+        const sel = hmHpId === hp.id;
+        h += `<div class="fe-form-item ${sel?'a':''}" onclick="hmSelHp(${hp.id})">
+          <span class="nm">${esc(hp.name)}</span><span class="meta">${(hp.sections||[]).length}섹</span></div>`;
+      }
+      h += `<div class="fe-form-item plus" onclick="hmAddHp('${w.id}')">+ 홈페이지 추가</div>`;
+    }
+  }
+
+  // 미지정
+  const unset = homepages.filter(hp => !hp.linkedSite).filter(filter);
+  if (unset.length || hmSite === 'unset') {
+    const active = hmSite === 'unset';
+    h += `<div class="fe-site ${active?'a':''}" onclick="hmSelSite('unset')">
+      <span>📁 미지정</span><span class="cnt">${unset.length}개</span></div>`;
+    if (active) {
+      for (const hp of unset) {
+        const sel = hmHpId === hp.id;
+        h += `<div class="fe-form-item ${sel?'a':''}" onclick="hmSelHp(${hp.id})">
+          <span class="nm">${esc(hp.name)}</span><span class="meta">${(hp.sections||[]).length}섹</span></div>`;
+      }
+      h += `<div class="fe-form-item plus" onclick="hmAddHp('')">+ 홈페이지 추가</div>`;
+    }
+  }
+
+  // ─── 콘텐츠 모듈 라이브러리 ───
+  h += `<div class="sb-hd lib">
+    <span>🧩 콘텐츠 모듈 <span class="cnt">${modules.length}</span></span>
+    <button onclick="event.stopPropagation();hmAddNewModule()">+ 새</button></div>`;
+
+  const modFilter = m => !q || (m.name || '').toLowerCase().includes(q) || (m.moduleId || '').toLowerCase().includes(q);
+  for (const grp of TYPE_GROUPS) {
+    const gMods = modules.filter(m => m.category === grp.id).filter(modFilter);
+    if (!gMods.length) continue;
+    h += `<div class="rg-head" style="color:${grp.color};background:${grp.bg}">
+      <span>${esc(grp.name)}</span><span class="cnt">${gMods.length}</span></div>`;
+    for (const t of grp.types) {
+      const typeMods = gMods.filter(m => m.type === t.id);
+      if (!typeMods.length) continue;
+      h += `<div class="rg-sub">${t.icon} ${esc(t.name)}</div>`;
+      for (const m of typeMods) {
+        const usage = countModuleUsage(m.moduleId);
+        h += `<div class="fe-form-item" style="padding-left:22px;color:${grp.color}" onclick="hmEditModule('${esc(m.moduleId)}')" title="클릭 → 편집">
+          <span class="nm">${t.icon} ${esc(m.name)}</span>
+          <span class="meta">${usage>0?usage+'곳':''}</span></div>`;
+      }
+    }
+  }
+
+  document.getElementById('sidebar').innerHTML = h;
 }
 
-function scrollToStep(n){
-  const el = document.getElementById('step-' + n);
-  if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
-}
+function renderMain() {
+  const main = document.getElementById('main');
 
-/* ═══════════════════════════════════════════════════════════ */
-/*   Left list                                                   */
-/* ═══════════════════════════════════════════════════════════ */
-
-function renderList(){
-  const filtered = homepages.filter(h => !searchQuery ||
-    (h.name || '').toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0 ||
-    (h.slug || '').toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0);
-  document.getElementById('hpCount').textContent = filtered.length;
-
-  const box = document.getElementById('hpList');
-  if (!filtered.length) {
-    box.innerHTML = '<div class="lp-empty">생성된 홈페이지가<br>없습니다.<br><br>[+ 새]로 시작</div>';
+  if (!hmHpId || !hmData) {
+    // 초기 화면 — 전체 홈페이지 카드 그리드
+    let h = `<div class="fe-editor"><h3>홈페이지 선택</h3>
+      <p style="font-size:11px;color:#64748b;margin-bottom:8px">왼쪽에서 홈페이지를 선택하거나 <b>+ 홈페이지 추가</b>로 시작하세요. 전체 ${homepages.length}개:</p>`;
+    if (!homepages.length) {
+      h += `<div class="cp-empty"><div class="big-ic">🏠</div>
+        <div>아직 홈페이지가 없습니다.</div>
+        <button onclick="hmAddHp('')">+ 새 홈페이지 만들기</button></div>`;
+    } else {
+      h += `<div class="hp-grid">${homepages.map(renderHpCard).join('')}</div>`;
+    }
+    h += `</div>`;
+    main.innerHTML = h;
     return;
   }
 
-  let h = '';
-  filtered.forEach(hp => {
-    const active = hp.id === currentHpId ? 'a' : '';
-    const exp = expandedIds.has(hp.id) ? 'exp' : '';
-    const sts = hp.status || 'draft';
-    const doneCnt = STEPS.filter(s => isStepDone(hp, s.key)).length;
-    const siteName = (WEBSITES.find(w => w.id === hp.linkedSite) || {}).name || '—';
-    h += '<div class="hp-row ' + active + ' ' + exp + '" onclick="selectHp(' + hp.id + ')">' +
-      '<div class="hp-top"><div class="hp-name">' + escapeHtml(hp.name || '(이름 없음)') + '</div>' +
-      '<span class="hp-st st-' + sts + '">' + sts + '</span></div>' +
-      '<div class="hp-meta"><span>' + escapeHtml(siteName) + '</span><span>·</span><span>' + doneCnt + '/5</span>' +
-      '<button class="hp-del" onclick="event.stopPropagation();deleteHp(' + hp.id + ')" title="삭제">×</button></div>' +
-      '<div class="hp-prog">' +
-      STEPS.map(s => '<div class="hp-prog-dot ' + (isStepDone(hp, s.key)?'on':'') + '"></div>').join('') +
-      '</div>' +
-      '<div class="hp-det">' +
-      '<div>ID ' + hp.id + ' · ' + (hp._created || '').slice(0, 10) + '</div>' +
-      '<div>' + (hp.slug ? 'slug: ' + hp.slug : '슬러그 미지정') + '</div>' +
-      '</div></div>';
-  });
-  box.innerHTML = h;
+  main.innerHTML = renderHomeEditor();
 }
 
-function onSearch(v){ searchQuery = v; renderList(); }
+function renderHpCard(hp) {
+  const w = WEBSITES.find(x => x.id === hp.linkedSite) || { name: '미지정', color: '#64748b' };
+  const secs = (hp.sections || []).length;
+  return `<div class="hp-card" style="border-top-color:${w.color}" onclick="hmSelHp(${hp.id})">
+    <div class="top">
+      <span class="site-badge" style="background:${w.color}">${esc(w.name)}</span>
+      <span class="cnt-badge">${secs}섹션</span>
+      <span class="cnt-badge" style="background:#fef3c7;color:#d97706">${esc(hp.status||'draft')}</span>
+    </div>
+    <div class="hp-nm">${esc(hp.name)}</div>
+    <div class="hp-slug">${hp.slug ? '/'+esc(hp.slug) : '(슬러그 미지정)'}</div>
+  </div>`;
+}
 
-function toggleExpandAll(){
-  if (expandedIds.size === homepages.length && homepages.length > 0) {
-    expandedIds = new Set();
-    document.getElementById('btnExpAll').textContent = '전체 펼치기';
-  } else {
-    expandedIds = new Set(homepages.map(h => h.id));
-    document.getElementById('btnExpAll').textContent = '전체 접기';
+function renderHomeEditor() {
+  const hp = hmData;
+  const secs = assembleHome(hp);
+  const w = WEBSITES.find(x => x.id === hp.linkedSite);
+  const usedIds = new Set(hp.sections || []);
+  const canPreview = !!hp.slug && /^[a-z0-9-]+$/.test(hp.slug);
+
+  let h = `<div class="fe-editor">`;
+
+  // ── Toolbar ──
+  h += `<div class="fe-toolbar">
+    <button style="background:#0088ff;color:#fff" onclick="hmSave()">💾 저장${dirty?' *':''}</button>
+    <button style="background:#059669;color:#fff" onclick="hmPreview()" ${canPreview?'':'disabled style="opacity:.4;cursor:not-allowed;background:#059669;color:#fff"'}>📄 PRD 뷰어</button>
+    <button style="background:#fff;border:1px solid #dc2626;color:#dc2626" onclick="hmDelete()">삭제</button>
+    <span class="meta-summary">${w?esc(w.name):'(사이트 미지정)'} › ${esc(hp.name)} · ${secs.length}섹션${canPreview?' · /'+esc(hp.slug):''}</span></div>`;
+
+  // ── Meta row 1: name/slug/status ──
+  h += `<div class="fe-meta">
+    <div class="fld"><label>이름</label>
+      <input value="${escAttr(hp.name)}" onchange="hmField('name',this.value);renderSidebar()" style="width:220px"></div>
+    <div class="fld"><label>슬러그 (PRD URL)</label>
+      <input value="${escAttr(hp.slug)}" placeholder="my-homepage" onchange="hmField('slug',this.value);renderSidebar();rMain()" style="width:180px"></div>
+    <div class="fld"><label>상태</label>
+      <div class="chips">${['draft','published','archived'].map(s =>
+        `<span class="chip ${hp.status===s?'a':''}" onclick="hmField('status','${s}');rMain()">${s}</span>`).join('')}</div></div>
+    <div class="fld" style="flex:1"><label>연결 사이트</label>
+      <div class="chips">${WEBSITES.map(w =>
+        `<span class="chip ${hp.linkedSite===w.id?'a':''}" onclick="hmField('linkedSite','${w.id}');renderSidebar()">${esc(w.name)}</span>`).join('')}</div></div>
+  </div>`;
+
+  // ── Meta row 2: landing ──
+  const l = hp.landing || {};
+  h += `<div class="fe-meta">
+    <div class="fld" style="flex:1;min-width:260px"><label>랜딩 GitHub Repo</label>
+      <input value="${escAttr(l.repoUrl||'')}" placeholder="https://github.com/... 또는 owner/repo"
+        onchange="hmFieldPath('landing.repoUrl',this.value)"></div>
+    <div class="fld"><label>브랜치</label>
+      <input value="${escAttr(l.branch||'main')}" onchange="hmFieldPath('landing.branch',this.value)" style="width:90px"></div>
+    <div class="fld"><label>경로</label>
+      <input value="${escAttr(l.deployPath||'/')}" onchange="hmFieldPath('landing.deployPath',this.value)" style="width:70px"></div>
+    <div class="fld"><label>&nbsp;</label>
+      <button class="chip a" style="padding:4px 10px;font-size:10px" onclick="hmVerifyLanding()">🔗 연결 테스트</button></div>
+  </div>`;
+  if (l.verified && typeof l.verified === 'object') {
+    const v = l.verified;
+    h += `<div class="landing-result ok">✓ <b>${esc(v.fullName)}</b>${v.description?' — '+esc(v.description):''} · ⭐ ${v.stars||0} · 🍴 ${v.forks||0} · ${v.hasPages?'🌐 Pages 활성':'Pages 비활성'}</div>`;
+  } else if (l.verified === false) {
+    h += `<div class="landing-result err">✗ 연결 실패 — 유효하지 않은 URL 또는 접근 불가</div>`;
   }
-  renderList();
+
+  // ── Sections block (phase-block equivalent) ──
+  h += `<div class="phase-block">
+    <h4><span class="pbadge">📋</span><span>섹션 구성</span>
+    <span class="meta">${secs.length}개 모듈 · 순서 = 표시 순서</span></h4>`;
+
+  // 포함된 모듈 칩 (순서대로)
+  h += `<div class="phase-mod-chips">`;
+  if (!(hp.sections||[]).length) {
+    h += `<span style="font-size:9px;color:#94a3b8;font-style:italic">모듈 없음 — 아래에서 +로 추가하세요</span>`;
+  } else {
+    (hp.sections||[]).forEach((mid, i) => {
+      const m = getModule(mid);
+      if (!m) {
+        h += `<span class="phase-mod-chip" style="background:#fee2e2;color:#b91c1c;border-color:#fca5a5">
+          ❓ ${esc(mid)} <span class="x" onclick="hmRemoveSection(${i})">×</span></span>`;
+        return;
+      }
+      const { group: g, type: t } = getTypeInfo(m.type);
+      h += `<span class="phase-mod-chip" style="background:${g.bg};color:${g.color};border-color:${g.bd}">
+        <span class="mv" onclick="hmMoveSection(${i},-1)" title="위로">▲</span>
+        <span class="mv" onclick="hmMoveSection(${i},1)" title="아래로">▼</span>
+        ${t.icon} ${esc(m.name)}
+        <button class="ed" style="color:${g.color};border-color:${g.bd}" onclick="event.stopPropagation();hmEditModule('${esc(m.moduleId)}')">편집</button>
+        <span class="x" onclick="hmRemoveSection(${i})">×</span></span>`;
+    });
+  }
+  h += `</div>`;
+
+  // 추가 가능한 모듈 — 타입 그룹별 칩 리스트
+  h += `<div class="phase-add">
+    <div class="title">+ 섹션 추가 (클릭하여 모듈을 배열 끝에 추가)</div>`;
+  for (const grp of TYPE_GROUPS) {
+    const groupMods = modules.filter(m => m.category === grp.id && !usedIds.has(m.moduleId));
+    if (!groupMods.length) continue;
+    h += `<div class="phase-add-row">
+      <span class="label" style="color:${grp.color}">${esc(grp.name)}</span>
+      <div class="chips-wrap">${groupMods.map(m => {
+        const { type: t } = getTypeInfo(m.type);
+        return `<span class="phase-add-chip" style="background:${grp.bg};color:${grp.color};border-color:${grp.bd}"
+          onclick="hmAddSection('${esc(m.moduleId)}')">+ ${t.icon} ${esc(m.name)}</span>`;
+      }).join('')}
+      <span class="phase-add-chip" style="background:#f8fafc;color:#64748b;border-color:#cbd5e1;border-style:dashed" onclick="hmAddNewModuleFor('${grp.id}')">+ 새 ${esc(grp.name.replace(/^[^ ]+ /, ''))} 모듈</span>
+      </div></div>`;
+  }
+  h += `</div>`;
+
+  // 4단 그리드 콘텐츠 미리보기
+  if (secs.length) {
+    h += `<div class="phase-sections">`;
+    secs.forEach(m => {
+      const { group: g, type: t } = getTypeInfo(m.type);
+      h += `<div class="ps-card" style="border-top:3px solid ${g.color}">
+        <div class="ps-head" style="background:${g.bg};color:${g.color}">
+          <span class="nm">${t.icon} ${esc(m.name)}</span>
+          <button style="color:${g.color};border-color:${g.bd}" onclick="hmEditModule('${esc(m.moduleId)}')">편집</button>
+        </div>
+        <div class="ps-body">${renderSectionPreview(m)}</div>
+      </div>`;
+    });
+    h += `</div>`;
+  }
+  h += `</div>`; // close phase-block
+  h += `</div>`; // close fe-editor
+  return h;
+}
+
+function renderSectionPreview(m) {
+  const d = m.data || {};
+  const items = arr => arr && arr.length ? arr : [];
+  switch (m.type) {
+    case 'banner':
+      return `<div class="ps-fld"><span class="nm">${esc(d.title||'(미설정)')}</span><span class="tp">title</span></div>
+        ${d.subtitle?`<div class="ps-fld"><span class="nm">${esc(d.subtitle)}</span><span class="tp">sub</span></div>`:''}
+        ${d.ctaLabel?`<div class="ps-fld"><span class="nm">${esc(d.ctaLabel)} → ${esc(d.ctaUrl||'#')}</span><span class="tp">CTA</span></div>`:''}`;
+    case 'footer':
+      return `<div class="ps-fld"><span class="nm">${esc(d.company||'(미설정)')}</span><span class="tp">회사</span></div>
+        ${d.address?`<div class="ps-fld"><span class="nm">${esc(d.address)}</span><span class="tp">주소</span></div>`:''}
+        ${d.contact?`<div class="ps-fld"><span class="nm">${esc(d.contact)}</span><span class="tp">연락</span></div>`:''}`;
+    case 'nav':
+      return items(d.sections).slice(0,6).map(s =>
+        `<div class="ps-fld"><span class="nm">${esc(s.label||'')}</span><span class="tp">#${esc(s.id||'')}</span></div>`).join('') || '<div class="ps-fld"><span class="nm" style="font-style:italic">섹션 없음</span></div>';
+    case 'notice':
+      return items(d.items).slice(0,5).map(it =>
+        `<div class="ps-fld"><span class="nm">${esc(it.title||'')}</span><span class="tp">${esc((it.date||'').slice(5))}</span></div>`).join('') + (items(d.items).length>5?`<div style="font-size:8px;text-align:center;color:#94a3b8">+${d.items.length-5}</div>`:'') || '<div class="ps-fld"><span class="nm" style="font-style:italic">항목 없음</span></div>';
+    case 'faq':
+      return items(d.items).slice(0,5).map(it =>
+        `<div class="ps-fld"><span class="nm">Q. ${esc(it.q||'')}</span></div>`).join('') + (items(d.items).length>5?`<div style="font-size:8px;text-align:center;color:#94a3b8">+${d.items.length-5}</div>`:'') || '<div class="ps-fld"><span class="nm" style="font-style:italic">항목 없음</span></div>';
+    case 'qna':
+      return `<div class="ps-fld"><span class="nm">${d.policy==='manual'?'관리자 승인':'자동 공개'}</span><span class="tp">정책</span></div>
+        <div class="ps-fld"><span class="nm">${esc((d.categories||[]).join(', '))}</span><span class="tp">분류</span></div>`;
+    case 'review':
+      return `<div class="ps-fld"><span class="nm">최근 ${d.limit||10}개</span><span class="tp">limit</span></div>
+        <div class="ps-fld"><span class="nm">${esc(d.sort||'latest')}</span><span class="tp">sort</span></div>`;
+    case 'blog':
+      return `<div class="ps-fld"><span class="nm">${esc((d.categories||[]).join(', ')||'카테고리 없음')}</span><span class="tp">cat</span></div>`;
+    case 'inquiry':
+      return items(d.fields).map(f => `<div class="ps-fld"><span class="nm">${esc(f)}</span></div>`).join('') || '<div class="ps-fld"><span class="nm" style="font-style:italic">필드 없음</span></div>';
+    case 'terms':
+    case 'privacy':
+      return `<div class="ps-fld"><span class="nm">${esc((d.text||'').slice(0,120))}${(d.text||'').length>120?'…':''}</span></div>
+        <div style="font-size:8px;color:#94a3b8;text-align:right">${(d.text||'').length}자</div>`;
+    case 'apply_ref': {
+      const tpl = formTemplates.find(t => t.id === d.templateId);
+      if (!tpl) return `<div class="ps-fld"><span class="nm" style="color:#dc2626">템플릿 #${d.templateId} 없음</span></div>`;
+      return `<div class="ps-fld"><span class="nm">${esc(tpl.name||'')}</span><span class="tp">#${tpl.id}</span></div>
+        <div class="ps-fld"><span class="nm">${esc(tpl._site||'')}/${esc(tpl._formId||'')}</span><span class="tp">src</span></div>
+        <div class="ps-fld"><span class="nm">${(d.phases||[]).join(' + ')}</span><span class="tp">phase</span></div>`;
+    }
+    default:
+      if (m.type.startsWith('block_')) {
+        return `<div class="ps-fld"><span class="nm" style="font-family:monospace;font-size:9px">${esc(JSON.stringify(d).slice(0,120))}${JSON.stringify(d).length>120?'…':''}</span></div>`;
+      }
+      return `<div class="ps-fld"><span class="nm" style="color:#94a3b8">—</span></div>`;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════ */
-/*   CRUD                                                        */
+/*   CRUD (Homepages)                                            */
 /* ═══════════════════════════════════════════════════════════ */
 
-async function createNew(){
-  const name = prompt('홈페이지 이름 입력:', '새 홈페이지');
+function hmSelSite(id) { hmSite = id; rHomes(); }
+
+function hmSelHp(id) {
+  if (dirty && !confirm('저장되지 않은 변경사항이 있습니다. 이동할까요?')) return;
+  const hp = homepages.find(h => h.id === id);
+  if (!hp) return;
+  hmHpId = id;
+  hmData = JSON.parse(JSON.stringify(hp));
+  migrateHp(hmData);
+  dirty = false;
+  // site 자동 동기화 (카드에서 선택 시)
+  if (hp.linkedSite) hmSite = hp.linkedSite;
+  else hmSite = 'unset';
+  rHomes();
+}
+
+async function hmAddHp(siteId) {
+  const name = prompt('홈페이지 이름:');
   if (!name) return;
-  const data = defaultHp(name);
+  const data = {
+    name, slug: '', linkedSite: siteId || '', status: 'draft',
+    landing: { repoUrl:'', branch:'main', deployPath:'/', verified:null },
+    sections: [],
+    deploy: { lastPublished:'' },
+    _notes: '', _notesFiles: [],
+  };
   try {
-    const r = await fetch('/api/homepages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(data)
-    });
+    const r = await fetch('/api/homepages', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
     const j = await r.json();
     await loadHomepages();
-    currentHpId = j.id;
+    hmSite = siteId || 'unset';
+    hmHpId = j.id;
+    const hp = homepages.find(h => h.id === j.id);
+    hmData = JSON.parse(JSON.stringify(hp));
+    migrateHp(hmData);
     dirty = false;
-    renderAll();
-    toast('홈페이지 생성 완료', 'ok');
-  } catch(e) { toast('생성 실패: ' + e.message, 'err'); }
+    rHomes();
+    toast('홈페이지 생성', 'ok');
+  } catch(e) { toast('생성 실패: '+e.message, 'err'); }
 }
 
-async function deleteHp(id){
-  if (!confirm('정말 삭제하시겠습니까?')) return;
+async function hmSave() {
+  if (!hmData) return;
   try {
-    await fetch('/api/homepages/' + id, { method:'DELETE' });
-    if (currentHpId === id) { currentHpId = null; dirty = false; }
+    const { id, _created, ...data } = hmData;
+    await fetch('/api/homepages/' + hmData.id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
     await loadHomepages();
-    renderAll();
-    toast('삭제 완료', 'ok');
-  } catch(e) { toast('삭제 실패: ' + e.message, 'err'); }
-}
-
-function selectHp(id){
-  if (dirty && !confirm('변경사항이 있습니다. 저장 없이 이동?')) return;
-  currentHpId = id;
-  dirty = false;
-  renderAll();
-}
-
-async function saveHomepage(){
-  const hp = getCurrent();
-  if (!hp) return;
-  try {
-    const data = Object.assign({}, hp);
-    delete data.id; delete data._created;
-    await fetch('/api/homepages/' + hp.id, {
-      method:'PUT', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(data)
-    });
+    const hp = homepages.find(h => h.id === hmData.id);
+    if (hp) { hmData = JSON.parse(JSON.stringify(hp)); migrateHp(hmData); }
     dirty = false;
-    renderStepsBar();
-    updateActions();
-    updateDirtyInd();
     toast('저장 완료', 'ok');
-  } catch(e) { toast('저장 실패: ' + e.message, 'err'); }
+    rHomes();
+  } catch(e) { toast('저장 실패: '+e.message, 'err'); }
 }
 
-async function publishHomepage(){
-  const hp = getCurrent();
-  if (!hp) return;
-  if (!hp.slug) { toast('슬러그(slug)가 필요합니다 (우측 패널)', 'err'); return; }
-  if (!/^[a-z0-9-]+$/.test(hp.slug)) { toast('슬러그는 영소문자/숫자/- 만 가능', 'err'); return; }
-  if (!confirm('PRD를 확정하고 공개하시겠습니까?\n\n뷰어 URL: /hp/' + hp.slug + '\nRaw .md: /hp/' + hp.slug + '.md')) return;
-
-  hp.status = 'published';
-  hp.deploy.lastPublished = new Date().toISOString().slice(0,16).replace('T',' ');
-  dirty = true;
-  await saveHomepage();
-  renderAll();
-  toast('PRD 확정 완료 📄', 'ok');
-  setTimeout(() => openPreview(), 400);
+async function hmDelete() {
+  if (!hmData) return;
+  if (!confirm(`홈페이지 '${hmData.name}' 삭제?`)) return;
+  try {
+    await fetch('/api/homepages/' + hmData.id, { method:'DELETE' });
+    hmHpId = null; hmData = null; dirty = false;
+    await loadHomepages();
+    rHomes();
+    toast('삭제 완료', 'ok');
+  } catch(e) { toast('삭제 실패: '+e.message, 'err'); }
 }
 
-function openPreview(){
-  const hp = getCurrent();
-  if (!hp) return;
-  if (!hp.slug) { toast('슬러그를 먼저 지정하세요', 'err'); return; }
+function hmPreview() {
+  if (!hmData) return;
+  if (!hmData.slug) { toast('슬러그를 먼저 지정하세요', 'err'); return; }
   if (dirty) {
-    if (!confirm('저장되지 않은 변경이 있습니다. 지금 저장 후 프리뷰?')) return;
-    saveHomepage().then(() => window.open('/hp/' + hp.slug, '_blank'));
+    if (!confirm('저장되지 않은 변경이 있습니다. 저장 후 열기?')) return;
+    hmSave().then(() => window.open('/hp/' + hmData.slug, '_blank'));
   } else {
-    window.open('/hp/' + hp.slug, '_blank');
+    window.open('/hp/' + hmData.slug, '_blank');
   }
 }
 
-/* ═══════════════════════════════════════════════════════════ */
-/*   Edit area                                                   */
-/* ═══════════════════════════════════════════════════════════ */
-
-function renderEditArea(){
-  const hp = getCurrent();
-  if (!hp) {
-    document.getElementById('editArea').innerHTML =
-      '<div class="cp-empty"><div class="big-ic">🏠</div>' +
-      '<div>홈페이지를 선택하거나<br>새로 만드세요</div>' +
-      '<button onclick="createNew()">+ 새 홈페이지 만들기</button></div>';
-    return;
-  }
-  document.getElementById('editArea').innerHTML =
-    renderStep1(hp) + renderStep2(hp) + renderStep3(hp) + renderStep4(hp) + renderStep5(hp);
-}
-
-function stepHeader(n, title, hp, key, meta){
-  const done = isStepDone(hp, key);
-  return '<div class="step-hd"><div class="step-n">' + n + '</div>' +
-    '<h3>' + title + (meta ? '<span class="meta">' + meta + '</span>' : '') + '</h3>' +
-    '<div class="step-sts ' + (done?'done':'') + '">' + (done?'완료':'대기') + '</div></div>';
-}
-
-/* ─── Step 1: Landing + real GitHub verify ─── */
-function renderStep1(hp){
-  const l = hp.landing || {};
-  const v = l.verified;
-  let verifyBox = '';
-  if (v) {
-    verifyBox = '<div class="gh-result ok"><div class="gh-title">✓ ' + escapeHtml(v.fullName) + '</div>' +
-      '<div class="gh-meta">' +
-      (v.description ? escapeHtml(v.description) + '<br>' : '') +
-      '⭐ ' + v.stars + ' · 🍴 ' + v.forks + ' · 기본 브랜치 <code>' + escapeHtml(v.defaultBranch) + '</code><br>' +
-      '최근 푸시: ' + escapeHtml((v.pushedAt || '').slice(0,10)) +
-      (v.hasPages ? ' · 🌐 GitHub Pages 활성' : ' · GitHub Pages 비활성') +
-      '</div></div>';
-  } else if (v === false) {
-    verifyBox = '<div class="gh-result err"><div class="gh-title">✗ 연결 실패</div>' +
-      '<div class="gh-meta">유효하지 않은 URL이거나 private/404 레포입니다.</div></div>';
-  }
-
-  return '<section class="step-card" id="step-1">' +
-    stepHeader(1, '랜딩 페이지 — GitHub 연결', hp, 'landing') +
-    '<div class="step-body">' +
-    '<div class="hint">Figma → GitHub 레포에 업로드한 랜딩 페이지를 연결합니다. [연결 테스트]로 GitHub API를 통해 실제 존재 여부를 확인합니다.</div>' +
-    '<div class="fld"><label>GitHub Repository URL</label>' +
-    '<input type="url" value="' + escapeAttr(l.repoUrl) + '" placeholder="https://github.com/user/repo 또는 user/repo"' +
-    ' onblur="setField(\'landing.repoUrl\', this.value); setField(\'landing.verified\', null); renderEditArea()"></div>' +
-    '<div class="fld-row">' +
-    '<div class="fld"><label>브랜치</label>' +
-    '<input type="text" value="' + escapeAttr(l.branch || 'main') + '"' +
-    ' onblur="setField(\'landing.branch\', this.value)"></div>' +
-    '<div class="fld"><label>배포 경로</label>' +
-    '<input type="text" value="' + escapeAttr(l.deployPath || '/') + '"' +
-    ' onblur="setField(\'landing.deployPath\', this.value)"></div>' +
-    '</div>' +
-    '<button class="chip sq a" onclick="verifyLanding()">🔗 GitHub API 연결 테스트</button>' +
-    verifyBox +
-    '</div></section>';
-}
-
-async function verifyLanding(){
-  const hp = getCurrent();
-  if (!hp || !hp.landing || !hp.landing.repoUrl) {
-    toast('URL을 먼저 입력하세요', 'err');
-    return;
-  }
-  const parsed = parseGitHubUrl(hp.landing.repoUrl);
-  if (!parsed) {
-    hp.landing.verified = false;
-    dirty = true;
-    renderAll();
-    toast('유효하지 않은 GitHub URL', 'err');
-    return;
-  }
+async function hmVerifyLanding() {
+  if (!hmData || !hmData.landing?.repoUrl) { toast('URL을 먼저 입력하세요', 'err'); return; }
+  let url = hmData.landing.repoUrl.trim().replace(/\.git$/, '').replace(/\/$/, '');
+  let m = url.match(/github\.com[/:]+([^/]+)\/([^/]+)/);
+  if (!m) m = url.match(/^([^/\s]+)\/([^/\s]+)$/);
+  if (!m) { hmData.landing.verified = false; dirty = true; rMain(); toast('유효하지 않은 GitHub URL', 'err'); return; }
   toast('GitHub API 확인 중...', 'ok');
   try {
-    const r = await fetch('https://api.github.com/repos/' + parsed.owner + '/' + parsed.repo);
+    const r = await fetch('https://api.github.com/repos/' + m[1] + '/' + m[2]);
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const j = await r.json();
-    hp.landing.verified = {
-      owner: j.owner && j.owner.login,
-      repo: j.name,
-      fullName: j.full_name,
-      description: j.description || '',
-      stars: j.stargazers_count || 0,
-      forks: j.forks_count || 0,
-      defaultBranch: j.default_branch || 'main',
-      pushedAt: j.pushed_at || '',
-      hasPages: !!j.has_pages,
+    hmData.landing.verified = {
+      owner: j.owner?.login, repo: j.name, fullName: j.full_name,
+      description: j.description || '', stars: j.stargazers_count||0, forks: j.forks_count||0,
+      defaultBranch: j.default_branch||'main', pushedAt: j.pushed_at||'', hasPages: !!j.has_pages,
       url: j.html_url,
     };
-    hp.landing.lastSync = new Date().toISOString().slice(0,16).replace('T',' ');
+    hmData.landing.lastSync = new Date().toISOString().slice(0,16).replace('T',' ');
     dirty = true;
-    renderAll();
-    toast('✓ ' + j.full_name + ' 확인 완료', 'ok');
+    rMain();
+    toast('✓ ' + j.full_name, 'ok');
   } catch(e) {
-    hp.landing.verified = false;
+    hmData.landing.verified = false;
     dirty = true;
-    renderAll();
+    rMain();
     toast('연결 실패: ' + e.message, 'err');
   }
-}
-
-function parseGitHubUrl(url){
-  if (!url) return null;
-  url = url.trim().replace(/\.git$/, '').replace(/\/$/, '');
-  let m = url.match(/github\.com[/:]+([^/]+)\/([^/]+)/);
-  if (m) return { owner: m[1], repo: m[2] };
-  m = url.match(/^([^/\s]+)\/([^/\s]+)$/);
-  if (m) return { owner: m[1], repo: m[2] };
-  return null;
-}
-
-/* ─── Step 2: Common modules with inline editors ─── */
-function renderStep2(hp){
-  const cs = hp.commonState || {};
-  const enabledCnt = Object.keys(cs).filter(k => cs[k].enabled).length;
-  const byCat = {};
-  COMMON_MODULES.forEach(m => { (byCat[m.cat] = byCat[m.cat] || []).push(m); });
-
-  let body = '<div class="hint">각 모듈은 기본적으로 <b>활성 상태</b>이며, 토글로 끄거나 펼쳐서 상세 편집합니다. ' + enabledCnt + '/' + COMMON_MODULES.length + '개 활성.</div>';
-
-  Object.keys(byCat).forEach(cat => {
-    body += '<div style="font-size:9px;color:#94a3b8;font-weight:700;margin:8px 0 4px;text-transform:uppercase;letter-spacing:.3px">' + cat + '</div>';
-    byCat[cat].forEach(m => {
-      const st = cs[m.id] || { enabled: false, data: {} };
-      const exp = expandedCommon.has(m.id);
-      const summary = getCommonSummary(m, st);
-      body += '<div class="cm-card ' + (exp?'exp':'') + ' ' + (st.enabled?'':'disabled') + '">' +
-        '<div class="cm-hd" onclick="toggleCommonExpand(\'' + m.id + '\')">' +
-        '<span class="cm-chev">▶</span>' +
-        '<span class="cm-ic">' + m.ic + '</span>' +
-        '<span class="cm-nm">' + m.name + '</span>' +
-        '<span class="cm-cat">' + m.cat + '</span>' +
-        '<span class="cm-cnt">' + summary + '</span>' +
-        '<button class="cm-tog ' + (st.enabled?'on':'off') + '" onclick="event.stopPropagation();toggleCommonEnabled(\'' + m.id + '\')" title="활성/비활성"></button>' +
-        '</div>' +
-        '<div class="cm-body">' + renderCommonEditor(m, st) + '</div>' +
-        '</div>';
-    });
-  });
-
-  return '<section class="step-card" id="step-2">' +
-    stepHeader(2, '공통 모듈', hp, 'common', enabledCnt + '/' + COMMON_MODULES.length + ' 활성') +
-    '<div class="step-body">' + body + '</div></section>';
-}
-
-function getCommonSummary(m, st){
-  if (!st.enabled) return '비활성';
-  const d = st.data || {};
-  switch(m.editor){
-    case 'banner': return d.title ? '"' + d.title.slice(0,20) + '"' : '미설정';
-    case 'nav_section': return (d.sections||[]).length + '개 섹션';
-    case 'footer': return d.company || '미설정';
-    case 'notice': return (d.items||[]).length + '개 항목';
-    case 'faq': return (d.items||[]).length + '개 항목';
-    case 'qna': return (d.categories||[]).length + '개 분류';
-    case 'review': return '최근 ' + (d.limit||10) + '개';
-    case 'inquiry': return (d.fields||[]).length + '개 필드';
-    case 'blog': return (d.categories||[]).length + '개 카테고리';
-    case 'longtext': return (d.text||'').length + '자';
-  }
-  return '';
-}
-
-function renderCommonEditor(m, st){
-  const d = st.data || {};
-  const p = 'commonState.' + m.id + '.data';
-  switch(m.editor){
-    case 'banner':
-      return '<div class="fld"><label>제목</label><input type="text" value="' + escapeAttr(d.title) + '" onblur="setField(\'' + p + '.title\',this.value);renderEditArea()"></div>' +
-        '<div class="fld"><label>부제목</label><input type="text" value="' + escapeAttr(d.subtitle) + '" onblur="setField(\'' + p + '.subtitle\',this.value)"></div>' +
-        '<div class="fld"><label>이미지 URL</label><input type="url" value="' + escapeAttr(d.image) + '" onblur="setField(\'' + p + '.image\',this.value)"></div>' +
-        '<div class="fld-row"><div class="fld"><label>CTA 라벨</label><input type="text" value="' + escapeAttr(d.ctaLabel) + '" onblur="setField(\'' + p + '.ctaLabel\',this.value)"></div>' +
-        '<div class="fld"><label>CTA 링크</label><input type="text" value="' + escapeAttr(d.ctaUrl) + '" onblur="setField(\'' + p + '.ctaUrl\',this.value)"></div></div>';
-
-    case 'nav_section':
-      const secs = d.sections || [];
-      let navHtml = '<div class="list-ed">';
-      secs.forEach((s, i) => {
-        navHtml += '<div class="list-ed-item"><div class="idx">' + (i+1) + '</div>' +
-          '<div class="fields">' +
-          '<input type="text" placeholder="섹션 ID" value="' + escapeAttr(s.id) + '" onblur="setListItem(\'' + p + '.sections\',' + i + ',\'id\',this.value)">' +
-          '<input type="text" placeholder="라벨" value="' + escapeAttr(s.label) + '" onblur="setListItem(\'' + p + '.sections\',' + i + ',\'label\',this.value)">' +
-          '</div><button class="rm" onclick="removeListItem(\'' + p + '.sections\',' + i + ')">×</button></div>';
-      });
-      navHtml += '</div><button class="list-ed-add" onclick="addListItem(\'' + p + '.sections\',{id:\'\',label:\'\'})">+ 섹션 추가</button>';
-      return navHtml;
-
-    case 'footer':
-      return '<div class="fld"><label>회사명</label><input type="text" value="' + escapeAttr(d.company) + '" onblur="setField(\'' + p + '.company\',this.value)"></div>' +
-        '<div class="fld"><label>주소</label><input type="text" value="' + escapeAttr(d.address) + '" onblur="setField(\'' + p + '.address\',this.value)"></div>' +
-        '<div class="fld"><label>연락처</label><input type="text" value="' + escapeAttr(d.contact) + '" onblur="setField(\'' + p + '.contact\',this.value)"></div>' +
-        '<div class="fld"><label>저작권 문구</label><input type="text" value="' + escapeAttr(d.copyright) + '" onblur="setField(\'' + p + '.copyright\',this.value)"></div>';
-
-    case 'notice': {
-      const items = d.items || [];
-      let h = '<div class="list-ed">';
-      items.forEach((it, i) => {
-        h += '<div class="list-ed-item"><div class="idx">' + (i+1) + '</div>' +
-          '<div class="fields">' +
-          '<div class="fld-row"><input type="date" value="' + escapeAttr(it.date) + '" onblur="setListItem(\'' + p + '.items\',' + i + ',\'date\',this.value)" style="flex:0 0 110px;padding:3px 6px;font-size:10px">' +
-          '<input type="text" placeholder="제목" value="' + escapeAttr(it.title) + '" onblur="setListItem(\'' + p + '.items\',' + i + ',\'title\',this.value)"></div>' +
-          '<textarea placeholder="내용" onblur="setListItem(\'' + p + '.items\',' + i + ',\'content\',this.value)">' + escapeHtml(it.content) + '</textarea>' +
-          '</div><button class="rm" onclick="removeListItem(\'' + p + '.items\',' + i + ')">×</button></div>';
-      });
-      h += '</div><button class="list-ed-add" onclick="addListItem(\'' + p + '.items\',{date:\'\',title:\'\',content:\'\'});renderEditArea()">+ 공지 추가</button>';
-      return h;
-    }
-
-    case 'faq': {
-      const items = d.items || [];
-      let h = '<div class="list-ed">';
-      items.forEach((it, i) => {
-        h += '<div class="list-ed-item"><div class="idx">' + (i+1) + '</div>' +
-          '<div class="fields">' +
-          '<input type="text" placeholder="질문 Q" value="' + escapeAttr(it.q) + '" onblur="setListItem(\'' + p + '.items\',' + i + ',\'q\',this.value)">' +
-          '<textarea placeholder="답변 A" onblur="setListItem(\'' + p + '.items\',' + i + ',\'a\',this.value)">' + escapeHtml(it.a) + '</textarea>' +
-          '</div><button class="rm" onclick="removeListItem(\'' + p + '.items\',' + i + ')">×</button></div>';
-      });
-      h += '</div><button class="list-ed-add" onclick="addListItem(\'' + p + '.items\',{q:\'\',a:\'\'});renderEditArea()">+ FAQ 추가</button>';
-      return h;
-    }
-
-    case 'qna': {
-      const polChips = ['auto','manual'].map(x =>
-        '<button class="chip sq ' + (d.policy===x?'a':'') + '" onclick="setField(\'' + p + '.policy\',\'' + x + '\');renderEditArea()">' + (x==='auto'?'자동공개':'관리자승인') + '</button>'
-      ).join('');
-      const cats = (d.categories || []).map((c, i) =>
-        '<span class="chip sq a">' + escapeHtml(c) + ' <button style="background:none;border:none;color:#fff;cursor:pointer;font-size:10px;font-weight:700" onclick="removeArrItem(\'' + p + '.categories\',' + i + ')">×</button></span>'
-      ).join('');
-      return '<div class="fld"><label>게시 정책</label><div class="chips">' + polChips + '</div></div>' +
-        '<div class="fld"><label>분류 (' + (d.categories||[]).length + ')</label><div class="chips">' + cats +
-        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.categories\',\'분류 이름:\')">+ 추가</button></div></div>';
-    }
-
-    case 'review':
-      return '<div class="fld-row"><div class="fld"><label>표시 수</label><input type="number" value="' + (d.limit||10) + '" onblur="setField(\'' + p + '.limit\',parseInt(this.value)||10)"></div>' +
-        '<div class="fld"><label>정렬</label><div class="chips">' +
-        ['latest','rating','popular'].map(x => '<button class="chip sq ' + (d.sort===x?'a':'') + '" onclick="setField(\'' + p + '.sort\',\'' + x + '\');renderEditArea()">' + x + '</button>').join('') +
-        '</div></div></div>';
-
-    case 'inquiry': {
-      const allFields = [
-        { id:'name', label:'이름' }, { id:'email', label:'이메일' }, { id:'phone', label:'전화' },
-        { id:'company', label:'회사' }, { id:'title', label:'제목' }, { id:'content', label:'내용' },
-        { id:'file', label:'파일첨부' }, { id:'budget', label:'예산' }, { id:'deadline', label:'희망일' },
-      ];
-      const selected = new Set(d.fields || []);
-      return '<div class="fld"><label>포함 필드</label><div class="chips">' +
-        allFields.map(f => '<button class="chip sq ' + (selected.has(f.id)?'a':'') + '" onclick="toggleArrValue(\'' + p + '.fields\',\'' + f.id + '\');renderEditArea()">' + f.label + '</button>').join('') +
-        '</div></div>';
-    }
-
-    case 'blog': {
-      const cats = (d.categories || []).map((c, i) =>
-        '<span class="chip sq a">' + escapeHtml(c) + ' <button style="background:none;border:none;color:#fff;cursor:pointer;font-size:10px;font-weight:700" onclick="removeArrItem(\'' + p + '.categories\',' + i + ')">×</button></span>'
-      ).join('');
-      return '<div class="fld"><label>카테고리</label><div class="chips">' + cats +
-        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.categories\',\'카테고리 이름:\')">+ 추가</button></div></div>';
-    }
-
-    case 'longtext':
-      return '<div class="fld"><label>본문 (' + (d.text||'').length + '자)</label>' +
-        '<textarea rows="8" placeholder="약관/정책 본문을 입력하세요" onblur="setField(\'' + p + '.text\',this.value);renderEditArea()">' + escapeHtml(d.text || '') + '</textarea></div>';
-  }
-  return '<div class="hint">편집기 미구현</div>';
-}
-
-/* ─── Step 3: Multi-axis apply templates ─── */
-function renderStep3(hp){
-  const applyMap = {};
-  (hp.applyTemplates || []).forEach(at => { applyMap[at.templateId] = new Set(at.phases || []); });
-
-  let tpls = formTemplates.slice();
-  if (filterSite !== 'all')  tpls = tpls.filter(t => t._site === filterSite);
-  if (filterRole !== 'all') {
-    tpls = tpls.filter(t => {
-      const s = (JSON.stringify(t) || '').toLowerCase();
-      return s.indexOf(filterRole) >= 0;
-    });
-  }
-
-  const selectedCount = Object.keys(applyMap).reduce((n, k) => n + applyMap[k].size, 0);
-
-  const siteChips = '<button class="chip sq ' + (filterSite==='all'?'a':'') + '" onclick="filterSite=\'all\';renderEditArea()">전체</button>' +
-    WEBSITES.map(w => '<button class="chip sq ' + (filterSite===w.id?'a':'') + '" onclick="filterSite=\'' + w.id + '\';renderEditArea()">' + w.name + '</button>').join('');
-  const roleChips = APPLY_ROLES.map(r => '<button class="chip sq ' + (filterRole===r.id?'a':'') + '" onclick="filterRole=\'' + r.id + '\';renderEditArea()">' + r.label + '</button>').join('');
-  const phaseChips = PHASE_FILTERS.map(p => '<button class="chip sq ' + (filterPhase===p.id?'a':'') + '" onclick="filterPhase=\'' + p.id + '\';renderEditArea()">' + p.label + '</button>').join('');
-
-  let tplHtml = '';
-  if (!tpls.length) {
-    tplHtml = '<div class="ft-empty">필터 조건에 맞는 템플릿이 없습니다.<br>관리자 홈 → 신청서에서 먼저 템플릿을 만드세요.</div>';
-  } else {
-    tplHtml = '<div class="ft-list">' + tpls.map(t => {
-      const sel = applyMap[t.id] || new Set();
-      const isSel = sel.size > 0;
-      const phases = t.phases || { part1:[], part2:[] };
-      const site = WEBSITES.find(w => w.id === t._site);
-      const siteColor = site ? site.color : '#64748b';
-      let phasesHtml = '';
-      ['part1','part2'].forEach(ph => {
-        if (filterPhase !== 'all' && filterPhase !== ph) return;
-        const mods = phases[ph] || [];
-        if (!mods.length && ph === 'part2') return;
-        const phSel = sel.has(ph);
-        phasesHtml += '<div class="ph-block ' + (phSel?'on':'') + '">' +
-          '<div class="ph-hd">' +
-          '<input type="checkbox" ' + (phSel?'checked':'') + ' onchange="toggleApplyPhase(' + t.id + ',\'' + ph + '\')">' +
-          '<span class="ph-name">' + (ph==='part1'?'1부':'2부') + '</span>' +
-          '<span class="ph-cnt">' + mods.length + '개 모듈</span></div>' +
-          (mods.length ? '<div class="ph-mods">' + mods.map(m => '<span class="ph-mod">' + escapeHtml(m) + '</span>').join('') + '</div>' : '') +
-          '</div>';
-      });
-      return '<div class="ft-card ' + (isSel?'sel':'') + '">' +
-        '<div class="ft-top">' +
-        '<span class="ft-badge site" style="background:' + siteColor + '">' + escapeHtml(t._site || '—') + '</span>' +
-        '<span class="ft-nm">' + escapeHtml(t.name || '(이름 없음)') + '</span>' +
-        '<span class="ft-badge role">' + escapeHtml(t._role || t._formId || '—') + '</span>' +
-        '</div>' +
-        (phasesHtml ? '<div class="ft-phases">' + phasesHtml + '</div>' : '<div class="hint">단계 정보 없음</div>') +
-        '</div>';
-    }).join('') + '</div>';
-  }
-
-  return '<section class="step-card" id="step-3">' +
-    stepHeader(3, '준공통 — 신청서', hp, 'apply', selectedCount + '개 phase 선택') +
-    '<div class="step-body">' +
-    '<div class="hint">사이트 × 역할 × 단계(1부/2부) 3축으로 필터. 각 템플릿의 1부/2부를 <b>개별 선택</b>할 수 있습니다 (한쪽만 포함도 가능).</div>' +
-    '<div class="filter-bar">' +
-    '<div class="filter-row"><span class="fr-lbl">사이트</span><div class="chips">' + siteChips + '</div></div>' +
-    '<div class="filter-row"><span class="fr-lbl">역할</span><div class="chips">' + roleChips + '</div></div>' +
-    '<div class="filter-row"><span class="fr-lbl">단계</span><div class="chips">' + phaseChips + '</div></div>' +
-    '</div>' +
-    tplHtml + '</div></section>';
-}
-
-function toggleApplyPhase(tplId, phase){
-  const hp = getCurrent();
-  if (!hp) return;
-  hp.applyTemplates = hp.applyTemplates || [];
-  let entry = hp.applyTemplates.find(at => at.templateId === tplId);
-  if (!entry) {
-    entry = { templateId: tplId, phases: [] };
-    hp.applyTemplates.push(entry);
-  }
-  const i = entry.phases.indexOf(phase);
-  if (i >= 0) entry.phases.splice(i, 1);
-  else entry.phases.push(phase);
-  if (!entry.phases.length) {
-    hp.applyTemplates = hp.applyTemplates.filter(at => at.templateId !== tplId);
-  }
-  dirty = true;
-  renderAll();
-}
-
-/* ─── Step 4: Block library + applied blocks with inline config ─── */
-function renderStep4(hp){
-  const blocks = hp.blocks || [];
-
-  let libHtml = '<div class="stack-btns">';
-  Object.keys(STACK_PRESETS).forEach(k => {
-    const p = STACK_PRESETS[k];
-    libHtml += '<button class="stack-btn" onclick="addStack(\'' + k + '\')">' + p.label + '<br><span style="font-size:8px;color:#64748b;font-weight:500">' + p.source + '</span></button>';
-  });
-  libHtml += '</div>';
-  libHtml += '<div class="block-lib">' + BLOCK_LIBRARY.map(b =>
-    '<div class="blk-lib-card" onclick="addBlock(\'' + b.type + '\')">' +
-    '<div class="bl-nm">' + b.name + '</div>' +
-    '<div class="bl-desc">' + b.desc + ' · <code style="font-size:8px">' + b.src + '</code></div>' +
-    '</div>'
-  ).join('') + '</div>';
-
-  let appliedHtml = '';
-  if (!blocks.length) {
-    appliedHtml = '<div class="ft-empty">아직 추가된 블록이 없습니다.<br>위 라이브러리에서 클릭하거나 일괄 추가 버튼을 사용하세요.</div>';
-  } else {
-    appliedHtml = '<div class="applied-list">' + blocks.map((b, i) => {
-      const exp = expandedBlocks.has(i);
-      return '<div class="app-blk ' + (exp?'exp':'') + '">' +
-        '<div class="app-blk-hd" onclick="toggleBlockExpand(' + i + ')">' +
-        '<div class="ab-n">' + (i+1) + '</div>' +
-        '<div class="ab-nm">' + escapeHtml(b.name) + '</div>' +
-        '<div class="ab-type">' + b.type + '</div>' +
-        '<div class="ab-ctrls">' +
-        '<button onclick="event.stopPropagation();moveBlock(' + i + ',-1)" title="위로">▲</button>' +
-        '<button onclick="event.stopPropagation();moveBlock(' + i + ',1)" title="아래로">▼</button>' +
-        '<button class="rm" onclick="event.stopPropagation();removeBlock(' + i + ')" title="삭제">×</button>' +
-        '</div></div>' +
-        '<div class="ab-body">' + renderBlockConfig(i, b) + '</div>' +
-        '</div>';
-    }).join('') + '</div>';
-  }
-
-  return '<section class="step-card" id="step-4">' +
-    stepHeader(4, '선택 모듈 — 블록 라이브러리', hp, 'optional', blocks.length + '개 블록') +
-    '<div class="step-body">' +
-    '<div class="hint">파일2(AI STUDIO)·파일3(원페이지)에서 분해한 실제 블록들. 카드 클릭 → 추가, 펼치기 → 설정, ▲▼ 순서 변경, × 제거.</div>' +
-    '<div class="block-lib-hd">📚 라이브러리</div>' +
-    libHtml +
-    '<div class="applied-hd">🧱 적용된 블록 <b>' + blocks.length + '</b>개</div>' +
-    appliedHtml +
-    '</div></section>';
-}
-
-function renderBlockConfig(idx, b){
-  const cfg = b.config || {};
-  const p = 'blocks.' + idx + '.config';
-  switch(b.type){
-    case 'cat_multi':
-      return '<div class="fld"><label>선택된 카테고리 (' + (cfg.selected||[]).length + ')</label><div class="chips">' +
-        (cfg.selected||[]).map((c,i) => '<span class="chip sq a">' + escapeHtml(c) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.selected\',' + i + ')">×</button></span>').join('') +
-        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.selected\',\'카테고리 (예: 문서/비즈니스/사업계획서):\')">+ 추가</button>' +
-        '</div></div>' +
-        '<div class="fld"><label>축 수</label><div class="chips">' +
-        [2,3].map(n => '<button class="chip sq ' + (cfg.axes===n?'a':'') + '" onclick="setField(\'' + p + '.axes\',' + n + ');renderEditArea()">' + n + '단 (대' + (n===3?'중소':'중') + ')</button>').join('') +
-        '</div></div>';
-
-    case 'file_drop':
-      const accepts = ['pdf','docx','xlsx','pptx','txt','zip','jpg','png','mp3','mp4'];
-      const selAcc = new Set(cfg.accept || []);
-      return '<div class="fld"><label>허용 확장자</label><div class="chips">' +
-        accepts.map(a => '<button class="chip sq ' + (selAcc.has(a)?'a':'') + '" onclick="toggleArrValue(\'' + p + '.accept\',\'' + a + '\');renderEditArea()">' + a + '</button>').join('') +
-        '</div></div>' +
-        '<div class="fld-row"><div class="fld"><label>최대 MB</label><input type="number" value="' + (cfg.maxMb||50) + '" onblur="setField(\'' + p + '.maxMb\',parseInt(this.value)||50)"></div>' +
-        '<div class="fld"><label>다중업로드</label><div class="chips">' +
-        '<button class="chip sq ' + (cfg.multi?'a':'') + '" onclick="setField(\'' + p + '.multi\',true);renderEditArea()">허용</button>' +
-        '<button class="chip sq ' + (!cfg.multi?'a':'') + '" onclick="setField(\'' + p + '.multi\',false);renderEditArea()">단일</button>' +
-        '</div></div></div>';
-
-    case 'ai_radio4':
-      return '<div class="fld"><label>모델 목록 (' + (cfg.models||[]).length + ')</label><div class="chips">' +
-        (cfg.models || []).map((m,i) => '<span class="chip sq a">' + escapeHtml(m) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.models\',' + i + ')">×</button></span>').join('') +
-        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.models\',\'모델명:\')">+ 추가</button>' +
-        '</div></div>' +
-        '<div class="fld"><label>기본 선택</label><div class="chips">' +
-        (cfg.models || []).map((m, i) => '<button class="chip sq ' + (cfg.defaultIdx===i?'a':'') + '" onclick="setField(\'' + p + '.defaultIdx\',' + i + ');renderEditArea()">' + escapeHtml(m) + '</button>').join('') +
-        '</div></div>';
-
-    case 'editor_bool':
-      return '<div class="fld"><label>기본 모드</label><div class="chips">' +
-        '<button class="chip sq ' + (cfg.defaultMode==='use'?'a':'') + '" onclick="setField(\'' + p + '.defaultMode\',\'use\');renderEditArea()">에디터 사용</button>' +
-        '<button class="chip sq ' + (cfg.defaultMode==='nouse'?'a':'') + '" onclick="setField(\'' + p + '.defaultMode\',\'nouse\');renderEditArea()">에디터 미사용</button>' +
-        '</div></div>';
-
-    case 'human_3sel':
-      return '<div class="fld"><label>작업 유형 (' + (cfg.types||[]).length + ')</label><div class="chips">' +
-        (cfg.types || []).map((t,i) => '<span class="chip sq a">' + escapeHtml(t) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.types\',' + i + ')">×</button></span>').join('') +
-        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.types\',\'작업 유형:\')">+</button>' +
-        '</div></div>' +
-        '<div class="fld"><label>전문가 등급</label><div class="chips">' +
-        (cfg.grades || []).map((g,i) => '<span class="chip sq a">' + escapeHtml(g) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.grades\',' + i + ')">×</button></span>').join('') +
-        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.grades\',\'등급명:\')">+</button>' +
-        '</div></div>' +
-        '<div class="fld"><label>긴급도 (label+surcharge%)</label><div style="font-size:9px;color:#64748b">' +
-        (cfg.urgencies || []).map(u => u.label + ' (+' + u.surcharge + '%)').join(' · ') +
-        '</div></div>';
-
-    case 'opts_toggle':
-      return '<div class="fld"><label>옵션</label>' +
-        '<div class="list-ed">' +
-        (cfg.options || []).map((o, i) =>
-          '<div class="list-ed-item"><div class="idx">' + (i+1) + '</div>' +
-          '<div class="fields"><input type="text" value="' + escapeAttr(o.label) + '" onblur="setField(\'' + p + '.options.' + i + '.label\',this.value)"></div>' +
-          '<button class="rm" onclick="removeListItem(\'' + p + '.options\',' + i + ')">×</button></div>'
-        ).join('') +
-        '</div><button class="list-ed-add" onclick="addListItem(\'' + p + '.options\',{id:\'opt\'+Date.now(),label:\'새 옵션\',enabled:false});renderEditArea()">+ 옵션 추가</button>' +
-        '</div>';
-
-    case 'lang_pair':
-      return '<div class="fld"><label>원문 언어</label><div class="chips">' +
-        (cfg.sources || []).map((l,i) => '<span class="chip sq a">' + escapeHtml(l) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.sources\',' + i + ')">×</button></span>').join('') +
-        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.sources\',\'원문 언어:\')">+</button>' +
-        '</div></div>' +
-        '<div class="fld"><label>번역 언어</label><div class="chips">' +
-        (cfg.targets || []).map((l,i) => '<span class="chip sq a">' + escapeHtml(l) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeArrItem(\'' + p + '.targets\',' + i + ')">×</button></span>').join('') +
-        '<button class="chip sq" onclick="promptArrItem(\'' + p + '.targets\',\'번역 언어:\')">+</button>' +
-        '</div></div>';
-
-    case 'quality_panel':
-      return '<div class="fld"><label>표시 메트릭</label><div class="chips">' +
-        ['files','categories','model','editor','human','cost','time','regulation'].map(m => {
-          const on = (cfg.metrics || []).indexOf(m) >= 0;
-          return '<button class="chip sq ' + (on?'a':'') + '" onclick="toggleArrValue(\'' + p + '.metrics\',\'' + m + '\');renderEditArea()">' + m + '</button>';
-        }).join('') +
-        '</div></div>';
-
-    case 'regulation':
-      return '<div class="fld"><label>규정 세트 ID</label><input type="text" value="' + escapeAttr(cfg.ruleSet) + '" onblur="setField(\'' + p + '.ruleSet\',this.value)"></div>';
-
-    case 'textarea_big':
-      return '<div class="fld"><label>Placeholder</label><input type="text" value="' + escapeAttr(cfg.placeholder) + '" onblur="setField(\'' + p + '.placeholder\',this.value)"></div>' +
-        '<div class="fld"><label>최소 높이 (px)</label><input type="number" value="' + (cfg.minH||260) + '" onblur="setField(\'' + p + '.minH\',parseInt(this.value)||260)"></div>';
-  }
-  return '<div class="fld"><label>JSON 설정</label><textarea rows="3" onblur="try{setField(\'' + p + '\',JSON.parse(this.value));renderEditArea()}catch(e){toast(\'JSON 파싱 실패\',\'err\')}">' + escapeHtml(JSON.stringify(cfg, null, 2)) + '</textarea></div>';
-}
-
-/* ─── Step 5: Deploy / Publish (real) ─── */
-function renderStep5(hp){
-  const slug = hp.slug || '';
-  const canPublish = !!slug && /^[a-z0-9-]+$/.test(slug);
-
-  let routingRows = '';
-  const at = hp.applyTemplates || [];
-  if (!at.length) {
-    routingRows = '<tr><td colspan="3" style="text-align:center;color:#94a3b8">신청서 미지정</td></tr>';
-  } else {
-    at.forEach(e => {
-      const t = formTemplates.find(x => x.id === e.templateId);
-      if (!t) return;
-      e.phases.forEach(ph => {
-        routingRows += '<tr>' +
-          '<td>' + escapeHtml(t.name || '') + ' <span style="color:#94a3b8">· ' + ph + '</span></td>' +
-          '<td>' + escapeHtml(t._site || '') + '</td>' +
-          '<td class="tgt">POST /api/applications</td></tr>';
-      });
-    });
-  }
-
-  // Add common module routing
-  const cs = hp.commonState || {};
-  if (cs.community_notice && cs.community_notice.enabled) {
-    routingRows += '<tr><td>공지사항 (표시)</td><td>' + (cs.community_notice.data.items || []).length + '개</td><td class="tgt">인라인 렌더</td></tr>';
-  }
-  if (cs.community_faq && cs.community_faq.enabled) {
-    routingRows += '<tr><td>FAQ (표시)</td><td>' + (cs.community_faq.data.items || []).length + '개</td><td class="tgt">인라인 렌더</td></tr>';
-  }
-  if (cs.community_qna && cs.community_qna.enabled) {
-    routingRows += '<tr><td>Q&A</td><td>제출</td><td class="tgt">POST /api/story_posts</td></tr>';
-  }
-  if (cs.community_review && cs.community_review.enabled) {
-    routingRows += '<tr><td>후기</td><td>제출</td><td class="tgt">POST /api/story_posts</td></tr>';
-  }
-  if (cs.inquiry && cs.inquiry.enabled) {
-    routingRows += '<tr><td>1:1 문의</td><td>' + (cs.inquiry.data.fields || []).length + '개 필드</td><td class="tgt">POST /api/applications</td></tr>';
-  }
-
-  const previewUrl = slug ? '/hp/' + slug : '(슬러그 필요)';
-  const configUrl = slug ? '/api/hp-config/' + slug : '(슬러그 필요)';
-
-  const prdUrl = slug ? '/api/hp-prd/' + slug : '(슬러그 필요)';
-  const mdUrl = slug ? '/hp/' + slug + '.md' : '(슬러그 필요)';
-
-  return '<section class="step-card" id="step-5">' +
-    stepHeader(5, 'PRD 출력 — 뷰어 & 다운로드', hp, 'deploy', hp.status === 'published' ? '확정됨' : '초안') +
-    '<div class="step-body">' +
-    '<div class="hint">이 빌더의 최종 결과물은 <b>PRD 마크다운 문서</b>입니다. 슬러그를 지정하면 <code>/hp/:slug</code>에서 뷰어로 열람, <code>/hp/:slug.md</code>에서 원본 <code>.md</code> 다운로드, <code>/api/hp-prd/:slug</code>에서 JSON으로 조회할 수 있습니다.</div>' +
-
-    '<div class="fld"><label>슬러그 (PRD URL)</label>' +
-    '<input type="text" value="' + escapeAttr(hp.slug) + '" placeholder="my-homepage (영소문자/숫자/-)" onblur="setField(\'slug\',this.value);renderEditArea();renderList()"></div>' +
-
-    (canPublish ? '<div class="preview-box">' +
-      '<div class="pv-url"><span class="label">VIEWER</span> <a href="' + previewUrl + '" target="_blank">' + previewUrl + '</a></div>' +
-      '<div class="pv-url"><span class="label">RAW.MD</span> <a href="' + mdUrl + '" target="_blank">' + mdUrl + '</a></div>' +
-      '<div class="pv-url"><span class="label">JSON</span> <a href="' + prdUrl + '" target="_blank">' + prdUrl + '</a></div>' +
-      '</div>' :
-      '<div class="warn-box">⚠️ 슬러그를 먼저 지정해야 PRD를 출력할 수 있습니다 (영소문자/숫자/-)</div>') +
-
-    '<div style="display:flex;gap:6px;margin-top:8px">' +
-    '<button class="chip sq a" onclick="openPreview()" ' + (canPublish?'':'disabled') + '>📄 PRD 뷰어 열기</button>' +
-    '<button class="publish-btn" onclick="publishHomepage()" ' + (canPublish?'':'disabled') + '>' + (hp.status === 'published' ? '✓ 재확정' : '📄 PRD 확정 & 공개') + '</button>' +
-    (hp.deploy && hp.deploy.lastPublished ? '<span style="font-size:9px;color:#94a3b8;align-self:center">마지막 확정: ' + hp.deploy.lastPublished + '</span>' : '') +
-    '</div>' +
-
-    '<div style="font-size:10px;color:#64748b;font-weight:700;margin:12px 0 4px;text-transform:uppercase">📍 PRD 라우팅 테이블 (§6에도 포함)</div>' +
-    '<table class="rt-table"><thead><tr><th>요소</th><th>메타</th><th>엔드포인트</th></tr></thead><tbody>' + routingRows + '</tbody></table>' +
-    '<div class="hint" style="margin-top:6px">🔌 외부 시스템/AI가 이 PRD를 가져가려면 <code>GET /api/hp-prd/' + (slug || '{slug}') + '</code> 호출. 반환 JSON의 <code>markdown</code> 필드가 원본 PRD입니다.</div>' +
-
-    '</div></section>';
-}
-
-/* ═══════════════════════════════════════════════════════════ */
-/*   Right panel                                                 */
-/* ═══════════════════════════════════════════════════════════ */
-
-function renderRight(){
-  const hp = getCurrent();
-  const box = document.getElementById('rpBody');
-  if (!hp) {
-    box.innerHTML = '<div class="rp-empty">홈페이지를 선택하면<br>메타 정보가 표시됩니다</div>';
-    updateActions();
-    return;
-  }
-
-  let progHtml = '';
-  STEPS.forEach(s => {
-    const done = isStepDone(hp, s.key);
-    progHtml += '<div class="rp-pr ' + (done?'done':'wait') + '" onclick="scrollToStep(' + s.n + ')">' +
-      '<div class="pr-ck">' + (done?'✓':s.n) + '</div>' +
-      '<div class="pr-nm">' + s.label + '</div></div>';
-  });
-
-  const siteChips = WEBSITES.map(w =>
-    '<button class="chip sq ' + (hp.linkedSite===w.id?'a':'') + '" onclick="setField(\'linkedSite\',\'' + w.id + '\');renderAll()">' + w.name + '</button>'
-  ).join('');
-
-  const statusChips = ['draft','published','archived'].map(s =>
-    '<button class="chip sq ' + (hp.status===s?'a':'') + '" onclick="setField(\'status\',\'' + s + '\');renderAll()">' + s + '</button>'
-  ).join('');
-
-  const notesFiles = (hp._notesFiles || []).map((f, i) =>
-    '<span class="chip sq a">📎 ' + escapeHtml(f.name) + ' <button style="background:none;border:none;color:#fff;cursor:pointer" onclick="removeNoteFile(' + i + ')">×</button></span>'
-  ).join('');
-
-  box.innerHTML =
-    '<div class="rp-sec"><h4>📊 진행 현황</h4><div class="rp-prog">' + progHtml + '</div></div>' +
-    '<div class="rp-sec"><h4>🏷️ 메타</h4>' +
-    '<div class="rp-fld"><label>이름</label><input type="text" value="' + escapeAttr(hp.name) + '" onblur="setField(\'name\',this.value);renderList()"></div>' +
-    '<div class="rp-fld"><label>슬러그</label><input type="text" value="' + escapeAttr(hp.slug) + '" placeholder="영소문자/숫자/-" onblur="setField(\'slug\',this.value);renderList();renderEditArea()"></div>' +
-    '<div class="rp-fld"><label>연결 사이트</label><div class="chips">' + siteChips + '</div></div>' +
-    '<div class="rp-fld"><label>상태</label><div class="chips">' + statusChips + '</div></div>' +
-    '</div>' +
-    '<div class="rp-sec"><h4>📝 비고</h4>' +
-    '<textarea rows="3" onblur="setField(\'_notes\',this.value)">' + escapeHtml(hp._notes || '') + '</textarea>' +
-    '<div class="chips" style="margin-top:4px">' + notesFiles +
-    '<button class="chip sq" onclick="addNoteFile()">📎 +</button></div></div>';
-  updateActions();
-}
-
-function updateActions(){
-  const hp = getCurrent();
-  const save = document.getElementById('btnSave');
-  const prev = document.getElementById('btnPreview');
-  save.disabled = !hp || !dirty;
-  prev.disabled = !hp || !hp.slug;
-  save.textContent = dirty ? '💾 저장 *' : '💾 저장';
-}
-
-function updateDirtyInd(){
-  document.getElementById('dirtyInd').innerHTML = dirty ? '<span class="dirty-dot"></span>' : '';
 }
 
 /* ═══════════════════════════════════════════════════════════ */
 /*   Field setters                                               */
 /* ═══════════════════════════════════════════════════════════ */
 
-function setField(path, value){
-  const hp = getCurrent();
-  if (!hp) return;
+function hmField(key, val) {
+  if (!hmData) return;
+  hmData[key] = val;
+  dirty = true;
+  updateDirty();
+}
+
+function hmFieldPath(path, val) {
+  if (!hmData) return;
   const parts = path.split('.');
-  let obj = hp;
+  let obj = hmData;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const k = parts[i];
+    if (obj[k] == null) obj[k] = {};
+    obj = obj[k];
+  }
+  obj[parts[parts.length-1]] = val;
+  dirty = true;
+  updateDirty();
+}
+
+function hmAddSection(modId) {
+  if (!hmData) return;
+  if (!Array.isArray(hmData.sections)) hmData.sections = [];
+  hmData.sections.push(modId);
+  dirty = true;
+  rMain();
+}
+
+function hmRemoveSection(idx) {
+  if (!hmData?.sections) return;
+  hmData.sections.splice(idx, 1);
+  dirty = true;
+  rMain();
+}
+
+function hmMoveSection(idx, dir) {
+  if (!hmData?.sections) return;
+  const next = idx + dir;
+  if (next < 0 || next >= hmData.sections.length) return;
+  const tmp = hmData.sections[idx];
+  hmData.sections[idx] = hmData.sections[next];
+  hmData.sections[next] = tmp;
+  dirty = true;
+  rMain();
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*   Module CRUD + Modal Editor                                  */
+/* ═══════════════════════════════════════════════════════════ */
+
+function hmAddNewModule() {
+  hmShowTypePicker(null);
+}
+function hmAddNewModuleFor(categoryId) {
+  hmShowTypePicker(categoryId);
+}
+
+function hmShowTypePicker(filterCategoryId) {
+  const groups = filterCategoryId ? TYPE_GROUPS.filter(g => g.id === filterCategoryId) : TYPE_GROUPS;
+  const body = groups.map(g => `
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;font-weight:700;color:${g.color};text-transform:uppercase;margin-bottom:4px;letter-spacing:.3px">${esc(g.name)}</div>
+      <div style="display:flex;gap:3px;flex-wrap:wrap">
+        ${g.types.map(t => `<span class="chip" style="padding:5px 10px;font-size:11px;border-color:${g.bd};color:${g.color}"
+          onclick="hmCreateModule('${t.id}','${g.id}')">${t.icon} ${esc(t.name)}</span>`).join('')}
+      </div>
+    </div>`).join('');
+  const h = `<div class="fp-overlay" onclick="if(event.target===this)this.remove()">
+    <div class="fp-modal" style="width:600px">
+      <span class="fp-close" onclick="this.closest('.fp-overlay').remove()">×</span>
+      <div class="fp-header" style="background:#f0f4ff;border-bottom-color:#0088ff">
+        <h2 style="color:#0088ff">+ 새 콘텐츠 모듈</h2>
+        <p>어떤 유형의 모듈을 만들지 선택하세요</p>
+      </div>
+      <div class="fp-body">${body}</div>
+    </div></div>`;
+  document.body.insertAdjacentHTML('beforeend', h);
+}
+
+async function hmCreateModule(typeId, categoryId) {
+  const name = prompt('모듈 이름:');
+  if (!name) return;
+  document.querySelectorAll('.fp-overlay').forEach(el => el.remove());
+  const moduleId = 'HM-' + typeId.toUpperCase().replace(/_/g,'-') + '-' + Date.now().toString(36).slice(-4).toUpperCase();
+  const data = defaultDataForType(typeId);
+  const newMod = { moduleId, name, type: typeId, category: categoryId, data };
+  try {
+    await fetch('/api/homepage_modules', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(newMod) });
+    await loadModules();
+    rHomes();
+    toast('모듈 생성', 'ok');
+    setTimeout(() => hmEditModule(moduleId), 100);
+  } catch(e) { toast('생성 실패: '+e.message, 'err'); }
+}
+
+function defaultDataForType(typeId) {
+  switch(typeId) {
+    case 'banner':  return { title:'', subtitle:'', image:'', ctaLabel:'', ctaUrl:'#' };
+    case 'nav':     return { sections:[] };
+    case 'footer':  return { company:'', address:'', contact:'', copyright:'' };
+    case 'notice':  return { items:[] };
+    case 'faq':     return { items:[] };
+    case 'qna':     return { policy:'auto', categories:['일반'] };
+    case 'review':  return { limit:10, sort:'latest' };
+    case 'blog':    return { categories:[] };
+    case 'inquiry': return { fields:['name','email','phone','title','content'] };
+    case 'terms':
+    case 'privacy': return { text:'' };
+    case 'apply_ref': return { templateId:null, phases:['part1','part2'] };
+    case 'block_cat_multi':  return { axes:3, multi:true, selected:[] };
+    case 'block_file_drop':  return { accept:['pdf','docx','xlsx'], maxMb:50, multi:true };
+    case 'block_ai_radio4':  return { models:['GPT-4o','Claude 3.5','Gemini 1.5','Multi-Model'], defaultIdx:3 };
+    case 'block_editor':     return { defaultMode:'use' };
+    case 'block_human':      return { types:['감수요청','검증요청'], grades:['일반','고급'], urgencies:[{label:'일반',surcharge:0},{label:'긴급',surcharge:50}] };
+    case 'block_opts':       return { options:[] };
+    case 'block_lang_pair':  return { sources:['한국어','영어'], targets:['영어','한국어'] };
+    case 'block_quality':    return { metrics:['files','categories','model','cost'] };
+    case 'block_regulation': return { ruleSet:'default' };
+    case 'block_textarea':   return { placeholder:'입력하세요', minH:260 };
+  }
+  return {};
+}
+
+function hmEditModule(modId) {
+  const mod = modules.find(m => m.moduleId === modId);
+  if (!mod) { toast('모듈 없음: '+modId, 'err'); return; }
+  meEditModId = modId;
+  const { group: g, type: t } = getTypeInfo(mod.type);
+  const usage = countModuleUsage(modId);
+  const warn = usage > 0 ? ` · 사용 중 <b style="color:${g.color}">${usage}곳</b> (편집 시 모두 영향)` : '';
+  const h = `<div class="fp-overlay" onclick="if(event.target===this)this.remove()">
+    <div class="fp-modal">
+      <span class="fp-close" onclick="this.closest('.fp-overlay').remove()">×</span>
+      <div class="fp-header" style="background:${g.bg};border-bottom-color:${g.color}">
+        <h2 style="color:${g.color}">${t.icon} 모듈 편집: ${esc(mod.name)}</h2>
+        <p>${esc(g.name)} · ${esc(t.name)} · <code>${esc(mod.moduleId)}</code>${warn}</p>
+      </div>
+      <div class="fp-body" id="meBody"></div>
+    </div></div>`;
+  document.body.insertAdjacentHTML('beforeend', h);
+  renderModuleEditor(mod);
+}
+
+function renderModuleEditor(mod) {
+  const body = document.getElementById('meBody');
+  if (!body) return;
+  const { group: g } = getTypeInfo(mod.type);
+
+  let h = `<div class="me-row">
+    <span class="me-lbl">이름</span>
+    <input value="${escAttr(mod.name)}" oninput="hmMESet('name',this.value)" style="flex:1">
+    <button style="padding:5px 16px;background:${g.color};color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit" onclick="hmSaveModule()">💾 저장</button>
+    <button style="padding:5px 12px;background:#fff;border:1px solid #dc2626;color:#dc2626;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit" onclick="hmDeleteModule()">삭제</button>
+  </div>
+  <div style="border-top:1px dashed #e3e5ed;margin:10px 0 8px"></div>`;
+
+  h += renderTypeEditor(mod);
+  body.innerHTML = h;
+}
+
+function hmMESet(key, val) {
+  const mod = modules.find(m => m.moduleId === meEditModId);
+  if (!mod) return;
+  mod[key] = val;
+}
+
+function hmMED(path, val) {
+  const mod = modules.find(m => m.moduleId === meEditModId);
+  if (!mod) return;
+  if (!mod.data) mod.data = {};
+  const parts = path.split('.');
+  let obj = mod.data;
   for (let i = 0; i < parts.length - 1; i++) {
     const k = isNaN(+parts[i]) ? parts[i] : +parts[i];
     if (obj[k] == null) obj[k] = isNaN(+parts[i+1]) ? {} : [];
     obj = obj[k];
   }
-  const last = parts[parts.length - 1];
-  obj[isNaN(+last) ? last : +last] = value;
-  dirty = true;
-  renderStepsBar();
-  updateActions();
-  updateDirtyInd();
+  const last = parts[parts.length-1];
+  obj[isNaN(+last) ? last : +last] = val;
+  renderModuleEditor(mod);
 }
 
-function setListItem(path, idx, key, value){
-  const hp = getCurrent();
-  if (!hp) return;
-  const arr = resolvePath(hp, path);
-  if (!arr || !arr[idx]) return;
-  arr[idx][key] = value;
-  dirty = true;
-  renderStepsBar();
-  updateActions();
-  updateDirtyInd();
+function hmMEItem(path, idx, key, val) {
+  const mod = modules.find(m => m.moduleId === meEditModId);
+  if (!mod?.data?.[path]?.[idx]) return;
+  mod.data[path][idx][key] = val;
+  renderModuleEditor(mod);
 }
 
-function addListItem(path, item){
-  const hp = getCurrent();
-  if (!hp) return;
-  const arr = resolvePath(hp, path);
-  if (!Array.isArray(arr)) return;
-  arr.push(item);
-  dirty = true;
-  renderAll();
+function hmMERemove(path, idx) {
+  const mod = modules.find(m => m.moduleId === meEditModId);
+  if (!mod?.data?.[path]) return;
+  mod.data[path].splice(idx, 1);
+  renderModuleEditor(mod);
 }
 
-function removeListItem(path, idx){
-  const hp = getCurrent();
-  if (!hp) return;
-  const arr = resolvePath(hp, path);
-  if (!Array.isArray(arr)) return;
-  arr.splice(idx, 1);
-  dirty = true;
-  renderAll();
+function hmMEAdd(path, item) {
+  const mod = modules.find(m => m.moduleId === meEditModId);
+  if (!mod) return;
+  if (!mod.data) mod.data = {};
+  if (!Array.isArray(mod.data[path])) mod.data[path] = [];
+  mod.data[path].push(item);
+  renderModuleEditor(mod);
 }
 
-function promptArrItem(path, label){
+function hmMEToggle(path, val) {
+  const mod = modules.find(m => m.moduleId === meEditModId);
+  if (!mod) return;
+  if (!mod.data) mod.data = {};
+  if (!Array.isArray(mod.data[path])) mod.data[path] = [];
+  const i = mod.data[path].indexOf(val);
+  if (i >= 0) mod.data[path].splice(i, 1);
+  else mod.data[path].push(val);
+  renderModuleEditor(mod);
+}
+
+function hmMEPromptAdd(path, label) {
   const v = prompt(label);
   if (!v) return;
-  addListItem(path, v);
+  hmMEAdd(path, v);
 }
 
-function removeArrItem(path, idx){
-  removeListItem(path, idx);
-}
+function renderTypeEditor(mod) {
+  const d = mod.data || {};
+  switch (mod.type) {
+    case 'banner':
+      return `<div class="me-row"><span class="me-lbl">제목</span><input value="${escAttr(d.title)}" onchange="hmMED('title',this.value)"></div>
+        <div class="me-row"><span class="me-lbl">부제목</span><input value="${escAttr(d.subtitle)}" onchange="hmMED('subtitle',this.value)"></div>
+        <div class="me-row"><span class="me-lbl">이미지 URL</span><input value="${escAttr(d.image)}" placeholder="https://..." onchange="hmMED('image',this.value)"></div>
+        <div class="me-row"><span class="me-lbl">CTA 라벨</span><input value="${escAttr(d.ctaLabel)}" onchange="hmMED('ctaLabel',this.value)"></div>
+        <div class="me-row"><span class="me-lbl">CTA 링크</span><input value="${escAttr(d.ctaUrl)}" onchange="hmMED('ctaUrl',this.value)"></div>`;
 
-function toggleArrValue(path, value){
-  const hp = getCurrent();
-  if (!hp) return;
-  let arr = resolvePath(hp, path);
-  if (!Array.isArray(arr)) {
-    setField(path, [value]);
-    return;
+    case 'footer':
+      return `<div class="me-row"><span class="me-lbl">회사명</span><input value="${escAttr(d.company)}" onchange="hmMED('company',this.value)"></div>
+        <div class="me-row"><span class="me-lbl">주소</span><input value="${escAttr(d.address)}" onchange="hmMED('address',this.value)"></div>
+        <div class="me-row"><span class="me-lbl">연락처</span><input value="${escAttr(d.contact)}" onchange="hmMED('contact',this.value)"></div>
+        <div class="me-row"><span class="me-lbl">저작권</span><input value="${escAttr(d.copyright)}" onchange="hmMED('copyright',this.value)"></div>`;
+
+    case 'nav': {
+      const secs = d.sections || [];
+      let h = '<div style="font-size:10px;color:#64748b;margin-bottom:4px">네비게이션 섹션 (순서 = 표시 순서)</div><div class="me-grid">';
+      secs.forEach((s,i) => {
+        h += `<div class="me-card"><span class="me-del" onclick="hmMERemove('sections',${i})">×</span>
+          <div class="inrow"><span class="inlbl">ID</span><input value="${escAttr(s.id)}" onchange="hmMEItem('sections',${i},'id',this.value)"></div>
+          <div class="inrow"><span class="inlbl">라벨</span><input value="${escAttr(s.label)}" onchange="hmMEItem('sections',${i},'label',this.value)"></div></div>`;
+      });
+      h += `<div class="me-add-card" onclick="hmMEAdd('sections',{id:'',label:''})">+ 섹션 추가</div></div>`;
+      return h;
+    }
+
+    case 'notice': {
+      const items = d.items || [];
+      let h = '<div style="font-size:10px;color:#64748b;margin-bottom:4px">공지사항 항목</div><div class="me-grid">';
+      items.forEach((it,i) => {
+        h += `<div class="me-card"><span class="me-del" onclick="hmMERemove('items',${i})">×</span>
+          <div class="inrow"><span class="inlbl">날짜</span><input type="date" value="${escAttr(it.date)}" onchange="hmMEItem('items',${i},'date',this.value)"></div>
+          <div class="inrow"><span class="inlbl">제목</span><input value="${escAttr(it.title)}" onchange="hmMEItem('items',${i},'title',this.value)"></div>
+          <textarea rows="2" placeholder="내용" onchange="hmMEItem('items',${i},'content',this.value)">${esc(it.content||'')}</textarea></div>`;
+      });
+      h += `<div class="me-add-card" onclick="hmMEAdd('items',{date:'',title:'',content:''})">+ 공지 추가</div></div>`;
+      return h;
+    }
+
+    case 'faq': {
+      const items = d.items || [];
+      let h = '<div style="font-size:10px;color:#64748b;margin-bottom:4px">FAQ 항목</div><div class="me-grid">';
+      items.forEach((it,i) => {
+        h += `<div class="me-card"><span class="me-del" onclick="hmMERemove('items',${i})">×</span>
+          <div class="inrow"><span class="inlbl">Q</span><input value="${escAttr(it.q)}" onchange="hmMEItem('items',${i},'q',this.value)"></div>
+          <textarea rows="3" placeholder="A. 답변" onchange="hmMEItem('items',${i},'a',this.value)">${esc(it.a||'')}</textarea></div>`;
+      });
+      h += `<div class="me-add-card" onclick="hmMEAdd('items',{q:'',a:''})">+ FAQ 추가</div></div>`;
+      return h;
+    }
+
+    case 'qna':
+      return `<div class="me-row"><span class="me-lbl">게시 정책</span>
+        <div class="chips">
+          <span class="chip ${d.policy==='auto'?'a':''}" onclick="hmMED('policy','auto')">🌐 자동 공개</span>
+          <span class="chip ${d.policy==='manual'?'a':''}" onclick="hmMED('policy','manual')">🔒 관리자 승인</span>
+        </div></div>
+        <div class="me-row"><span class="me-lbl">분류</span>
+        <div class="chips">${(d.categories||[]).map((c,i) =>
+          `<span class="chip a">${esc(c)}<button style="background:none;border:none;color:#fff;cursor:pointer;font-size:11px;font-weight:700;margin-left:2px" onclick="hmMERemoveArr('categories',${i})">×</button></span>`).join('')}
+          <span class="chip" onclick="hmMEPromptAdd('categories','분류 이름:')">+ 추가</span></div></div>`;
+
+    case 'review':
+      return `<div class="me-row"><span class="me-lbl">표시 수</span><input type="number" value="${d.limit||10}" onchange="hmMED('limit',parseInt(this.value)||10)" style="width:100px;flex:none"></div>
+        <div class="me-row"><span class="me-lbl">정렬</span>
+        <div class="chips">${['latest','rating','popular'].map(s =>
+          `<span class="chip ${d.sort===s?'a':''}" onclick="hmMED('sort','${s}')">${s}</span>`).join('')}</div></div>`;
+
+    case 'blog':
+      return `<div class="me-row"><span class="me-lbl">카테고리</span>
+        <div class="chips">${(d.categories||[]).map((c,i) =>
+          `<span class="chip a">${esc(c)}<button style="background:none;border:none;color:#fff;cursor:pointer;font-size:11px;font-weight:700;margin-left:2px" onclick="hmMERemoveArr('categories',${i})">×</button></span>`).join('')}
+          <span class="chip" onclick="hmMEPromptAdd('categories','카테고리:')">+ 추가</span></div></div>`;
+
+    case 'inquiry': {
+      const allFields = [
+        {id:'name',label:'이름'},{id:'email',label:'이메일'},{id:'phone',label:'전화'},
+        {id:'company',label:'회사'},{id:'title',label:'제목'},{id:'content',label:'내용'},
+        {id:'file',label:'파일'},{id:'budget',label:'예산'},{id:'deadline',label:'희망일'}
+      ];
+      const selected = new Set(d.fields||[]);
+      return `<div class="me-row"><span class="me-lbl">포함 필드</span>
+        <div class="chips">${allFields.map(f =>
+          `<span class="chip ${selected.has(f.id)?'a':''}" onclick="hmMEToggle('fields','${f.id}')">${esc(f.label)}</span>`).join('')}</div></div>`;
+    }
+
+    case 'terms':
+    case 'privacy':
+      return `<div class="me-row top"><span class="me-lbl">본문</span>
+        <textarea rows="16" style="flex:1;font-family:'Menlo',monospace;font-size:11px" onchange="hmMED('text',this.value)">${esc(d.text||'')}</textarea></div>
+        <div style="text-align:right;font-size:9px;color:#94a3b8">${(d.text||'').length.toLocaleString()}자</div>`;
+
+    case 'apply_ref': {
+      const bySite = {};
+      for (const t of formTemplates) { (bySite[t._site||'_none'] = bySite[t._site||'_none'] || []).push(t); }
+      let h = `<div class="me-row"><span class="me-lbl">Phase</span>
+        <div class="chips">${['part1','part2'].map(p =>
+          `<span class="chip ${(d.phases||[]).includes(p)?'a':''}" onclick="hmMEToggle('phases','${p}')">${p==='part1'?'1부':'2부'}</span>`).join('')}</div></div>
+        <div class="me-row top"><span class="me-lbl">템플릿</span>
+          <div style="flex:1">
+            <div style="font-size:10px;color:#64748b;margin-bottom:4px">사이트별 신청서 템플릿 (클릭하여 선택)</div>`;
+      const siteKeys = Object.keys(bySite).sort();
+      for (const sid of siteKeys) {
+        const w = WEBSITES.find(ws => ws.id === sid);
+        h += `<div style="margin-bottom:4px">
+          <span style="display:inline-block;font-size:9px;font-weight:700;color:${w?.color||'#64748b'};text-transform:uppercase;min-width:80px">${esc(w?.name||sid)}</span>
+          ${bySite[sid].map(t => `<span class="chip ${d.templateId===t.id?'a':''}" onclick="hmMED('templateId',${t.id})">${esc(t.name||'(이름없음)')} <span style="opacity:.6">#${t.id}</span></span>`).join('')}
+        </div>`;
+      }
+      if (!siteKeys.length) h += `<div style="font-size:10px;color:#94a3b8;font-style:italic">form_templates가 없습니다. 관리자 홈 → 신청서에서 먼저 생성하세요.</div>`;
+      h += `</div></div>`;
+      return h;
+    }
+
+    case 'block_cat_multi':
+      return `<div class="me-row"><span class="me-lbl">축 수</span>
+        <div class="chips">${[2,3].map(n =>
+          `<span class="chip ${d.axes===n?'a':''}" onclick="hmMED('axes',${n})">${n}단 ${n===3?'(대→중→소)':'(대→중)'}</span>`).join('')}</div></div>
+        <div class="me-row"><span class="me-lbl">다중 선택</span>
+        <div class="chips">
+          <span class="chip ${d.multi?'a':''}" onclick="hmMED('multi',true)">허용</span>
+          <span class="chip ${!d.multi?'a':''}" onclick="hmMED('multi',false)">단일</span>
+        </div></div>
+        <div class="me-row"><span class="me-lbl">선택된 카테고리</span>
+        <div class="chips">${(d.selected||[]).map((c,i) =>
+          `<span class="chip a">${esc(c)}<button style="background:none;border:none;color:#fff;cursor:pointer;font-size:11px;margin-left:2px" onclick="hmMERemoveArr('selected',${i})">×</button></span>`).join('')}
+          <span class="chip" onclick="hmMEPromptAdd('selected','카테고리:')">+ 추가</span></div></div>`;
+
+    case 'block_file_drop': {
+      const accepts = ['pdf','docx','xlsx','pptx','txt','zip','jpg','png','mp3','mp4'];
+      const selAcc = new Set(d.accept||[]);
+      return `<div class="me-row"><span class="me-lbl">허용 확장자</span>
+        <div class="chips">${accepts.map(a =>
+          `<span class="chip ${selAcc.has(a)?'a':''}" onclick="hmMEToggle('accept','${a}')">${a}</span>`).join('')}</div></div>
+        <div class="me-row"><span class="me-lbl">최대 MB</span><input type="number" value="${d.maxMb||50}" onchange="hmMED('maxMb',parseInt(this.value)||50)" style="width:100px;flex:none"></div>
+        <div class="me-row"><span class="me-lbl">다중</span>
+        <div class="chips">
+          <span class="chip ${d.multi?'a':''}" onclick="hmMED('multi',true)">허용</span>
+          <span class="chip ${!d.multi?'a':''}" onclick="hmMED('multi',false)">단일</span>
+        </div></div>`;
+    }
+
+    case 'block_ai_radio4':
+      return `<div class="me-row"><span class="me-lbl">모델 목록</span>
+        <div class="chips">${(d.models||[]).map((m,i) =>
+          `<span class="chip ${d.defaultIdx===i?'a':''}" onclick="hmMED('defaultIdx',${i})">${esc(m)} <button style="background:none;border:none;color:inherit;cursor:pointer;font-size:11px;margin-left:2px" onclick="event.stopPropagation();hmMERemoveArr('models',${i})">×</button></span>`).join('')}
+          <span class="chip" onclick="hmMEPromptAdd('models','모델명:')">+ 추가</span></div></div>
+        <div style="font-size:9px;color:#64748b;margin-top:2px">⭐ 하이라이트 = 기본 선택값</div>`;
+
+    case 'block_editor':
+      return `<div class="me-row"><span class="me-lbl">기본 모드</span>
+        <div class="chips">
+          <span class="chip ${d.defaultMode==='use'?'a':''}" onclick="hmMED('defaultMode','use')">에디터 사용</span>
+          <span class="chip ${d.defaultMode==='nouse'?'a':''}" onclick="hmMED('defaultMode','nouse')">에디터 미사용</span>
+        </div></div>`;
+
+    case 'block_human':
+      return `<div class="me-row"><span class="me-lbl">작업 유형</span>
+        <div class="chips">${(d.types||[]).map((t,i) =>
+          `<span class="chip a">${esc(t)}<button style="background:none;border:none;color:#fff;cursor:pointer;font-size:11px;margin-left:2px" onclick="hmMERemoveArr('types',${i})">×</button></span>`).join('')}
+          <span class="chip" onclick="hmMEPromptAdd('types','유형:')">+ 추가</span></div></div>
+        <div class="me-row"><span class="me-lbl">전문가 등급</span>
+        <div class="chips">${(d.grades||[]).map((g,i) =>
+          `<span class="chip a">${esc(g)}<button style="background:none;border:none;color:#fff;cursor:pointer;font-size:11px;margin-left:2px" onclick="hmMERemoveArr('grades',${i})">×</button></span>`).join('')}
+          <span class="chip" onclick="hmMEPromptAdd('grades','등급:')">+ 추가</span></div></div>
+        <div class="me-row top"><span class="me-lbl">긴급도</span>
+        <div style="flex:1;font-size:10px;color:#64748b">${(d.urgencies||[]).map(u => `${esc(u.label)} +${u.surcharge||0}%`).join(' · ')||'(없음)'}</div></div>`;
+
+    case 'block_opts':
+      return `<div class="me-row top"><span class="me-lbl">옵션</span>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+          ${(d.options||[]).map((o,i) => `
+            <div style="display:flex;gap:4px;align-items:center">
+              <input value="${escAttr(o.id)}" placeholder="id" onchange="hmMEItem('options',${i},'id',this.value)" style="width:140px;padding:3px 6px;border:1px solid #cbd5e1;border-radius:3px;font-size:10px;font-family:inherit">
+              <input value="${escAttr(o.label)}" placeholder="라벨" onchange="hmMEItem('options',${i},'label',this.value)" style="flex:1;padding:3px 6px;border:1px solid #cbd5e1;border-radius:3px;font-size:10px;font-family:inherit">
+              <span class="chip sm ${o.enabled?'a':''}" onclick="hmMEItem('options',${i},'enabled',${!o.enabled})">${o.enabled?'ON':'OFF'}</span>
+              <span class="chip sm" onclick="hmMERemove('options',${i})">×</span>
+            </div>`).join('')}
+          <button onclick="hmMEAdd('options',{id:'opt_'+Date.now().toString(36),label:'새 옵션',enabled:false})" style="padding:4px;background:#fafbfc;border:1px dashed #cbd5e1;border-radius:4px;font-size:10px;cursor:pointer;font-family:inherit;color:#0088ff;font-weight:700">+ 옵션 추가</button>
+        </div></div>`;
+
+    case 'block_lang_pair':
+      return `<div class="me-row"><span class="me-lbl">원문 언어</span>
+        <div class="chips">${(d.sources||[]).map((l,i) =>
+          `<span class="chip a">${esc(l)}<button style="background:none;border:none;color:#fff;cursor:pointer;font-size:11px;margin-left:2px" onclick="hmMERemoveArr('sources',${i})">×</button></span>`).join('')}
+          <span class="chip" onclick="hmMEPromptAdd('sources','언어:')">+ 추가</span></div></div>
+        <div class="me-row"><span class="me-lbl">번역 언어</span>
+        <div class="chips">${(d.targets||[]).map((l,i) =>
+          `<span class="chip a">${esc(l)}<button style="background:none;border:none;color:#fff;cursor:pointer;font-size:11px;margin-left:2px" onclick="hmMERemoveArr('targets',${i})">×</button></span>`).join('')}
+          <span class="chip" onclick="hmMEPromptAdd('targets','언어:')">+ 추가</span></div></div>`;
+
+    case 'block_quality':
+      return `<div class="me-row"><span class="me-lbl">표시 메트릭</span>
+        <div class="chips">${['files','categories','model','editor','human','cost','time','regulation'].map(m =>
+          `<span class="chip ${(d.metrics||[]).includes(m)?'a':''}" onclick="hmMEToggle('metrics','${m}')">${m}</span>`).join('')}</div></div>`;
+
+    case 'block_regulation':
+      return `<div class="me-row"><span class="me-lbl">규정 세트 ID</span><input value="${escAttr(d.ruleSet)}" placeholder="default" onchange="hmMED('ruleSet',this.value)"></div>`;
+
+    case 'block_textarea':
+      return `<div class="me-row"><span class="me-lbl">Placeholder</span><input value="${escAttr(d.placeholder)}" onchange="hmMED('placeholder',this.value)"></div>
+        <div class="me-row"><span class="me-lbl">최소 높이</span><input type="number" value="${d.minH||260}" onchange="hmMED('minH',parseInt(this.value)||260)" style="width:100px;flex:none"><span style="font-size:10px;color:#64748b">px</span></div>`;
   }
-  const i = arr.indexOf(value);
-  if (i >= 0) arr.splice(i, 1);
-  else arr.push(value);
-  dirty = true;
-  renderStepsBar();
-  updateActions();
-  updateDirtyInd();
+  return `<div style="padding:20px;text-align:center;color:#94a3b8;font-size:11px">이 타입의 편집기가 아직 구현되지 않았습니다: <code>${esc(mod.type)}</code></div>`;
 }
 
-function resolvePath(root, path){
-  const parts = path.split('.');
-  let obj = root;
-  for (const p of parts) {
-    if (obj == null) return null;
-    obj = obj[isNaN(+p) ? p : +p];
-  }
-  return obj;
+function hmMERemoveArr(path, idx) { hmMERemove(path, idx); }
+
+async function hmSaveModule() {
+  const mod = modules.find(m => m.moduleId === meEditModId);
+  if (!mod) return;
+  const { id, ...data } = mod;
+  try {
+    await fetch(`/api/homepage_modules/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    await loadModules();
+    document.querySelector('.fp-overlay')?.remove();
+    toast('모듈 저장', 'ok');
+    rHomes();
+  } catch(e) { toast('저장 실패: '+e.message, 'err'); }
 }
 
-/* Common module toggles */
-function toggleCommonEnabled(moduleId){
-  const hp = getCurrent();
-  if (!hp || !hp.commonState || !hp.commonState[moduleId]) return;
-  hp.commonState[moduleId].enabled = !hp.commonState[moduleId].enabled;
-  dirty = true;
-  renderAll();
-}
-function toggleCommonExpand(moduleId){
-  if (expandedCommon.has(moduleId)) expandedCommon.delete(moduleId);
-  else expandedCommon.add(moduleId);
-  renderEditArea();
-}
-
-/* Block operations */
-function addBlock(type){
-  const hp = getCurrent();
-  if (!hp) { toast('먼저 홈페이지를 선택하세요', 'err'); return; }
-  const def = BLOCK_LIBRARY.find(b => b.type === type);
-  if (!def) return;
-  hp.blocks = hp.blocks || [];
-  hp.blocks.push({
-    type: def.type,
-    name: def.name,
-    desc: def.desc,
-    config: JSON.parse(JSON.stringify(def.defaultConfig)),
-  });
-  expandedBlocks.add(hp.blocks.length - 1);
-  dirty = true;
-  renderAll();
-}
-
-function addStack(presetId){
-  const hp = getCurrent();
-  if (!hp) { toast('먼저 홈페이지를 선택하세요', 'err'); return; }
-  const stack = STACK_PRESETS[presetId];
-  if (!stack) return;
-  if (!confirm(stack.label + ' — ' + stack.blocks.length + '개 블록을 추가하시겠습니까?')) return;
-  stack.blocks.forEach(t => addBlock(t));
-  toast(stack.blocks.length + '개 블록 추가 완료', 'ok');
-}
-
-function removeBlock(idx){
-  const hp = getCurrent();
-  if (!hp || !hp.blocks) return;
-  if (!confirm('블록 #' + (idx+1) + ' 삭제?')) return;
-  hp.blocks.splice(idx, 1);
-  expandedBlocks = new Set();
-  dirty = true;
-  renderAll();
-}
-
-function moveBlock(idx, dir){
-  const hp = getCurrent();
-  if (!hp || !hp.blocks) return;
-  const next = idx + dir;
-  if (next < 0 || next >= hp.blocks.length) return;
-  const tmp = hp.blocks[idx];
-  hp.blocks[idx] = hp.blocks[next];
-  hp.blocks[next] = tmp;
-  dirty = true;
-  renderAll();
-}
-
-function toggleBlockExpand(idx){
-  if (expandedBlocks.has(idx)) expandedBlocks.delete(idx);
-  else expandedBlocks.add(idx);
-  renderEditArea();
-}
-
-/* Notes */
-function addNoteFile(){
-  const name = prompt('파일명 (실 업로드는 후속):');
-  if (!name) return;
-  const hp = getCurrent();
-  if (!hp) return;
-  hp._notesFiles = hp._notesFiles || [];
-  hp._notesFiles.push({ name: name, url: '' });
-  dirty = true;
-  renderRight();
-}
-
-function removeNoteFile(i){
-  const hp = getCurrent();
-  if (!hp) return;
-  hp._notesFiles = hp._notesFiles || [];
-  hp._notesFiles.splice(i, 1);
-  dirty = true;
-  renderRight();
+async function hmDeleteModule() {
+  const mod = modules.find(m => m.moduleId === meEditModId);
+  if (!mod) return;
+  const usage = countModuleUsage(mod.moduleId);
+  const msg = usage > 0
+    ? `모듈 '${mod.name}' 삭제?\n⚠️ 사용 중 ${usage}곳의 참조가 깨집니다.`
+    : `모듈 '${mod.name}' 삭제?`;
+  if (!confirm(msg)) return;
+  try {
+    await fetch(`/api/homepage_modules/${mod.id}`, { method: 'DELETE' });
+    await loadModules();
+    document.querySelector('.fp-overlay')?.remove();
+    toast('모듈 삭제', 'ok');
+    rHomes();
+  } catch(e) { toast('삭제 실패: '+e.message, 'err'); }
 }
 
 /* ═══════════════════════════════════════════════════════════ */
-/*   Render all                                                  */
+/*   Helpers                                                     */
 /* ═══════════════════════════════════════════════════════════ */
 
-function renderAll(){
-  renderStepsBar();
-  renderList();
-  renderEditArea();
-  renderRight();
-  updateDirtyInd();
+function rMain() { renderMain(); }
+function updateDirty() {
+  document.getElementById('dirtyInd').innerHTML = dirty ? '<span class="dirty-dot"></span>' : '';
 }
 
-/* Helpers */
-function escapeHtml(s){
+function esc(s) {
   if (s == null) return '';
   const d = document.createElement('div');
   d.textContent = String(s);
   return d.innerHTML;
 }
-function escapeAttr(s){
-  return escapeHtml(s).replace(/"/g, '&quot;');
-}
+function escAttr(s) { return esc(s).replace(/"/g, '&quot;'); }
 
 let toastTimer = null;
-function toast(msg, type){
+function toast(msg, type) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className = 'toast v ' + (type || '');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.className = 'toast ' + (type || ''); }, 2200);
+  toastTimer = setTimeout(() => el.className = 'toast', 2200);
 }
-
-window.addEventListener('beforeunload', function(e){
-  if (dirty) { e.preventDefault(); e.returnValue = ''; }
-});
 
 init();
 </script>
