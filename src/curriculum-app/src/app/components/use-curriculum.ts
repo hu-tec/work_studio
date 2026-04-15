@@ -51,10 +51,57 @@ void STORAGE_KEY;
 const emptyKeywords: CurriculumKeywords = { common: [], prompt: [], specialty: [], ethics: [] };
 const emptyExtra: UnitExtra = { remark: "", attachment: "", qna: "", qnaAttachment: "" };
 
+// 모드 → DB 테이블 매핑 (가연 시드 포함 서버 rows fetch 용)
+const MODE_TO_API: Record<ContentMode, string | null> = {
+  curriculum: null,  // 커리큘럼은 DUMMY_DATA 가 있어 기존 동작 유지
+  textbooks: "/api/textbooks",
+  questions: null,  // questions 테이블은 CBT 전용 스키마 — SavedCurriculum 과 호환 안 됨
+};
+
+async function loadFromAPI(mode: ContentMode): Promise<SavedCurriculum[]> {
+  const endpoint = MODE_TO_API[mode];
+  if (!endpoint) return [];
+  try {
+    const res = await fetch(endpoint);
+    if (!res.ok) return [];
+    const rows: Array<{ id: number; data: string | Record<string, unknown> }> = await res.json();
+    const parsed: SavedCurriculum[] = [];
+    for (const r of rows) {
+      const d = typeof r.data === "string" ? JSON.parse(r.data) : r.data;
+      if (d && d.category?.large && d.instructor_grade?.field && (d.keywords || d.textbookData)) {
+        parsed.push(d as SavedCurriculum);
+      }
+    }
+    return parsed;
+  } catch {
+    return [];
+  }
+}
+
 export function useCurriculum() {
   const [mode] = useState<ContentMode>(() => detectMode());
   const [savedList, setSavedList] = useState<SavedCurriculum[]>(() => loadFromStorage(mode));
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // 비커리 모드: 마운트 시 DB 에서 fetch 해서 localStorage 와 merge (id 중복 시 localStorage 우선)
+  useEffect(() => {
+    let alive = true;
+    if (MODE_TO_API[mode]) {
+      loadFromAPI(mode).then((apiRows) => {
+        if (!alive || apiRows.length === 0) return;
+        setSavedList((current) => {
+          const existingIds = new Set(current.map((r) => r.id));
+          const merged = [...current];
+          for (const r of apiRows) {
+            if (!existingIds.has(r.id)) merged.push(r);
+          }
+          return merged;
+        });
+      });
+    }
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Step 1
   const [catLarge, setCatLarge] = useState("");
