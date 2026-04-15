@@ -136,6 +136,21 @@
     .detail-sec .kv{display:flex;gap:4px;font-size:10px;padding:1px 0}
     .detail-sec .kv .k{color:#64748b;min-width:80px}
     .detail-sec .kv .v{color:#1f2937;font-weight:500;flex:1;word-break:break-all}
+    /* v2 module field grid: label + chip-style value, 2-col inside each card */
+    .fld-grid{display:grid;grid-template-columns:1fr;gap:3px}
+    @media(min-width:560px){.fld-grid.wide{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .fld{padding:3px 5px;background:#f8fafc;border-radius:3px;min-width:0;border:1px solid #f1f5f9}
+    .fld.span2{grid-column:1/-1}
+    .flabel{font-size:9px;color:#475569;font-weight:800;margin-bottom:2px;letter-spacing:.2px;line-height:1.2}
+    .fv{font-size:10px;color:#1f2937;word-break:break-all;line-height:1.35}
+    .fv-text{font-size:10px;color:#1f2937;white-space:pre-wrap;line-height:1.4;padding:1px 0}
+    .fv-chips{display:flex;flex-wrap:wrap;gap:2px}
+    .fv-chip{display:inline-block;padding:1px 6px;background:#e0e7ff;color:#3730a3;border-radius:999px;font-size:9px;font-weight:600;line-height:1.5;border:1px solid #c7d2fe}
+    .fv-bool{display:inline-block;font-size:10px;font-weight:700}
+    .fv-bool.y{color:#15803d}
+    .fv-bool.n{color:#94a3b8}
+    .sec-legacy h4{color:#94a3b8}
+    .sec-legacy{border-color:#f1f5f9}
     .score-in{width:48px;padding:2px 4px;font-size:10px;border:1px solid #d1d5db;border-radius:3px;text-align:center}
     .grade-select{padding:2px 6px;font-size:10px;border:1px solid #d1d5db;border-radius:3px}
     .edit-ta{width:100%;padding:4px 6px;font-size:10px;border:1px solid #d1d5db;border-radius:3px;resize:vertical;min-height:40px;font-family:inherit}
@@ -296,6 +311,62 @@ function getTax(d, key) {
   // Taxonomy lives under part1.tax_* typically
   const p1 = d.part1 || {};
   return p1[`tax_${key}`];
+}
+
+// ============================================================
+//  FIELD METADATA — 로드된 form_modules에서 필드 라벨/타입/옵션 추출
+//  Figma v2 원본 필드 + 레거시 M-*-* 필드 모두 커버 (raw key 노출 방지)
+// ============================================================
+function buildFieldMeta() {
+  const meta = {};
+  for (const mod of state.modules) {
+    for (const f of (mod.fields || [])) {
+      if (!f.key) continue;
+      if (!meta[f.key]) {
+        meta[f.key] = {
+          label: f.label || f.key,
+          type: f.type || 'text',
+          options: f.options || null,
+          moduleId: mod.moduleId,
+          moduleName: mod.name
+        };
+      }
+    }
+  }
+  return meta;
+}
+
+// 모듈 섹션 정렬 순서: v2 우선 → 공통 → 레거시 M-* 후단
+const MODULE_SECTION_ORDER = [
+  'common_identity', 'M-COM-IDENT',
+  'common_qualification',
+  'spec_instructor_context', 'spec_translator_context',
+  'spec_instructor_classification',
+  'spec_instructor_expertise',
+  'spec_instructor_skillsets',
+  'spec_translator_translation',
+  'spec_translator_techskills',
+  'common_narrative',
+  // legacy tail
+  'M-INS-Q','M-INS-SKILL','M-INS-ADD','M-INS-RES',
+  'M-EXP-Q','M-EXP-SKILL','M-EXP-ADD','M-EXP-RES',
+  'M-STU-Q','M-STU-SKILL','M-STU-ADD','M-STU-RES',
+  'common_client','spec_client_quote','spec_student_course'
+];
+
+// 값 타입별 렌더링: 배열→칩, textarea→pre, checkbox→✓/✗
+function renderFieldValue(val, type) {
+  if (val == null || val === '' || (Array.isArray(val) && !val.length)) return '';
+  if (Array.isArray(val)) {
+    return `<div class="fv-chips">${val.map(v => `<span class="fv-chip">${esc(String(v))}</span>`).join('')}</div>`;
+  }
+  if (type === 'checkbox') {
+    return val ? '<span class="fv-bool y">✓</span>' : '<span class="fv-bool n">✗</span>';
+  }
+  if (type === 'textarea') {
+    return `<div class="fv-text">${esc(String(val))}</div>`;
+  }
+  return `<div class="fv">${esc(String(val))}</div>`;
 }
 
 function getField(d, phase, key) {
@@ -691,38 +762,85 @@ function renderDetail(r) {
 
   const kv = (k, v) => v != null && v !== '' ? `<div class="kv"><div class="k">${esc(k)}</div><div class="v">${esc(typeof v === 'object' ? JSON.stringify(v) : String(v))}</div></div>` : '';
 
-  const p1Section = `
+  // 기본 인적사항 — fld-grid 2열 컴팩트
+  const identItems = [
+    ['성명', p1.name],
+    ['영문명', p1.nameEn],
+    ['생년월일', p1.birthDate],
+    ['성별', p1.gender],
+    ['연락처', p1.phone],
+    ['이메일', p1.email],
+    ['주소', p1.address],
+    ['국적', p1.nationality]
+  ].filter(([, v]) => v != null && v !== '')
+   .map(([k, v]) => `<div class="fld"><div class="flabel">${esc(k)}</div><div class="fv">${esc(String(v))}</div></div>`)
+   .join('');
+  const p1Section = identItems ? `
     <div class="detail-sec">
-      <h4>📥 1부 — 기본 정보</h4>
-      ${kv('성명', p1.name)}
-      ${kv('영문명', p1.nameEn)}
-      ${kv('생년월일', p1.birthDate)}
-      ${kv('성별', p1.gender)}
-      ${kv('연락처', p1.phone)}
-      ${kv('이메일', p1.email)}
-      ${kv('주소', p1.address)}
-      ${kv('국적', p1.nationality)}
-    </div>`;
+      <h4>📥 기본 인적사항</h4>
+      <div class="fld-grid wide">${identItems}</div>
+    </div>` : '';
 
-  const taxSection = `
+  // 분류 5축 (M-COM-TAX 레거시) — tax_* 필드 하나라도 있을 때만 렌더
+  const hasTax = ['tax_subject','tax_grade','tax_function','tax_industry','tax_domain','tax_layer']
+    .some(k => { const v = p1[k]; return Array.isArray(v) ? v.length : (v != null && v !== ''); });
+  const taxSection = hasTax ? `
     <div class="detail-sec">
       <h4>🏷️ 분류 5축</h4>
-      ${kv('과목', (p1.tax_subject || []).join(', '))}
-      ${kv('과정', p1.tax_grade)}
-      ${kv('기능', (p1.tax_function || []).join(', '))}
-      ${kv('산업', p1.tax_industry)}
-      ${kv('영역', p1.tax_domain)}
-      ${kv('레이어', (p1.tax_layer || []).join(', '))}
-      ${kv('개인정보 동의', p1.privacyConsent ? 'O' : 'X')}
-    </div>`;
-
-  // Role-specific Part1 extras
-  const roleKeys = Object.keys(p1).filter(k => !['name','nameEn','birthDate','gender','phone','email','address','nationality','tax_subject','tax_grade','tax_function','tax_industry','tax_domain','tax_layer','privacyConsent','marketingConsent'].includes(k));
-  const roleSec = roleKeys.length ? `
-    <div class="detail-sec">
-      <h4>🎯 역할별 1부</h4>
-      ${roleKeys.map(k => kv(k, p1[k])).join('')}
+      <div class="fld-grid wide">
+        ${(p1.tax_subject||[]).length ? `<div class="fld span2"><div class="flabel">과목</div>${renderFieldValue(p1.tax_subject,'multiselect')}</div>` : ''}
+        ${p1.tax_grade ? `<div class="fld"><div class="flabel">과정</div><div class="fv">${esc(p1.tax_grade)}</div></div>` : ''}
+        ${(p1.tax_function||[]).length ? `<div class="fld span2"><div class="flabel">기능</div>${renderFieldValue(p1.tax_function,'multiselect')}</div>` : ''}
+        ${p1.tax_industry ? `<div class="fld"><div class="flabel">산업</div><div class="fv">${esc(p1.tax_industry)}</div></div>` : ''}
+        ${p1.tax_domain ? `<div class="fld"><div class="flabel">영역</div><div class="fv">${esc(p1.tax_domain)}</div></div>` : ''}
+        ${(p1.tax_layer||[]).length ? `<div class="fld span2"><div class="flabel">레이어</div>${renderFieldValue(p1.tax_layer,'multiselect')}</div>` : ''}
+        ${p1.privacyConsent != null ? `<div class="fld"><div class="flabel">개인정보 동의</div>${p1.privacyConsent ? '<span class="fv-bool y">✓</span>' : '<span class="fv-bool n">✗</span>'}</div>` : ''}
+      </div>
     </div>` : '';
+
+  // Part1 필드를 소속 모듈 단위로 섹션화 (v2 Figma 원본 구조 반영)
+  // 이미 p1Section/taxSection에서 다룬 키는 제외
+  const HANDLED = new Set([
+    'name','nameEn','birthDate','gender','phone','email','address','nationality',
+    'tax_subject','tax_grade','tax_function','tax_industry','tax_domain','tax_layer',
+    'privacyConsent','marketingConsent'
+  ]);
+  const fieldMeta = buildFieldMeta();
+  const groups = {};
+  for (const [k, v] of Object.entries(p1)) {
+    if (HANDLED.has(k)) continue;
+    if (v == null || v === '' || (Array.isArray(v) && !v.length)) continue;
+    const m = fieldMeta[k] || { label: k, type: 'text', moduleId: '_other', moduleName: '기타' };
+    const g = groups[m.moduleId] = groups[m.moduleId] || { name: m.moduleName, items: [] };
+    g.items.push({ key: k, label: m.label, value: v, type: m.type });
+  }
+  const orderedMids = Object.keys(groups).sort((a, b) => {
+    const ai = MODULE_SECTION_ORDER.indexOf(a);
+    const bi = MODULE_SECTION_ORDER.indexOf(b);
+    if (ai === -1 && bi === -1) return a.localeCompare(b);
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+  const roleSec = orderedMids.map(mid => {
+    const g = groups[mid];
+    const isLegacy = /^M-[A-Z]+-/.test(mid);
+    const isWide = g.items.length >= 4;
+    const itemsHtml = g.items.map(it => {
+      const valHtml = renderFieldValue(it.value, it.type);
+      if (!valHtml) return '';
+      const span = (it.type === 'textarea' || (Array.isArray(it.value) && it.value.length >= 6)) ? ' span2' : '';
+      return `<div class="fld${span}"><div class="flabel">${esc(it.label)}</div>${valHtml}</div>`;
+    }).filter(Boolean).join('');
+    if (!itemsHtml) return '';
+    const icon = isLegacy ? '🗂️' : '📋';
+    const cls = isLegacy ? 'detail-sec sec-legacy' : 'detail-sec';
+    return `
+      <div class="${cls}">
+        <h4>${icon} ${esc(g.name)}</h4>
+        <div class="fld-grid${isWide ? ' wide' : ''}">${itemsHtml}</div>
+      </div>`;
+  }).filter(Boolean).join('');
 
   // Call + Interview (editable)
   const callSection = `
@@ -752,12 +870,36 @@ function renderDetail(r) {
       <div class="kv"><div class="k">메모</div><textarea class="edit-ta" onblur="saveNested(${r.id},'interview','memo',this.value)">${esc(iv.memo||'')}</textarea></div>
     </div>`;
 
-  const p2Keys = Object.keys(p2);
-  const p2Section = p2Keys.length ? `
-    <div class="detail-sec">
-      <h4>📝 2부 — 상세</h4>
-      ${p2Keys.map(k => kv(k, p2[k])).join('')}
-    </div>` : `<div class="detail-sec"><h4>📝 2부</h4><div style="font-size:10px;color:#94a3b8">미제출 — <a href="#" onclick="sendPart2Link(${r.id});return false">Part 2 링크 생성</a></div></div>`;
+  // Part2 — 모듈 단위 섹션화 (동일 로직 재사용)
+  const p2Groups = {};
+  for (const [k, v] of Object.entries(p2)) {
+    if (v == null || v === '' || (Array.isArray(v) && !v.length)) continue;
+    const m = fieldMeta[k] || { label: k, type: 'text', moduleId: '_p2_other', moduleName: '2부 기타' };
+    const g = p2Groups[m.moduleId] = p2Groups[m.moduleId] || { name: m.moduleName, items: [] };
+    g.items.push({ key: k, label: m.label, value: v, type: m.type });
+  }
+  const p2OrderedMids = Object.keys(p2Groups).sort((a, b) => {
+    const ai = MODULE_SECTION_ORDER.indexOf(a);
+    const bi = MODULE_SECTION_ORDER.indexOf(b);
+    if (ai === -1 && bi === -1) return a.localeCompare(b);
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+  const p2Section = p2OrderedMids.length ? p2OrderedMids.map(mid => {
+    const g = p2Groups[mid];
+    const isLegacy = /^M-[A-Z]+-/.test(mid);
+    const isWide = g.items.length >= 4;
+    const itemsHtml = g.items.map(it => {
+      const valHtml = renderFieldValue(it.value, it.type);
+      if (!valHtml) return '';
+      const span = (it.type === 'textarea' || (Array.isArray(it.value) && it.value.length >= 6)) ? ' span2' : '';
+      return `<div class="fld${span}"><div class="flabel">${esc(it.label)}</div>${valHtml}</div>`;
+    }).filter(Boolean).join('');
+    if (!itemsHtml) return '';
+    const cls = isLegacy ? 'detail-sec sec-legacy' : 'detail-sec';
+    return `<div class="${cls}"><h4>📝 2부 · ${esc(g.name)}</h4><div class="fld-grid${isWide ? ' wide' : ''}">${itemsHtml}</div></div>`;
+  }).filter(Boolean).join('') : `<div class="detail-sec"><h4>📝 2부</h4><div style="font-size:10px;color:#94a3b8">미제출 — <a href="#" onclick="sendPart2Link(${r.id});return false">Part 2 링크 생성</a></div></div>`;
 
   const currentGrade=fn.final_grade||'';
   const gradeChip=(g)=>`<span class="chip chip-sq ${currentGrade===g?'sel grade-'+g:''}" style="padding:4px 14px;font-size:12px;font-weight:800;${currentGrade===g?'':'background:#f8fafc;color:#64748b'}" onclick="setGrade(${r.id},'${g}')">${g}</span>`;
