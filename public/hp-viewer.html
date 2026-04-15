@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PRD — Work Studio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;color:#0f172a;background:#f1f5f9;line-height:1.65;font-size:14px}
+
+.tb{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.tb .back{color:#64748b;font-size:12px;text-decoration:none;padding:6px 12px;border:1px solid #e2e8f0;border-radius:5px;font-weight:500}
+.tb .back:hover{background:#f8fafc;color:#1a365d}
+.tb .title{font-weight:700;font-size:14px;color:#1a365d;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb .title .slug{font-weight:400;font-size:11px;color:#94a3b8;margin-left:8px;font-family:'Menlo','Consolas',monospace}
+.tb .status{font-size:10px;padding:3px 10px;border-radius:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.st-draft{background:#fef3c7;color:#d97706}
+.st-published{background:#d1fae5;color:#059669}
+.st-archived{background:#f3f4f6;color:#64748b}
+.tb button,.tb a.dl{padding:7px 13px;background:#1a365d;color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.tb button:hover,.tb a.dl:hover{background:#2d4a7c}
+.tb button.copied{background:#059669}
+.tb button:disabled{opacity:.4;cursor:not-allowed}
+
+.layout{display:flex;max-width:1280px;margin:0 auto;align-items:flex-start}
+
+.toc{width:230px;flex-shrink:0;position:sticky;top:65px;max-height:calc(100vh - 80px);overflow-y:auto;padding:24px 0 24px 16px}
+.toc h3{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:10px;padding:0 12px}
+.toc a{display:block;padding:5px 12px;font-size:12px;color:#475569;text-decoration:none;border-left:2px solid transparent;border-radius:0 4px 4px 0;margin-bottom:1px;line-height:1.4;transition:.1s}
+.toc a:hover{background:#f1f5f9;color:#1a365d}
+.toc a.h2{font-weight:600}
+.toc a.h3{padding-left:26px;font-size:11px;color:#64748b}
+.toc a.active{background:#eef2ff;color:#1a365d;border-left-color:#1a365d}
+
+.article-wrap{flex:1;padding:24px 24px 60px;min-width:0}
+.article{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:42px 54px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.article h1{font-size:28px;border-bottom:2px solid #1a365d;padding-bottom:12px;margin-bottom:18px;color:#1a365d;line-height:1.3}
+.article h2{font-size:20px;margin-top:36px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e2e8f0;color:#0f172a;line-height:1.4}
+.article h3{font-size:16px;margin-top:24px;margin-bottom:8px;color:#1a365d;line-height:1.4}
+.article p{margin-bottom:10px}
+.article ul,.article ol{margin:8px 0 14px 24px}
+.article li{margin-bottom:4px}
+.article code{background:#f1f5f9;color:#be185d;padding:2px 6px;border-radius:3px;font-family:'Menlo','Consolas',monospace;font-size:12px}
+.article pre{background:#0f172a;color:#a5f3fc;padding:16px 20px;border-radius:6px;overflow-x:auto;margin:14px 0;font-size:12px;line-height:1.55}
+.article pre code{background:none;color:inherit;padding:0;font-size:12px}
+.article a{color:#2563eb;text-decoration:underline}
+.article a:hover{color:#1a365d}
+.article blockquote{border-left:3px solid #cbd5e1;padding:8px 16px;margin:12px 0;background:#f8fafc;color:#475569;font-size:13px;border-radius:0 5px 5px 0}
+.article blockquote p{margin:0}
+.article hr{border:none;border-top:1px solid #e2e8f0;margin:24px 0}
+.article table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden}
+.article th{background:#f8fafc;padding:9px 13px;text-align:left;font-weight:700;border-bottom:2px solid #e2e8f0;color:#334155;font-size:12px}
+.article td{padding:8px 13px;border-bottom:1px solid #f1f5f9;color:#475569}
+.article tr:last-child td{border-bottom:none}
+.article td code{font-size:11px}
+.article strong{color:#0f172a;font-weight:700}
+.article em{color:#64748b;font-style:italic}
+.article details{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;margin:12px 0}
+.article details summary{cursor:pointer;font-weight:600;color:#1a365d;padding:4px;font-size:13px}
+.article details[open] summary{margin-bottom:10px;border-bottom:1px solid #e2e8f0;padding-bottom:8px}
+.article details pre{margin:0}
+
+.loading,.error{padding:80px 20px;text-align:center;color:#94a3b8;font-size:14px}
+.error{color:#dc2626}
+.error a{color:#1a365d;text-decoration:underline}
+
+@media (max-width:860px){
+  .toc{display:none}
+  .article-wrap{padding:16px}
+  .article{padding:24px 22px}
+}
+
+@media print{
+  .tb,.toc{display:none !important}
+  body{background:#fff}
+  .article{border:none;box-shadow:none;padding:0;max-width:100%}
+  .layout{display:block;max-width:100%}
+  .article-wrap{padding:0}
+  .article pre{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0}
+  .article code{background:#f8fafc;color:#be185d}
+  .article a{color:#0f172a;text-decoration:underline}
+}
+</style>
+</head>
+<body>
+
+<div class="tb">
+  <a href="/homepage-builder.html" class="back">← 빌더</a>
+  <div class="title" id="tbTitle">PRD 불러오는 중…</div>
+  <span class="status" id="tbStatus"></span>
+  <button id="btnCopy" onclick="copyMd()" disabled>📋 복사</button>
+  <a class="dl" id="btnDl" href="#" download>⬇️ .md</a>
+  <button onclick="window.print()">🖨️ 인쇄</button>
+</div>
+
+<div class="layout">
+  <nav class="toc" id="toc"><h3>📑 목차</h3><div id="tocList"></div></nav>
+  <div class="article-wrap">
+    <article class="article" id="article">
+      <div class="loading">⏳ PRD 불러오는 중…</div>
+    </article>
+  </div>
+</div>
+
+<script>
+let rawMarkdown = '';
+
+const slug = (location.pathname.replace(/^\/hp\//, '').replace(/\.md$/, '') || '').trim();
+
+async function load(){
+  if (!slug) { showError('슬러그가 지정되지 않았습니다.'); return; }
+  try {
+    const r = await fetch('/api/hp-prd/' + encodeURIComponent(slug));
+    if (!r.ok) { showError('PRD를 찾을 수 없습니다: ' + slug); return; }
+    const j = await r.json();
+    rawMarkdown = j.markdown || '';
+    const name = j.name || '(이름 없음)';
+    document.getElementById('tbTitle').innerHTML =
+      esc(name) + '<span class="slug">/' + esc(j.slug || slug) + '</span>';
+    const sts = j.status || 'draft';
+    const stLbl = { draft:'Draft', published:'Published', archived:'Archived' }[sts] || sts;
+    const stEl = document.getElementById('tbStatus');
+    stEl.textContent = stLbl;
+    stEl.className = 'status st-' + sts;
+    document.getElementById('btnDl').href = '/hp/' + encodeURIComponent(j.slug || slug) + '.md';
+    document.getElementById('btnCopy').disabled = false;
+    document.title = 'PRD: ' + name + ' — Work Studio';
+    render(rawMarkdown);
+  } catch (e) {
+    showError('로딩 실패: ' + e.message);
+  }
+}
+
+function showError(msg){
+  document.getElementById('article').innerHTML =
+    '<div class="error">❌ ' + esc(msg) + '<br><br>' +
+    '<a href="/homepage-builder.html">← 빌더로 돌아가기</a></div>';
+}
+
+function render(md){
+  document.getElementById('article').innerHTML = mdToHtml(md);
+  buildToc();
+  attachScrollSpy();
+}
+
+function buildToc(){
+  const headings = document.querySelectorAll('#article h2, #article h3');
+  let html = '';
+  headings.forEach(h => {
+    const level = h.tagName.toLowerCase();
+    const id = h.id;
+    html += '<a href="#' + id + '" class="' + level + '" data-target="' + id + '">' + esc(h.textContent) + '</a>';
+  });
+  document.getElementById('tocList').innerHTML = html;
+  document.querySelectorAll('.toc a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.getElementById(a.getAttribute('data-target'));
+      if (target) {
+        const top = target.getBoundingClientRect().top + window.scrollY - 72;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+}
+
+function attachScrollSpy(){
+  const links = document.querySelectorAll('.toc a');
+  const headings = Array.from(document.querySelectorAll('#article h2, #article h3'));
+  const onScroll = () => {
+    let current = '';
+    for (const h of headings) {
+      if (h.getBoundingClientRect().top < 130) current = h.id;
+      else break;
+    }
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('data-target') === current));
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+async function copyMd(){
+  if (!rawMarkdown) return;
+  try {
+    await navigator.clipboard.writeText(rawMarkdown);
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✓ 복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 복사'; btn.classList.remove('copied'); }, 1500);
+  } catch (e) {
+    alert('복사 실패: ' + e.message);
+  }
+}
+
+/* ───────────────────────────────────────── */
+/*   Minimal Markdown → HTML (no deps)       */
+/* ───────────────────────────────────────── */
+
+function mdToHtml(md){
+  const lines = md.split('\n');
+  let html = '';
+  let inCode = false, codeBuf = [];
+  let inList = null, listBuf = [];
+  let inTable = false, tableBuf = [];
+
+  function flushList(){
+    if (inList) { html += '<' + inList + '>' + listBuf.join('') + '</' + inList + '>'; inList = null; listBuf = []; }
+  }
+  function flushTable(){
+    if (inTable) { html += renderTable(tableBuf); inTable = false; tableBuf = []; }
+  }
+  function flush(){ flushList(); flushTable(); }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (line.startsWith('```')) {
+      if (inCode) {
+        html += '<pre><code>' + esc(codeBuf.join('\n')) + '</code></pre>';
+        codeBuf = []; inCode = false;
+      } else {
+        flush();
+        inCode = true;
+      }
+      continue;
+    }
+    if (inCode) { codeBuf.push(line); continue; }
+
+    const h = line.match(/^(#{1,3}) (.+)$/);
+    if (h) {
+      flush();
+      const level = h[1].length;
+      const text = h[2];
+      const id = slugify(text);
+      html += '<h' + level + ' id="' + id + '">' + inline(text) + '</h' + level + '>';
+      continue;
+    }
+
+    if (/^---+$/.test(line)) { flush(); html += '<hr>'; continue; }
+
+    if (line.startsWith('> ')) {
+      flush();
+      const buf = [line.slice(2)];
+      while (i + 1 < lines.length && lines[i + 1].startsWith('> ')) {
+        buf.push(lines[++i].slice(2));
+      }
+      html += '<blockquote>' + buf.map(inline).join('<br>') + '</blockquote>';
+      continue;
+    }
+
+    if (line.startsWith('|') && line.endsWith('|') && line.length > 2) {
+      if (!inTable) { flush(); inTable = true; }
+      tableBuf.push(line);
+      continue;
+    }
+
+    const ul = line.match(/^(\s*)[-*] (.+)$/);
+    if (ul) {
+      flushTable();
+      if (inList !== 'ul') { flushList(); inList = 'ul'; }
+      listBuf.push('<li>' + inline(ul[2]) + '</li>');
+      continue;
+    }
+
+    const ol = line.match(/^(\s*)\d+\. (.+)$/);
+    if (ol) {
+      flushTable();
+      if (inList !== 'ol') { flushList(); inList = 'ol'; }
+      listBuf.push('<li>' + inline(ol[2]) + '</li>');
+      continue;
+    }
+
+    const trimmed = line.trim();
+    if (/^<\/?(details|summary)/.test(trimmed)) {
+      flush();
+      html += line;
+      continue;
+    }
+
+    if (!trimmed) { flush(); continue; }
+
+    flush();
+    html += '<p>' + inline(line) + '</p>';
+  }
+
+  flush();
+  if (inCode) html += '<pre><code>' + esc(codeBuf.join('\n')) + '</code></pre>';
+  return html;
+}
+
+function renderTable(lines){
+  if (lines.length < 2) return '';
+  const parseCells = (l) => l.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+  const header = parseCells(lines[0]);
+  const body = lines.slice(2).map(parseCells);
+  let h = '<table><thead><tr>';
+  header.forEach(c => h += '<th>' + inline(c) + '</th>');
+  h += '</tr></thead><tbody>';
+  body.forEach(row => {
+    h += '<tr>';
+    row.forEach(c => h += '<td>' + inline(c) + '</td>');
+    h += '</tr>';
+  });
+  h += '</tbody></table>';
+  return h;
+}
+
+function inline(s){
+  s = esc(s);
+  const codes = [];
+  s = s.replace(/`([^`]+)`/g, (m, c) => {
+    codes.push(c);
+    return '\u0000CODE' + (codes.length - 1) + '\u0000';
+  });
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, url) => {
+    const isExt = /^https?:\/\//.test(url);
+    return '<a href="' + url + '"' + (isExt ? ' target="_blank" rel="noopener"' : '') + '>' + text + '</a>';
+  });
+  s = s.replace(/\u0000CODE(\d+)\u0000/g, (m, i) => '<code>' + codes[+i] + '</code>');
+  return s;
+}
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function slugify(s){
+  return String(s || '').toLowerCase()
+    .replace(/[^\w가-힣\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .slice(0, 80);
+}
+
+load();
+</script>
+</body>
+</html>

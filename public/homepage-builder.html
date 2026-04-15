@@ -287,7 +287,7 @@ header .hr button:hover{background:rgba(255,255,255,.25)}
     </div>
     <div class="rp-acts">
       <button class="rp-save" id="btnSave" onclick="saveHomepage()" disabled>💾 저장</button>
-      <button class="rp-preview" id="btnPreview" onclick="openPreview()" disabled>👁️ 프리뷰</button>
+      <button class="rp-preview" id="btnPreview" onclick="openPreview()" disabled>📄 PRD 뷰어</button>
     </div>
   </div>
 </div>
@@ -680,14 +680,14 @@ async function publishHomepage(){
   if (!hp) return;
   if (!hp.slug) { toast('슬러그(slug)가 필요합니다 (우측 패널)', 'err'); return; }
   if (!/^[a-z0-9-]+$/.test(hp.slug)) { toast('슬러그는 영소문자/숫자/- 만 가능', 'err'); return; }
-  if (!confirm('발행하시겠습니까? 외부 접근 가능해집니다.\n\n미리보기 URL: /hp/' + hp.slug)) return;
+  if (!confirm('PRD를 확정하고 공개하시겠습니까?\n\n뷰어 URL: /hp/' + hp.slug + '\nRaw .md: /hp/' + hp.slug + '.md')) return;
 
   hp.status = 'published';
   hp.deploy.lastPublished = new Date().toISOString().slice(0,16).replace('T',' ');
   dirty = true;
   await saveHomepage();
   renderAll();
-  toast('발행 완료 🎉', 'ok');
+  toast('PRD 확정 완료 📄', 'ok');
   setTimeout(() => openPreview(), 400);
 }
 
@@ -1245,29 +1245,33 @@ function renderStep5(hp){
   const previewUrl = slug ? '/hp/' + slug : '(슬러그 필요)';
   const configUrl = slug ? '/api/hp-config/' + slug : '(슬러그 필요)';
 
-  return '<section class="step-card" id="step-5">' +
-    stepHeader(5, '배포 — 발행 & 라우팅', hp, 'deploy', hp.status === 'published' ? '발행됨' : '초안') +
-    '<div class="step-body">' +
-    '<div class="hint">이 빌더는 홈페이지를 <b>빌드/배포</b>하는 게 아니라 <b>설정을 저장하고 서버 렌더링으로 노출</b>합니다. 실제 페이지는 Express 라우트 <code>/hp/:slug</code>에서 이 설정을 읽어 즉시 렌더링합니다.</div>' +
+  const prdUrl = slug ? '/api/hp-prd/' + slug : '(슬러그 필요)';
+  const mdUrl = slug ? '/hp/' + slug + '.md' : '(슬러그 필요)';
 
-    '<div class="fld"><label>슬러그 (발행 URL)</label>' +
+  return '<section class="step-card" id="step-5">' +
+    stepHeader(5, 'PRD 출력 — 뷰어 & 다운로드', hp, 'deploy', hp.status === 'published' ? '확정됨' : '초안') +
+    '<div class="step-body">' +
+    '<div class="hint">이 빌더의 최종 결과물은 <b>PRD 마크다운 문서</b>입니다. 슬러그를 지정하면 <code>/hp/:slug</code>에서 뷰어로 열람, <code>/hp/:slug.md</code>에서 원본 <code>.md</code> 다운로드, <code>/api/hp-prd/:slug</code>에서 JSON으로 조회할 수 있습니다.</div>' +
+
+    '<div class="fld"><label>슬러그 (PRD URL)</label>' +
     '<input type="text" value="' + escapeAttr(hp.slug) + '" placeholder="my-homepage (영소문자/숫자/-)" onblur="setField(\'slug\',this.value);renderEditArea();renderList()"></div>' +
 
     (canPublish ? '<div class="preview-box">' +
-      '<div class="pv-url"><span class="label">RENDER</span> <a href="' + previewUrl + '" target="_blank">' + previewUrl + '</a></div>' +
-      '<div class="pv-url"><span class="label">CONFIG</span> <a href="' + configUrl + '" target="_blank">' + configUrl + '</a></div>' +
+      '<div class="pv-url"><span class="label">VIEWER</span> <a href="' + previewUrl + '" target="_blank">' + previewUrl + '</a></div>' +
+      '<div class="pv-url"><span class="label">RAW.MD</span> <a href="' + mdUrl + '" target="_blank">' + mdUrl + '</a></div>' +
+      '<div class="pv-url"><span class="label">JSON</span> <a href="' + prdUrl + '" target="_blank">' + prdUrl + '</a></div>' +
       '</div>' :
-      '<div class="warn-box">⚠️ 슬러그를 먼저 지정해야 발행할 수 있습니다 (영소문자/숫자/-)</div>') +
+      '<div class="warn-box">⚠️ 슬러그를 먼저 지정해야 PRD를 출력할 수 있습니다 (영소문자/숫자/-)</div>') +
 
     '<div style="display:flex;gap:6px;margin-top:8px">' +
-    '<button class="chip sq a" onclick="openPreview()" ' + (canPublish?'':'disabled') + '>👁️ 프리뷰 열기</button>' +
-    '<button class="publish-btn" onclick="publishHomepage()" ' + (canPublish?'':'disabled') + '>' + (hp.status === 'published' ? '✓ 재발행' : '🚀 발행하기') + '</button>' +
-    (hp.deploy && hp.deploy.lastPublished ? '<span style="font-size:9px;color:#94a3b8;align-self:center">마지막 발행: ' + hp.deploy.lastPublished + '</span>' : '') +
+    '<button class="chip sq a" onclick="openPreview()" ' + (canPublish?'':'disabled') + '>📄 PRD 뷰어 열기</button>' +
+    '<button class="publish-btn" onclick="publishHomepage()" ' + (canPublish?'':'disabled') + '>' + (hp.status === 'published' ? '✓ 재확정' : '📄 PRD 확정 & 공개') + '</button>' +
+    (hp.deploy && hp.deploy.lastPublished ? '<span style="font-size:9px;color:#94a3b8;align-self:center">마지막 확정: ' + hp.deploy.lastPublished + '</span>' : '') +
     '</div>' +
 
-    '<div style="font-size:10px;color:#64748b;font-weight:700;margin:12px 0 4px;text-transform:uppercase">📍 접수 & 표시 라우팅</div>' +
+    '<div style="font-size:10px;color:#64748b;font-weight:700;margin:12px 0 4px;text-transform:uppercase">📍 PRD 라우팅 테이블 (§6에도 포함)</div>' +
     '<table class="rt-table"><thead><tr><th>요소</th><th>메타</th><th>엔드포인트</th></tr></thead><tbody>' + routingRows + '</tbody></table>' +
-    '<div class="hint" style="margin-top:6px">🔌 외부 사이트가 이 홈페이지 설정을 가져오려면 <code>GET /api/hp-config/' + (slug || '{slug}') + '</code> 호출. form-engine/engine.js에서 동일한 구조로 렌더 가능.</div>' +
+    '<div class="hint" style="margin-top:6px">🔌 외부 시스템/AI가 이 PRD를 가져가려면 <code>GET /api/hp-prd/' + (slug || '{slug}') + '</code> 호출. 반환 JSON의 <code>markdown</code> 필드가 원본 PRD입니다.</div>' +
 
     '</div></section>';
 }
