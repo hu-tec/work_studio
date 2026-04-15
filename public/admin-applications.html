@@ -44,6 +44,9 @@
     .sum{padding:4px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;cursor:pointer;transition:.1s}
     .sum:hover{border-color:#1a365d;background:#f8fafc}
     .sum b{color:#1a365d;font-size:13px;margin-right:4px}
+    .sum.sel{background:#1a365d;border-color:#1a365d;color:#fff}
+    .sum.sel b{color:#fff}
+    .sum.sel:hover{background:#1a365d}
 
     /* Table */
     .tbl{width:100%;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
@@ -516,6 +519,7 @@ function resetFilters() {
 
 function renderSumBar(filtered) {
   const el = document.getElementById('sumbar');
+  const fl = state.filter;
   const total = state.rows.length;
   const cur = filtered.length;
   const byPhase = { part1:0, interview:0, part2:0, final:0 };
@@ -530,17 +534,18 @@ function renderSumBar(filtered) {
     const g = d.final?.final_grade;
     if (g && byGrade[g] != null) byGrade[g]++;
   }
+  const sc = (axis, val) => fl[axis] === val ? ' sel' : '';
   el.innerHTML = `
     <div class="sum" onclick="resetFilters()" title="필터 초기화"><b>${cur}</b>/${total} 건</div>
-    <div class="sum" onclick="filterBy('phase','part1')"><b>${byPhase.part1}</b>1부</div>
-    <div class="sum" onclick="filterBy('phase','interview')"><b>${byPhase.interview}</b>면접</div>
-    <div class="sum" onclick="filterBy('phase','part2')"><b>${byPhase.part2}</b>2부</div>
-    <div class="sum" onclick="filterBy('phase','final')"><b>${byPhase.final}</b>최종</div>
-    <div class="sum" onclick="filterBy('role','student')"><b>${byRole.student}</b>학생</div>
-    <div class="sum" onclick="filterBy('role','instructor')"><b>${byRole.instructor}</b>강사</div>
-    <div class="sum" onclick="filterBy('role','expert')"><b>${byRole.expert}</b>전문가</div>
-    <div class="sum" onclick="filterBy('status',0)"><b>${byStatus[0]}</b>미확인</div>
-    <div class="sum" onclick="filterBy('status',4)"><b>${byStatus[4]}</b>완료</div>
+    <div class="sum${sc('phase','part1')}" onclick="filterBy('phase','part1')"><b>${byPhase.part1}</b>1부</div>
+    <div class="sum${sc('phase','interview')}" onclick="filterBy('phase','interview')"><b>${byPhase.interview}</b>면접</div>
+    <div class="sum${sc('phase','part2')}" onclick="filterBy('phase','part2')"><b>${byPhase.part2}</b>2부</div>
+    <div class="sum${sc('phase','final')}" onclick="filterBy('phase','final')"><b>${byPhase.final}</b>최종</div>
+    <div class="sum${sc('role','student')}" onclick="filterBy('role','student')"><b>${byRole.student}</b>학생</div>
+    <div class="sum${sc('role','instructor')}" onclick="filterBy('role','instructor')"><b>${byRole.instructor}</b>강사</div>
+    <div class="sum${sc('role','expert')}" onclick="filterBy('role','expert')"><b>${byRole.expert}</b>전문가</div>
+    <div class="sum${sc('status',0)}" onclick="filterBy('status',0)"><b>${byStatus[0]}</b>미확인</div>
+    <div class="sum${sc('status',4)}" onclick="filterBy('status',4)"><b>${byStatus[4]}</b>완료</div>
     <div class="sum" style="cursor:default">A:<b>${byGrade.A}</b>  B:<b>${byGrade.B}</b>  C:<b>${byGrade.C}</b>  D:<b>${byGrade.D}</b></div>
   `;
 }
