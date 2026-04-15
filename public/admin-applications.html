@@ -40,13 +40,35 @@
     .reset{padding:3px 10px;font-size:10px;font-weight:700;color:#dc2626;border:1px solid #fecaca;border-radius:4px;background:#fef2f2}
 
     /* Summary bar */
-    .sumbar{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
-    .sum{padding:4px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;cursor:pointer;transition:.1s}
-    .sum:hover{border-color:#1a365d;background:#f8fafc}
-    .sum b{color:#1a365d;font-size:13px;margin-right:4px}
-    .sum.sel{background:#1a365d;border-color:#1a365d;color:#fff}
-    .sum.sel b{color:#fff}
-    .sum.sel:hover{background:#1a365d}
+    .sumbar{display:flex;gap:3px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
+    .sum{padding:4px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;cursor:pointer;transition:.1s;white-space:nowrap}
+    .sum:hover{filter:brightness(.96)}
+    .sum b{font-size:13px;margin-right:4px;color:#1a365d}
+    .sum-lbl{font-size:9px;color:#64748b;font-weight:700;letter-spacing:.3px;padding:0 2px 0 10px;user-select:none;white-space:nowrap}
+    .sum-lbl:first-child{padding-left:4px}
+    /* Group: 건 (total/reset) — neutral */
+    .sum.g-total{background:#f1f5f9;border-color:#cbd5e1}
+    .sum.g-total b{color:#0f172a}
+    /* Group: 단계 (phase) — blue */
+    .sum.g-phase{background:#eff6ff;border-color:#bfdbfe}
+    .sum.g-phase b{color:#1d4ed8}
+    .sum.g-phase.sel{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+    .sum.g-phase.sel b{color:#fff}
+    /* Group: 역할 (role) — green */
+    .sum.g-role{background:#f0fdf4;border-color:#bbf7d0}
+    .sum.g-role b{color:#15803d}
+    .sum.g-role.sel{background:#15803d;border-color:#15803d;color:#fff}
+    .sum.g-role.sel b{color:#fff}
+    /* Group: 상태 (status) — amber */
+    .sum.g-status{background:#fffbeb;border-color:#fde68a}
+    .sum.g-status b{color:#b45309}
+    .sum.g-status.sel{background:#b45309;border-color:#b45309;color:#fff}
+    .sum.g-status.sel b{color:#fff}
+    /* Group: 급수 (grade) — purple */
+    .sum.g-grade{background:#faf5ff;border-color:#e9d5ff}
+    .sum.g-grade b{color:#7e22ce}
+    .sum.g-grade.sel{background:#7e22ce;border-color:#7e22ce;color:#fff}
+    .sum.g-grade.sel b{color:#fff}
 
     /* Table */
     .tbl{width:100%;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
@@ -536,17 +558,24 @@ function renderSumBar(filtered) {
   }
   const sc = (axis, val) => fl[axis] === val ? ' sel' : '';
   el.innerHTML = `
-    <div class="sum" onclick="resetFilters()" title="필터 초기화"><b>${cur}</b>/${total} 건</div>
-    <div class="sum${sc('phase','part1')}" onclick="filterBy('phase','part1')"><b>${byPhase.part1}</b>1부</div>
-    <div class="sum${sc('phase','interview')}" onclick="filterBy('phase','interview')"><b>${byPhase.interview}</b>면접</div>
-    <div class="sum${sc('phase','part2')}" onclick="filterBy('phase','part2')"><b>${byPhase.part2}</b>2부</div>
-    <div class="sum${sc('phase','final')}" onclick="filterBy('phase','final')"><b>${byPhase.final}</b>최종</div>
-    <div class="sum${sc('role','student')}" onclick="filterBy('role','student')"><b>${byRole.student}</b>학생</div>
-    <div class="sum${sc('role','instructor')}" onclick="filterBy('role','instructor')"><b>${byRole.instructor}</b>강사</div>
-    <div class="sum${sc('role','expert')}" onclick="filterBy('role','expert')"><b>${byRole.expert}</b>전문가</div>
-    <div class="sum${sc('status',0)}" onclick="filterBy('status',0)"><b>${byStatus[0]}</b>미확인</div>
-    <div class="sum${sc('status',4)}" onclick="filterBy('status',4)"><b>${byStatus[4]}</b>완료</div>
-    <div class="sum" style="cursor:default">A:<b>${byGrade.A}</b>  B:<b>${byGrade.B}</b>  C:<b>${byGrade.C}</b>  D:<b>${byGrade.D}</b></div>
+    <div class="sum g-total" onclick="resetFilters()" title="필터 초기화"><b>${cur}</b>/${total} 건</div>
+    <span class="sum-lbl">단계</span>
+    <div class="sum g-phase${sc('phase','part1')}" onclick="filterBy('phase','part1')"><b>${byPhase.part1}</b>1부</div>
+    <div class="sum g-phase${sc('phase','interview')}" onclick="filterBy('phase','interview')"><b>${byPhase.interview}</b>면접</div>
+    <div class="sum g-phase${sc('phase','part2')}" onclick="filterBy('phase','part2')"><b>${byPhase.part2}</b>2부</div>
+    <div class="sum g-phase${sc('phase','final')}" onclick="filterBy('phase','final')"><b>${byPhase.final}</b>최종</div>
+    <span class="sum-lbl">역할</span>
+    <div class="sum g-role${sc('role','student')}" onclick="filterBy('role','student')"><b>${byRole.student}</b>학생</div>
+    <div class="sum g-role${sc('role','instructor')}" onclick="filterBy('role','instructor')"><b>${byRole.instructor}</b>강사</div>
+    <div class="sum g-role${sc('role','expert')}" onclick="filterBy('role','expert')"><b>${byRole.expert}</b>전문가</div>
+    <span class="sum-lbl">상태</span>
+    <div class="sum g-status${sc('status',0)}" onclick="filterBy('status',0)"><b>${byStatus[0]}</b>미확인</div>
+    <div class="sum g-status${sc('status',4)}" onclick="filterBy('status',4)"><b>${byStatus[4]}</b>완료</div>
+    <span class="sum-lbl">급수</span>
+    <div class="sum g-grade${sc('grade','A')}" onclick="filterBy('grade','A')"><b>${byGrade.A}</b>A</div>
+    <div class="sum g-grade${sc('grade','B')}" onclick="filterBy('grade','B')"><b>${byGrade.B}</b>B</div>
+    <div class="sum g-grade${sc('grade','C')}" onclick="filterBy('grade','C')"><b>${byGrade.C}</b>C</div>
+    <div class="sum g-grade${sc('grade','D')}" onclick="filterBy('grade','D')"><b>${byGrade.D}</b>D</div>
   `;
 }
 
