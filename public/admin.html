@@ -199,16 +199,39 @@ tbody td{padding:3px 6px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 .hm-qst-4{background:#bbf7d0;color:#14532d}
 .hm-qdt{font-size:9px;color:#94a3b8;text-align:right}
 .hm-qempty{padding:14px 0;text-align:center;color:#cbd5e1;font-size:10px}
+/* 🚨 실행 우선 패널 (오늘 미처리) */
+.hm-urg{background:#fff;border:1px solid #fecaca;border-left:3px solid #dc2626;border-radius:5px;margin-bottom:6px;overflow:hidden}
+.hm-urg-hd{display:flex;align-items:center;gap:6px;padding:5px 8px;background:#fef2f2;border-bottom:1px solid #fecaca}
+.hm-urg-icon{font-size:12px}
+.hm-urg-title{font-size:11px;font-weight:800;color:#991b1b}
+.hm-urg-cnt-t{font-size:10px;color:#7f1d1d;background:#fee2e2;padding:1px 6px;border-radius:3px}
+.hm-urg-cnt-t b{font-size:12px;font-weight:900;color:#dc2626;margin-left:2px}
+.hm-urg-cnt-o{font-size:10px;color:#64748b;background:#f1f5f9;padding:1px 6px;border-radius:3px}
+.hm-urg-cnt-o b{font-size:12px;font-weight:900;color:#475569;margin-left:2px}
+.hm-urg-spacer{flex:1}
+.hm-urg-btn{padding:2px 8px;background:#dc2626;color:#fff;border:none;border-radius:3px;font-size:10px;font-weight:700;cursor:pointer}
+.hm-urg-btn:hover{background:#b91c1c}
+.hm-urg-body{padding:4px 8px}
+.hm-urg-empty{padding:10px;text-align:center;font-size:11px;color:#16a34a;font-weight:700}
+.hm-urg-lbl{font-size:9px;color:#94a3b8;font-weight:700;margin-bottom:3px;letter-spacing:.3px}
+.hm-urg-list{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}
+@media(max-width:900px){.hm-urg-list{grid-template-columns:1fr}}
+.hm-urg-row{display:flex;align-items:center;gap:6px;padding:3px 6px;border:1px solid #f0f0f0;border-radius:3px;cursor:pointer;transition:.12s;font-size:10px}
+.hm-urg-row:hover{background:#fef2f2;border-color:#fca5a5}
+.hm-urg-row .hm-urg-dt{color:#64748b;font-variant-numeric:tabular-nums;width:68px;flex-shrink:0}
+.hm-urg-row .hm-urg-site{color:#0088ff;background:#eff6ff;padding:0 4px;border-radius:2px;font-size:9px;font-weight:700;flex-shrink:0}
+.hm-urg-row .hm-urg-nm{font-weight:700;color:#1f2937;flex-shrink:0}
+.hm-urg-row .hm-urg-ct{color:#94a3b8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hm-urg-row .hm-urg-act{color:#dc2626;font-weight:700;font-size:9px;flex-shrink:0;padding:1px 5px;border-radius:2px;background:#fee2e2;cursor:pointer}
+.hm-urg-row .hm-urg-act:hover{background:#fecaca}
 /* Stats */
-/* ═══ 통계 뷰 (전면 컴팩트 + 필터·비고·드릴·정렬 준수) ═══ */
-.st-cards{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-bottom:6px}
-@media(max-width:1100px){.st-cards{grid-template-columns:repeat(4,1fr)}}
-.st-card{background:#fff;border-radius:4px;border:1px solid #e3e5ed;padding:4px 6px;display:flex;flex-direction:column;gap:1px}
-.st-card.cl{cursor:pointer;transition:.12s}
-.st-card.cl:hover{background:#f0f4ff;border-color:#0088ff}
-.st-card .st-label{font-size:9px;color:#888;font-weight:600;letter-spacing:-.2px}
-.st-card .st-val{font-size:15px;font-weight:800;line-height:1;tabular-nums;font-variant-numeric:tabular-nums}
-.st-card .st-u{font-size:8px;color:#888;font-weight:400;margin-left:2px}
+/* ═══ 분석 뷰 (필터·분포·시계열·피벗 · 실행 과 중복 카드 제거) ═══ */
+.st-summary{display:flex;gap:4px;flex-wrap:wrap;background:#fff;border:1px solid #e3e5ed;border-radius:4px;padding:4px 6px;margin-bottom:4px}
+.st-sum-item{display:flex;align-items:baseline;gap:2px;padding:1px 6px;border-right:1px solid #f0f0f0}
+.st-sum-item:last-child{border-right:none}
+.st-sum-item .st-sum-l{font-size:9px;color:#888;font-weight:600;margin-right:2px}
+.st-sum-item b{font-size:13px;font-weight:900;tabular-nums;font-variant-numeric:tabular-nums;line-height:1}
+.st-sum-item .st-sum-u{font-size:8px;color:#888;font-weight:400;margin-left:1px}
 .st-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:4px}
 @media(max-width:900px){.st-3col{grid-template-columns:1fr 1fr}}
 .st-dist{background:#fff;border-radius:4px;border:1px solid #e3e5ed;overflow:hidden}
@@ -426,10 +449,10 @@ tbody td{padding:3px 6px;max-width:200px;overflow:hidden;text-overflow:ellipsis;
 <aside class="sb">
 <div class="sb-top"><div class="sb-logo" onclick="goHome()">W</div></div>
 <nav class="sb-nav">
-<div class="sb-item a" data-v="d" onclick="sv('d')" title="대시보드"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>홈</span></div>
+<div class="sb-item a" data-v="d" onclick="sv('d')" title="실행 (Action)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>실행</span></div>
 <div class="sb-item" data-v="l" onclick="sv('l')" title="리스트"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>리스트</span></div>
 <div class="sb-item" data-v="f" onclick="sv('f')" title="신청서"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>신청서</span></div>
-<div class="sb-item" data-v="s" onclick="sv('s')" title="통계"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>통계</span></div>
+<div class="sb-item" data-v="s" onclick="sv('s')" title="분석 (Analytics)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>분석</span></div>
 <div class="sb-item" data-v="q" onclick="sv('q')" title="콘텐츠"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><span>콘텐츠</span></div>
 
 <div class="sb-item" onclick="location.href='homepage-builder.html'" title="홈페이지 생성"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg><span>홈생성</span></div>
@@ -594,7 +617,7 @@ function fv(v){if(v==null)return"";if(Array.isArray(v))return v.join(", ");if(ty
 
 // ═══ Navigation ═══
 function sv(v){cV=v;document.querySelectorAll('.sb-item[data-v]').forEach(b=>{b.classList.toggle('a',b.dataset.v===v)});rv()}
-function rv(){curPage=1;ca.style.padding="16px 20px";ca.style.overflow="";if(cV==="f"){rForms();return}if(cV==="s"){rStats();return}if(cV==="q"){rContent();return}if(cV==="od"){rOldHome();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
+function rv(){curPage=1;ca.style.padding="6px 10px";ca.style.overflow="";if(cV==="f"){rForms();return}if(cV==="s"){rStats();return}if(cV==="q"){rContent();return}if(cV==="od"){rOldHome();return}if(!cT){cV==="l"?rAL():rD()}else rL()}
 
 function rNav(){
 const allCnt=T.reduce((s,t)=>s+(TC[t]||0),0);
@@ -619,7 +642,7 @@ uB()}
 function selSite(id){cSite=id;cSubT=null;cT=null;rNav();rv()}
 function selSubT(t){cSubT=t;cT=t;rNav();if(t)rL();else rv()}
 function sT(t){const s=gSite(t);if(s)cSite=s.id;cSubT=t;cT=t;cV="l";bD.className="";bL.className="a";rNav();rL()}
-function uB(){bc.innerHTML=cT?`Work Studio &rsaquo; <b>${(gSite(cT)||{label:"기타"}).label}</b> &rsaquo; <b>${L[cT]||cT}</b>`:cSite?`Work Studio &rsaquo; <b>${(SITES.find(s=>s.id===cSite)||{label:""}).label}</b>`:"Work Studio"}
+function uB(){const vLbl={d:"실행",l:"리스트",f:"신청서",s:"분석",q:"콘텐츠"}[cV]||"";bc.innerHTML=cT?`Work Studio &rsaquo; <b>${(gSite(cT)||{label:"기타"}).label}</b> &rsaquo; <b>${L[cT]||cT}</b>`:cSite?`Work Studio &rsaquo; <b>${(SITES.find(s=>s.id===cSite)||{label:""}).label}</b>`:vLbl?`Work Studio &rsaquo; <b>${vLbl}</b>`:"Work Studio"}
 
 // ═══ Quadrant Dashboard — 4단 ═══
 // ═══ 홈 (컴팩트, 칩 기반, 클릭 → 신청서관리로 점프) ═══
@@ -708,6 +731,42 @@ h+=`<div class="hm-grid4">
 <div class="hm-sub">단원별 관리</div>
 </div>
 </div>`;
+
+// ── 🚨 오늘 미처리 TOP (실행 우선 패널) ──
+const urgent=all.filter(r=>{try{const p=JSON.parse(r.data);return(p._status||0)===0}catch{return false}})
+.sort((a,b)=>(b.created_at||"").localeCompare(a.created_at||""));
+const todayPending=urgent.filter(r=>iT(r.created_at));
+const oldPending=urgent.filter(r=>!iT(r.created_at)).slice(0,6);
+h+=`<div class="hm-urg">
+<div class="hm-urg-hd">
+<span class="hm-urg-icon">🚨</span>
+<span class="hm-urg-title">처리 대기</span>
+<span class="hm-urg-cnt-t" title="오늘 신규">오늘 <b>${todayPending.length}</b></span>
+<span class="hm-urg-cnt-o" title="누적 미처리">누적 <b>${urgent.length}</b></span>
+<span class="hm-urg-spacer"></span>
+<button class="hm-urg-btn" onclick="goApps('status',0)">전체 보기 →</button>
+</div>
+<div class="hm-urg-body">`;
+if(!urgent.length)h+=`<div class="hm-urg-empty">✅ 처리 대기 없음</div>`;
+else{
+const showList=todayPending.length?todayPending.slice(0,10):oldPending;
+const label=todayPending.length?"오늘 신규":"최근 미처리";
+h+=`<div class="hm-urg-lbl">${label}</div>`;
+h+=`<div class="hm-urg-list">`;
+showList.forEach(r=>{let p;try{p=JSON.parse(r.data)}catch{p={}}
+const nm=(p.part1&&p.part1.name)||p.name||p.title||p.studentName||p.orgName||"—";
+const ct=p.email||p.contact||p.phone||"";
+const site=gSite(r._t);const sLabel=site?site.label:"기타";
+const dt=(r.created_at||"").slice(5,16);
+h+=`<div class="hm-urg-row" onclick="sT('${r._t}')">
+<span class="hm-urg-dt">${dt}</span>
+<span class="hm-urg-site">${eh(sLabel)}</span>
+<span class="hm-urg-nm">${eh(String(nm).slice(0,14))}</span>
+<span class="hm-urg-ct">${eh(String(ct).slice(0,22))}</span>
+<span class="hm-urg-act" onclick="event.stopPropagation();cyS(${r.id})">상태 →</span>
+</div>`});
+h+=`</div>`}
+h+=`</div></div>`;
 
 // ── 사이트별 최근 접수 4단 사분면 ──
 const siteIds=Object.entries(siteCnts).sort((a,b)=>b[1]-a[1]).map(([id])=>id);
@@ -1891,8 +1950,8 @@ if(l.includes("ITT")||l.includes("정통"))return"ITT정통번역";
 return""}
 
 function rStats(preserveFocus){
-uB();bc.innerHTML="Work Studio &rsaquo; <b>통계</b>";
-navBar.innerHTML=`<span class="nav-lbl">통계 대시보드</span>`;
+uB();bc.innerHTML="Work Studio &rsaquo; <b>분석 (Analytics)</b>";
+navBar.innerHTML=`<span class="nav-lbl">분석 · 필터 · 분포 · 시계열 · 피벗</span>`;
 subNav.classList.remove("v");
 ca.style.padding="6px 10px";
 
@@ -1920,24 +1979,17 @@ h+=`<button class="fb" onclick="stToggleAll()">${stS.collapsed.size?"▾ 전체 
 h+=`<span class="cnt">${all.length}/${allRaw.length}건</span>`;
 h+=`</div>`;
 
-// ── KPI 카드 (R8 drill-down · R11 compact · R12 6단) ──
-const cards=[
-{l:"전체",v:total,u:"건",c:"#0088ff",t:"all"},
-{l:"오늘",v:todayCnt,u:"건",c:"#c53030",t:"today"},
-{l:"신규",v:stCnts[0],u:"건",c:"#f59e0b",t:"status",val:"0"},
-{l:"확인",v:stCnts[1],u:"건",c:"#16a34a",t:"status",val:"1"},
-{l:"완료",v:stCnts[2],u:"건",c:"#94a3b8",t:"status",val:"2"},
-{l:"템플릿",v:ftTemplates.length,u:"개",c:"#0088ff",t:"nav",val:"f"},
-{l:"문제",v:TC["questions"]||0,u:"개",c:"#7c3aed",t:"content",val:"questions"},
-{l:"과정",v:TC["curriculum"]||0,u:"개",c:"#059669",t:"content",val:"curriculum"},
-{l:"교재",v:TC["textbooks"]||0,u:"개",c:"#0891b2",t:"content",val:"textbooks"},
-{l:"홈피",v:WEBSITES.length,u:"개",c:"#64748b"},
-{l:"테이블",v:T.length,u:"개",c:"#555"},
-{l:"모듈",v:ftModules.length,u:"개",c:"#059669"}];
-h+=`<div class="st-cards">`;
-cards.forEach(c=>{const cl=c.t?"cl":"";const oc=c.t?`onclick="stDrill('${c.t}','${c.val||""}')"`:"";
-h+=`<div class="st-card ${cl}" ${oc}><div class="st-label">${c.l}</div><div class="st-val" style="color:${c.c}">${c.v}<span class="st-u">${c.u}</span></div></div>`});
-h+=`</div>`;
+// ── 분석 전용 요약 (R11 compact · R12 multi-col) — 홈/실행 과 중복되는 KPI 카드는 제거 ──
+// 필터 적용 후 결과 + 기간 범위 표시만
+h+=`<div class="st-summary">
+<div class="st-sum-item"><span class="st-sum-l">필터 결과</span><b>${total}</b><span class="st-sum-u">건</span></div>
+<div class="st-sum-item"><span class="st-sum-l">오늘</span><b style="color:#c53030">${todayCnt}</b><span class="st-sum-u">건</span></div>
+<div class="st-sum-item"><span class="st-sum-l">미처리</span><b style="color:#f59e0b">${stCnts[0]}</b><span class="st-sum-u">건</span></div>
+<div class="st-sum-item"><span class="st-sum-l">확인</span><b style="color:#16a34a">${stCnts[1]}</b><span class="st-sum-u">건</span></div>
+<div class="st-sum-item"><span class="st-sum-l">완료</span><b style="color:#94a3b8">${stCnts[2]}</b><span class="st-sum-u">건</span></div>
+<div class="st-sum-item"><span class="st-sum-l">홈피</span><b>${Object.values(siteCnts).filter(v=>v>0).length}</b><span class="st-sum-u">/${SITES.length}</span></div>
+<div class="st-sum-item"><span class="st-sum-l">종목</span><b>${Object.values(domainCnts).filter(v=>v>0).length}</b><span class="st-sum-u">/${EXAM_DOMAINS.length}</span></div>
+</div>`;
 
 // ── Distribution 3단 그리드 (R12) ──
 const hdr=(id,title,cnt)=>`<div class="st-dist-hd" onclick="stToggleSec('${id}')"><span class="exp">${stS.collapsed.has(id)?"▸":"▾"}</span><h4>${title}</h4><span class="cnt">${cnt}</span></div>`;
@@ -2037,6 +2089,38 @@ if(stS.cols.day.has("chk"))h+=`<td class="num">${d.chk}</td>`;
 if(stS.cols.day.has("done"))h+=`<td class="num">${d.done}</td>`;
 if(stS.cols.day.has("note"))h+=`<td class="note" onclick="event.stopPropagation()"><input value="${eh(nt)}" placeholder="…" onblur="stSaveNote('day','${d.key}',this.value)"/></td>`;
 h+=`</tr>`});
+h+=`</tbody></table>`}
+h+=`</div>`;
+
+// ── 피벗: 사이트 × 상태 교차 (분석 전용) ──
+const pv={};
+SITES.forEach(s=>{pv[s.label]=[0,0,0]});
+all.forEach(r=>{const s=gSite(r._t);if(!s)return;try{const st=JSON.parse(r.data)._status||0;pv[s.label][st]++}catch{}});
+h+=`<div class="st-dist" id="dist-pivot" style="margin-top:4px">`+hdr("dist-pivot","사이트 × 상태 피벗",Object.keys(pv).length);
+if(!stS.collapsed.has("dist-pivot")){
+h+=`<table class="st-tbl"><thead><tr>
+<th>홈페이지</th>
+<th class="num">신규</th>
+<th class="num">확인</th>
+<th class="num">완료</th>
+<th class="num">합계</th>
+<th class="num">미처리율</th>
+<th class="note">비고</th>
+</tr></thead><tbody>`;
+let pvRows=Object.entries(pv).map(([name,cnts])=>{const sum=cnts[0]+cnts[1]+cnts[2];return{name,n:cnts[0],c:cnts[1],d:cnts[2],sum,pend:sum>0?Math.round(cnts[0]/sum*100):0}});
+pvRows.sort((a,b)=>b.sum-a.sum);
+if(!pvRows.filter(r=>r.sum>0).length)h+=`<tr><td colspan="7" style="text-align:center;padding:6px;color:#999">데이터 없음</td></tr>`;
+else pvRows.filter(r=>r.sum>0).forEach(r=>{const nt=(stS.notes.pivot||{})[r.name]||"";
+const pendColor=r.pend>=50?"#dc2626":r.pend>=25?"#f59e0b":"#94a3b8";
+h+=`<tr class="cl" onclick="stDrill('site','${eh(r.name)}')">
+<td title="${eh(r.name)}">${eh(r.name)}</td>
+<td class="num">${r.n||"—"}</td>
+<td class="num">${r.c||"—"}</td>
+<td class="num">${r.d||"—"}</td>
+<td class="num"><b>${r.sum}</b></td>
+<td class="num" style="color:${pendColor};font-weight:700">${r.pend}%</td>
+<td class="note" onclick="event.stopPropagation()"><input value="${eh(nt)}" placeholder="…" onblur="stSaveNote('pivot','${eh(r.name)}',this.value)"/></td>
+</tr>`});
 h+=`</tbody></table>`}
 h+=`</div>`;
 
