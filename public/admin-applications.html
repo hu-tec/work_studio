@@ -300,6 +300,7 @@
     .gwp-sec>h5 .sp{margin-left:auto;font-size:9px;color:#64748b;font-weight:600}
     .gwp-sec.clpsd{padding-bottom:2px;margin-bottom:3px}
     .gwp-sec.clpsd>h5{border-bottom:none;padding-bottom:0;margin-bottom:0}
+    .gwp-sec.clpsd .gwp-sec-body{display:none}
     .gwp-subcard{background:#f8fafc;border:1px solid #f1f5f9;border-radius:3px;padding:3px 5px;margin-bottom:3px}
     .gwp-subt{font-size:9px;font-weight:700;color:#475569;padding-bottom:2px;border-bottom:1px dashed #e5e7eb;margin-bottom:3px;display:flex;align-items:center;gap:4px}
     .gwp-subt .sp{margin-left:auto;font-size:8px;color:#94a3b8;font-weight:600}
@@ -313,8 +314,59 @@
     .gwp-v1 .gwp-subcard{background:#f8fafc;border:1px solid #e2e8f0;border-radius:2px}
     .gwp-v1 .gwp-subt{color:#475569;border-bottom:1px dashed #cbd5e1}
 
-    /* v2/v3 CSS — A 확정 후 제작 예정 (stub only) */
-    .gwp-v2,.gwp-v3{padding:0}
+    /* 멀티 기록 이벤트 카드 (통화/상담/면접) */
+    .gwp-evt{background:#f8fafc;border:1px solid #e5e7eb;border-radius:4px;padding:4px 6px;margin-bottom:3px}
+    .gwp-evt-head{display:flex;gap:3px;align-items:center;margin-bottom:3px;flex-wrap:wrap}
+    .gwp-evt-no{font-size:9px;font-weight:800;color:#0088ff;padding:1px 5px;background:#dbeafe;border-radius:2px;white-space:nowrap}
+    .gwp-evt-total{font-size:9px;color:#64748b;margin-left:auto;font-weight:700}
+    .gwp-evt .gwp-in[type="datetime-local"]{min-width:140px;width:auto;flex:1}
+    .gwp-evt .gwp-in[type="text"]{max-width:110px;flex:0 1 90px}
+    .gwp-evt .gwp-ta{min-height:28px;font-size:10px}
+    /* 모듈/필드 CRUD */
+    .gwp-addmod{padding:2px 9px;font-size:9px;font-weight:700;border:1px dashed #0088ff;color:#0088ff;background:#fff;border-radius:3px;cursor:pointer;font-family:inherit;margin-bottom:4px;line-height:1.5}
+    .gwp-addmod:hover{background:#eff6ff}
+    .gwp-modpicker{background:#eff6ff;border:1px dashed #0088ff;border-radius:4px;padding:5px 7px;margin-bottom:5px;display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+    .gwp-mod-x{margin-left:4px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:0 5px;font-size:9px;font-weight:700;border-radius:3px;cursor:pointer;font-family:inherit;line-height:1.4}
+    .gwp-mod-x:hover{background:#fee2e2}
+    .gwp-addfld{background:#eff6ff;border:1px dashed #bfdbfe;color:#0088ff;padding:1px 6px;font-size:9px;font-weight:700;border-radius:3px;cursor:pointer;font-family:inherit;margin-top:3px;width:100%;line-height:1.5}
+    .gwp-addfld:hover{background:#dbeafe;border-color:#0088ff}
+    .gwp-f{position:relative}
+    .gwp-fld-x{position:absolute;top:1px;right:2px;background:none;border:none;color:#e2e8f0;font-size:11px;cursor:pointer;padding:0 3px;line-height:1;font-family:inherit}
+    .gwp-fld-x:hover{color:#dc2626}
+
+    /* ══ 버전 B · 카드 모던 — rounded+shadow+pastel ══ */
+    .gwp-v2 .gwp-secgrid{gap:6px}
+    .gwp-v2 .gwp-sec{background:#fff;border:1px solid transparent;border-radius:10px;box-shadow:0 1px 3px rgba(15,23,42,.06),0 0 0 1px rgba(226,232,240,.8);padding:7px 10px;margin-bottom:0}
+    .gwp-v2 .gwp-sec>h5{color:#0088ff;border-bottom:1px solid #dbeafe;padding-bottom:4px;margin-bottom:5px;font-size:11px}
+    .gwp-v2 .gwp-sec>h5 .col{color:#0088ff}
+    .gwp-v2 .gwp-sec>h5 .sp{color:#64748b}
+    .gwp-v2 .gwp-f{background:#f0f9ff;border:1px solid #dbeafe;border-radius:6px;padding:3px 7px}
+    .gwp-v2 .gwp-fl{color:#0088ff;font-weight:700}
+    .gwp-v2 .gwp-in,.gwp-v2 .gwp-ta,.gwp-v2 .gwp-sc{border-radius:5px;border-color:#bfdbfe}
+    .gwp-v2 .gwp-subcard{background:#fff;border:1px solid #e0e7ff;border-radius:7px}
+    .gwp-v2 .gwp-subt{color:#4f46e5;border-bottom-color:#e0e7ff}
+    .gwp-v2 .gwp-chip{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+    .gwp-v2 .gwp-mchip.sel{background:#0088ff;color:#fff;border-color:#0088ff}
+    .gwp-v2 .gwp-schip.sel{background:#4f46e5;border-color:#4f46e5}
+    .gwp-v2 .gwp-evt{background:#f0f9ff;border-color:#bfdbfe;border-radius:7px}
+
+    /* ══ 버전 C · 미니멀 타이포 — no-fill / dividers / airy ══ */
+    .gwp-v3{background:#fff;padding:4px 10px}
+    .gwp-v3 .gwp-secgrid{gap:4px 12px;row-gap:2px}
+    .gwp-v3 .gwp-sec{background:transparent;border:none;border-top:1px solid #e5e7eb;border-radius:0;padding:6px 2px 4px;margin-bottom:0}
+    .gwp-v3 .gwp-sec>h5{font-weight:500;color:#64748b;border-bottom:none;padding-bottom:0;margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase;font-size:9px}
+    .gwp-v3 .gwp-sec>h5 .col{color:#cbd5e1}
+    .gwp-v3 .gwp-sec>h5 .sp{color:#94a3b8;text-transform:none;letter-spacing:0;font-size:9px}
+    .gwp-v3 .gwp-f{background:transparent;border:none;border-bottom:1px dotted #e5e7eb;border-radius:0;padding:3px 1px}
+    .gwp-v3 .gwp-fl{color:#94a3b8;letter-spacing:.3px;text-transform:uppercase;font-size:8px;font-weight:500}
+    .gwp-v3 .gwp-in,.gwp-v3 .gwp-ta,.gwp-v3 .gwp-sc{background:transparent;border:1px solid transparent;border-bottom:1px solid #e5e7eb;border-radius:0;padding:2px 0}
+    .gwp-v3 .gwp-in:focus,.gwp-v3 .gwp-ta:focus,.gwp-v3 .gwp-sc:focus{border-bottom-color:#0088ff;background:#fafbfc}
+    .gwp-v3 .gwp-subcard{background:transparent;border:none;border-left:2px solid #cbd5e1;padding-left:8px;border-radius:0}
+    .gwp-v3 .gwp-subt{color:#475569;border-bottom:none}
+    .gwp-v3 .gwp-chip{background:transparent;color:#475569;border:1px solid #cbd5e1}
+    .gwp-v3 .gwp-mchip{font-weight:400}
+    .gwp-v3 .gwp-mchip.sel{background:#1f2937;color:#fff;border-color:#1f2937}
+    .gwp-v3 .gwp-evt{background:transparent;border:none;border-bottom:1px solid #f1f5f9;border-radius:0;padding:3px 0}
 
     /* Embed mode — hide top header when inside admin.html iframe */
     body.embed .top{display:none}
@@ -1096,7 +1148,7 @@ function renderDetail(r) {
 //  저장: 기존 saveNested/saveScore/setStatus/setPhase/setGrade 재사용 + gwpRefresh
 // ============================================================
 
-const gwp = { id: null, tab: 'A', collapsed: new Set() };
+const gwp = { id: null, tab: 'A', collapsed: new Set(), addingMod: null };
 
 function openGwp(id) {
   const row = state.rows.find(r => r.id === id);
@@ -1165,12 +1217,26 @@ function gwpExtract(row) {
     'tax_subject','tax_grade','tax_function','tax_industry','tax_domain','tax_layer',
     'privacyConsent','marketingConsent'
   ]);
+  const customFields = d._customFields || {};
+  const getMetaFor = (k, p2) => {
+    if (fieldMeta[k]) return fieldMeta[k];
+    if (customFields[k]) {
+      const cm = customFields[k];
+      return {
+        label: cm.label || k,
+        type: cm.type || 'text',
+        moduleId: cm.moduleId || (p2?'_p2_other':'_other'),
+        moduleName: state.modules.find(m => m.moduleId === cm.moduleId)?.name || '커스텀'
+      };
+    }
+    return { label: k, type: 'text', moduleId: (p2?'_p2_other':'_other'), moduleName: (p2?'2부 기타':'기타') };
+  };
   const edu = [], car = [], qua = [];
   const otherP1 = {};
   for (const [k, v] of Object.entries(p1)) {
     if (HANDLED.has(k)) continue;
-    if (v == null || v === '' || (Array.isArray(v) && !v.length)) continue;
-    const m = fieldMeta[k] || { label: k, type: 'text', moduleId: '_other', moduleName: '기타' };
+    // 빈 값도 포함 — 관리자가 추가한 모듈/필드 렌더링 위해
+    const m = getMetaFor(k, false);
     const tag = ((m.moduleId||'') + ' ' + (m.moduleName||'') + ' ' + (m.label||'')).toLowerCase();
     const item = { key: k, label: m.label, value: v, type: m.type };
     if (/학력|education|\bedu\b|school|univ|전공/.test(tag)) edu.push(item);
@@ -1183,8 +1249,7 @@ function gwpExtract(row) {
   }
   const p2Groups = {};
   for (const [k, v] of Object.entries(p2)) {
-    if (v == null || v === '' || (Array.isArray(v) && !v.length)) continue;
-    const m = fieldMeta[k] || { label: k, type: 'text', moduleId: '_p2_other', moduleName: '2부 기타' };
+    const m = getMetaFor(k, true);
     const g = p2Groups[m.moduleId] = p2Groups[m.moduleId] || { name: m.moduleName, items: [] };
     g.items.push({ key: k, label: m.label, value: v, type: m.type });
   }
@@ -1254,13 +1319,13 @@ function gwpFnInputs(x) {
 //  편집용 헬퍼 — 전 필드 inline 수정 가능
 // ════════════════════════════════════════════════════════════════
 
-function gwpEF(label, id, section, key, value, type, options, span) {
+function gwpEF(label, id, section, key, value, type, options, span, delBtn) {
   const spanCls = span ? ' s' + span : '';
   const sk = key.replace(/'/g,"\\'");
   const ss = section;
   let body;
   if (type === 'textarea') {
-    body = `<textarea class="gwp-ta" onblur="saveNested(${id},'${ss}','${sk}',this.value);gwpRefresh()">${esc(String(value||''))}</textarea>`;
+    body = `<textarea class="gwp-ta" onblur="saveNested(${id},'${ss}','${sk}',this.value)">${esc(String(value||''))}</textarea>`;
   } else if (type === 'multiselect' || (Array.isArray(value) && type !== 'checkbox')) {
     const arr = Array.isArray(value) ? value : [];
     if (options && options.length) {
@@ -1280,16 +1345,187 @@ function gwpEF(label, id, section, key, value, type, options, span) {
         return `<button class="gwp-schip${sel?' sel':''}" onclick="saveNested(${id},'${ss}','${sk}','${oe}');gwpRefresh()">${esc(o)}</button>`;
       }).join('')}</div>`;
     } else {
-      body = `<input class="gwp-in" type="text" value="${esc(String(value||''))}" onchange="saveNested(${id},'${ss}','${sk}',this.value);gwpRefresh()">`;
+      body = `<input class="gwp-in" type="text" value="${esc(String(value||''))}" onchange="saveNested(${id},'${ss}','${sk}',this.value)">`;
     }
   } else if (type === 'checkbox' || type === 'bool') {
     body = `<div class="gwp-chips"><button class="gwp-schip${value===true?' sel':''}" onclick="saveNested(${id},'${ss}','${sk}',true);gwpRefresh()">✓</button><button class="gwp-schip${value===false?' sel':''}" onclick="saveNested(${id},'${ss}','${sk}',false);gwpRefresh()">✗</button></div>`;
   } else {
     const it = type==='date'?'date':type==='number'?'number':type==='email'?'email':type==='tel'?'tel':type==='datetime'?'datetime-local':'text';
-    const numAttr = type==='number'?' onchange':'';
-    body = `<input class="gwp-in" type="${it}" value="${esc(String(value??''))}" onchange="saveNested(${id},'${ss}','${sk}',${type==='number'?'Number(this.value)':'this.value'});gwpRefresh()">`;
+    body = `<input class="gwp-in" type="${it}" value="${esc(String(value??''))}" onchange="saveNested(${id},'${ss}','${sk}',${type==='number'?'Number(this.value)':'this.value'})">`;
   }
-  return `<div class="gwp-f${spanCls}"><div class="gwp-fl">${esc(label)}</div>${body}</div>`;
+  return `<div class="gwp-f${spanCls}"><div class="gwp-fl">${esc(label)}</div>${body}${delBtn||''}</div>`;
+}
+
+// ─── 모듈 CRUD ───
+function gwpStartAddMod(section) { gwp.addingMod = { section }; gwpRefresh(); }
+function gwpCancelAddMod() { gwp.addingMod = null; gwpRefresh(); }
+async function gwpAddMod(id, section, moduleId) {
+  const mod = state.modules.find(m => m.moduleId === moduleId);
+  if (!mod) return;
+  const row = state.rows.find(r => r.id === id);
+  if (!row.d[section]) row.d[section] = {};
+  for (const f of (mod.fields || [])) {
+    if (row.d[section][f.key] === undefined) {
+      row.d[section][f.key] = f.type === 'multiselect' ? [] : (f.type === 'checkbox' ? null : '');
+    }
+  }
+  gwp.addingMod = null;
+  await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
+  gwpRefresh();
+}
+async function gwpRemoveMod(id, section, moduleId) {
+  if (!confirm(`모듈 "${moduleId}"의 모든 필드를 이 접수에서 삭제?`)) return;
+  const row = state.rows.find(r => r.id === id);
+  if (!row || !row.d[section]) return;
+  const m = buildFieldMeta();
+  const keysToDel = [];
+  for (const k of Object.keys(row.d[section])) {
+    if (m[k]?.moduleId === moduleId) keysToDel.push(k);
+    else if (row.d._customFields?.[k]?.moduleId === moduleId) keysToDel.push(k);
+  }
+  keysToDel.forEach(k => delete row.d[section][k]);
+  await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
+  gwpRefresh();
+}
+async function gwpAddField(id, section, moduleId) {
+  const key = (prompt('필드 key (영문)', '')||'').trim();
+  if (!key) return;
+  const label = (prompt('필드 라벨', key)||'').trim() || key;
+  const row = state.rows.find(r => r.id === id);
+  if (!row.d[section]) row.d[section] = {};
+  if (row.d[section][key] === undefined) row.d[section][key] = '';
+  if (!row.d._customFields) row.d._customFields = {};
+  row.d._customFields[key] = { label, moduleId, type: 'text' };
+  await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
+  gwpRefresh();
+}
+async function gwpDelField(id, section, key) {
+  if (!confirm(`"${key}" 필드 삭제?`)) return;
+  const row = state.rows.find(r => r.id === id);
+  if (!row || !row.d[section]) return;
+  delete row.d[section][key];
+  if (row.d._customFields?.[key]) delete row.d._customFields[key];
+  await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
+  gwpRefresh();
+}
+
+// ─── 멀티 기록 (통화/상담/면접) ───
+function gwpGetList(d, key, legacyKey) {
+  if (Array.isArray(d[key])) return d[key];
+  if (legacyKey && d[legacyKey]) {
+    const leg = d[legacyKey];
+    const hasData = leg.at || leg.notes || leg.by || leg.memo || (leg.score && Object.keys(leg.score).length);
+    if (hasData) return [{ ...leg }];
+  }
+  return [];
+}
+function gwpEnsureList(row, key, legacyKey) {
+  if (!Array.isArray(row.d[key])) {
+    const leg = legacyKey ? row.d[legacyKey] : null;
+    const seed = (leg && (leg.at || leg.notes || leg.by || leg.memo || (leg.score && Object.keys(leg.score).length))) ? [{ ...leg }] : [];
+    row.d[key] = seed;
+  }
+  return row.d[key];
+}
+async function gwpAddEvt(id, key) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  const legacyKey = key === 'calls' ? 'call' : key === 'interviews' ? 'interview' : null;
+  gwpEnsureList(row, key, legacyKey);
+  const nowLocal = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const blank = key === 'interviews' ? { at: nowLocal, by: '', score:{}, memo: '' } : { at: nowLocal, by: '', notes: '' };
+  row.d[key].push(blank);
+  await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
+  gwpRefresh();
+}
+async function gwpDelEvt(id, key, idx) {
+  if (!confirm('이 기록을 삭제?')) return;
+  const row = state.rows.find(r => r.id === id);
+  if (!Array.isArray(row.d[key])) return;
+  row.d[key].splice(idx, 1);
+  await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
+  gwpRefresh();
+}
+async function gwpSaveEvt(id, key, idx, field, value) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  const legacyKey = key === 'calls' ? 'call' : key === 'interviews' ? 'interview' : null;
+  gwpEnsureList(row, key, legacyKey);
+  if (!row.d[key][idx]) row.d[key][idx] = {};
+  row.d[key][idx][field] = value;
+  await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
+  // 포커스 유지 — 재렌더 없음
+}
+async function gwpSaveIvScore(id, idx, field, value) {
+  const row = state.rows.find(r => r.id === id);
+  if (!row) return;
+  gwpEnsureList(row, 'interviews', 'interview');
+  if (!row.d.interviews[idx]) row.d.interviews[idx] = {};
+  if (!row.d.interviews[idx].score) row.d.interviews[idx].score = {};
+  row.d.interviews[idx].score[field] = Number(value);
+  const sc = row.d.interviews[idx].score;
+  const t = Number(sc.communication||0)+Number(sc.expertise||0)+Number(sc.attitude||0)+Number(sc.availability||0);
+  row.d.interviews[idx].total = t;
+  await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
+  // 총점만 부분 업데이트 (포커스 유지)
+  document.querySelectorAll(`#gwp .gwp-evt[data-ek="interviews-${idx}"] .gwp-evt-total`).forEach(el => el.textContent = `${t}/20`);
+}
+
+// 이벤트 리스트 렌더 (통화/상담)
+function gwpEvtList(id, key, list, typeLabel) {
+  const hasStatusButtons = key === 'calls';
+  const entries = list.map((e, i) => `
+    <div class="gwp-evt" data-ek="${key}-${i}">
+      <div class="gwp-evt-head">
+        <span class="gwp-evt-no">#${i+1}</span>
+        <input class="gwp-in" type="datetime-local" value="${e.at||''}" onchange="gwpSaveEvt(${id},'${key}',${i},'at',this.value)">
+        <input class="gwp-in" type="text" value="${esc(e.by||'')}" placeholder="담당자" onchange="gwpSaveEvt(${id},'${key}',${i},'by',this.value)">
+        <button class="gwp-fld-x" style="position:static" onclick="gwpDelEvt(${id},'${key}',${i})" title="삭제">×</button>
+      </div>
+      <textarea class="gwp-ta" placeholder="메모" onblur="gwpSaveEvt(${id},'${key}',${i},'notes',this.value)">${esc(e.notes||'')}</textarea>
+    </div>`).join('');
+  const statusRow = hasStatusButtons ? `<div style="display:flex;gap:3px;margin-bottom:3px;flex-wrap:wrap;align-items:center"><button class="gwp-btn" onclick="setStatus(${id},2);gwpRefresh()">통화 완료</button><button class="gwp-btn p" onclick="setStatus(${id},3);setPhase(${id},'interview');gwpRefresh()">→ 면접</button><button class="gwp-addmod" style="margin-left:auto" onclick="gwpAddEvt(${id},'${key}')">＋ ${typeLabel} 추가</button></div>` : `<div style="display:flex;margin-bottom:3px"><button class="gwp-addmod" style="margin-left:auto" onclick="gwpAddEvt(${id},'${key}')">＋ ${typeLabel} 추가</button></div>`;
+  return `${statusRow}${entries || `<div class="gwp-fv e" style="padding:4px;text-align:center;font-size:10px">${typeLabel} 기록 없음</div>`}`;
+}
+
+// 면접 리스트 (점수 포함)
+function gwpIvList(id, list) {
+  const entries = list.map((e, i) => {
+    const sc = e.score || {};
+    const total = Number(sc.communication||0)+Number(sc.expertise||0)+Number(sc.attitude||0)+Number(sc.availability||0);
+    return `
+    <div class="gwp-evt" data-ek="interviews-${i}">
+      <div class="gwp-evt-head">
+        <span class="gwp-evt-no">#${i+1}</span>
+        <input class="gwp-in" type="datetime-local" value="${e.at||''}" onchange="gwpSaveEvt(${id},'interviews',${i},'at',this.value)">
+        <input class="gwp-in" type="text" value="${esc(e.by||'')}" placeholder="면접관" onchange="gwpSaveEvt(${id},'interviews',${i},'by',this.value)">
+        <span class="gwp-evt-total">${total}/20</span>
+        <button class="gwp-fld-x" style="position:static" onclick="gwpDelEvt(${id},'interviews',${i})" title="삭제">×</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;margin-bottom:3px">
+        <div class="gwp-f"><div class="gwp-fl">커뮤</div><input class="gwp-sc" type="number" min="1" max="5" value="${sc.communication||''}" onchange="gwpSaveIvScore(${id},${i},'communication',this.value)"></div>
+        <div class="gwp-f"><div class="gwp-fl">전문</div><input class="gwp-sc" type="number" min="1" max="5" value="${sc.expertise||''}" onchange="gwpSaveIvScore(${id},${i},'expertise',this.value)"></div>
+        <div class="gwp-f"><div class="gwp-fl">태도</div><input class="gwp-sc" type="number" min="1" max="5" value="${sc.attitude||''}" onchange="gwpSaveIvScore(${id},${i},'attitude',this.value)"></div>
+        <div class="gwp-f"><div class="gwp-fl">가용</div><input class="gwp-sc" type="number" min="1" max="5" value="${sc.availability||''}" onchange="gwpSaveIvScore(${id},${i},'availability',this.value)"></div>
+      </div>
+      <textarea class="gwp-ta" placeholder="면접 메모" onblur="gwpSaveEvt(${id},'interviews',${i},'memo',this.value)">${esc(e.memo||'')}</textarea>
+    </div>`;
+  }).join('');
+  return `<div style="display:flex;margin-bottom:3px"><button class="gwp-addmod" style="margin-left:auto" onclick="gwpAddEvt(${id},'interviews')">＋ 면접 추가</button></div>${entries || '<div class="gwp-fv e" style="padding:4px;text-align:center;font-size:10px">면접 기록 없음</div>'}`;
+}
+
+// 모듈 추가 UI
+function gwpModAddUi(id, section, usedList) {
+  const usedIds = new Set(usedList.map(g => g.mid));
+  if (gwp.addingMod && gwp.addingMod.section === section) {
+    const available = state.modules.filter(m => !usedIds.has(m.moduleId));
+    return `<div class="gwp-modpicker">
+      <span style="font-size:9px;color:#64748b;margin-right:4px">모듈 선택 (${available.length}):</span>
+      ${available.map(m => `<button class="gwp-schip" onclick="gwpAddMod(${id},'${section}','${String(m.moduleId).replace(/'/g,"\\'")}')">${esc(m.name||m.moduleId)}</button>`).join('')}
+      <button class="gwp-btn" onclick="gwpCancelAddMod()">취소</button>
+    </div>`;
+  }
+  return `<button class="gwp-addmod" onclick="gwpStartAddMod('${section}')">＋ 모듈 추가</button>`;
 }
 
 async function gwpToggleMulti(id, section, key, val) {
@@ -1325,16 +1561,30 @@ async function gwpRemoveMulti(id, section, key, idx) {
   gwpRefresh();
 }
 
+// 섹션 접기/펼치기 — DOM 클래스 토글만, 재렌더 없음 (깜빡임 방지, 포커스 유지)
 function gwpToggleSection(secId) {
-  if (gwp.collapsed.has(secId)) gwp.collapsed.delete(secId);
+  const isC = gwp.collapsed.has(secId);
+  if (isC) gwp.collapsed.delete(secId);
   else gwp.collapsed.add(secId);
-  gwpRefresh();
+  document.querySelectorAll(`#gwp .gwp-sec[data-sec="${secId}"]`).forEach(el => {
+    el.classList.toggle('clpsd', !isC);
+    const a = el.querySelector(':scope > h5 .col');
+    if (a) a.textContent = !isC ? '▶' : '▼';
+  });
 }
 function gwpToggleAll() {
   const all = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11','s12'];
-  if (gwp.collapsed.size >= all.length) gwp.collapsed.clear();
+  const wasAll = gwp.collapsed.size >= all.length;
+  if (wasAll) gwp.collapsed.clear();
   else gwp.collapsed = new Set(all);
-  gwpRefresh();
+  document.querySelectorAll('#gwp .gwp-sec').forEach(el => {
+    const id = el.dataset.sec;
+    const c = gwp.collapsed.has(id);
+    el.classList.toggle('clpsd', c);
+    const a = el.querySelector(':scope > h5 .col');
+    if (a) a.textContent = c ? '▶' : '▼';
+  });
+  document.querySelectorAll('#gwp .gwp-toggle-all').forEach(b => b.textContent = wasAll ? '▲ 전체 접기' : '▼ 전체 펼치기');
 }
 
 function gwpSec(secId, icon, title, extra, body, span) {
@@ -1342,20 +1592,22 @@ function gwpSec(secId, icon, title, extra, body, span) {
   const w = span ? ' ' + span : '';
   return `<div class="gwp-sec${c?' clpsd':''}${w}" data-sec="${secId}">
     <h5 onclick="gwpToggleSection('${secId}')"><span class="col">${c?'▶':'▼'}</span>${icon} ${title}${extra?` <span class="sp">${extra}</span>`:''}</h5>
-    ${c ? '' : body}
+    <div class="gwp-sec-body">${body}</div>
   </div>`;
 }
 
 // ════════════════════════════════════════════════════════════════
-// 버전 A — 전필드 편집 + 4단 그리드 + 섹션 펼치기/접기
+// 버전 A — 전필드 편집 + 4단 그리드 + 멀티 기록 + 모듈 CRUD
 // ════════════════════════════════════════════════════════════════
 function gwpVer1(x) {
-  const p1 = x.p1, call = x.call, iv = x.iv, fn = x.fn, id = x.id;
+  const p1 = x.p1, fn = x.fn, id = x.id, d = x.d;
   const photo = x.photoUrl ? `<img src="${esc(x.photoUrl)}" alt="">` : '사진<br>없음';
   const { gradeChip } = gwpFnInputs(x);
   const meta = buildFieldMeta();
+  const customFields = d._customFields || {};
+  const isModuleKey = (k) => !!(meta[k] || customFields[k]);
 
-  // 1. 기본 인적사항 — 사진 + 4단 편집
+  // 1. 기본 인적사항
   const s1 = `<div class="gwp-idr">
     <div class="gwp-photo">${photo}</div>
     <div class="gwp-idg">
@@ -1366,90 +1618,88 @@ function gwpVer1(x) {
     </div>
   </div>`;
 
-  // 2. 분류 5축 — 4단, 칩 토글
+  // 2. 분류 5축
   const mOpts = k => (meta[k]?.options) || [];
   const s2 = `<div class="gwp-g gwp-g4">
     ${gwpEF('과목',id,'part1','tax_subject',p1.tax_subject||[],'multiselect',mOpts('tax_subject'),2)}${gwpEF('과정',id,'part1','tax_grade',p1.tax_grade,'select',mOpts('tax_grade'))}${gwpEF('산업',id,'part1','tax_industry',p1.tax_industry,'select',mOpts('tax_industry'))}
     ${gwpEF('기능',id,'part1','tax_function',p1.tax_function||[],'multiselect',mOpts('tax_function'),2)}${gwpEF('영역',id,'part1','tax_domain',p1.tax_domain,'select',mOpts('tax_domain'))}${gwpEF('레이어',id,'part1','tax_layer',p1.tax_layer||[],'multiselect',mOpts('tax_layer'))}
   </div>`;
 
-  // 3-5. 학력/경력/자격 — 4단 편집, 빈 섹션도 표시(추후 추가 가능)
+  // 3-5. 학력/경력/자격 — 각 필드에 × 삭제 포함
   const grpEdit = (items) => {
     if (!items.length) return `<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">없음</div>`;
     return `<div class="gwp-g gwp-g4">${items.map(it => {
-      const m = meta[it.key] || {};
+      const m = meta[it.key] || (customFields[it.key] || {});
       const sp = (it.type==='textarea'||(Array.isArray(it.value)&&it.value.length>=3)) ? 2 : null;
-      return gwpEF(it.label, id, 'part1', it.key, it.value, it.type, m.options||null, sp);
+      const delBtn = `<button class="gwp-fld-x" onclick="gwpDelField(${id},'part1','${String(it.key).replace(/'/g,"\\'")}')" title="필드 삭제">×</button>`;
+      return gwpEF(it.label, id, 'part1', it.key, it.value, it.type, m.options||null, sp, delBtn);
     }).join('')}</div>`;
   };
 
-  // 6. Part 1 역할 모듈 — 모듈 카드 4단 배치
+  // 6-7. Part 1/2 — 모듈 카드 + × 삭제 + + 필드 + 모듈 추가 UI
   const modEdit = (sec, g) => {
     const items = g.items.map(it => {
-      const m = meta[it.key] || {};
+      const m = meta[it.key] || (customFields[it.key] || {});
       const sp = (it.type==='textarea'||(Array.isArray(it.value)&&it.value.length>=4)) ? 2 : null;
-      return gwpEF(it.label, id, sec, it.key, it.value, it.type, m.options||null, sp);
+      const delBtn = `<button class="gwp-fld-x" onclick="gwpDelField(${id},'${sec}','${String(it.key).replace(/'/g,"\\'")}')" title="필드 삭제">×</button>`;
+      return gwpEF(it.label, id, sec, it.key, it.value, it.type, m.options||null, sp, delBtn);
     }).join('');
-    return `<div class="gwp-subcard"><div class="gwp-subt">${esc(g.name)} <span class="sp">${g.items.length}</span></div><div class="gwp-g gwp-g2">${items}</div></div>`;
+    const modId = String(g.mid).replace(/'/g,"\\'");
+    return `<div class="gwp-subcard">
+      <div class="gwp-subt"><span>${esc(g.name)}</span><span class="sp">${g.items.length}</span><button class="gwp-mod-x" onclick="gwpRemoveMod(${id},'${sec}','${modId}')" title="모듈 삭제">×</button></div>
+      <div class="gwp-g gwp-g2">${items}</div>
+      <button class="gwp-addfld" onclick="gwpAddField(${id},'${sec}','${modId}')">＋ 필드</button>
+    </div>`;
   };
-  const s6 = x.p1OtherList.length
+  const s6 = `${gwpModAddUi(id, 'part1', x.p1OtherList)}${x.p1OtherList.length
     ? `<div class="gwp-g gwp-g4">${x.p1OtherList.map(g => modEdit('part1', g)).join('')}</div>`
-    : '<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">역할별 추가 모듈 없음</div>';
-  const s7 = x.p2List.length
+    : '<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">역할별 추가 모듈 없음</div>'}`;
+  const s7 = `${gwpModAddUi(id, 'part2', x.p2List)}${x.p2List.length
     ? `<div class="gwp-g gwp-g4">${x.p2List.map(g => modEdit('part2', g)).join('')}</div>`
-    : `<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">Part 2 미제출 — <a href="#" onclick="sendPart2Link(${id});return false" style="color:#0088ff">링크 생성</a></div>`;
+    : `<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">Part 2 미제출 — <a href="#" onclick="sendPart2Link(${id});return false" style="color:#0088ff">링크 생성</a></div>`}`;
 
-  // 8. 타임라인 (읽기전용)
-  const s8 = gwpTimelineHtml(x);
+  // 8-10. 통화/상담/면접 — 멀티 기록
+  const calls = gwpGetList(d, 'calls', 'call');
+  const consults = gwpGetList(d, 'consults');
+  const interviews = gwpGetList(d, 'interviews', 'interview');
+  const s8 = gwpEvtList(id, 'calls', calls, '통화');
+  const s9 = gwpEvtList(id, 'consults', consults, '상담');
+  const s10 = gwpIvList(id, interviews);
 
-  // 9. 통화 기록 — 4단
-  const s9 = `<div class="gwp-g gwp-g4">
-    ${gwpEF('일시',id,'call','at',call.at,'datetime')}${gwpEF('담당자',id,'call','by',call.by,'text')}
-    <div class="gwp-f s2"><div class="gwp-fl">액션</div><div style="display:flex;gap:3px;flex-wrap:wrap"><button class="gwp-btn" onclick="setStatus(${id},2);gwpRefresh()">통화 완료</button><button class="gwp-btn p" onclick="setStatus(${id},3);setPhase(${id},'interview');gwpRefresh()">→ 면접</button></div></div>
-    ${gwpEF('메모',id,'call','notes',call.notes,'textarea',null,4)}
-  </div>`;
-
-  // 10. 면접 점수 — 4단
-  const s10 = `<div class="gwp-g gwp-g4">
-    <div class="gwp-f"><div class="gwp-fl">커뮤니케이션</div><input class="gwp-sc" type="number" min="1" max="5" value="${x.sc.communication||''}" onchange="saveScore(${id},'communication',this.value);gwpRefresh()"></div>
-    <div class="gwp-f"><div class="gwp-fl">전문성</div><input class="gwp-sc" type="number" min="1" max="5" value="${x.sc.expertise||''}" onchange="saveScore(${id},'expertise',this.value);gwpRefresh()"></div>
-    <div class="gwp-f"><div class="gwp-fl">태도</div><input class="gwp-sc" type="number" min="1" max="5" value="${x.sc.attitude||''}" onchange="saveScore(${id},'attitude',this.value);gwpRefresh()"></div>
-    <div class="gwp-f"><div class="gwp-fl">가용성</div><input class="gwp-sc" type="number" min="1" max="5" value="${x.sc.availability||''}" onchange="saveScore(${id},'availability',this.value);gwpRefresh()"></div>
-    ${gwpEF('면접 메모',id,'interview','memo',iv.memo,'textarea',null,4)}
-  </div>`;
-
-  // 11. 최종 등급 — 칩 + 4단
+  // 11. 최종 등급
   const s11 = `<div style="display:flex;gap:3px;margin-bottom:3px;flex-wrap:wrap">${gradeChip('A')}${gradeChip('B')}${gradeChip('C')}${gradeChip('D')}<button class="gwp-gc" style="padding:5px 10px;font-size:11px" onclick="setGrade(${id},'');gwpRefresh()">해제</button></div>
   <div class="gwp-g gwp-g4">
     ${gwpEF('자동 점수',id,'final','final_autoScore',fn.final_autoScore,'number')}${gwpEF('수동 점수',id,'final','final_manualScore',fn.final_manualScore,'number')}${gwpEF('평가자',id,'final','final_evaluator',fn.final_evaluator,'text')}${gwpEF('평가일',id,'final','final_evalAt',fn.final_evalAt,'datetime')}
     ${gwpEF('평가 사유',id,'final','final_reason',fn.final_reason,'textarea',null,4)}
   </div>`;
 
-  // 12. 동일인 이력 (읽기전용)
+  // 12. 동일인 이력
   const s12 = gwpCrossHtml(x);
 
-  // 12 섹션을 4단 그리드로 배치 — 3행에 4개씩 꽉 채우기
+  const ivTotSum = interviews.reduce((a, e) => a + (Number(e.total)||(Number(e.score?.communication||0)+Number(e.score?.expertise||0)+Number(e.score?.attitude||0)+Number(e.score?.availability||0))), 0);
+
+  // 12 섹션을 4단 그리드로 배치 (grid-auto-flow: dense로 빈칸 자동 메움)
   return `<div class="gwp-secgrid">${[
     gwpSec('s1','👤','1. 기본 인적사항','', s1, 'w2'),
     gwpSec('s2','🏷️','2. 분류 5축','', s2, 'w2'),
-    gwpSec('s3','🎓','3. 학력', x.edu.length?x.edu.length+'필드':'', grpEdit(x.edu)),
-    gwpSec('s4','💼','4. 경력', x.car.length?x.car.length+'필드':'', grpEdit(x.car)),
-    gwpSec('s5','📜','5. 자격', x.qua.length?x.qua.length+'필드':'', grpEdit(x.qua)),
-    gwpSec('s8','⏱️','8. 타임라인','', s8),
-    gwpSec('s6','📋','6. Part 1 역할 모듈', x.p1OtherList.length?x.p1OtherList.length+'모듈':'', s6, 'w4'),
-    gwpSec('s7','📝','7. Part 2', x.p2List.length?x.p2List.length+'모듈':'', s7, 'w4'),
-    gwpSec('s9','📞','9. 통화','', s9),
-    gwpSec('s10','🗣️','10. 면접', `${x.ivTotal||'-'}/20`, s10),
-    gwpSec('s11','🏆','11. 최종 등급', `합계 ${x.avgScore}점`, s11, 'w2'),
-    gwpSec('s12','📚','12. 동일인 이력', x.others.length?x.others.length+'건':'', s12, 'w4')
+    gwpSec('s3','🎓','3. 학력', x.edu.length?x.edu.length+'':'', grpEdit(x.edu)),
+    gwpSec('s4','💼','4. 경력', x.car.length?x.car.length+'':'', grpEdit(x.car)),
+    gwpSec('s5','📜','5. 자격', x.qua.length?x.qua.length+'':'', grpEdit(x.qua)),
+    gwpSec('s11','🏆','11. 최종', fn.final_grade||'미평가', s11),
+    gwpSec('s6','📋','6. Part 1 역할 모듈', x.p1OtherList.length+'모듈', s6, 'w4'),
+    gwpSec('s7','📝','7. Part 2', x.p2List.length+'모듈', s7, 'w4'),
+    gwpSec('s8','📞','8. 통화 이력', calls.length+'건', s8, 'w2'),
+    gwpSec('s9','💬','9. 상담 이력', consults.length+'건', s9, 'w2'),
+    gwpSec('s10','🗣️','10. 면접 이력', `${interviews.length}건 · ${ivTotSum}점`, s10, 'w2'),
+    gwpSec('s12','📚','12. 동일인 이력', x.others.length?x.others.length+'건':'없음', s12, 'w2')
   ].join('')}</div>`;
 }
 
 // ════════════════════════════════════════════════════════════════
-// 버전 B/C — A 확정 후 제작 (현재 stub)
+// 버전 B/C — A와 동일 content, CSS 변형만 다름 (.gwp-v2 / .gwp-v3 scope)
 // ════════════════════════════════════════════════════════════════
-function gwpVer2() { return `<div style="padding:30px;text-align:center;color:#64748b;font-size:11px"><b style="font-size:13px;color:#1a365d">🚧 B 버전 — A 확정 후 제작</b><br>A 탭에서 편집·4단·펼치기를 먼저 완성합니다.</div>`; }
-function gwpVer3() { return `<div style="padding:30px;text-align:center;color:#64748b;font-size:11px"><b style="font-size:13px;color:#1a365d">🚧 C 버전 — A 확정 후 제작</b><br>A 탭에서 편집·4단·펼치기를 먼저 완성합니다.</div>`; }
+function gwpVer2(x) { return gwpVer1(x); }
+function gwpVer3(x) { return gwpVer1(x); }
 
 function renderGwp(row) {
   const x = gwpExtract(row);
@@ -1478,9 +1728,10 @@ function renderGwp(row) {
       <button class="gwp-x" onclick="closeGwp()" title="닫기 (Esc)">×</button>
     </div>
     <div class="gwp-tabs">
-      <button class="gwp-tab ${gwp.tab==='A'?'a':''}" data-t="A" onclick="gwpSetTab('A')"><span class="ltr">A</span>상세 (편집)</button>
-      <button class="gwp-tab ${gwp.tab==='B'?'a':''}" data-t="B" onclick="gwpSetTab('B')"><span class="ltr">B</span>대기</button>
-      <button class="gwp-tab ${gwp.tab==='C'?'a':''}" data-t="C" onclick="gwpSetTab('C')"><span class="ltr">C</span>대기</button>
+      <button class="gwp-tab ${gwp.tab==='A'?'a':''}" data-t="A" onclick="gwpSetTab('A')"><span class="ltr">A</span>클래식</button>
+      <button class="gwp-tab ${gwp.tab==='B'?'a':''}" data-t="B" onclick="gwpSetTab('B')"><span class="ltr">B</span>카드 모던</button>
+      <button class="gwp-tab ${gwp.tab==='C'?'a':''}" data-t="C" onclick="gwpSetTab('C')"><span class="ltr">C</span>미니멀</button>
+      <span style="margin-left:auto;align-self:center;font-size:9px;color:#94a3b8;padding-right:4px">동일 구조 · 디자인만 상이</span>
     </div>`;
 
   document.getElementById('gwp').innerHTML = `
