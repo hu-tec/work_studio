@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>신청서 관리 — Work Studio</title>
+  <title>(P2 샘플) 전체보기 — Work Studio</title>
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -176,11 +176,12 @@
     /* ══════════ GW-STYLE DETAIL POPUP (신규, 기존 인라인 펼침 미간섭) ══════════
        내용 참조: gw 팝업 / 구현 규칙: 공용 메모리 (compact·4단·칩·드롭다운 금지·실데이터만)
        네임스페이스: .gwp-* 전용 — 기존 .detail-sec/.fld-grid 등과 충돌 없음 */
-    #gwp{display:none;position:fixed;inset:0;z-index:9000;font-size:11px}
+    /* P2 전체보기: 모달 대신 풀페이지 */
+    #gwp{display:block;font-size:11px}
     #gwp.open{display:block}
-    .gwp-bd{position:absolute;inset:0;background:rgba(15,23,42,.58);backdrop-filter:blur(3px);animation:gwpFade .14s}
+    .gwp-bd{display:none}
     @keyframes gwpFade{from{opacity:0}to{opacity:1}}
-    .gwp-dlg{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:min(1280px,96vw);max-height:calc(100vh - 28px);background:#f1f5f9;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.38);display:flex;flex-direction:column;overflow:hidden;border:1px solid #cbd5e1}
+    .gwp-dlg{width:100%;max-width:1700px;margin:0 auto;background:#f1f5f9;display:flex;flex-direction:column;overflow:visible;border:1px solid #cbd5e1;border-radius:4px}
     .gwp-hd{display:flex;align-items:center;gap:8px;padding:7px 12px;background:linear-gradient(180deg,#1a365d 0%,#0f2541 100%);color:#fff;flex-shrink:0}
     .gwp-hd .gwp-name{font-size:14px;font-weight:800}
     .gwp-hd .gwp-grade{font-size:11px;padding:2px 10px;border-radius:3px;font-weight:800}
@@ -298,6 +299,33 @@
     .gwp-dept-tab:hover{border-color:#0088ff;color:#0088ff}
     .gwp-dept-tab.a{background:#1a365d;color:#fff;border-color:#1a365d}
     .gwp-sec.dept-hidden{display:none}
+    /* 메가 섹션 (4 그룹) */
+    .mega-sec{margin-bottom:8px;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px}
+    .mega-h{font-size:13px;font-weight:800;color:#1a365d;padding:3px 4px 5px;border-bottom:2px solid #0088ff;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+    /* B 프레임 — 메가 탭 */
+    .mega-tabs{display:flex;gap:3px;padding:6px 8px 0;background:#fff;border-bottom:1px solid #e5e7eb;flex-wrap:wrap}
+    .mega-tab{padding:6px 16px;font-size:12px;font-weight:700;color:#64748b;background:#fff;border:1px solid #cbd5e1;border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer;font-family:inherit}
+    .mega-tab:hover{color:#1a365d;background:#f8fafc}
+    .mega-tab.a{background:#1a365d;color:#fff;border-color:#1a365d}
+    .mega-body-w{padding:8px}
+    /* C 프레임 — 타임라인 */
+    .flow-timeline{display:flex;flex-direction:column;gap:4px;padding:6px}
+    .flow-step{background:#fff;border:1px solid #e5e7eb;border-left:4px solid #cbd5e1;border-radius:4px;overflow:hidden}
+    .flow-step.done{border-left-color:#16a34a}
+    .flow-step.pend{opacity:.7}
+    .flow-step.exp{border-left-color:#0088ff;opacity:1}
+    .flow-head{display:flex;align-items:center;gap:8px;padding:6px 10px;cursor:pointer;user-select:none}
+    .flow-head:hover{background:#f8fafc}
+    .flow-n{width:22px;height:22px;border-radius:50%;background:#f1f5f9;color:#64748b;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+    .flow-step.done .flow-n{background:#16a34a;color:#fff}
+    .flow-step.exp .flow-n{background:#0088ff;color:#fff}
+    .flow-icon{font-size:14px}
+    .flow-label{font-size:12px;font-weight:800;color:#1a365d;min-width:50px}
+    .flow-value{flex:1;font-size:11px;color:#475569;word-break:break-all}
+    .flow-st{font-size:12px;font-weight:800;color:#16a34a}
+    .flow-step.pend .flow-st{color:#cbd5e1}
+    .flow-expand{font-size:9px;color:#94a3b8;margin-left:4px}
+    .flow-body{padding:6px 10px 10px;border-top:1px dashed #e5e7eb;background:#fafbfc}
 
     /* ── 섹션 기본(v1/v2/v3 공통 구조) — 컴팩트 강화 ── */
     .gwp-sec{margin-bottom:4px;padding:4px 6px;background:#fff;border:1px solid #e5e7eb;border-radius:4px}
@@ -388,29 +416,17 @@
 <body>
 
 <header class="top">
-  <h1>🗂 신청서 관리</h1>
+  <h1>🔍 (P2 샘플) 전체보기</h1>
   <nav>
-    <button id="viewList" class="a" onclick="setView('list')">▤ 리스트</button>
-    <button id="viewDash" onclick="setView('dash')">▦ 4단 대시보드</button>
-    <a href="/admin.html">← 전체 admin</a>
+    <input id="idInput" type="number" placeholder="id" class="srch" style="width:80px" onkeydown="if(event.key==='Enter')p2Load()">
+    <button class="btn" onclick="p2Load()">조회</button>
+    <a href="/admin-applications.html" class="btn">← 신청서 목록</a>
+    <a href="/admin.html" class="btn">← 전체 admin</a>
   </nav>
 </header>
 
-<div class="wrap">
-  <div class="sumbar" id="sumbar"></div>
-  <div class="filters" id="filters"></div>
-
-  <div id="listView">
-    <div class="tbl"><div class="loading">로딩 중…</div></div>
-  </div>
-
-  <div id="dashView" hidden>
-    <div class="dash4" id="dashGrid"></div>
-  </div>
-</div>
-
-<!-- GW-style detail popup root (신규, 기존 인라인 펼침과 병행) -->
-<div id="gwp"></div>
+<!-- 풀페이지 P2 전체보기 콘텐츠 영역 -->
+<div id="gwp" class="open"><div class="loading" style="padding:40px;text-align:center;color:#6b7280">로딩 중…</div></div>
 
 <script>
 // ============================================================
@@ -928,7 +944,7 @@ function renderList(filtered) {
         <td>${grade !== '-' ? `<span class="grade grade-${grade} cell-click" onclick="filterBy('finalGrade','${grade}')" title="이 평가로 필터">${grade}</span>` : '-'}</td>
         <td>
           <button class="btn" onclick="toggleExpand(${r.id})">${exp ? '접기' : '펼치기'}</button>
-          <a class="btn" href="/p2-overview.html?id=${r.id}" target="_blank" title="(P2 샘플) 전체보기 — 새 창" style="padding:3px 8px;display:inline-block">전체보기 ↗</a>
+          <button class="btn" onclick="openGwp(${r.id})" title="A/B/C 탭 상세 팝업">상세 팝업</button>
           <button class="btn btn-danger" onclick="delRow(${r.id})">×</button>
         </td>
         <td>
@@ -1154,7 +1170,18 @@ function renderDetail(r) {
 //  저장: 기존 saveNested/saveScore/setStatus/setPhase/setGrade 재사용 + gwpRefresh
 // ============================================================
 
-const gwp = { id: null, tab: 'A', collapsed: new Set(), addingMod: null, dept: 'all' };
+const gwp = { id: null, tab: 'A', collapsed: new Set(), addingMod: null, dept: 'all', megaTab: 'M1', tlExpanded: null };
+
+// B 프레임 메가 탭 전환 (재렌더 없이 DOM 교체)
+function gwpSetMegaTab(megaId) {
+  gwp.megaTab = megaId;
+  gwpRefresh();
+}
+// C 프레임 타임라인 단계 펼치기
+function gwpToggleTimelineStep(secId) {
+  gwp.tlExpanded = (gwp.tlExpanded === secId) ? null : secId;
+  gwpRefresh();
+}
 
 // 부서별 관점 — 각 탭이 숨길 섹션 ID 목록
 const GWP_DEPTS = [
@@ -1673,18 +1700,26 @@ function gwpSec(secId, icon, title, extra, body, span) {
 }
 
 // ════════════════════════════════════════════════════════════════
-// 버전 A — 전필드 편집 + 4단 그리드 + 멀티 기록 + 모듈 CRUD
+// 메가 섹션 구성 — 4그룹 (신청/상담/매칭/회계)
 // ════════════════════════════════════════════════════════════════
-function gwpVer1(x) {
+const MEGA_SECTIONS = [
+  { id: 'M1', label: '1. 신청 정보', icon: '📄', subs: ['s1','s2','s3','s4','s5','s6','s7'] },
+  { id: 'M2', label: '2. 상담',     icon: '🗣️', subs: ['s8','s9','s10'] },
+  { id: 'M3', label: '3. 매칭',     icon: '🎯', subs: ['s11','s_match','s12'] },
+  { id: 'M4', label: '4. 회계',     icon: '💰', subs: ['s_acct_pay','s_acct_payroll','s_acct_settle'] }
+];
+
+// ────────────────────────────────────────────────────────────────
+// 모든 서브 섹션 빌드 — 딕셔너리 반환 {s1:{icon,title,extra,body,span}, ...}
+// ────────────────────────────────────────────────────────────────
+function gwpBuildAllSecs(x) {
   const p1 = x.p1, fn = x.fn, id = x.id, d = x.d;
   const photo = x.photoUrl ? `<img src="${esc(x.photoUrl)}" alt="">` : '사진<br>없음';
   const { gradeChip } = gwpFnInputs(x);
   const meta = buildFieldMeta();
   const customFields = d._customFields || {};
-  const isModuleKey = (k) => !!(meta[k] || customFields[k]);
 
-  // 1. 기본 인적사항
-  const s1 = `<div class="gwp-idr">
+  const s1Body = `<div class="gwp-idr">
     <div class="gwp-photo">${photo}</div>
     <div class="gwp-idg">
       ${gwpEF('성명',id,'part1','name',p1.name,'text')}${gwpEF('영문명',id,'part1','nameEn',p1.nameEn,'text')}${gwpEF('생년월일',id,'part1','birthDate',p1.birthDate,'date')}${gwpEF('성별',id,'part1','gender',p1.gender,'select',['남','여','기타'])}
@@ -1694,14 +1729,12 @@ function gwpVer1(x) {
     </div>
   </div>`;
 
-  // 2. 분류 5축
   const mOpts = k => (meta[k]?.options) || [];
-  const s2 = `<div class="gwp-g gwp-g4">
+  const s2Body = `<div class="gwp-g gwp-g4">
     ${gwpEF('과목',id,'part1','tax_subject',p1.tax_subject||[],'multiselect',mOpts('tax_subject'),2)}${gwpEF('과정',id,'part1','tax_grade',p1.tax_grade,'select',mOpts('tax_grade'))}${gwpEF('산업',id,'part1','tax_industry',p1.tax_industry,'select',mOpts('tax_industry'))}
     ${gwpEF('기능',id,'part1','tax_function',p1.tax_function||[],'multiselect',mOpts('tax_function'),2)}${gwpEF('영역',id,'part1','tax_domain',p1.tax_domain,'select',mOpts('tax_domain'))}${gwpEF('레이어',id,'part1','tax_layer',p1.tax_layer||[],'multiselect',mOpts('tax_layer'))}
   </div>`;
 
-  // 3-5. 학력/경력/자격 — 각 필드에 × 삭제 포함
   const grpEdit = (items) => {
     if (!items.length) return `<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">없음</div>`;
     return `<div class="gwp-g gwp-g4">${items.map(it => {
@@ -1712,7 +1745,6 @@ function gwpVer1(x) {
     }).join('')}</div>`;
   };
 
-  // 6-7. Part 1/2 — 모듈 카드 + × 삭제 + + 필드 + 모듈 추가 UI
   const modEdit = (sec, g) => {
     const items = g.items.map(it => {
       const m = meta[it.key] || (customFields[it.key] || {});
@@ -1727,55 +1759,120 @@ function gwpVer1(x) {
       <button class="gwp-addfld" onclick="gwpAddField(${id},'${sec}','${modId}')">＋ 필드</button>
     </div>`;
   };
-  const s6 = `${gwpModAddUi(id, 'part1', x.p1OtherList)}${x.p1OtherList.length
+  const s6Body = `${gwpModAddUi(id, 'part1', x.p1OtherList)}${x.p1OtherList.length
     ? `<div class="gwp-g gwp-g4">${x.p1OtherList.map(g => modEdit('part1', g)).join('')}</div>`
     : '<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">역할별 추가 모듈 없음</div>'}`;
-  const s7 = `${gwpModAddUi(id, 'part2', x.p2List)}${x.p2List.length
+  const s7Body = `${gwpModAddUi(id, 'part2', x.p2List)}${x.p2List.length
     ? `<div class="gwp-g gwp-g4">${x.p2List.map(g => modEdit('part2', g)).join('')}</div>`
     : `<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">Part 2 미제출 — <a href="#" onclick="sendPart2Link(${id});return false" style="color:#0088ff">링크 생성</a></div>`}`;
 
-  // 8-10. 통화/상담/면접 — 멀티 기록
   const calls = gwpGetList(d, 'calls', 'call');
   const consults = gwpGetList(d, 'consults');
   const interviews = gwpGetList(d, 'interviews', 'interview');
-  const s8 = gwpEvtList(id, 'calls', calls, '통화');
-  const s9 = gwpEvtList(id, 'consults', consults, '상담');
-  const s10 = gwpIvList(id, interviews);
+  const s8Body = gwpEvtList(id, 'calls', calls, '통화');
+  const s9Body = gwpEvtList(id, 'consults', consults, '상담');
+  const s10Body = gwpIvList(id, interviews);
 
-  // 11. 최종 등급
-  const s11 = `<div style="display:flex;gap:3px;margin-bottom:3px;flex-wrap:wrap">${gradeChip('A')}${gradeChip('B')}${gradeChip('C')}${gradeChip('D')}<button class="gwp-gc" style="padding:5px 10px;font-size:11px" onclick="setGrade(${id},'');gwpRefresh()">해제</button></div>
+  const s11Body = `<div style="display:flex;gap:3px;margin-bottom:3px;flex-wrap:wrap">${gradeChip('A')}${gradeChip('B')}${gradeChip('C')}${gradeChip('D')}<button class="gwp-gc" style="padding:5px 10px;font-size:11px" onclick="setGrade(${id},'');gwpRefresh()">해제</button></div>
   <div class="gwp-g gwp-g4">
     ${gwpEF('자동 점수',id,'final','final_autoScore',fn.final_autoScore,'number')}${gwpEF('수동 점수',id,'final','final_manualScore',fn.final_manualScore,'number')}${gwpEF('평가자',id,'final','final_evaluator',fn.final_evaluator,'text')}${gwpEF('평가일',id,'final','final_evalAt',fn.final_evalAt,'datetime')}
     ${gwpEF('평가 사유',id,'final','final_reason',fn.final_reason,'textarea',null,4)}
   </div>`;
 
-  // 12. 동일인 이력
-  const s12 = gwpCrossHtml(x);
+  const s12Body = gwpCrossHtml(x);
+
+  const placeholder = (msg) => `<div class="gwp-fv e" style="padding:20px;text-align:center;font-size:11px;color:#94a3b8;border:1px dashed #cbd5e1;border-radius:4px">🚧 ${msg} (추후 구현 예정)</div>`;
 
   const ivTotSum = interviews.reduce((a, e) => a + (Number(e.total)||(Number(e.score?.communication||0)+Number(e.score?.expertise||0)+Number(e.score?.attitude||0)+Number(e.score?.availability||0))), 0);
 
-  // 12 섹션을 4단 그리드로 배치 (grid-auto-flow: dense로 빈칸 자동 메움)
-  return `<div class="gwp-secgrid">${[
-    gwpSec('s1','👤','1. 기본 인적사항','', s1, 'w2'),
-    gwpSec('s2','🏷️','2. 분류 5축','', s2, 'w2'),
-    gwpSec('s3','🎓','3. 학력', x.edu.length?x.edu.length+'':'', grpEdit(x.edu)),
-    gwpSec('s4','💼','4. 경력', x.car.length?x.car.length+'':'', grpEdit(x.car)),
-    gwpSec('s5','📜','5. 자격', x.qua.length?x.qua.length+'':'', grpEdit(x.qua)),
-    gwpSec('s11','🏆','11. 최종', fn.final_grade||'미평가', s11),
-    gwpSec('s6','📋','6. Part 1 역할 모듈', x.p1OtherList.length+'모듈', s6, 'w4'),
-    gwpSec('s7','📝','7. Part 2', x.p2List.length+'모듈', s7, 'w4'),
-    gwpSec('s8','📞','8. 통화 이력', calls.length+'건', s8, 'w2'),
-    gwpSec('s9','💬','9. 상담 이력', consults.length+'건', s9, 'w2'),
-    gwpSec('s10','🗣️','10. 면접 이력', `${interviews.length}건 · ${ivTotSum}점`, s10, 'w2'),
-    gwpSec('s12','📚','12. 동일인 이력', x.others.length?x.others.length+'건':'없음', s12, 'w2')
-  ].join('')}</div>`;
+  return {
+    s1:  { icon:'👤', title:'1. 기본 인적사항', extra:'', body:s1Body, span:'w2' },
+    s2:  { icon:'🏷️', title:'2. 분류 5축',      extra:'', body:s2Body, span:'w2' },
+    s3:  { icon:'🎓', title:'3. 학력',           extra:x.edu.length?String(x.edu.length):'', body:grpEdit(x.edu), span:null },
+    s4:  { icon:'💼', title:'4. 경력',           extra:x.car.length?String(x.car.length):'', body:grpEdit(x.car), span:null },
+    s5:  { icon:'📜', title:'5. 자격',           extra:x.qua.length?String(x.qua.length):'', body:grpEdit(x.qua), span:null },
+    s6:  { icon:'📋', title:'6. Part 1 역할 모듈', extra:x.p1OtherList.length+'모듈', body:s6Body, span:'w4' },
+    s7:  { icon:'📝', title:'7. Part 2',         extra:x.p2List.length+'모듈', body:s7Body, span:'w4' },
+    s8:  { icon:'📞', title:'통화 이력',          extra:calls.length+'건', body:s8Body, span:'w2' },
+    s9:  { icon:'💬', title:'상담 이력',          extra:consults.length+'건', body:s9Body, span:'w2' },
+    s10: { icon:'🗣️', title:'면접 이력',         extra:`${interviews.length}건 · ${ivTotSum}점`, body:s10Body, span:'w2' },
+    s11: { icon:'🏆', title:'최종 평가',          extra:fn.final_grade||'미평가', body:s11Body, span:'w2' },
+    s12: { icon:'📚', title:'동일인 이력',        extra:x.others.length?x.others.length+'건':'없음', body:s12Body, span:'w2' },
+    s_match:       { icon:'🎯', title:'매칭 정보', extra:'', body:placeholder('매칭 정보 — 프로젝트/강의/업무 배정'), span:'w2' },
+    s_acct_pay:    { icon:'💳', title:'수강료/결제', extra:'', body:placeholder('수강료·결제 정보'), span:null },
+    s_acct_payroll:{ icon:'💵', title:'급여/강사료', extra:'', body:placeholder('강사료·급여 정보'), span:null },
+    s_acct_settle: { icon:'📊', title:'정산 이력',   extra:'', body:placeholder('정산 내역'), span:'w2' }
+  };
+}
+
+// 메가 섹션 내 서브 그리드 렌더 — 공용
+function gwpRenderMegaBody(mega, secs) {
+  return `<div class="gwp-secgrid">${mega.subs.map(id => {
+    const s = secs[id]; if (!s) return '';
+    return gwpSec(id, s.icon, s.title, s.extra, s.body, s.span);
+  }).join('')}</div>`;
 }
 
 // ════════════════════════════════════════════════════════════════
-// 버전 B/C — A와 동일 content, CSS 변형만 다름 (.gwp-v2 / .gwp-v3 scope)
+// A · 펼침 프레임 — 4 메가 섹션 세로 스택 (풀 오버뷰)
 // ════════════════════════════════════════════════════════════════
-function gwpVer2(x) { return gwpVer1(x); }
-function gwpVer3(x) { return gwpVer1(x); }
+function gwpVer1(x) {
+  const secs = gwpBuildAllSecs(x);
+  return MEGA_SECTIONS.map(mega => `
+    <div class="mega-sec" data-mega="${mega.id}">
+      <h3 class="mega-h">${mega.icon} ${mega.label}</h3>
+      ${gwpRenderMegaBody(mega, secs)}
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// B · 탭 프레임 — 4 메가 탭, 한번에 한 메가만 (포커스 모드)
+// ════════════════════════════════════════════════════════════════
+function gwpVer2(x) {
+  const secs = gwpBuildAllSecs(x);
+  const active = gwp.megaTab || 'M1';
+  const tabs = MEGA_SECTIONS.map(m => `<button class="mega-tab ${m.id===active?'a':''}" onclick="gwpSetMegaTab('${m.id}')">${m.icon} ${m.label}</button>`).join('');
+  const body = (MEGA_SECTIONS.find(m => m.id === active) || MEGA_SECTIONS[0]);
+  return `<div class="mega-tabs">${tabs}</div><div class="mega-body-w">${gwpRenderMegaBody(body, secs)}</div>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// C · 타임라인 프레임 — 프로세스 흐름 (접수→통화→상담→면접→평가→매칭→회계)
+// ════════════════════════════════════════════════════════════════
+function gwpVer3(x) {
+  const secs = gwpBuildAllSecs(x);
+  const exp = gwp.tlExpanded;
+  const d = x.d;
+  const callsLen = (d.calls?.length || (d.call?.at ? 1 : 0));
+  const consultsLen = (d.consults?.length || 0);
+  const ivLen = (d.interviews?.length || (d.interview?.memo ? 1 : 0));
+  const steps = [
+    { icon:'📨', label:'접수',   v:(x.row.created_at||'').slice(0,16).replace('T',' ')||'-', done:!!x.row.created_at, sec:'s1' },
+    { icon:'🏷️', label:'분류',   v:((x.p1.tax_subject||[]).join(',')||'-'), done:(x.p1.tax_subject||[]).length>0, sec:'s2' },
+    { icon:'📞', label:'통화',   v:callsLen?`${callsLen}건`:'-', done:callsLen>0, sec:'s8' },
+    { icon:'💬', label:'상담',   v:consultsLen?`${consultsLen}건`:'-', done:consultsLen>0, sec:'s9' },
+    { icon:'🗣️', label:'면접',   v:ivLen?`${ivLen}건`:'-', done:ivLen>0, sec:'s10' },
+    { icon:'🏆', label:'평가',   v:x.fn.final_grade||'미평가', done:!!x.fn.final_grade, sec:'s11' },
+    { icon:'🎯', label:'매칭',   v:'-', done:false, sec:'s_match' },
+    { icon:'💰', label:'회계',   v:'-', done:false, sec:'s_acct_pay' }
+  ];
+  const stepsHtml = steps.map((st, i) => {
+    const isExp = exp === st.sec;
+    const s = secs[st.sec];
+    const bodyHtml = (isExp && s) ? `<div class="flow-body">${gwpSec(st.sec, s.icon, s.title, s.extra, s.body, s.span)}</div>` : '';
+    return `<div class="flow-step ${st.done?'done':'pend'} ${isExp?'exp':''}">
+      <div class="flow-head" onclick="gwpToggleTimelineStep('${st.sec}')">
+        <span class="flow-n">${i+1}</span>
+        <span class="flow-icon">${st.icon}</span>
+        <span class="flow-label">${st.label}</span>
+        <span class="flow-value">${esc(st.v)}</span>
+        <span class="flow-st">${st.done?'✓':'○'}</span>
+        <span class="flow-expand">${isExp?'▼':'▶'}</span>
+      </div>${bodyHtml}
+    </div>`;
+  }).join('');
+  return `<div class="flow-timeline">${stepsHtml}</div>`;
+}
 
 function renderGwp(row) {
   const x = gwpExtract(row);
@@ -1804,10 +1901,10 @@ function renderGwp(row) {
       <button class="gwp-x" onclick="closeGwp()" title="닫기 (Esc)">×</button>
     </div>
     <div class="gwp-tabs">
-      <button class="gwp-tab ${gwp.tab==='A'?'a':''}" data-t="A" onclick="gwpSetTab('A')"><span class="ltr">A</span>클래식</button>
-      <button class="gwp-tab ${gwp.tab==='B'?'a':''}" data-t="B" onclick="gwpSetTab('B')"><span class="ltr">B</span>카드 모던</button>
-      <button class="gwp-tab ${gwp.tab==='C'?'a':''}" data-t="C" onclick="gwpSetTab('C')"><span class="ltr">C</span>미니멀</button>
-      <span style="margin-left:auto;align-self:center;font-size:9px;color:#94a3b8;padding-right:4px">디자인만 상이</span>
+      <button class="gwp-tab ${gwp.tab==='A'?'a':''}" data-t="A" onclick="gwpSetTab('A')"><span class="ltr">A</span>펼침 · 풀 오버뷰</button>
+      <button class="gwp-tab ${gwp.tab==='B'?'a':''}" data-t="B" onclick="gwpSetTab('B')"><span class="ltr">B</span>탭 · 메가 포커스</button>
+      <button class="gwp-tab ${gwp.tab==='C'?'a':''}" data-t="C" onclick="gwpSetTab('C')"><span class="ltr">C</span>타임라인 · 프로세스</button>
+      <span style="margin-left:auto;align-self:center;font-size:9px;color:#94a3b8;padding-right:4px">같은 내용, 다른 구성/뷰/프레임</span>
     </div>
     <div class="gwp-depts">
       <span style="font-size:9px;color:#64748b;font-weight:700;margin-right:4px">부서별 관점:</span>
@@ -2126,16 +2223,51 @@ function applyUrlFilters() {
   }
 }
 
-(async function init() {
+// ============================================================
+// P2 전체보기 — URL ?id=XXX 로 지정된 신청서 1건을 풀페이지로 렌더
+// ============================================================
+
+function p2Load() {
+  const v = Number(document.getElementById('idInput').value);
+  if (!v) return alert('ID를 입력하세요');
+  location.href = '/p2-overview.html?id=' + v;
+}
+
+async function p2Init() {
+  const id = Number(new URLSearchParams(location.search).get('id'));
+  const root = document.getElementById('gwp');
+  if (!id) {
+    root.innerHTML = `<div class="empty" style="padding:40px;text-align:center">
+      <div style="font-size:14px;font-weight:700;color:#1a365d;margin-bottom:8px">신청서 ID를 지정하세요</div>
+      <div style="font-size:11px;color:#64748b">URL 예: <code>/p2-overview.html?id=123</code><br>또는 상단 입력창에 ID 입력 후 [조회]</div>
+    </div>`;
+    return;
+  }
+  document.getElementById('idInput').value = id;
   try {
-    applyUrlFilters();
     await loadAll();
-    rerender();
+    const row = state.rows.find(r => r.id === id);
+    if (!row) {
+      root.innerHTML = `<div class="empty" style="padding:40px;text-align:center;color:#dc2626">ID ${id} 신청서를 찾을 수 없습니다</div>`;
+      return;
+    }
+    gwp.id = id;
+    if (!gwp.tab) gwp.tab = 'A';
+    if (!gwp.dept) gwp.dept = 'all';
+    renderGwp(row);
+    gwpApplyDept();
   } catch (e) {
     console.error(e);
-    document.getElementById('listView').innerHTML = `<div class="tbl"><div class="empty">데이터 로드 실패: ${esc(e.message)}</div></div>`;
+    root.innerHTML = `<div class="empty" style="padding:40px;text-align:center;color:#dc2626">로드 실패: ${esc(e.message)}</div>`;
   }
-})();
+}
+
+// list/dashboard rerender 대체 (편집 후 동일인 이력 재계산)
+function rerender() {
+  if (gwp.id != null) gwpRefresh();
+}
+
+p2Init();
 </script>
 </body>
 </html>
