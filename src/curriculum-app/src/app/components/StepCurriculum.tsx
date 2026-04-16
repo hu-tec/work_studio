@@ -88,14 +88,14 @@ function KeywordPanel({
           {allSelected ? "해제" : "전체"}
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+      <div className="columns-2 gap-x-2">
         {allKeywords.map((kw, i) => {
           const isSelected = selected.includes(kw);
           return (
             <button
               key={kw}
               onClick={() => onToggle(categoryKey, kw)}
-              className={`flex w-full items-start gap-1.5 rounded-md px-1.5 py-0.5 text-left text-[0.74rem] transition-colors ${
+              className={`flex w-full items-start gap-1.5 rounded-md px-1.5 py-0.5 text-left text-[0.74rem] transition-colors break-inside-avoid ${
                 isSelected ? "bg-primary/5 text-foreground" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               }`}
             >
