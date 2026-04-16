@@ -418,14 +418,14 @@
 <header class="top">
   <h1>🔍 (P2 샘플) 전체보기</h1>
   <nav>
-    <input id="idInput" type="number" placeholder="id" class="srch" style="width:80px" onkeydown="if(event.key==='Enter')p2Load()">
-    <button class="btn" onclick="p2Load()">조회</button>
-    <a href="/admin-applications.html" class="btn">← 신청서 목록</a>
-    <a href="/admin.html" class="btn">← 전체 admin</a>
+    <button class="btn" onclick="p2Prev()" title="이전 샘플">◀</button>
+    <span id="sampleLabel" style="font-size:10px;color:#64748b;font-weight:700;padding:0 4px;white-space:nowrap"></span>
+    <button class="btn" onclick="p2Next()" title="다음 샘플">▶</button>
+    <a href="/admin.html" class="btn">← admin</a>
   </nav>
 </header>
 
-<!-- 풀페이지 P2 전체보기 콘텐츠 영역 -->
+<!-- 샘플 페이지 — 최신 신청 1건 자동 로드 -->
 <div id="gwp" class="open"><div class="loading" style="padding:40px;text-align:center;color:#6b7280">로딩 중…</div></div>
 
 <script>
@@ -2224,47 +2224,66 @@ function applyUrlFilters() {
 }
 
 // ============================================================
-// P2 전체보기 — URL ?id=XXX 로 지정된 신청서 1건을 풀페이지로 렌더
+// (P2 샘플) 전체보기 — 최신 신청 1건 자동 로드 (실제 데이터 기반 샘플)
+// URL ?id=<n> 지정 시 해당 건, 없으면 최신 건
+// ◀/▶ 네비로 다른 샘플 건 전환
 // ============================================================
 
-function p2Load() {
-  const v = Number(document.getElementById('idInput').value);
-  if (!v) return alert('ID를 입력하세요');
-  location.href = '/p2-overview.html?id=' + v;
+function p2Sorted() {
+  return [...state.rows].sort((a, b) => (b.created_at||'').localeCompare(a.created_at||''));
+}
+function p2Nav(delta) {
+  const sorted = p2Sorted();
+  if (!sorted.length) return;
+  const idx = sorted.findIndex(r => r.id === gwp.id);
+  const nextIdx = Math.max(0, Math.min(sorted.length - 1, (idx < 0 ? 0 : idx + delta)));
+  const next = sorted[nextIdx];
+  if (next && next.id !== gwp.id) {
+    history.replaceState(null, '', '/p2-overview.html?id=' + next.id);
+    gwp.id = next.id;
+    renderGwp(next);
+    gwpApplyDept();
+    p2UpdateLabel();
+  }
+}
+function p2Prev() { p2Nav(-1); }
+function p2Next() { p2Nav(1); }
+function p2UpdateLabel() {
+  const sorted = p2Sorted();
+  const idx = sorted.findIndex(r => r.id === gwp.id);
+  const lbl = document.getElementById('sampleLabel');
+  if (lbl) lbl.textContent = sorted.length ? `샘플 ${idx+1}/${sorted.length} · id=${gwp.id}` : '';
 }
 
 async function p2Init() {
-  const id = Number(new URLSearchParams(location.search).get('id'));
   const root = document.getElementById('gwp');
-  if (!id) {
-    root.innerHTML = `<div class="empty" style="padding:40px;text-align:center">
-      <div style="font-size:14px;font-weight:700;color:#1a365d;margin-bottom:8px">신청서 ID를 지정하세요</div>
-      <div style="font-size:11px;color:#64748b">URL 예: <code>/p2-overview.html?id=123</code><br>또는 상단 입력창에 ID 입력 후 [조회]</div>
-    </div>`;
-    return;
-  }
-  document.getElementById('idInput').value = id;
   try {
     await loadAll();
-    const row = state.rows.find(r => r.id === id);
-    if (!row) {
-      root.innerHTML = `<div class="empty" style="padding:40px;text-align:center;color:#dc2626">ID ${id} 신청서를 찾을 수 없습니다</div>`;
+    if (!state.rows.length) {
+      root.innerHTML = `<div class="empty" style="padding:40px;text-align:center;color:#64748b">
+        <div style="font-size:14px;font-weight:700;color:#1a365d;margin-bottom:8px">샘플로 쓸 신청 데이터가 없습니다</div>
+        <div style="font-size:11px">신청서 접수 후 이 페이지에 자동으로 최신 건이 샘플로 표시됩니다.</div>
+      </div>`;
       return;
     }
-    gwp.id = id;
+    const qId = Number(new URLSearchParams(location.search).get('id'));
+    const sorted = p2Sorted();
+    const row = (qId && state.rows.find(r => r.id === qId)) || sorted[0];
+    gwp.id = row.id;
     if (!gwp.tab) gwp.tab = 'A';
     if (!gwp.dept) gwp.dept = 'all';
     renderGwp(row);
     gwpApplyDept();
+    p2UpdateLabel();
   } catch (e) {
     console.error(e);
     root.innerHTML = `<div class="empty" style="padding:40px;text-align:center;color:#dc2626">로드 실패: ${esc(e.message)}</div>`;
   }
 }
 
-// list/dashboard rerender 대체 (편집 후 동일인 이력 재계산)
+// 편집 후 라벨 갱신을 위한 rerender 대체
 function rerender() {
-  if (gwp.id != null) gwpRefresh();
+  if (gwp.id != null) { gwpRefresh(); p2UpdateLabel(); }
 }
 
 p2Init();

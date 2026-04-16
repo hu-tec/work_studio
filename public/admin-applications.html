@@ -928,7 +928,6 @@ function renderList(filtered) {
         <td>${grade !== '-' ? `<span class="grade grade-${grade} cell-click" onclick="filterBy('finalGrade','${grade}')" title="이 평가로 필터">${grade}</span>` : '-'}</td>
         <td>
           <button class="btn" onclick="toggleExpand(${r.id})">${exp ? '접기' : '펼치기'}</button>
-          <a class="btn" href="/p2-overview.html?id=${r.id}" target="_blank" title="(P2 샘플) 전체보기 — 새 창" style="padding:3px 8px;display:inline-block">전체보기 ↗</a>
           <button class="btn btn-danger" onclick="delRow(${r.id})">×</button>
         </td>
         <td>
