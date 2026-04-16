@@ -292,6 +292,12 @@
     .gwp-cx:hover{color:#dc2626}
     .gwp-toggle-all{padding:3px 10px;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:4px;cursor:pointer;font-family:inherit;margin-right:6px}
     .gwp-toggle-all:hover{background:rgba(255,255,255,.2)}
+    /* 부서별 관점 필터 탭 */
+    .gwp-depts{display:flex;background:#f8fafc;border-bottom:1px solid #e5e7eb;padding:4px 10px;flex-shrink:0;gap:3px;align-items:center}
+    .gwp-dept-tab{padding:3px 12px;font-size:10px;font-weight:700;color:#64748b;background:#fff;border:1px solid #cbd5e1;border-radius:3px;cursor:pointer;font-family:inherit}
+    .gwp-dept-tab:hover{border-color:#0088ff;color:#0088ff}
+    .gwp-dept-tab.a{background:#1a365d;color:#fff;border-color:#1a365d}
+    .gwp-sec.dept-hidden{display:none}
 
     /* ── 섹션 기본(v1/v2/v3 공통 구조) — 컴팩트 강화 ── */
     .gwp-sec{margin-bottom:4px;padding:4px 6px;background:#fff;border:1px solid #e5e7eb;border-radius:4px}
@@ -1148,14 +1154,29 @@ function renderDetail(r) {
 //  저장: 기존 saveNested/saveScore/setStatus/setPhase/setGrade 재사용 + gwpRefresh
 // ============================================================
 
-const gwp = { id: null, tab: 'A', collapsed: new Set(), addingMod: null };
+const gwp = { id: null, tab: 'A', collapsed: new Set(), addingMod: null, dept: 'all' };
+
+// 부서별 관점 — 각 탭이 숨길 섹션 ID 목록
+const GWP_DEPTS = [
+  { id: 'all',       label: '전체',   hide: [] },
+  { id: 'marketing', label: '마케팅', hide: ['s3','s4','s5','s6','s7','s9','s10','s11'] },
+  { id: 'consult',   label: '상담',   hide: ['s3','s4','s5','s6','s7','s10','s11'] },
+  { id: 'interview', label: '면접',   hide: ['s2','s8','s9','s11','s12'] },
+  { id: 'eval',      label: '평가',   hide: ['s8','s9'] }
+];
+// 작업별 섹션 매핑 (부분 re-render용)
+const GWP_SEC_FOR_EVT = { calls: 's8', consults: 's9', interviews: 's10' };
+const GWP_SECS_FOR_FIELD = { part1: ['s3','s4','s5','s6'], part2: ['s7'] };
+const GWP_SEC_FOR_MOD = { part1: 's6', part2: 's7' };
 
 function openGwp(id) {
   const row = state.rows.find(r => r.id === id);
   if (!row) return;
   gwp.id = id;
   if (!gwp.tab) gwp.tab = 'A';
+  if (!gwp.dept) gwp.dept = 'all';
   renderGwp(row);
+  gwpApplyDept();
   document.getElementById('gwp').classList.add('open');
   document.addEventListener('keydown', gwpEsc);
 }
@@ -1177,10 +1198,61 @@ function gwpSetTab(tab) {
   dlg.querySelectorAll('.gwp-tab').forEach(b => b.classList.toggle('a', b.dataset.t === tab));
 }
 
+// 콘텐츠만 재렌더 (헤더/탭/스크롤/부서 필터 유지) — 깜빡임 최소화
 function gwpRefresh() {
   if (gwp.id == null) return;
   const row = state.rows.find(r => r.id === gwp.id);
-  if (row) renderGwp(row);
+  if (!row) return;
+  const x = gwpExtract(row);
+  const bd2 = document.querySelector('#gwp .gwp-bd2');
+  if (!bd2) { renderGwp(row); return; }
+  const scrollTop = bd2.scrollTop;
+  bd2.innerHTML = `
+    <div class="gwp-pn gwp-v1" data-pane="A">${gwpVer1(x)}</div>
+    <div class="gwp-pn gwp-v2" data-pane="B">${gwpVer2(x)}</div>
+    <div class="gwp-pn gwp-v3" data-pane="C">${gwpVer3(x)}</div>`;
+  bd2.scrollTop = scrollTop;
+  gwpApplyDept();
+}
+
+// 부분 재렌더 — 지정 섹션만 (포커스·스크롤 100% 유지)
+function gwpRenderSec(secId) {
+  if (gwp.id == null || !secId) return;
+  const row = state.rows.find(r => r.id === gwp.id);
+  if (!row) return;
+  const x = gwpExtract(row);
+  const full = gwpVer1(x);
+  const tmp = document.createElement('div');
+  tmp.innerHTML = full;
+  const src = tmp.querySelector(`.gwp-sec[data-sec="${secId}"]`);
+  if (!src) return;
+  const srcBody = src.querySelector(':scope > .gwp-sec-body');
+  const srcExtra = src.querySelector(':scope > h5 .sp');
+  document.querySelectorAll(`#gwp .gwp-sec[data-sec="${secId}"]`).forEach(el => {
+    const bd = el.querySelector(':scope > .gwp-sec-body');
+    if (bd && srcBody) bd.innerHTML = srcBody.innerHTML;
+    const sp = el.querySelector(':scope > h5 .sp');
+    if (sp) sp.textContent = srcExtra ? srcExtra.textContent : '';
+  });
+  gwpApplyDept();
+}
+
+function gwpRenderSecs(secIds) { (secIds||[]).forEach(gwpRenderSec); }
+
+// 부서별 필터 — 표시/숨김만
+function gwpSetDept(deptId) {
+  gwp.dept = deptId;
+  const dlg = document.querySelector('#gwp .gwp-dlg');
+  if (dlg) dlg.dataset.dept = deptId;
+  document.querySelectorAll('#gwp .gwp-dept-tab').forEach(b => b.classList.toggle('a', b.dataset.dept === deptId));
+  gwpApplyDept();
+}
+function gwpApplyDept() {
+  const d = GWP_DEPTS.find(x => x.id === gwp.dept) || GWP_DEPTS[0];
+  const hidden = new Set(d.hide);
+  document.querySelectorAll('#gwp .gwp-sec').forEach(el => {
+    el.classList.toggle('dept-hidden', hidden.has(el.dataset.sec));
+  });
 }
 
 // 한 필드 (라벨 + 값) — 값 없으면 '—' (실데이터 규칙 준수)
@@ -1356,9 +1428,13 @@ function gwpEF(label, id, section, key, value, type, options, span, delBtn) {
   return `<div class="gwp-f${spanCls}"><div class="gwp-fl">${esc(label)}</div>${body}${delBtn||''}</div>`;
 }
 
-// ─── 모듈 CRUD ───
-function gwpStartAddMod(section) { gwp.addingMod = { section }; gwpRefresh(); }
-function gwpCancelAddMod() { gwp.addingMod = null; gwpRefresh(); }
+// ─── 모듈 CRUD — 부분 재렌더 ───
+function gwpStartAddMod(section) { gwp.addingMod = { section }; gwpRenderSec(GWP_SEC_FOR_MOD[section]); }
+function gwpCancelAddMod() {
+  const sec = gwp.addingMod?.section;
+  gwp.addingMod = null;
+  if (sec) gwpRenderSec(GWP_SEC_FOR_MOD[sec]);
+}
 async function gwpAddMod(id, section, moduleId) {
   const mod = state.modules.find(m => m.moduleId === moduleId);
   if (!mod) return;
@@ -1371,7 +1447,7 @@ async function gwpAddMod(id, section, moduleId) {
   }
   gwp.addingMod = null;
   await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
-  gwpRefresh();
+  gwpRenderSecs(GWP_SECS_FOR_FIELD[section]);
 }
 async function gwpRemoveMod(id, section, moduleId) {
   if (!confirm(`모듈 "${moduleId}"의 모든 필드를 이 접수에서 삭제?`)) return;
@@ -1385,7 +1461,7 @@ async function gwpRemoveMod(id, section, moduleId) {
   }
   keysToDel.forEach(k => delete row.d[section][k]);
   await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
-  gwpRefresh();
+  gwpRenderSecs(GWP_SECS_FOR_FIELD[section]);
 }
 async function gwpAddField(id, section, moduleId) {
   const key = (prompt('필드 key (영문)', '')||'').trim();
@@ -1397,7 +1473,7 @@ async function gwpAddField(id, section, moduleId) {
   if (!row.d._customFields) row.d._customFields = {};
   row.d._customFields[key] = { label, moduleId, type: 'text' };
   await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
-  gwpRefresh();
+  gwpRenderSecs(GWP_SECS_FOR_FIELD[section]);
 }
 async function gwpDelField(id, section, key) {
   if (!confirm(`"${key}" 필드 삭제?`)) return;
@@ -1406,7 +1482,7 @@ async function gwpDelField(id, section, key) {
   delete row.d[section][key];
   if (row.d._customFields?.[key]) delete row.d._customFields[key];
   await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
-  gwpRefresh();
+  gwpRenderSecs(GWP_SECS_FOR_FIELD[section]);
 }
 
 // ─── 멀티 기록 (통화/상담/면접) ───
@@ -1436,7 +1512,7 @@ async function gwpAddEvt(id, key) {
   const blank = key === 'interviews' ? { at: nowLocal, by: '', score:{}, memo: '' } : { at: nowLocal, by: '', notes: '' };
   row.d[key].push(blank);
   await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
-  gwpRefresh();
+  gwpRenderSec(GWP_SEC_FOR_EVT[key]);
 }
 async function gwpDelEvt(id, key, idx) {
   if (!confirm('이 기록을 삭제?')) return;
@@ -1444,7 +1520,7 @@ async function gwpDelEvt(id, key, idx) {
   if (!Array.isArray(row.d[key])) return;
   row.d[key].splice(idx, 1);
   await fetch('/api/applications/' + id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(row.d)});
-  gwpRefresh();
+  gwpRenderSec(GWP_SEC_FOR_EVT[key]);
 }
 async function gwpSaveEvt(id, key, idx, field, value) {
   const row = state.rows.find(r => r.id === id);
@@ -1731,12 +1807,17 @@ function renderGwp(row) {
       <button class="gwp-tab ${gwp.tab==='A'?'a':''}" data-t="A" onclick="gwpSetTab('A')"><span class="ltr">A</span>클래식</button>
       <button class="gwp-tab ${gwp.tab==='B'?'a':''}" data-t="B" onclick="gwpSetTab('B')"><span class="ltr">B</span>카드 모던</button>
       <button class="gwp-tab ${gwp.tab==='C'?'a':''}" data-t="C" onclick="gwpSetTab('C')"><span class="ltr">C</span>미니멀</button>
-      <span style="margin-left:auto;align-self:center;font-size:9px;color:#94a3b8;padding-right:4px">동일 구조 · 디자인만 상이</span>
+      <span style="margin-left:auto;align-self:center;font-size:9px;color:#94a3b8;padding-right:4px">디자인만 상이</span>
+    </div>
+    <div class="gwp-depts">
+      <span style="font-size:9px;color:#64748b;font-weight:700;margin-right:4px">부서별 관점:</span>
+      ${GWP_DEPTS.map(dep => `<button class="gwp-dept-tab ${gwp.dept===dep.id?'a':''}" data-dept="${dep.id}" onclick="gwpSetDept('${dep.id}')">${esc(dep.label)}</button>`).join('')}
+      <span style="margin-left:auto;align-self:center;font-size:9px;color:#94a3b8;padding-right:4px">해당 부서가 보는 섹션만 표시</span>
     </div>`;
 
   document.getElementById('gwp').innerHTML = `
     <div class="gwp-bd" onclick="closeGwp()"></div>
-    <div class="gwp-dlg" data-tab="${gwp.tab}">
+    <div class="gwp-dlg" data-tab="${gwp.tab}" data-dept="${gwp.dept}">
       ${header}
       <div class="gwp-bd2">
         <div class="gwp-pn gwp-v1" data-pane="A">${gwpVer1(x)}</div>
