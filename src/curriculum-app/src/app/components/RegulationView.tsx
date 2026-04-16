@@ -81,7 +81,7 @@ function ItemRow({
   const [draft, setDraft] = useState(it.text);
   const commit = () => { onEdit(draft); setEditing(false); };
   return (
-    <div className={`group flex gap-1 rounded border ${s.bd} px-1.5 py-0.5 items-start`}>
+    <div className="group flex gap-1 px-1.5 py-0.5 items-start break-inside-avoid">
       <span className={`shrink-0 inline-flex h-3.5 min-w-3.5 items-center justify-center rounded-full ${s.dot} text-[9px] font-bold text-white px-1`}>
         {it.no}
       </span>
@@ -173,7 +173,7 @@ function BlockGrid({
 
   return (
     <div className="space-y-1">
-      <div className="grid grid-cols-4 gap-1">
+      <div className="columns-4 gap-1">
         {flat.map(({ it, tier, idx }) => (
           <ItemRow
             key={`${tier}-${idx}`}
@@ -987,13 +987,13 @@ function ReadOnlyBlockGrid({ block, tiers, search }: { block: RegulationBlock; t
     });
   });
   return (
-    <div className="grid grid-cols-4 gap-1">
+    <div className="columns-4 gap-1">
       {flat.map(({ it, tier }, i) => {
         const s = tierStyle[tier];
         return (
           <div
             key={`${tier}-${i}`}
-            className={`group flex gap-1 rounded border ${s.bd} px-1.5 py-0.5 items-start`}
+            className="group flex gap-1 px-1.5 py-0.5 items-start break-inside-avoid"
           >
             <span className={`shrink-0 inline-flex h-3.5 min-w-3.5 items-center justify-center rounded-full ${s.dot} text-[9px] font-bold text-white px-1`}>
               {it.no}
@@ -1003,7 +1003,7 @@ function ReadOnlyBlockGrid({ block, tiers, search }: { block: RegulationBlock; t
         );
       })}
       {flat.length === 0 && (
-        <div className="col-span-4 text-center text-[10px] text-muted-foreground py-1">
+        <div className="text-center text-[10px] text-muted-foreground py-1">
           조건에 맞는 항목 없음
         </div>
       )}

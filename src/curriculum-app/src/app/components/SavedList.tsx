@@ -33,14 +33,14 @@ function TextbookCardItem({
         isEditing ? "border-primary ring-2 ring-primary/20" : "border-cyan-200"
       }`}
     >
-      <div className="absolute right-1 top-1 flex gap-0 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute right-1 top-1 flex gap-0.5">
         <button onClick={(e) => { e.stopPropagation(); onEdit(); }}
-          className="rounded p-0.5 text-muted-foreground hover:bg-blue-50 hover:text-blue-600">
-          <Pencil className="h-2.5 w-2.5" />
+          className="flex items-center gap-0.5 rounded border border-blue-200 bg-blue-50 px-1 py-0 text-[0.58rem] font-medium text-blue-700 hover:bg-blue-100">
+          <Pencil className="h-2.5 w-2.5" />수정
         </button>
         <button onClick={(e) => { e.stopPropagation(); if (window.confirm("정말 삭제하시겠습니까?")) onDelete(); }}
-          className="rounded p-0.5 text-muted-foreground hover:bg-red-50 hover:text-red-600">
-          <Trash2 className="h-2.5 w-2.5" />
+          className="flex items-center gap-0.5 rounded border border-red-200 bg-red-50 px-1 py-0 text-[0.58rem] font-medium text-red-700 hover:bg-red-100">
+          <Trash2 className="h-2.5 w-2.5" />삭제
         </button>
       </div>
 
@@ -110,14 +110,14 @@ function CurriculumCard({
         isEditing ? "border-primary ring-2 ring-primary/20" : "border-border"
       }`}
     >
-      <div className="absolute right-1 top-1 flex gap-0 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute right-1 top-1 flex gap-0.5">
         <button onClick={(e) => { e.stopPropagation(); onEdit(); }}
-          className="rounded p-0.5 text-muted-foreground hover:bg-blue-50 hover:text-blue-600">
-          <Pencil className="h-2.5 w-2.5" />
+          className="flex items-center gap-0.5 rounded border border-blue-200 bg-blue-50 px-1 py-0 text-[0.58rem] font-medium text-blue-700 hover:bg-blue-100">
+          <Pencil className="h-2.5 w-2.5" />수정
         </button>
         <button onClick={(e) => { e.stopPropagation(); if (window.confirm("정말 삭제하시겠습니까?")) onDelete(); }}
-          className="rounded p-0.5 text-muted-foreground hover:bg-red-50 hover:text-red-600">
-          <Trash2 className="h-2.5 w-2.5" />
+          className="flex items-center gap-0.5 rounded border border-red-200 bg-red-50 px-1 py-0 text-[0.58rem] font-medium text-red-700 hover:bg-red-100">
+          <Trash2 className="h-2.5 w-2.5" />삭제
         </button>
       </div>
 
@@ -313,7 +313,7 @@ export function SavedList({ mode = "curriculum", savedList, editingId, onEdit, o
                 <th className={`${thCls} w-[42px] text-center`}>기본</th>
                 <th className={`${thCls} w-[42px] text-center`}>실습</th>
                 <th className={thCls}>대상</th>
-                <th className={`${thCls} w-[50px]`}></th>
+                <th className={`${thCls} w-[90px] text-center`}>작업</th>
               </tr>
             </thead>
             <tbody>
@@ -342,11 +342,13 @@ export function SavedList({ mode = "curriculum", savedList, editingId, onEdit, o
                     <td className={`${tdCls} text-[0.66rem]`}>{item.targets.length > 0 ? item.targets.join(", ") : "—"}</td>
                     <td className={`${tdCls} text-center`}>
                       <div className="flex gap-0.5 justify-center">
-                        <button onClick={() => onEdit(item)} className="rounded p-0.5 hover:bg-blue-50 hover:text-blue-600 text-muted-foreground">
-                          <Pencil className="h-3 w-3" />
+                        <button onClick={() => onEdit(item)}
+                          className="flex items-center gap-0.5 rounded border border-blue-200 bg-blue-50 px-1 py-0 text-[0.62rem] font-medium text-blue-700 hover:bg-blue-100">
+                          <Pencil className="h-2.5 w-2.5" />수정
                         </button>
-                        <button onClick={() => { if (window.confirm("정말 삭제하시겠습니까?")) onDelete(item.id); }} className="rounded p-0.5 hover:bg-red-50 hover:text-red-600 text-muted-foreground">
-                          <Trash2 className="h-3 w-3" />
+                        <button onClick={() => { if (window.confirm("정말 삭제하시겠습니까?")) onDelete(item.id); }}
+                          className="flex items-center gap-0.5 rounded border border-red-200 bg-red-50 px-1 py-0 text-[0.62rem] font-medium text-red-700 hover:bg-red-100">
+                          <Trash2 className="h-2.5 w-2.5" />삭제
                         </button>
                       </div>
                     </td>
