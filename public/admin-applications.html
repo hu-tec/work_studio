@@ -206,10 +206,24 @@
     .gwp-g2{grid-template-columns:repeat(2,minmax(0,1fr))}
     .gwp-g3{grid-template-columns:repeat(3,minmax(0,1fr))}
     .gwp-g4{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .gwp-2col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-    .gwp-3col{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
-    .gwp-4col{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
-    @media(max-width:900px){.gwp-4col{grid-template-columns:repeat(2,1fr)}.gwp-3col{grid-template-columns:repeat(2,1fr)}}
+    /* Outer section grid — 12 sections in 4 columns */
+    .gwp-secgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-items:start}
+    .gwp-sec.w2{grid-column:span 2}
+    .gwp-sec.w3{grid-column:span 3}
+    .gwp-sec.w4{grid-column:span 4}
+    /* Internal field grid — default 1-col inside narrow sections; wider sections expand */
+    .gwp-sec .gwp-g.gwp-g4{grid-template-columns:1fr}
+    .gwp-sec.w2 .gwp-g.gwp-g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .gwp-sec.w3 .gwp-g.gwp-g4{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .gwp-sec.w4 .gwp-g.gwp-g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .gwp-sec .gwp-g.gwp-g3{grid-template-columns:1fr}
+    .gwp-sec.w2 .gwp-g.gwp-g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .gwp-sec.w3 .gwp-g.gwp-g3,.gwp-sec.w4 .gwp-g.gwp-g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .gwp-sec .gwp-g.gwp-g2{grid-template-columns:1fr}
+    .gwp-sec.w2 .gwp-g.gwp-g2,.gwp-sec.w3 .gwp-g.gwp-g2,.gwp-sec.w4 .gwp-g.gwp-g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .gwp-sec.w2 .gwp-idr .gwp-idg{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media(max-width:1200px){.gwp-secgrid{grid-template-columns:repeat(3,minmax(0,1fr))}.gwp-sec.w4{grid-column:span 3}}
+    @media(max-width:900px){.gwp-secgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.gwp-sec.w3,.gwp-sec.w4{grid-column:span 2}}
     .gwp-f{padding:3px 5px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:3px;min-width:0}
     .gwp-f.s2{grid-column:span 2}
     .gwp-f.s3{grid-column:span 3}
@@ -1323,9 +1337,10 @@ function gwpToggleAll() {
   gwpRefresh();
 }
 
-function gwpSec(secId, icon, title, extra, body) {
+function gwpSec(secId, icon, title, extra, body, span) {
   const c = gwp.collapsed.has(secId);
-  return `<div class="gwp-sec${c?' clpsd':''}" data-sec="${secId}">
+  const w = span ? ' ' + span : '';
+  return `<div class="gwp-sec${c?' clpsd':''}${w}" data-sec="${secId}">
     <h5 onclick="gwpToggleSection('${secId}')"><span class="col">${c?'▶':'▼'}</span>${icon} ${title}${extra?` <span class="sp">${extra}</span>`:''}</h5>
     ${c ? '' : body}
   </div>`;
@@ -1368,20 +1383,20 @@ function gwpVer1(x) {
     }).join('')}</div>`;
   };
 
-  // 6. Part 1 역할 모듈 — 4단 편집
+  // 6. Part 1 역할 모듈 — 모듈 카드 4단 배치
   const modEdit = (sec, g) => {
     const items = g.items.map(it => {
       const m = meta[it.key] || {};
       const sp = (it.type==='textarea'||(Array.isArray(it.value)&&it.value.length>=4)) ? 2 : null;
       return gwpEF(it.label, id, sec, it.key, it.value, it.type, m.options||null, sp);
     }).join('');
-    return `<div class="gwp-subcard"><div class="gwp-subt">${esc(g.name)} <span class="sp">${g.items.length}필드</span></div><div class="gwp-g gwp-g4">${items}</div></div>`;
+    return `<div class="gwp-subcard"><div class="gwp-subt">${esc(g.name)} <span class="sp">${g.items.length}</span></div><div class="gwp-g gwp-g2">${items}</div></div>`;
   };
   const s6 = x.p1OtherList.length
-    ? x.p1OtherList.map(g => modEdit('part1', g)).join('')
+    ? `<div class="gwp-g gwp-g4">${x.p1OtherList.map(g => modEdit('part1', g)).join('')}</div>`
     : '<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">역할별 추가 모듈 없음</div>';
   const s7 = x.p2List.length
-    ? x.p2List.map(g => modEdit('part2', g)).join('')
+    ? `<div class="gwp-g gwp-g4">${x.p2List.map(g => modEdit('part2', g)).join('')}</div>`
     : `<div class="gwp-fv e" style="padding:3px;text-align:center;font-size:10px">Part 2 미제출 — <a href="#" onclick="sendPart2Link(${id});return false" style="color:#0088ff">링크 생성</a></div>`;
 
   // 8. 타임라인 (읽기전용)
@@ -1413,16 +1428,21 @@ function gwpVer1(x) {
   // 12. 동일인 이력 (읽기전용)
   const s12 = gwpCrossHtml(x);
 
-  return [
-    gwpSec('s1','👤','1. 기본 인적사항','', s1),
-    gwpSec('s2','🏷️','2. 분류 5축','', s2),
-    `<div class="gwp-3col">${gwpSec('s3','🎓','3. 학력',x.edu.length?x.edu.length+'필드':'',grpEdit(x.edu))}${gwpSec('s4','💼','4. 경력',x.car.length?x.car.length+'필드':'',grpEdit(x.car))}${gwpSec('s5','📜','5. 자격/면허',x.qua.length?x.qua.length+'필드':'',grpEdit(x.qua))}</div>`,
-    gwpSec('s6','📋','6. Part 1 역할 모듈',x.p1OtherList.length?x.p1OtherList.length+'모듈':'', s6),
-    gwpSec('s7','📝','7. Part 2',x.p2List.length?x.p2List.length+'모듈':'', s7),
+  // 12 섹션을 4단 그리드로 배치 — 3행에 4개씩 꽉 채우기
+  return `<div class="gwp-secgrid">${[
+    gwpSec('s1','👤','1. 기본 인적사항','', s1, 'w2'),
+    gwpSec('s2','🏷️','2. 분류 5축','', s2, 'w2'),
+    gwpSec('s3','🎓','3. 학력', x.edu.length?x.edu.length+'필드':'', grpEdit(x.edu)),
+    gwpSec('s4','💼','4. 경력', x.car.length?x.car.length+'필드':'', grpEdit(x.car)),
+    gwpSec('s5','📜','5. 자격', x.qua.length?x.qua.length+'필드':'', grpEdit(x.qua)),
     gwpSec('s8','⏱️','8. 타임라인','', s8),
-    `<div class="gwp-3col">${gwpSec('s9','📞','9. 통화','', s9)}${gwpSec('s10','🗣️','10. 면접',`${x.ivTotal||'-'}/20`, s10)}${gwpSec('s11','🏆','11. 최종 등급',`합계 ${x.avgScore}점`, s11)}</div>`,
-    gwpSec('s12','📚','12. 동일인 이력',x.others.length?x.others.length+'건':'', s12)
-  ].join('');
+    gwpSec('s6','📋','6. Part 1 역할 모듈', x.p1OtherList.length?x.p1OtherList.length+'모듈':'', s6, 'w4'),
+    gwpSec('s7','📝','7. Part 2', x.p2List.length?x.p2List.length+'모듈':'', s7, 'w4'),
+    gwpSec('s9','📞','9. 통화','', s9),
+    gwpSec('s10','🗣️','10. 면접', `${x.ivTotal||'-'}/20`, s10),
+    gwpSec('s11','🏆','11. 최종 등급', `합계 ${x.avgScore}점`, s11, 'w2'),
+    gwpSec('s12','📚','12. 동일인 이력', x.others.length?x.others.length+'건':'', s12, 'w4')
+  ].join('')}</div>`;
 }
 
 // ════════════════════════════════════════════════════════════════
