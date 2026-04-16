@@ -421,6 +421,11 @@
     <button class="btn" onclick="p2Prev()" title="이전 샘플">◀</button>
     <span id="sampleLabel" style="font-size:10px;color:#64748b;font-weight:700;padding:0 4px;white-space:nowrap"></span>
     <button class="btn" onclick="p2Next()" title="다음 샘플">▶</button>
+    <span style="width:1px;height:18px;background:#e5e7eb;margin:0 4px"></span>
+    <button class="btn btn-success" onclick="p2AddNew()" title="새 대상 추가 (빈 신청서 생성)">＋ 추가</button>
+    <button class="btn" onclick="p2Duplicate()" title="현재 대상을 복제">🔁 복제</button>
+    <button class="btn btn-danger" onclick="p2Delete()" title="현재 대상 삭제">× 삭제</button>
+    <span style="width:1px;height:18px;background:#e5e7eb;margin:0 4px"></span>
     <a href="/admin.html" class="btn">← admin</a>
   </nav>
 </header>
@@ -2248,6 +2253,61 @@ function p2Nav(delta) {
 }
 function p2Prev() { p2Nav(-1); }
 function p2Next() { p2Nav(1); }
+
+// 새 대상 추가 — 빈 신청서 생성 후 해당 건으로 이동
+async function p2AddNew() {
+  if (!confirm('새 빈 신청서를 생성하시겠습니까?')) return;
+  const blank = {
+    _site: '', _formId: '', _status: 0, _phase: 'part1', _role: '',
+    part1: {}, part2: {}, calls: [], consults: [], interviews: [], final: {}
+  };
+  try {
+    const res = await fetch('/api/applications', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(blank)
+    });
+    const result = await res.json();
+    if (result && result.id) location.href = '/p2-overview.html?id=' + result.id;
+    else alert('생성 실패');
+  } catch (e) { alert('생성 실패: ' + e.message); }
+}
+
+// 현재 대상 복제
+async function p2Duplicate() {
+  if (gwp.id == null) return alert('대상이 없습니다');
+  const row = state.rows.find(r => r.id === gwp.id);
+  if (!row) return;
+  if (!confirm(`이 신청서(id=${gwp.id})를 복제하시겠습니까?`)) return;
+  const cloned = JSON.parse(JSON.stringify(row.d));
+  cloned._status = 0;
+  cloned._phase = 'part1';
+  if (cloned.final) cloned.final = {};
+  try {
+    const res = await fetch('/api/applications', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(cloned)
+    });
+    const result = await res.json();
+    if (result && result.id) location.href = '/p2-overview.html?id=' + result.id;
+    else alert('복제 실패');
+  } catch (e) { alert('복제 실패: ' + e.message); }
+}
+
+// 현재 대상 삭제 — 삭제 후 최신 샘플로 이동
+async function p2Delete() {
+  if (gwp.id == null) return alert('대상이 없습니다');
+  if (!confirm(`정말 삭제? (id=${gwp.id}) — 되돌릴 수 없습니다`)) return;
+  try {
+    await fetch('/api/applications/' + gwp.id, { method:'DELETE' });
+    const deletedId = gwp.id;
+    await loadAll();
+    const sorted = p2Sorted();
+    if (sorted.length) location.href = '/p2-overview.html?id=' + sorted[0].id;
+    else location.href = '/p2-overview.html';
+  } catch (e) { alert('삭제 실패: ' + e.message); }
+}
 function p2UpdateLabel() {
   const sorted = p2Sorted();
   const idx = sorted.findIndex(r => r.id === gwp.id);
